@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "util.h"
+#include "util.hpp"
 
 void wait() {
   puts("Press return to continue ... ");

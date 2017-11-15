@@ -1,0 +1,9 @@
+
+- C program (general presentation)
+
+- malloc/free
+
+- valgrind usage
+
+- effective memory reservation
+  (not when using malloc but when initialization)

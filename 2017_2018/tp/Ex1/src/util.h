@@ -1,3 +1,3 @@
-int wait();
-size_t memavail();
+void wait();
+size_t memavail(double factor);
 
