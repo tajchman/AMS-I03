@@ -3,6 +3,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR})
 
 add_library(Util
   util.c
+  timer.cpp
   )
 
 install(TARGETS Util DESTINATION lib)
