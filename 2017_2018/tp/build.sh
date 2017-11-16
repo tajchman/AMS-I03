@@ -1,6 +1,6 @@
 #! /bin/bash
 
-for i in Ex*
+for i in Utils Ex*
 do
    cd $i
    ./build.sh

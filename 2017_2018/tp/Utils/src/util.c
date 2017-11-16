@@ -1,12 +1,14 @@
 #include <stdio.h>
-#include "util.hpp"
+#include "util.h"
 
 void wait() {
   puts("Press return to continue ... ");
   getchar();
 }
 
-#ifdef __linux__
+
+#if  defined(__linux__) || defined(__APPLE__)
+
 #include <unistd.h>
 
 size_t memavail(double factor)
@@ -18,7 +20,7 @@ size_t memavail(double factor)
   return (size_t) (pages * page_size * factor);
 }
 
-#elif _WIN32
+#elif defined(_WIN32) || defined(__CYGWIN__)
 
 #include <windows.h>
 

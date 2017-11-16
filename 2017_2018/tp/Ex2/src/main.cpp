@@ -1,6 +1,6 @@
 #include <memory>
 #include <iostream>
-#include "util.hpp"
+#include "util.h"
 
 int main(int argc, char **argv)
 {
