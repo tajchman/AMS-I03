@@ -4,6 +4,7 @@ set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(
+   ${CMAKE_SOURCE_DIR}
    ${CMAKE_INSTALL_PREFIX}/include
 )
 find_library (UTIL_LIB Util

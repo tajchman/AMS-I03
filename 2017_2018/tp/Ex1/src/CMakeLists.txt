@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 include_directories(
+   ${CMAKE_SOURCE_DIR}
    ${CMAKE_INSTALL_PREFIX}/include
 )
 find_library (UTIL_LIB Util

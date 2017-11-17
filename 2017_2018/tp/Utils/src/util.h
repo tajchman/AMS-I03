@@ -2,7 +2,7 @@
 extern "C" {
 #endif
   
-  void wait();
+  void waitKey();
   size_t memavail(double);
 
   void * start();
