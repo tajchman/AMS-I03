@@ -1,0 +1,33 @@
+Programme
+
+- optimisation séquentielle (2 séances)
+   - architecture matérielle : mémoire cache, pipeline
+   - principes d'optimisation
+   - exemples et démos
+
+- rappels de programmation parallèle (1 séance)
+   - mémoire distribuée
+   - mémoire partagée
+   - threads
+   - processus
+
+- mémoire partagée : outils (1 séances)
+   - architecture matérielle
+   - principes d'optimisation
+   - classique : OpenMP
+   - autres
+
+- mémoire distribuée : outils (1 séances)
+   - architecture matérielle
+   - principes d'optimisation
+   - classique : MPI
+   - autres
+   
+- programmation parallèle hybride (4 séances)
+   - coexistance 
+   - modèles d'hybridation
+   - classique : MPI - OpenMP
+   - exemples
+   - modele PGAS
+
+- examen (1 séance)
