@@ -1,0 +1,88 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usetheme[]{CambridgeUS}
+\usecolortheme{seagull}
+\usepackage{french}
+\title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
+\author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\Large
+\begin{frame}
+  	\frametitle{Plan}
+  	\tableofcontents
+\end{frame}
+
+\begin{frame}
+\section{Optimisation de la programmation séquentielle}
+\frametitle{Optimisation de la programmation séquentielle \hbox{(2 séances)}}
+Points abordés
+\begin{itemize}
+\item Modèle d'architecture matérielle
+\item Localités spatiale et temporelle (optimisation de l'utilisation de la mémoire cache)
+\item Parallélisme à l'intérieur d'un c\oe ur
+\item Exemples et démos
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\section{Rappels de programmation parallèle}
+\subsection{Rappel des notions}
+\frametitle{Rappels de programmation parallèle: notions}
+Points abordés
+\begin{itemize}
+\item mémoire distribuée
+\item mémoire partagée
+\item threads
+\item processus
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\subsection{Mémoire partagée}
+\frametitle{Rappels de programmation parallèle: mémoire partagée}
+Points abordés
+\begin{itemize}
+\item Modèle d'architecture matérielle
+\item Principes d'optimisation
+\item Cas classique : OpenMP, pthreads
+\item Autres
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\subsection{Mémoire distribuée}
+\frametitle{Rappels de programmation parallèle: mémoire distribuée}
+Points abordés
+\begin{itemize}
+\item Modèle d'architecture matérielle
+\item Principes d'optimisation
+\item Cas classique : MPI
+\item Autres
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\section{Programmation parallèle hybride}
+\frametitle{Programmation parallèle hybride \hbox{(4 séances)}}
+Points abordés
+\begin{itemize}
+\item Coexistence 
+\item Modèles d'hybridation
+\item Cas classique : MPI - OpenMP
+\item Exemples
+\item Autres modèles (e.g. MPI+X, PGAS)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\section{Examen}
+\frametitle{Examen \hbox{(1 séance)}}
+\end{frame}
+
+\end{document}
