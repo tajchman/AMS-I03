@@ -11,13 +11,13 @@ Programme
    - threads
    - processus
 
-- mémoire partagée : outils (1 séances)
+- mémoire partagée : outils (1 séance)
    - architecture matérielle
    - principes d'optimisation
-   - classique : OpenMP
+   - classique : OpenMP, pthreads
    - autres
 
-- mémoire distribuée : outils (1 séances)
+- mémoire distribuée : outils (1 séance)
    - architecture matérielle
    - principes d'optimisation
    - classique : MPI
