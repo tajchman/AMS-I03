@@ -2,3 +2,11 @@
 *~
 build
 install
+*.aux
+*.out
+*.log
+*.nav
+*.gz
+*.snm
+*.toc
+
