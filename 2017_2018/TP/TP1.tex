@@ -2,22 +2,41 @@
 \usepackage[utf8]{inputenc}
 \usetheme[]{boxes}
 \usecolortheme{seagull}
-\usepackage{french}
-
+	
 \begin{document}
 \begin{frame}
-\frametitle{TP 1 : mesures des temps calcul}
-
-Préparation du TP:
-\begin{itemize}
-	\item Récuperer l'archive {\tt TP1.tar.gz} et extraire les fichiers.
-	\item Ouvrir un terminal et se placer dans le répertoire {\tt I03\_TP1} qui vient d'être créé.
-	\item Créer un nouveau sous-répertoire {\tt build}, se placer dans ce répertoire et taper:
-	\begin{quote}
-	cmake ../src\\
-	make
-	\end{quote} 
-\end{itemize}
+	\frametitle{TP 1 : mesures des temps calcul}
+	
+	Pr\'eparation du TP:
+	\vfill
+	\begin{enumerate}
+		\item R\'ecup\'erer l'archive {\tt TP1.tar.gz} et extraire les fichiers.
+		\item Ouvrir un terminal et se placer dans le r\'epertoire {\tt I03\_TP1} qui vient d'\^etre cr\'e\'e
+		\item préparer la compilation du code du TP avec les commandes :
+		\begin{quote}
+			mkdir -p build
+			cd build\\
+			cmake ../src\\
+			cd ..
+		\end{quote}
+		\item Se remettre dans le r\'epertoire {\tt I03\_TP1} et compiler:
+		\begin{quote}
+			make -C build
+		\end{quote}
+	\end{enumerate}
+	
 \end{frame}
+\begin{frame}
+	\begin{enumerate}
+  		\setcounter{enumi}{4}
+		\item Executer le code avec la commande:
+		\begin{quote}
+			./build/PoissonSeq
+		\end{quote}
+		\item A la fin de l'exécution, les résultats sont sauvegardés au format VTK dans un répertoire "results\_n\ldots" (le nom précis est affiché à l'écran)
 
+		\item Si on modifie un ou plusieurs fichiers sources (dans le sous r\'epertoire {\tt 	src}), il faut recompiler (point 4).
+	\end{enumerate}
+\end{frame}
+	
 \end{document}
