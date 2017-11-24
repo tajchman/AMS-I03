@@ -35,7 +35,7 @@ Parameters::Parameters(int *argc, char *** argv)
 {
   int i;
   for (i=0; i<3; i++)
-    m_n[i] = 1;
+    m_n[i] = 200;
   m_itmax = 10;
   m_dt = -1.0;
   m_output = -1;
@@ -68,15 +68,16 @@ Parameters::Parameters(int *argc, char *** argv)
 
     }
   }
-
+  if (m_output < 0)
+    m_output = m_itmax / 20;
+  
   if (!m_help) {
 
-  
     if (m_dt <= 0.0)
-      m_dt = 0.5/(m_n[0]*m_n[0]
+      m_dt = 1.5/(m_n[0]*m_n[0]
                   + m_n[1]*m_n[1]
                   + m_n[2]*m_n[2]);
-
+    
     for (i=0; i<3; i++) {
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
       m_di[i] = 1;
