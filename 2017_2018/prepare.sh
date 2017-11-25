@@ -8,9 +8,9 @@ while [ -h "$SOURCE" ]; do
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-git add TP
-git commit -m 'x'
-git push
+git add ${DIR}/TP
+git commit -m 'x' -q
+git push -q
 
 URL=`git config --get remote.origin.url`
 
@@ -20,19 +20,18 @@ mkdir -p ${ENVOI}
 cd ${ENVOI}
 echo "ENVOI : " ${ENVOI}
 
-git clone ${URL}
+git clone -q ${URL}
 rm -rf AMS_I03/.git
 
 cd AMS_I03/2017_2018/TP
-d=`date +%Y_%m_%d_%H_%M`
 
 dirs=`ls -d I03_TP?`
+echo "TP : " ${dirs}
 
 for i in ${dirs}
 do
     rm -f *.tex
-    tar cfz ${BASE}/${i}.tgz ${i}
-    cp ${BASE}/${i}.tgz ${BASE}/${i}_${d}.tgz
+    tar cfz ${ENVOI}/${i}.tgz ${i}
 done
 
 cd ${BASE}
