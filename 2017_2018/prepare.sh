@@ -26,7 +26,7 @@ rm -rf AMS_I03/.git
 cd AMS_I03/2017_2018/TP
 
 dirs=`ls -d I03_TP?`
-echo "TP : " ${dirs}
+echo "TP    : " ${dirs}
 
 for i in ${dirs}
 do
