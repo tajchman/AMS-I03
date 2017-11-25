@@ -30,7 +30,7 @@ echo "TP    : " ${dirs}
 
 for i in ${dirs}
 do
-    rm -f *.tex
+    rm -f ${i}/*.tex
     tar cfz ${ENVOI}/${i}.tgz ${i}
 done
 
