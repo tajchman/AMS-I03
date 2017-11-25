@@ -5,11 +5,12 @@
 	
 \begin{document}
 \begin{frame}
-	\frametitle{TP 1 : mesures des temps calcul (cas non parall\`ele)}
+	\frametitle{TP 1 : Pr\'eparation}
 	
-	Pr\'eparation du TP:
 	\vfill
-	A chaque \'etape, regarder les messages affich\'es pour voir si tout s'est bien pass\'e !
+	\textcolor{blue}{\bf A chaque \'etape, regarder les messages affich\'es pour voir si tout s'est bien pass\'e !}
+	\vfill
+
 	\begin{enumerate}
 		\item R\'ecup\'erer l'archive {\tt TP1.tar.gz} et extraire les fichiers.
 		\item Ouvrir un terminal et se placer dans le r\'epertoire {\tt I03\_TP1} qui vient d'\^etre cr\'e\'e
@@ -25,6 +26,7 @@
 			make -C build
 		\end{quote}
 	\end{enumerate}
+	\vfill
 	
 \end{frame}
 \begin{frame}
@@ -34,18 +36,43 @@
 		\begin{quote}
 			./build/PoissonSeq
 		\end{quote}
-		\item A la fin de l'exécution, les résultats sont sauvegardés au format VTK dans un répertoire "results\_n\ldots" (le nom précis est affiché à l'écran)
-
-		\item Si on modifie un ou plusieurs fichiers sources (dans le sous r\'epertoire {\tt 	src}), il faut recompiler (point 4).
+		\item A la fin de l'exécution, les résultats sont sauvegardés au format VTK dans un répertoire "results\_\ldots" (le nom précis est affiché à l'écran)
 	\end{enumerate}
+
+\vfill
+\textcolor{blue}{\bf Si on modifie un ou plusieurs fichiers sources (dans le sous-r\'epertoire src), il faut recompiler (point 4).}
+\vfill
+
+\textcolor{blue}{\bf Si on ajoute un nouveau fichier ou on enl\`eve un fichier existant (dans le sous-r\'epertoire src), il faut adapter les fichiers CMakeLists.txt et refaire les points 3 et 4.}
+\vfill
+
 \end{frame}
-\begin{frame}
+
+\begin{frame}[fragile]
 	\frametitle{Mesure du temps de calcul global}
-	Afficher le temps de calcul global avec {\tt time}.
+	Afficher le temps de calcul global avec {\tt time} :
+		\begin{quote}
+	       time ./build/PoissonSeq
+        \end{quote}
+	
+	A l'\'ecran:
+	\begin{verbatim}
+	   real    0m30,283s
+	   user    0m30,186s
+	   sys     0m0,096s
+	\end{verbatim}
 	
 	\begin{itemize}
-		\item Avantage : n'est pas intrusif (le code )
+		\item Avantage : n'est pas intrusif (pas besoin de modifier le code, ni de le compiler avec des options sp\'ecifiques)
+		\begin{quote}
+			pas besoin de modifier le code, ni de le compiler avec des options sp\'ecifiques.
+		\end{quote} 
+		\item D\'esavantage : donne une information globale
+		\begin{quote}
+			on ne sait pas dans quelle partie du code, on passe peu/beaucoup de temps, ni pourquoi.
+		\end{quote} 
 	\end{itemize}
+\vfill
 \end{frame}
 	
 \end{document}
