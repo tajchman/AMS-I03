@@ -31,3 +31,12 @@ Programme
    - modele PGAS
 
 - examen (1 séance)
+
+
+Exemples et demos
+
+- mesure des temps et d'autres caractéristiques d'efficacité du calcul
+- localité spatiale
+- localité temporelle
+- utilisation du pipeline
+
