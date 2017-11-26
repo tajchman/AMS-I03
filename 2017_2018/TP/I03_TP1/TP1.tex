@@ -50,20 +50,23 @@
 
 \begin{frame}[fragile]
 	\frametitle{Mesure du temps de calcul global}
+    \vfill
 	Afficher le temps de calcul global avec {\tt time} :
 		\begin{quote}
 	       time ./build/PoissonSeq
         \end{quote}
 	
-	A l'\'ecran:
+	A l'\'ecran:\begin{minipage}[t]{4cm}
 	\begin{verbatim}
 	   real    0m30,283s
 	   user    0m30,186s
 	   sys     0m0,096s
 	\end{verbatim}
-	
+	\end{minipage}
+
+    \vfill
 	\begin{itemize}
-		\item Avantage : n'est pas intrusif (pas besoin de modifier le code, ni de le compiler avec des options sp\'ecifiques)
+		\item Avantage : n'est pas intrusif
 		\begin{quote}
 			pas besoin de modifier le code, ni de le compiler avec des options sp\'ecifiques.
 		\end{quote} 
@@ -72,7 +75,119 @@
 			on ne sait pas dans quelle partie du code, on passe peu/beaucoup de temps, ni pourquoi.
 		\end{quote} 
 	\end{itemize}
-\vfill
+    \vfill
 \end{frame}
+
+\begin{frame}
+	\frametitle{Mesure plus pr\'ecise : utilisation d'outils de ``profiling''}
+    
+    Exemple : {\tt gprof}
+    
+	\vfill
+	Fait partie de la famille gcc/g++/gfortran.
 	
+	
+	\begin{itemize}
+	\item \textcolor{blue}{Avantage} : calcule le nombre d'appels de chaque fonction et le (pourcentage du) temps qui y est pass\'e
+	\item \textcolor{blue}{Avantage} : n'est pas tr\`es intrusif (pas besoin de modifier le code, mais il faut le recompiler avec une option sp\'ecifique: -pg).
+	\item \textcolor{red}{D\'esavantage} : le temps pass\'e dans une fonction est peu pr\'ecis dans une fonction ``courte"
+	\item \textcolor{red}{D\'esavantage} : ne mesure pas le temps dans les diff\'erentes parties d'une fonction.
+	\item \textcolor{red}{D\'esavantage} : ne rentre pas dans les librairies dynamiques.
+\end{itemize}
+	\vfill
+\end{frame}
+\begin{frame}[fragile]
+	
+{\bf 	Mode de fonctionnement:}
+	\begin{quote}
+		Ajoute dans chaque fonction, un comptage du nombre d'appels de cette fonction et \'evalue statistiquement le temps pass\'e dans cette fonction (tous les 0.01 secondes on enregistre dans quelle fonction on se trouve).
+	\end{quote} 
+
+	\vfill
+{\bf Utilisation de {\tt gprof}}
+	\vfill
+
+Recompiler en utilisant l'option -pg:
+	\begin{quote}
+		\begin{verbatim}
+			mkdir -p build_gprof
+			cd build_gprof
+			cmake -DCMAKE_CXX_FLAGS="-pg" ../src
+			cd ..
+			make -C build_gprof
+		\end{verbatim}
+	\end{quote} 
+
+Exécuter le code:
+		\begin{quote}
+		\begin{verbatim}
+			./build_gprof/PoissonSeq
+		\end{verbatim}
+		\end{quote}
+	
+Collecter les mesures
+		\begin{quote}
+		\begin{verbatim}
+			gprof ./build_gprof/PoissonSeq
+		\end{verbatim}
+		\end{quote}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mesure plus pr\'ecise : utilisation d'outils de ``profiling''}
+	
+	Exemple : {\tt perf}
+	
+	\vfill
+	Outil spécifique linux
+	
+	\begin{itemize}
+		\item \textcolor{blue}{Avantage} : tr\`es puissant (mesure le temps pass\'e dans une fonction, une instruction C/C++/fortran, une instruction binaire, multiples indicateurs de performance)
+		\item \textcolor{blue}{Avantage} : non intrusif
+		\item \textcolor{red}{D\'esavantage} : plus compliqu\'e \`a utiliser
+		\item \textcolor{red}{D\'esavantage} : ne rentre pas toujours dans les librairies dynamiques.
+		\item \textcolor{red}{D\'esavantage} : n\'ecessite que la machine soit configur\'ee  correctement.
+	\end{itemize}
+	\vfill
+	\textcolor{blue}{\bf Outil \'a privil\'egier quand c'est possible}
+\end{frame}
+\begin{frame}[fragile]
+	
+	{\bf 	Mode de fonctionnement:}
+	\begin{quote}
+		Enregistre les \'ev\'enements dans le noyau Linux, \'evalue statistiquement le temps pass\'e dans les fonctions et les instructions.
+	\end{quote} 
+	
+	\vfill
+	{\bf Utilisation simple de {\tt perf}}
+	\vfill
+	
+	Recompiler en utilisant l'option -pg:
+	\begin{quote}
+		\begin{verbatim}
+		mkdir -p build_gprof
+		cd build_gprof
+		cmake -DCMAKE_CXX_FLAGS="-pg" ../src
+		cd ..
+		make -C build_gprof
+		\end{verbatim}
+	\end{quote} 
+	
+	Exécuter le code:
+	\begin{quote}
+		\begin{verbatim}
+		./build_gprof/PoissonSeq
+		\end{verbatim}
+	\end{quote}
+	
+	Collecter les mesures
+	\begin{quote}
+		\begin{verbatim}
+		gprof ./build_gprof/PoissonSeq
+		\end{verbatim}
+	\end{quote}
+	
+\end{frame}
+
 \end{document}
