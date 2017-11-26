@@ -34,7 +34,7 @@ do
     tar cfz ${ENVOI}/${i}.tgz ${i}
 done
 
-cd ${BASE}
+cd ${ENVOI}
 rm -rf AMS_I03
 
 cd ${DIR}
