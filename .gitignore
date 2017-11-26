@@ -1,3 +1,5 @@
+Envoi
+results*
 *.o
 *~
 build
@@ -9,4 +11,4 @@ install
 *.gz
 *.snm
 *.toc
-
+*.vrb
