@@ -12,10 +12,10 @@ public:
          double (*f)(double, double, double) = 0L);
 
   double & operator() (int i,int j,int k) {
-    return m_u[i + n1*j + n2*k];
+    return m_u[n2*i + n1*j + k];
   }
   double operator() (int i,int j,int k) const {
-    return m_u[i + n1*j + n2*k];
+    return m_u[n2*i + n1*j + k];
   }
 
   void plot(int order);

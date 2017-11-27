@@ -80,7 +80,7 @@ Remplacer les commandes de 3. et 4. par:
 	       time ./build/PoissonSeq
         \end{quote}
 	
-	A l'\'ecran:\begin{minipage}[t]{4cm}
+	A l'\'ecran (exemple) :\begin{minipage}[t]{4cm}
 	\begin{verbatim}
 	   real    0m30,283s
 	   user    0m30,186s
@@ -333,16 +333,63 @@ double dt = T.elapsed();
 
 \end{frame}
 
-\begin{frame}
-\vfill
-\textcolor{red}{\bf
-	Utiliser la classe Timer pour mesurer s\'eparement}
+\begin{frame}[fragile]
+	\vfill
+	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src} dans {Q1/src} et compiler:
+	\begin{quote}
+		\begin{verbatim}
+		mkdir -p Q1/build
+		cp -rf src Q1/src
+		cd Q1/build && cmake ../src && cd ..
+		make -C build
+		\end{verbatim}
+	\end{quote}
+
+	\vfill
+	\textcolor{blue}{\bf Q1. Utiliser la classe Timer pour mesurer s\'epar\'ement}
 	\begin{itemize}
-		\item \textcolor{red}{\bf le temps d'initialisation (lignes 31-32 du fichier {\tt src/main.cxx})}
-		\item \textcolor{red}{\bf la moyenne du temps d'ex\'ecution d'une it\'eration de calcul (lignes 43-45 du fichier {\tt src/main.cxx})}
+		\item \textcolor{blue}{\bf le temps d'initialisation (lignes 31-32 du fichier {\tt src/main.cxx})}
+		\item \textcolor{blue}{\bf la moyenne du temps d'ex\'ecution d'une it\'eration de calcul (lignes 43-45 du fichier {\tt src/main.cxx})}
 	\end{itemize}
 
-\vfill
+	\textcolor{blue}{\bf Executer le code avec et sans l'option {\tt out=10}}:
+	\begin{quote}
+		\color{blue}
+		\begin{verbatim}
+			./build/PoissonSeq
+			./build/PoissonSeq out=10
+		\end{verbatim}
+	\end{quote}
+    (la seconde ex\'ecution sauvegarde les r\'esultats sur fichier)
+	
 
+\vfill
 \end{frame}
+
+\begin{frame}[fragile]
+	\vfill
+	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q1/src} dans {Q2/src} et compiler:
+	\begin{quote}
+		\begin{verbatim}
+		mkdir -p Q2/build
+		cp -rf Q1/src Q2/src
+		cd Q2/build && cmake ../src && cd ..
+		make -C build
+		\end{verbatim}
+	\end{quote}
+
+	\vfill
+	\textcolor{blue}{\bf Q2. La classe {Values} rep\'esente un ensemble de $n_0 \times n_1 \times n_2$ valeurs et poss\`ede des fonctions ({\tt operator()}) qui retournent la composante $v_{i,j,k}$ o\`u $v$ est de type {\tt Values}.}
+	
+	\begin{itemize}
+		\item \textcolor{blue}{D\'ecrire comment sont rang\'ees en m\'emoire les composantes $v_{i,j,k}$
+		(examiner les fichiers {\tt src/values.cxx} et {\tt src/values.hxx}).}
+		\item \textcolor{blue}{Changer la fa\c{c}on de ranger les composantes en m\'emoire (il y a plusieurs possibilit\'es)}
+		\item \textcolor{blue}{Comparer les r\'esultats et les temps de calcul avec la version dans {\tt Q1}.}
+		\item \textcolor{blue}{Expliquer les diff\'erences \'eventuelles de temps calcul (examiner aussi le fichier {\tt scheme.cxx}).}
+	\end{itemize}
+	 
+\end{frame}
+
+
 \end{document}
