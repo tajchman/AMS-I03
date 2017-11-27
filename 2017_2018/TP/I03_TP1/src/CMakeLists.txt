@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8.8)
 project(POISSON)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -9,7 +9,7 @@ if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
 endif()
 
-add_directory(timer)
+add_subdirectory(timer)
 
 add_executable(PoissonSeq 
 	main.cxx 
@@ -18,7 +18,7 @@ add_executable(PoissonSeq
 	scheme.cxx
 	)
 
-add_target_libraries(
+target_link_libraries(
    PoissonSeq
    timer
 )
