@@ -5,6 +5,7 @@
 #include "parameters.hxx"
 #include "values.hxx"
 #include "scheme.hxx"
+#include "timer.hxx"
 
 double f(double x, double y, double z)
 {
@@ -45,8 +46,8 @@ int main(int argc, char **argv)
       u2.swap(u1);
 
       std::ostringstream out;
-      out << std::setw(10) << it
-	  << " t = " << std::setw(12) << std::setprecision(5)
+    out << std::setw(8) << it
+        << " t = " << std::setw(10) << std::setprecision(5)
           << std::fixed << t
 	  << " delta u = " << std::setw(10) << std::setprecision(5)
           << std::fixed << du;
