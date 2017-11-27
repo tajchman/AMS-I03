@@ -2,7 +2,8 @@
 \usepackage[utf8]{inputenc}
 \usetheme[]{boxes}
 \usecolortheme{seagull}
-	
+\usepackage{listings}
+
 \begin{document}
 \begin{frame}
 	\frametitle{TP 1 : Pr\'eparation}
@@ -49,6 +50,29 @@
 \end{frame}
 
 \begin{frame}[fragile]
+\vfill
+Les commandes ci-dessus g\'enerent une version optimis\'ee par la compilateur (``Release''). Si n\'ecessaire, on peut compiler une version ``Debug'' (non optimis\'ee)
+qui permet d'utiliser un outil de d\'ebug (ex\'ecution pas \`a pas, afficher des valeurs en cours de calcul, etc).
+\vfill
+
+Certains des outils donnent aussi plus de renseignements sur une version ``Debug'' que sur une version ``Release''.
+\vfill
+
+Remplacer les commandes de 3. et 4. par:
+	\begin{quote}
+	\begin{verbatim}
+	mkdir -p build_debug
+	cd build_debug
+	cmake -DCMAKE_BUILD_TYPE=Debug ../src
+	cd ..
+	make -C build_debug
+	\end{verbatim}
+\end{quote}
+\vfill
+
+\end{frame}
+
+\begin{frame}[fragile]
 	\frametitle{Mesure du temps de calcul global}
     \vfill
 	Afficher le temps de calcul global avec {\tt time} :
@@ -79,9 +103,7 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Mesure plus pr\'ecise : utilisation d'outils de ``profiling''}
-    
-    Exemple : {\tt gprof}
+	\frametitle{Mesure plus pr\'ecise : outil de ``profiling''{\tt gprof}}
     
 	\vfill
 	Fait partie de la famille gcc/g++/gfortran.
@@ -135,10 +157,8 @@ Collecter les mesures
 \end{frame}
 
 \begin{frame}
-	\frametitle{Mesure plus pr\'ecise : utilisation d'outils de ``profiling''}
-	
-	Exemple : {\tt perf}
-	
+	\frametitle{Mesure plus pr\'ecise : outil de ``profiling'' {\tt perf}}
+		
 	\vfill
 	Outil spécifique linux
 	
@@ -163,31 +183,155 @@ Collecter les mesures
 	{\bf Utilisation simple de {\tt perf}}
 	\vfill
 	
-	Recompiler en utilisant l'option -pg:
+	Il n'est pas toujours n\'ecessaire de recompiler. Sur certaines machines, une version ``Debug" est pr\'ef\'erable. 
+	
+	\vfill
+	Instrumenter le code (g\'en\'erer les mesures):
 	\begin{quote}
 		\begin{verbatim}
-		mkdir -p build_gprof
-		cd build_gprof
-		cmake -DCMAKE_CXX_FLAGS="-pg" ../src
-		cd ..
-		make -C build_gprof
+		perf record ./build/PoissonSeq
+		(ou perf record ./build_debug/PoissonSeq)
+		perf report
 		\end{verbatim}
 	\end{quote} 
 	
-	Exécuter le code:
-	\begin{quote}
-		\begin{verbatim}
-		./build_gprof/PoissonSeq
-		\end{verbatim}
-	\end{quote}
+	\vfill
+	Voir la documentation de perf pour les (nombreuses) autres options.
 	
-	Collecter les mesures
-	\begin{quote}
-		\begin{verbatim}
-		gprof ./build_gprof/PoissonSeq
-		\end{verbatim}
-	\end{quote}
-	
+	\vfill
 \end{frame}
 
+\begin{frame}
+\frametitle{Mesure plus pr\'ecise : outil de ``profiling'' {\tt valgrind-callgrind}}
+
+\begin{itemize}
+	\item \textcolor{blue}{Avantage} : interm\'ediaire (mesure le temps pass\'e dans une fonction, une instruction C/C++/fortran)
+	\item \textcolor{blue}{Avantage} : non intrusif
+	\item \textcolor{blue}{Avantage} : g\`ere mieux les librairies dynamiques.
+	\item \textcolor{blue}{Avantage} : l'outil {\tt kcachegrind} offre une interface graphique pratique \`a utiliser.
+	\item \textcolor{red}{D\'esavantage} : temps d'ex\'ecution multipli\'e par $\approx$ 40
+\end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+Mode de fonctionnement:
+\begin{quote}
+	Le code s'ex\'ecute dans une machine virtuelle (simule une machine ``id\'eale''). Permet de mesurer pr\'ecisement un grand nombre d'indicateurs. Mais explique le facteur de ralentissement.
+\end{quote}
+
+{\bf Utilisation:}
+Utiliser une version ``Debug''.
+
+\vfill
+Instrumenter le code
+	\begin{quote}
+		\begin{verbatim}
+		valgrind --tool=callgrind ./build_debug/PoissonSeq
+		\end{verbatim}
+	\end{quote}
+
+Cr\'ee un fichier {\tt callgrind.out.XXXX} o\`u {\tt XXXX} est le num\'ero de processus qu'on vient d'ex\'ecuter.
+
+\vfill
+Afficher et explorer les r\'esultats de mesure:
+\begin{quote}
+	\begin{verbatim}
+	kcachegrind callgrind.out.XXXX
+	\end{verbatim}
+\end{quote}
+\vfill
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Mesure ``manuelle'' des temps de calcul.}
+
+Principe: 
+\begin{itemize}
+	\item encadrer le bloc d'instructions que l'on veut mesurer par des appels \`a des fonctions qui renvoient la valeur de l'horloge interne de la machine,
+	\item calculer le temps d'ex\'ecution dans ce bloc en faisant la diff\'erence des valeurs ci-dessus.
+\end{itemize}
+\vfill
+
+Fonctions syst\`eme disponibles:
+\begin{itemize}
+	\item \verb clock() \quad(fonction syst\`eme C)
+	\item \verb gettimeofday(...) \quad(fonction syst\`eme C)
+	\item \verb system_clock(...) \quad(fonction syst\`eme fortran)
+	\item \verb high_resolution_clock \quad(classe C++ 11)
+	\item ...
+\end{itemize}
+\vfill
+\end{frame}
+
+
+\begin{frame}
+Librairies externes (timers haute r\'esolution) :
+\begin{itemize}
+	\item PAPI : \url{http://icl.cs.utk.edu/papi}
+	\item BoostTimers : \url{http://www.boost.org/doc/libs/1_65_1/libs/timer/doc/cpu_timers.html}
+\end{itemize}
+\vfill
+
+Remarques
+\begin{quote}
+	Chaque fonction syst\`eme est utilisable ou non suivant le langage de programmation utilis\'e.
+	
+	La pr\'ecision n'est pas la m\^eme: consulter la documentation.
+\end{quote}
+\vfill
+\end{frame}
+
+
+\begin{frame}[fragile]
+
+Exemple avec la fonction C syst\`eme {\tt clock}:
+
+\vfill
+\begin{lstlisting}
+#include<stdio.h>   
+#include<math.h>   
+#include<time.h>   
+int main()   
+{   
+  clock_t t1, t2;
+  t1 = clock();   
+	
+  int n=100000;
+  double s = 0.0;
+  for(int i = 0; i < n; i++) s += sin((0.2*i)/n);  
+	
+  t2 = clock();   
+  float diff = (float)(t2 - t1)/CLOCKS_PER_SEC;   
+  printf("temps calcul : %f s",diff);   
+  return 0;   
+}
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+On fournit une classe C++ Timer
+avec les fonctionnalités suivantes:
+
+\begin{lstlisting}
+ //definit une variable "chronometre"
+Timer T; 
+//demarrer le chronometre T
+T.start();
+//arreter le chronometre T
+T.stop();
+//remettre a zero
+T.reset();
+
+// retourne le temps mesure 
+// entre un appel start() et un stop()
+// (utiliser juste apres le stop()
+double dt = T.elapsed(); 
+\end{lstlisting}
+
+\textcolor{red}{\bf
+Utiliser cette classe pour mesurer s\'eparement le temps d'initialisation et une moyenne du temps de calcul d'une it\'eration de calcul dans le code fourni.}
+\end{frame}
 \end{document}
