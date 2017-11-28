@@ -6,7 +6,26 @@
 
 \begin{document}
 \begin{frame}
-	\frametitle{TP 1 : Pr\'eparation}
+	\frametitle{TP 1 : Contexte}
+	
+	Le code propos\'e dans ce TP calcule une solution approch\'ee en 3 dimensions d'espace $(x,y,z)$ de l'\'equation de la chaleur dans un cube $[0,1]^3$ :
+	$$
+	\frac{\partial u}{\partial t} = \Delta u
+	$$
+	avec conditions aux limites de Dirichlet au bord.
+	\vfill
+	
+	Le calcul se fait a l'aide d'une m\'ethode explicite en temps (Euler) et discrt\'etisation par diff\'erences finies en espace.
+	
+	\vfill
+	Dans la derniere partie du TP, on peut ajouter un terme d'advection (linéaire) $\frac{\partial u}{\partial x}$.
+	
+	\vfill
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{TP 1 : Pr\'eparation}
 	
 	\vfill
 	\textcolor{blue}{\bf A chaque \'etape, regarder les messages affich\'es pour voir si tout s'est bien pass\'e !}
@@ -391,5 +410,78 @@ double dt = T.elapsed();
 	 
 \end{frame}
 
+\begin{frame}[fragile]
+Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src\_Q3a} dans {Q3a/src} et compiler:
+\begin{quote}
+	\begin{verbatim}
+	mkdir -p Q3a/build
+	cp -rf src_Q3a Q3a/src
+	cd Q3a/build && cmake ../src && cd ..
+	make -C build
+	\end{verbatim}
+\end{quote}
+
+\vfill
+\textcolor{blue}{\bf Q3a. Le fichier {\tt scheme.cxx} a \'et\'e modifi\'e pour pouvoir traiter des \'equations avec ou sans termes de diffusion (laplacien) et d'advection}
+
+\begin{itemize}
+	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables logiques ({\tt bool}) pour incorporer ou non les termes de diffusion-convection dans le calcul}
+	\item \textcolor{blue}{Ex\'ecuter le code sous les 4 formes ci-dessus et comparer :}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+		\begin{quote}
+		\color{blue}
+			\begin{verbatim}
+			./build/PoissonSeq
+			./build/PoissonSeq convection
+			./build/PoissonSeq diffusion
+			./build/PoissonSeq convection diffusion
+			\end{verbatim}
+		\end{quote}
+	
+\begin{itemize}		
+\item		\textcolor{blue}{Comparer et commenter les r\'esultats.}.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src\_Q3b} dans {Q3b/src} et compiler:
+\begin{quote}
+	\begin{verbatim}
+	mkdir -p Q3b/build
+	cp -rf src_Q3b Q3b/src
+	cd Q3b/build && cmake ../src && cd ..
+	make -C build
+	\end{verbatim}
+\end{quote}
+
+\vfill
+\textcolor{blue}{\bf Q3b. Le fichier {\tt scheme.cxx} contient une variante de l'algorithme vu en Q3a}
+
+\begin{itemize}
+	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables de type ({\tt double}) qui multiplient les termes de convection et diffusion pour les incorporer ou non dans le calcul (ces variables sont \'egales a 0.0 ou a 1.0.}
+	\item \textcolor{blue}{Faire les tests analogues au Q3a, comparer et commenter les r\'esultats.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\begin{quote}
+\color{blue}
+\begin{verbatim}
+./build/PoissonSeq
+./build/PoissonSeq convection
+./build/PoissonSeq diffusion
+./build/PoissonSeq convection diffusion
+\end{verbatim}
+\end{quote}
+
+\begin{itemize}		
+\item		\textcolor{blue}{Comparer et commenter les r\'esultats.}.
+\end{itemize}
+
+\end{frame}
 
 \end{document}
