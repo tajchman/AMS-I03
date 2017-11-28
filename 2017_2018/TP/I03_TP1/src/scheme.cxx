@@ -11,9 +11,9 @@
 double iterate(const Values & u1, Values & u2,
                double dt, Parameters &P)
 {
-  double du_max = 0.0, du;
+  double du_sum = 0.0, du;
   double dx2 = P.dx(0)*P.dx(0) + P.dx(1)*P.dx(1) + P.dx(2)*P.dx(2);
-  double lambda = 0.25*dt/(dx2 + 1e-12);
+  double lambda = 0.25*dt/dx2;
 
   int i, j, k;
   int   di = P.di(0),     dj = P.di(1),     dk = P.di(2);
@@ -29,10 +29,10 @@ double iterate(const Values & u1, Values & u2,
 	  - u1(i,j,k+dk) - u1(i,j,k-dk);
 	du *= lambda;
 	u2(i,j,k) = u1(i,j,k) - du;
-	du_max += du > 0 ? du : -du;
+	du_sum += du > 0 ? du : -du;
       }
 
-  return du_max;
+  return du_sum;
 }
 
 

@@ -35,7 +35,7 @@ private:
   
   int m_itmax;
   double m_dt;
-
+  
   int m_output;
 
   std::string m_path;

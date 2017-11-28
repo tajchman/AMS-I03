@@ -27,7 +27,7 @@ void stime(char * buffer, int size)
   /* Convert it to local time representation. */
 
   loctime = localtime (&curtime);
-  strftime(buffer, size, "%F_%Hh%Mm", loctime);
+  strftime(buffer, size, "%F_%Hh%Mm%Ss", loctime);
 
 }
 

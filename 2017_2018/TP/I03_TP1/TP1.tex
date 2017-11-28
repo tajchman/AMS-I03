@@ -7,12 +7,20 @@
 \begin{document}
 \begin{frame}
 	\frametitle{TP 1 :}
+	\vfill
 	\Large
+	Points abord\'es :
+	\vfill
 	\begin{itemize}
 		\item Outils de mesure de temps calcul
+		\bigskip
 		\item Localit\'es spatiale et temporelle
+		\bigskip
+		\item Utilisation des registres
+		\bigskip
 		\item Pipeline d'\'evaluation des expressions
 	\end{itemize}
+	\vfill
 \end{frame}
 
 \begin{frame}
@@ -43,7 +51,7 @@
 
 	\begin{enumerate}
 		\item R\'ecup\'erer l'archive {\tt TP1.tar.gz} et extraire les fichiers.
-		\item Ouvrir un terminal et se placer dans le r\'epertoire {\tt I03\_TP1} qui vient d'\^etre cr\'e\'e
+		\item Ouvrir un terminal et se placer dans le r\'epertoire {\tt I03\_TP1} \break qui vient d'\^etre cr\'e\'e
 		\item préparer la compilation du code du TP avec les commandes :
 		\begin{quote}
 			mkdir -p build\\
@@ -59,6 +67,7 @@
 	\vfill
 	
 \end{frame}
+
 \begin{frame}
 	\begin{enumerate}
   		\setcounter{enumi}{4}
@@ -362,10 +371,10 @@ double dt = T.elapsed();
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Localit\'es spatiale et temporelle}
+	
 	\vfill
 	
-	{\bf Version de r\'ef\'erence :}
+	{\bf Ajout de mesures manuelles de temps calcul :}
     \vfill
 
 	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src} dans {Q1/src} et compiler:
@@ -386,7 +395,7 @@ double dt = T.elapsed();
 	\textcolor{blue}{\bf Q1. Modifier le programme principal {\tt src/main.cxx} en utilisant la classe Timer pour mesurer s\'epar\'ement}
 	\begin{itemize}
 	\item \textcolor{blue}{\bf le temps d'initialisation (lignes 31-32 du fichier {\tt src/main.cxx})}
-	\item \textcolor{blue}{\bf la moyenne du temps d'ex\'ecution d'une it\'eration de calcul (lignes 43-45 du fichier {\tt src/main.cxx})}
+	\item \textcolor{blue}{\bf la somme du temps d'ex\'ecution des parties calcul des it\'erations (lignes 43-45 du fichier {\tt src/main.cxx})}
 	\end{itemize}
 
 	\vfill
@@ -405,11 +414,9 @@ double dt = T.elapsed();
 \end{frame}
 
 \begin{frame}[fragile]
-    
-	\vfill
-	{\bf Seconde version : modification de la localit\'e spatiale}
-	\vfill
-	
+\frametitle{Localit\'e spatiale}
+\vfill
+    	
 	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q1/src} dans {\tt Q2/src} et compiler:
 	
 	\begin{quote}
@@ -442,91 +449,164 @@ double dt = T.elapsed();
 	 
 \end{frame}
 
+\begin{frame}
+	\frametitle{Autre \'equation}
+	
+	On a modifi\'e le code pour calculer la solution approch\'ee de 
+	$$
+	\frac{\partial u}{\partial t} = \Delta u + \frac{\partial u}{\partial x}
+	$$
+	
+\vfill
+\end{frame}
+
 \begin{frame}[fragile]
-\vfill
-	{\bf Troisième version : termes optionels dans les \'equations}
-\vfill
-{\bf Le but est de permettre \`a l'utilisateur d'utiliser ou non les termes de diffusion et d'advection sans devoir modifier et recompiler le code}
 
+{\bf Version de r\'ef\'erence:}
 \vfill
 
-Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src\_Q3a} dans {Q3a/src} et compiler:
+Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q2/src} dans {\tt Q3a/src}, remplacer le fichier {\tt Q3a/src/scheme.cxx} par le fichier {\tt scheme\_Q3a.cxx} et compiler:
 \begin{quote}
 	\begin{verbatim}
 	mkdir -p Q3a/build
-	cp -rf src_Q3a Q3a/src
+	cp scheme_Q3a.cxx Q3a/src/scheme.cxx
 	cd Q3a/build && cmake ../src && cd ..
 	make -C build
 	\end{verbatim}
 \end{quote}
-
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}
 \vfill
-\textcolor{blue}{\bf Q3a. Premi\`ere impl\'ementation : la convection et la diffusion sont trait\'ees dans des boucles s\'epar\'ees}
+\textcolor{blue}{\bf Q3a. Impl\'ementation de r\'ef\'erence : la convection et la diffusion sont trait\'ees dans des boucles s\'epar\'ees}
 
 \begin{itemize}
-	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables logiques ({\tt bool}) pour incorporer ou non les termes de diffusion et de convection dans le calcul}
-	\item \textcolor{blue}{Ex\'ecuter le code sous les 4 formes ci-dessus et comparer :}
-
-		\begin{quote}
-		\color{blue}
-			\begin{verbatim}
-			./build/PoissonSeq
-			./build/PoissonSeq convection
-			./build/PoissonSeq diffusion
-			./build/PoissonSeq convection diffusion
-			\end{verbatim}
-		\end{quote}
-	\item		\textcolor{blue}{Comparer et commenter les r\'esultats.}.
+	\item \textcolor{blue}{Examiner la nouvelle version du fichier {\tt scheme.cxx}}
+	\item \textcolor{blue}{Ex\'ecuter le code}
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Localit\'e temporelle}
 \vfill
-{\bf Quatri\`eme version : calcul diff\'erent des termes optionels dans les \'equations}
+{\bf Premi\`ere variante : calcul des termes des \'equations dans une seule boucle}
 
 \vfill
 
-Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src\_Q3b} dans {Q3b/src} et compiler:
+Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q3a/src} dans {Q3b/src} et compiler:
 \begin{quote}
 	\begin{verbatim}
+	mkdir Q3b
+	cp -rf Q3a/src Q3b/src
 	mkdir -p Q3b/build
-	cp -rf src_Q3b Q3b/src
 	cd Q3b/build && cmake ../src && cd ..
 	make -C build
 	\end{verbatim}
 \end{quote}
 
+\end{frame}
+
+\begin{frame}[fragile]
+	
+\textcolor{blue}{\bf Q3b. Fusion des boucles de calcul}
+ \begin{itemize}
+	\item \textcolor{blue}{Examiner le fichier {\tt Q3b/src/scheme.cxx}: il contient 4 boucles du type}
+		\begin{quote}
+\begin{lstlisting}
+for (i=imin; i<imax; i++)
+  for (j=jmin; j<jmax; j++)
+    for (k=kmin; k<kmax; k++) {
+	  ...
+	}
+\end{lstlisting}
+		\end{quote}
+	\textcolor{blue}{Rassembler ces 4 boucles en une seule.}
+	\item \textcolor{blue}{Faire les tests analogues au cas Q3a, comparer et commenter les r\'esultats.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Variables scalaires locales}
 \vfill
-Le fichier {\tt scheme.cxx} contient une variante de l'algorithme vu en Q3a.
+{\bf Seconde variante : utilisation d'une variable scalaire auxiliaire.}
+\vfill
 
-\end{frame}
+Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q3b/src} dans {Q3c/src} et compiler:
 
-\begin{frame}[fragile]
-\textcolor{blue}{\bf Q3b. \begin{itemize}
-	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables de type ({\tt double}) qui multiplient les termes de convection et diffusion pour les incorporer ou non dans le calcul (ces variables sont \'egales a 0.0 ou a 1.0.}
-	\item \textcolor{blue}{Faire les tests analogues au Q3a, comparer et commenter les r\'esultats.}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
+\vfill
 \begin{quote}
-\color{blue}
-\begin{verbatim}
-./build/PoissonSeq
-./build/PoissonSeq convection
-./build/PoissonSeq diffusion
-./build/PoissonSeq convection diffusion
-\end{verbatim}
+	\begin{verbatim}
+	mkdir Q3c
+	cp -rf Q3b/src Q3c/src
+	mkdir -p Q3c/build
+	cd Q3c/build && cmake ../src && cd ..
+	make -C build
+	\end{verbatim}
 \end{quote}
+\vfill
+\end{frame}
 
-\begin{itemize}		
-\item		\textcolor{blue}{Comparer et commenter les r\'esultats.}.
+\begin{frame}[fragile]
+	
+	\textcolor{blue}{\bf Q3c. Remplacer la s\'equence d'instructions:}
+\begin{lstlisting}
+   u2(j,i,k) = u1(i,j,k);
+   u2(i,j,k) -= f(u1)
+   u2(i,j,k) -= g(u1)
+\end{lstlisting}
+
+\textcolor{blue}{par} 
+\begin{lstlisting}
+   u_aux = u1(i,j,k);
+   u_aux -= f(u1);
+   u_aux -= g(u1);
+   u2(i,j,k) = u_aux;
+\end{lstlisting}
+\begin{itemize}
+	\item \textcolor{blue}{Faire les tests analogues aux cas Q3a et Q3b, comparer et commenter les r\'esultats.}
 \end{itemize}
+\end{frame}
 
+\begin{frame}[fragile]
+	\frametitle{Expressions les ``plus longues possibles"}
+	\vfill
+	{\bf Troisième variante : fusionner les expressions.}
+	\vfill
+	
+	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q3c/src} dans {Q3d/src} et compiler:
+	
+	\vfill
+	\begin{quote}
+		\begin{verbatim}
+		mkdir Q3d
+		cp -rf Q3c/src Q3d/src
+		mkdir -p Q3d/build
+		cd Q3d/build && cmake ../src && cd ..
+		make -C build
+		\end{verbatim}
+	\end{quote}
+	\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	\textcolor{blue}{\bf Q3d. Fusionner les expressions dans le fichier {\tt scheme.cxx}:}
+	\begin{lstlisting}
+	d = u1(i,j,k);
+	d -= f(u1);
+	d -= f(u2);
+	u2(i,j,k) = d
+	\end{lstlisting}
+	
+	\textcolor{blue}{en} 
+	\begin{lstlisting}
+	u2(i,j,k) = u1(i,j,k) - f(u1) - g(u1);
+	\end{lstlisting}
+	
+	\begin{itemize}
+		\item \textcolor{blue}{Faire les tests analogues aux cas pr\'ec\'edents, comparer et commenter les r\'esultats.}
+	\end{itemize}
 \end{frame}
 
 \end{document}
