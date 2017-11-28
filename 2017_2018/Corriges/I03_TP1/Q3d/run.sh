@@ -1,7 +1,13 @@
 #! /bin/bash
 
-./build/PoissonSeq  it=10  | grep "cpu time"
-./build/PoissonSeq  it=10  convection | grep "cpu time"
-./build/PoissonSeq  it=10  diffusion | grep "cpu time"
-./build/PoissonSeq  it=10  convection diffusion | grep "cpu time"
+\rm -rf results*
+
+mkdir -p build
+cd build
+cmake ../src
+make VERBOSE=1
+cd -
+
+perf stat -B -d \
+   ./build/PoissonSeq  n=300 m=300 p=300 it=10
      

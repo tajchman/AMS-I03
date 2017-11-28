@@ -6,7 +6,17 @@
 
 \begin{document}
 \begin{frame}
-	\frametitle{TP 1 : Contexte}
+	\frametitle{TP 1 :}
+	\Large
+	\begin{itemize}
+		\item Outils de mesure de temps calcul
+		\item Localit\'es spatiale et temporelle
+		\item Pipeline d'\'evaluation des expressions
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Contexte}
 	
 	Le code propos\'e dans ce TP calcule une solution approch\'ee en 3 dimensions d'espace $(x,y,z)$ de l'\'equation de la chaleur dans un cube $[0,1]^3$ :
 	$$
@@ -15,17 +25,17 @@
 	avec conditions aux limites de Dirichlet au bord.
 	\vfill
 	
-	Le calcul se fait a l'aide d'une m\'ethode explicite en temps (Euler) et discrt\'etisation par diff\'erences finies en espace.
+	Le calcul se fait \`a l'aide d'une m\'ethode explicite en temps (Euler) et discr\'etisation par diff\'erences finies en espace.
 	
 	\vfill
-	Dans la derniere partie du TP, on peut ajouter un terme d'advection (linéaire) $\frac{\partial u}{\partial x}$.
+	Dans la derniere partie du TP, le code permet d'ajouter un terme d'advection (linéaire) $\frac{\displaystyle\partial u}{\displaystyle\partial x}$ au second membre (suivant les option d'ex\'ecution).
 	
 	\vfill
 	
 \end{frame}
 
 \begin{frame}
-\frametitle{TP 1 : Pr\'eparation}
+\frametitle{Pr\'eparation}
 	
 	\vfill
 	\textcolor{blue}{\bf A chaque \'etape, regarder les messages affich\'es pour voir si tout s'est bien pass\'e !}
@@ -122,7 +132,7 @@ Remplacer les commandes de 3. et 4. par:
 \end{frame}
 
 \begin{frame}
-	\frametitle{Mesure plus pr\'ecise : outil de ``profiling''{\tt gprof}}
+	\frametitle{Mesures plus pr\'ecises : outil de ``profiling''{\tt gprof}}
     
 	\vfill
 	Fait partie de la famille gcc/g++/gfortran.
@@ -176,7 +186,7 @@ Collecter les mesures
 \end{frame}
 
 \begin{frame}
-	\frametitle{Mesure plus pr\'ecise : outil de ``profiling'' {\tt perf}}
+	\frametitle{Mesures plus pr\'ecises : outil de ``profiling'' {\tt perf}}
 		
 	\vfill
 	Outil spécifique linux
@@ -221,7 +231,7 @@ Collecter les mesures
 \end{frame}
 
 \begin{frame}
-\frametitle{Mesure plus pr\'ecise : outil de ``profiling'' {\tt valgrind-callgrind}}
+\frametitle{Mesures plus pr\'ecises : outil de ``profiling'' {\tt valgrind-callgrind}}
 
 \begin{itemize}
 	\item \textcolor{blue}{Avantage} : interm\'ediaire (mesure le temps pass\'e dans une fonction, une instruction C/C++/fortran)
@@ -264,7 +274,7 @@ Afficher et explorer les r\'esultats de mesure:
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Mesure ``manuelle'' des temps de calcul.}
+\frametitle{Mesures ``manuelles'' des temps de calcul.}
 
 Principe: 
 \begin{itemize}
@@ -277,7 +287,7 @@ Fonctions syst\`eme disponibles:
 \begin{itemize}
 	\item \verb clock() \quad(fonction syst\`eme C)
 	\item \verb gettimeofday(...) \quad(fonction syst\`eme C)
-	\item \verb system_clock(...) \quad(fonction syst\`eme fortran)
+	\item \verb system_clock(...) \quad(fonction syst\`eme fortran 90)
 	\item \verb high_resolution_clock \quad(classe C++ 11)
 	\item ...
 \end{itemize}
@@ -297,7 +307,7 @@ Remarques
 \begin{quote}
 	Chaque fonction syst\`eme est utilisable ou non suivant le langage de programmation utilis\'e.
 	
-	La pr\'ecision n'est pas la m\^eme: consulter la documentation.
+	La pr\'ecision n'est pas la m\^eme et d\'epend de la machine : consulter la documentation, faire des tests.
 \end{quote}
 \vfill
 \end{frame}
@@ -331,8 +341,7 @@ int main()
 \end{frame}
 
 \begin{frame}[fragile]
-On fournit une classe C++ Timer
-avec les fonctionnalités suivantes:
+Dans le cadre de ce TP, on fournit une classe C++ Timer (fichiers {\tt timer.cxx} et {\tt timer.hxx}) avec les fonctionnalités suivantes:
 
 \begin{lstlisting}
  //definit une variable "chronometre"
@@ -346,14 +355,19 @@ T.reset();
 
 // retourne le temps mesure 
 // entre un appel start() et un stop()
-// (utiliser juste apres le stop()
+// (utiliser juste apres le stop())
 double dt = T.elapsed(); 
 \end{lstlisting}
 
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Localit\'es spatiale et temporelle}
 	\vfill
+	
+	{\bf Version de r\'ef\'erence :}
+    \vfill
+
 	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src} dans {Q1/src} et compiler:
 	\begin{quote}
 		\begin{verbatim}
@@ -365,13 +379,18 @@ double dt = T.elapsed();
 	\end{quote}
 
 	\vfill
-	\textcolor{blue}{\bf Q1. Utiliser la classe Timer pour mesurer s\'epar\'ement}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	\textcolor{blue}{\bf Q1. Modifier le programme principal {\tt src/main.cxx} en utilisant la classe Timer pour mesurer s\'epar\'ement}
 	\begin{itemize}
-		\item \textcolor{blue}{\bf le temps d'initialisation (lignes 31-32 du fichier {\tt src/main.cxx})}
-		\item \textcolor{blue}{\bf la moyenne du temps d'ex\'ecution d'une it\'eration de calcul (lignes 43-45 du fichier {\tt src/main.cxx})}
+	\item \textcolor{blue}{\bf le temps d'initialisation (lignes 31-32 du fichier {\tt src/main.cxx})}
+	\item \textcolor{blue}{\bf la moyenne du temps d'ex\'ecution d'une it\'eration de calcul (lignes 43-45 du fichier {\tt src/main.cxx})}
 	\end{itemize}
 
-	\textcolor{blue}{\bf Executer le code avec et sans l'option {\tt out=10}}:
+	\vfill
+	\textcolor{blue}{\bf Executer le code avec et sans l'option {\tt out=10} (la seconde ex\'ecution sauvegarde les r\'esultats sur fichier)}:
 	\begin{quote}
 		\color{blue}
 		\begin{verbatim}
@@ -379,15 +398,20 @@ double dt = T.elapsed();
 			./build/PoissonSeq out=10
 		\end{verbatim}
 	\end{quote}
-    (la seconde ex\'ecution sauvegarde les r\'esultats sur fichier)
-	
 
+	L'ex\'ecution avec param\`etre {\tt out=10} sert \`a sauvegarder les r\'esultats pour pouvoir les comparer avec les autres versions.
+	
 \vfill
 \end{frame}
 
 \begin{frame}[fragile]
+    
 	\vfill
-	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q1/src} dans {Q2/src} et compiler:
+	{\bf Seconde version : modification de la localit\'e spatiale}
+	\vfill
+	
+	Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt Q1/src} dans {\tt Q2/src} et compiler:
+	
 	\begin{quote}
 		\begin{verbatim}
 		mkdir -p Q2/build
@@ -397,20 +421,35 @@ double dt = T.elapsed();
 		\end{verbatim}
 	\end{quote}
 
+\end{frame}
+
+\begin{frame}[fragile]
 	\vfill
 	\textcolor{blue}{\bf Q2. La classe {Values} rep\'esente un ensemble de $n_0 \times n_1 \times n_2$ valeurs et poss\`ede des fonctions ({\tt operator()}) qui retournent la composante $v_{i,j,k}$ o\`u $v$ est de type {\tt Values}.}
 	
+	\vfill
 	\begin{itemize}
 		\item \textcolor{blue}{D\'ecrire comment sont rang\'ees en m\'emoire les composantes $v_{i,j,k}$
 		(examiner les fichiers {\tt src/values.cxx} et {\tt src/values.hxx}).}
+	\vfill
 		\item \textcolor{blue}{Changer la fa\c{c}on de ranger les composantes en m\'emoire (il y a plusieurs possibilit\'es)}
-		\item \textcolor{blue}{Comparer les r\'esultats et les temps de calcul avec la version dans {\tt Q1}.}
+	\vfill
+		\item \textcolor{blue}{Comparer les r\'esultats et les temps de calcul avec la version de r\'ef\'erence dans {\tt Q1}.}
+	\vfill
 		\item \textcolor{blue}{Expliquer les diff\'erences \'eventuelles de temps calcul (examiner aussi le fichier {\tt scheme.cxx}).}
 	\end{itemize}
+	\vfill
 	 
 \end{frame}
 
 \begin{frame}[fragile]
+\vfill
+	{\bf Troisième version : termes optionels dans les \'equations}
+\vfill
+{\bf Le but est de permettre \`a l'utilisateur d'utiliser ou non les termes de diffusion et d'advection sans devoir modifier et recompiler le code}
+
+\vfill
+
 Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src\_Q3a} dans {Q3a/src} et compiler:
 \begin{quote}
 	\begin{verbatim}
@@ -421,16 +460,16 @@ Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {
 	\end{verbatim}
 \end{quote}
 
-\vfill
-\textcolor{blue}{\bf Q3a. Le fichier {\tt scheme.cxx} a \'et\'e modifi\'e pour pouvoir traiter des \'equations avec ou sans termes de diffusion (laplacien) et d'advection}
-
-\begin{itemize}
-	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables logiques ({\tt bool}) pour incorporer ou non les termes de diffusion-convection dans le calcul}
-	\item \textcolor{blue}{Ex\'ecuter le code sous les 4 formes ci-dessus et comparer :}
-\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
+\vfill
+\textcolor{blue}{\bf Q3a. Premi\`ere impl\'ementation : la convection et la diffusion sont trait\'ees dans des boucles s\'epar\'ees}
+
+\begin{itemize}
+	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables logiques ({\tt bool}) pour incorporer ou non les termes de diffusion et de convection dans le calcul}
+	\item \textcolor{blue}{Ex\'ecuter le code sous les 4 formes ci-dessus et comparer :}
+
 		\begin{quote}
 		\color{blue}
 			\begin{verbatim}
@@ -440,14 +479,17 @@ Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {
 			./build/PoissonSeq convection diffusion
 			\end{verbatim}
 		\end{quote}
-	
-\begin{itemize}		
-\item		\textcolor{blue}{Comparer et commenter les r\'esultats.}.
+	\item		\textcolor{blue}{Comparer et commenter les r\'esultats.}.
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}[fragile]
+\vfill
+{\bf Quatri\`eme version : calcul diff\'erent des termes optionels dans les \'equations}
+
+\vfill
+
 Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {\tt src\_Q3b} dans {Q3b/src} et compiler:
 \begin{quote}
 	\begin{verbatim}
@@ -459,9 +501,12 @@ Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {
 \end{quote}
 
 \vfill
-\textcolor{blue}{\bf Q3b. Le fichier {\tt scheme.cxx} contient une variante de l'algorithme vu en Q3a}
+Le fichier {\tt scheme.cxx} contient une variante de l'algorithme vu en Q3a.
 
-\begin{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\textcolor{blue}{\bf Q3b. \begin{itemize}
 	\item \textcolor{blue}{Examiner le fichier {scheme.cxx}: on utilise 2 variables de type ({\tt double}) qui multiplient les termes de convection et diffusion pour les incorporer ou non dans le calcul (ces variables sont \'egales a 0.0 ou a 1.0.}
 	\item \textcolor{blue}{Faire les tests analogues au Q3a, comparer et commenter les r\'esultats.}
 \end{itemize}
