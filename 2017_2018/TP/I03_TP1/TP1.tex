@@ -71,11 +71,10 @@
 \begin{frame}
 	\begin{enumerate}
   		\setcounter{enumi}{4}
-		\item Executer le code avec la commande:
+		\item Ex\'ecuter le code avec la commande:
 		\begin{quote}
 			./build/PoissonSeq
 		\end{quote}
-		\item A la fin de l'exécution, les résultats sont sauvegardés au format VTK dans un répertoire "results\_\ldots" (le nom précis est affiché à l'écran)
 	\end{enumerate}
 
 \vfill
@@ -208,7 +207,7 @@ Collecter les mesures
 		\item \textcolor{red}{D\'esavantage} : n\'ecessite que la machine soit configur\'ee  correctement.
 	\end{itemize}
 	\vfill
-	\textcolor{blue}{\bf Outil \'a privil\'egier quand c'est possible}
+	\textcolor{blue}{\bf Outil \`a privil\'egier quand c'est possible}
 \end{frame}
 \begin{frame}[fragile]
 	
@@ -399,7 +398,7 @@ double dt = T.elapsed();
 	\end{itemize}
 
 	\vfill
-	\textcolor{blue}{\bf Executer le code avec et sans l'option {\tt out=10} (la seconde ex\'ecution sauvegarde les r\'esultats sur fichier)}:
+	\textcolor{blue}{\bf Ex\'ecuter le code avec et sans l'option {\tt out=10} (la seconde ex\'ecution sauvegarde les r\'esultats sur fichier)}:
 	\begin{quote}
 		\color{blue}
 		\begin{verbatim}
@@ -469,6 +468,7 @@ Se mettre dans le r\'epertoire {\tt I03\_TP1}, faire une copie du r\'epertoire {
 \begin{quote}
 	\begin{verbatim}
 	mkdir -p Q3a/build
+	cp -r Q2/src Q3a
 	cp scheme_Q3a.cxx Q3a/src/scheme.cxx
 	cd Q3a/build && cmake ../src && cd ..
 	make -C build
