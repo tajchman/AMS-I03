@@ -37,7 +37,7 @@ Vue globale: un ensemble de n\oe uds de calcul chacun contenant un ou plusieurs 
 \end{frame}
 
 \begin{frame}
-Vue interne d'un n\oe ud (variable suivant le mod\`ele de processeur et \\la g\'en\'eration \\utilis\'ee):
+Vue interne d'un n\oe ud (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 
 \begin{center}
 \includegraphics[scale=0.3]{architecture2}
@@ -46,7 +46,7 @@ Vue interne d'un n\oe ud (variable suivant le mod\`ele de processeur et \\la g\'
 \end{frame}
 
 \begin{frame}
-Vue interne d'un c\oe ur (variable suivant le mod\`ele de processeur et \\la g\'en\'eration \\utilis\'ee):
+Vue interne d'un c\oe ur (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 
 \begin{center}
 	\includegraphics[scale=0.2]{1106px-zen_block_diagram}
@@ -84,10 +84,10 @@ Situation actuelle (et encore pour plusieurs ann\'ees):
 Fonctionnement :
 
 \begin{itemize}
-	\item Il faut copier les donn\'ees dans les registres du processeur qui va les utiliser, en laissant des copie dans les diff\'erents niveaux de cache de ce processeur. 
+	\item Les donn\'ees sont envoy\'ees dans les registres du processeur qui va les utiliser, en laissant des copies dans les diff\'erents niveaux de cache de ce processeur. 
 	\vfill
 	
-	\item Les zones m\'emoires sont copi\'ees par bloc entre la m\'emoire centrale et les m\'emoires cache. Donc si une donn\'ee est proche d'une autre qui vient d'\^etre utilis\'e, elle a peut-\^etre d\'ej\`a \'et\'e copi\'ee (et l'utilisation de cette 2nde donn\'ee est plus rapide)	
+	\item Les zones m\'emoires sont copi\'ees par bloc entre la m\'emoire centrale et les m\'emoires cache. Donc si une donn\'ee est proche d'une autre qui vient d'\^etre utilis\'ee, elle a peut-\^etre d\'ej\`a \'et\'e copi\'ee (et l'utilisation de cette 2nde donn\'ee est plus rapide)	
 \end{itemize}
 	\vfill
 \end{frame}
