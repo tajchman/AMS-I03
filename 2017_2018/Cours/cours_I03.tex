@@ -95,7 +95,7 @@ Fonctionnement :
 \begin{frame}[fragile]
 	
 \begin{itemize}
-	\item Si une donn\'ee est utilis\'ee $n$ fois par le m\^eme processeur dans des instructions proches, les $n-1$ derni\`eres utilisations seront plus rapides.
+	\item Si une donn\'ee est utilis\'ee $n$ fois par le m\^eme processeur dans des instructions proches, les $n-1$ derni\`eres utilisations seront plus rapides (parce que la donn\'ee sera peut-\^etre encore dans une m\'emoire cache).
 \vfill
 
 	\item Si un processeur a modifi\'e une donn\'ee dans une de ses m\'emoires, il faut r\'epercuter cette modification dans les diff\'erentes copies de cette donn\'ee.
@@ -134,16 +134,21 @@ Fonctionnement :
 \frametitle{Localit\'e spatiale}
 Règle: autant que possible, utiliser des zones m\'emoires proches les unes des autres dans une s\'equence d'instructions
 
-\bigskip
+\vfill
 But: r\'eduire la fr\'equence de transferts m\'emoire centrale - m\'emoire cache
+
+\vfill
+Exemple: voir TP 1
 \end{frame}
 
 \begin{frame}
 \frametitle{Localit\'e temporelle}
 Règle: autant que possible, pour une zone m\'emoire, les instructions qui l'utilisent doivent s'ex\'ecuter de façon rapproch\'ee
 
-\bigskip
+\vfill
 But: r\'eduire la fr\'equence de transferts m\'emoire centrale - m\'emoire cache
+\vfill
+Exemple: voir TP 1
 \end{frame}
 
 \begin{frame}[fragile]
@@ -176,19 +181,24 @@ for (i=0; i<n; i++) {
 
 \end{frame}
 
-%\begin{frame}
-%\section{Rappels de programmation parallèle}
-%\subsection{Rappel des notions}
-%\frametitle{Rappels de programmation parallèle: notions}
-%Points abord\'es
-%\begin{itemize}
-%\item m\'emoire distribu\'ee
-%\item m\'emoire partag\'ee
-%\item threads
-%\item processus
-%\end{itemize}
-%\end{frame}
-%
+\begin{frame}
+\section{Rappels de programmation parallèle}
+\frametitle{Rappels de programmation parallèle: notions}
+Points abord\'es
+\begin{itemize}
+\item thread - process
+\item m\'emoire distribu\'ee ou partag\'ee
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\subsection{Threads - processes}
+\end{frame}
+
+\begin{frame}
+	\subsection{M\'emoire partag\'ee}
+\end{frame}
+
 %\begin{frame}
 %\subsection{M\'emoire partag\'ee}
 %\frametitle{Rappels de programmation parallèle: m\'emoire partag\'ee}
