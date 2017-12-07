@@ -1,6 +1,9 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
 
 #include "parameters.hxx"
 #include "values.hxx"
@@ -23,8 +26,12 @@ int main(int argc, char **argv)
 {
   int iOut = 0;
 
-  Parameters P(&argc, &argv);
+  Parameters P(argc, argv);
   if (P.help()) return 0;
+
+#if defined(_OPENMP)
+  omp_set_num_threads(P.nthreads());
+#endif
 
   std::cout << P << std::endl;
   P.out() << P << std::endl;
@@ -34,7 +41,7 @@ int main(int argc, char **argv)
   Values u1(P, f);
   Values u2(u1);
   T.stop();
-  std::cerr << "initialisation " << T.elapsed() << " s" << std::endl;
+  std::cout << "initialisation " << T.elapsed() << " s" << std::endl;
   
   Timer T2, T3;
   
@@ -73,9 +80,18 @@ int main(int argc, char **argv)
     P.out() << out.str() << "\n";
     
   }
-  std::cerr << "\n\ncpu time " << std::setprecision(5) << T2.elapsed() << " s "
+  std::cout << "\n\nresults in " << P.resultPath() << "\n\n";
+   
+  if (P.convection())
+    std::cout << "convection ";
+  else
+    std::cout << "           ";
+  if (P.diffusion())
+    std::cout << "diffusion  ";
+  else
+    std::cout << "           ";
+
+  std::cout << "cpu time " << std::setprecision(5) << T2.elapsed() << " s "
              << std::setprecision(5) << T2.elapsed()/(it-1) << " s/iteration\n";
-  std::cerr << "i/o time "  << std::setprecision(5) << T3.elapsed() << " s";
-  std::cerr << "\n\nresults in " << P.resultPath() << "\nEnd of run\n\n";
   return 0;
 }

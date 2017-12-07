@@ -4,10 +4,12 @@
 #include <iostream>
 #include <string>
 
-class Parameters {
+#include "GetPot.hxx"
+
+class Parameters : public GetPot {
 public:
 
-  Parameters(int *, char ***);
+  Parameters(int argc, char **argv);
   ~Parameters();
   std::ostream & out() { return *m_out; }
   void info();
@@ -23,15 +25,22 @@ public:
   double dt() const { return m_dt; }
 
   int output() const { return m_output; }
-  std::string resultPath() { return m_path; }
+  std::string resultPath() const { return m_path; }
   bool help();
 
-  bool convection() { return m_convection; }
-  bool diffusion() { return m_diffusion; }
+  bool convection() const { return m_convection; }
+  bool diffusion() const { return m_diffusion; }
+
+  void convection(bool b) { m_convection = b; }
+  void diffusion(bool b) { m_diffusion = b; }
+
+  int nthreads() const { return m_nthreads; }
+  void nthreads(int n) { m_nthreads = n; }
   
 private:
   std::ostream * m_out;
 
+  int m_nthreads;
   int m_n[3];
   double m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];

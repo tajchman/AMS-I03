@@ -4,10 +4,12 @@
 #include <iostream>
 #include <string>
 
-class Parameters {
+#include "GetPot.hxx"
+
+class Parameters : public GetPot {
 public:
 
-  Parameters(int *, char ***);
+  Parameters(int argc, char **argv);
   ~Parameters();
   std::ostream & out() { return *m_out; }
   void info();
@@ -28,6 +30,9 @@ public:
 
   bool convection() { return m_convection; }
   bool diffusion() { return m_diffusion; }
+
+  void convection(bool b) { m_convection = b; }
+  void diffusion(bool b) { m_diffusion = b; }
   
 private:
   std::ostream * m_out;

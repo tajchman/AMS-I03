@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 {
   int iOut = 0;
 
-  Parameters P(&argc, &argv);
+  Parameters P(argc, argv);
   if (P.help()) return 0;
 
   std::cout << P << std::endl;

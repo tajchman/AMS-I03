@@ -16,6 +16,9 @@ double iterate(const Values & u1, Values & u2,
   double dx2 = P.dx(0)*P.dx(0) + P.dx(1)*P.dx(1) + P.dx(2)*P.dx(2);
   double lambda = 0.25*dt/dx2;
 
+  if (not P.diffusion()) lambda = 0.0;
+  if (not P.convection())  mu = 0.0;
+  
   int i, j, k;
   int   di = P.di(0),     dj = P.di(1),     dk = P.di(2);
   int imin = P.imin(0), jmin = P.imin(1), kmin = P.imin(2);
