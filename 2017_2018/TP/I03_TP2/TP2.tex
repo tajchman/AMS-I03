@@ -22,7 +22,6 @@
 \begin{frame}
 \frametitle{Rappels d'architecture}
 	
-\begin{frame}
 	Exemple d\'ej\`a vu \`a la premi\`ere s\'eance de vue interne d'un n\oe ud (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 	
 	\begin{center}
@@ -31,5 +30,79 @@
 
 \end{frame}
 	
+\begin{frame}
+	\begin{tabular}{lcl}
+		Une machine &=& un ou plusieurs processeurs \\
+		& + & une m\'emoire centrale ($\approx 10^{10}$ octets) partag\'ee \\
+		& & (accessible directement par tous les processeurs)\\ \\
+		Un processeur & = & un ou plusieurs c\oe urs \\
+		& + & un ensemble de zones m\'emoire rapides ou\\
+		& & mémoire cache ($\approx 10^{4}$ \`a $10^{6}$ octets)(caches) \\
+		& & partag\'ees entre tous ou une partie des c\oe urs \\
+		\\
+		Un c\oe ur & = & une unit\'e de traitement capable d'ex\'ecuter \\
+		& & un thread (une s\'equence d'instructions)
+	\end{tabular}
+\end{frame}
+
+\begin{frame}
+	\vfill
+	En g\'en\'eral, une machine qui contient $N$ processeurs o\`u chaque processeur est compos\'e de $M$ c\oe urs peut ex\'ecuter au maximum $N\times M$ threads (s\'equences d'instructions) simultan\'ement.
+	
+	\vfill
+	La gestion dans un programme de cet ensemble de threads s'appelle la programmation multi-threads
+	\vfill
+	
+	Plusieurs outils logiciels permettent de faire cette gestion:
+	\begin{itemize}
+		\item pthreads
+		\item OpenMP
+		\item Threading Building Blocks
+		\item ...
+	\end{itemize}
+
+	\vfill
+	On utilisera ici l'outil OpenMP
+\end{frame}
+
+\begin{frame}
+\frametitle{Pr\'eparation}
+
+\vfill
+\begin{enumerate}
+	\item R\'ecup\'erer l'archive {\tt TP2.tar.gz} et extraire les fichiers.
+	\item Ouvrir un terminal et se placer dans le r\'epertoire {\tt I03\_TP2} \break qui vient d'\^etre cr\'e\'e
+	\item préparer la compilation du code du TP avec les commandes :
+	\begin{quote}
+		mkdir -p build\\
+		cd build\\
+		cmake ../src\\
+		cd ..
+	\end{quote}
+	\item Se remettre dans le r\'epertoire {\tt I03\_TP2} et compiler:
+	\begin{quote}
+		make -C build VERBOSE=1
+	\end{quote}
+\end{enumerate}
+\vfill	
+\end{frame}
+
+\begin{frame}
+	\begin{enumerate}
+		\setcounter{enumi}{4}
+		\item Ex\'ecuter le code avec la commande:
+		\begin{quote}
+			./build/PoissonOpenMP
+		\end{quote}
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\textcolor{blue}{\bf Q1. Utiliser la derni\`ere version du code vue aux 2 premi\`eres s\'eances}
+	
+	\begin{itemize}
+		\item Faire une copie du code dans une 
+	\end{itemize}
+\end{frame}
 
 \end{document}
