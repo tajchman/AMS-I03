@@ -32,6 +32,8 @@ void setOptions(int argc, char **argv, int * nThreads, long long * nSamples)
 
 void initGenere()
 {
+#pragma omp parallel private(i) shared(s)
+  _Thread_local unsigned int seed = time(NULL);
   srand(time(NULL));
 }
 
@@ -64,13 +66,28 @@ int main(int argc, char **argv)
   for (i=0; i<NVAL; i++)
     s[i] = 0.0;
 
+  double ** u = (double **) malloc(sizeof(double *) * nThreads);
+                                   
 #pragma omp parallel private(i) shared(s)
   {
+#if defined(_OPENMP)
+    int iThread = omp_get_num_threads();
+#else
+    int iThread = 1;
+#endif
+    double *t = (double *) malloc(sizeof(double) * NVAL);
+    
+    u[iThread] = t;
+    for (i=0; i<NVAL; i++)
+      t[i] = 0;   
 #pragma omp for 
     for (iSamples=0; iSamples<nSamples; iSamples++) {
       i = genere();
-      s[i] += 1.0;
+      t[i] += 1.0;
     }
+#pragma omp critical
+    for (i=0; i<NVAL; i++)
+      s[i] += t[i];   
   }
   
   sum = 0.0;
