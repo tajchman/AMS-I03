@@ -12,8 +12,8 @@ Values::Values(Parameters & prm,
   for (i=0; i<3; i++)
     nn *= (m_n[i] = m_p.n(i));
 
-  n1 = m_n[2];      // nombre de points dans la troisieme direction
-  n2 = m_n[1] * n1; // nombre de points dans le plan des 2 dernieres directions
+  n1 = m_n[2];      // nombre de points dans la premiere direction
+  n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
   if (f) {
     m_u.resize(nn);
