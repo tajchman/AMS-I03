@@ -24,6 +24,7 @@ double iterate(const Values & u1, Values & u2,
   int imin = P.imin(0), jmin = P.imin(1), kmin = P.imin(2);
   int imax = P.imax(0), jmax = P.imax(1), kmax = P.imax(2);
   
+#pragma omp parallel for private(i,j,k) default(shared) reduction(+:du_sum)
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++) {
@@ -34,7 +35,7 @@ double iterate(const Values & u1, Values & u2,
                       - u1(i,j,k+dk) - u1(i,j,k-dk))
           - mu*(u1(i,j,k) - u1(i-1, j, k));
 	du_sum += std::abs(u2(i,j,k) - u1(i,j,k));
-      }
+    }
    
   return du_sum;
 }

@@ -1,3 +1,7 @@
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #if defined(_WIN32)
 #define _CRT_SECURE_NO_WARNINGS
 #include <direct.h>
@@ -35,6 +39,18 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
 {
   m_help = options_contain("h") or long_options_contain("help");
   
+  m_nthreads = 1;
+#ifdef _OPENMP
+  m_nthreads = (*this)("threads", -1);
+  if (m_nthreads > 0)
+    omp_set_num_threads(m_nthreads);
+  else {
+#pragma omp parallel
+    if (omp_get_thread_num() == 0)
+      m_nthreads = omp_get_num_threads();
+    }
+#endif
+
   m_n[0] = (*this)("n", 400);
   m_n[1] = (*this)("m", 400);
   m_n[2] = (*this)("p", 400);
@@ -93,6 +109,7 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonSeq <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+              << "threads=<int>       : number of threads (default: number of cores)\n"
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n=<int>       : number of internal points in the X direction (default: 400)\n"

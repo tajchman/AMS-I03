@@ -3,15 +3,17 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "count.h"
+#include "random_2.h"
+
 #if defined(_OPENMP)
 #include <omp.h>
 #endif
-#define NVAL 20
 
 void setOptions(int argc, char **argv, int * nThreads, long long * nSamples)
 {
   char c;
-  *nSamples = 1000000;
+  *nSamples = 1000L * 200000L;
   *nThreads = 1;
   while ((c = getopt(argc , argv, "n:t:")) != -1)
     switch (c) {
@@ -30,60 +32,39 @@ void setOptions(int argc, char **argv, int * nThreads, long long * nSamples)
     }
 }
 
-void initGenere()
-{
-  srand(time(NULL));
-}
-
-int genere()
-{
-  int r = rand();
-  r = (int)(((double)r)/RAND_MAX * NVAL);
-  return r;
-}
-
 int main(int argc, char **argv)
 {
-  fprintf(stderr, "TP2 %s\n", argv[0]);
   long long nSamples;
   int nThreads;
-  double *s, sum;
-  int i;
+  double *s;
   long iSamples;
-
-  s = (double *) malloc(sizeof(double) * NVAL);
-  setOptions(argc, argv, &nThreads, &nSamples);
   
+  fprintf(stderr, "\nTP2 %s\n", argv[0]);
+  setOptions(argc, argv, &nThreads, &nSamples);
+
 #if defined(_OPENMP)
   omp_set_num_threads(nThreads);
 #endif
+  printf(" %d threads\n\n", nThreads);
+  printf(" %lld samples\n", nSamples);
   
-  printf(" %2d threads\n", nThreads);
-  printf(" %ld samples\n", nSamples);
+  s = countAllocate();
+  initRandom(time(NULL), 0, NVAL, nThreads);
   
-  for (i=0; i<NVAL; i++)
-    s[i] = 0.0;
-
-#pragma omp parallel private(i) shared(s)
+#pragma omp parallel private(iSamples) default(shared)
   {
-#pragma omp for 
+    int iThread = omp_get_thread_num();
+    int seed = getSeed(iThread);
+    
+#pragma omp for
     for (iSamples=0; iSamples<nSamples; iSamples++) {
-      i = genere();
-      s[i] += 1.0;
+      s[nextRnd(&seed)] += 1.0;
     }
   }
+  countNormalize(s);
+  countPrint(s);
   
-  sum = 0.0;
-  for (i=0; i<NVAL; i++)
-    sum += s[i];
-  for (i=0; i<NVAL; i++)
-    s[i] /= sum;
-
-  printf("s : \n"); 
-  for (i=0; i<NVAL; i++)
-    printf("%12.6f", i, s[i]);
-  printf("\n");
+  countDelete(&s);
   
-  free(s);
   return 0;
 }

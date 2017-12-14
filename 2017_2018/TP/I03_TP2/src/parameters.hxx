@@ -23,6 +23,7 @@ public:
   
   int itmax() const { return m_itmax; }
   double dt() const { return m_dt; }
+  int nthreads() const { return m_nthreads; };
 
   int output() const { return m_output; }
   std::string resultPath() { return m_path; }
@@ -44,6 +45,7 @@ private:
   int m_itmax;
   double m_dt;
   bool m_convection, m_diffusion;
+  int m_nthreads;
   
   int m_output;
 

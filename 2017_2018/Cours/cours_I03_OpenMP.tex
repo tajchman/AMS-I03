@@ -1,0 +1,74 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usetheme[]{boxes}
+\usecolortheme{seagull}
+\usepackage{listings}
+
+\begin{document}
+\begin{frame}
+	\frametitle{OpenMP :}
+	\vfill
+	\Large
+	Points abord\'es :
+	\vfill
+	\begin{itemize}
+		\item Programmation multi-threads
+		\bigskip
+		\item Exemples OpenMP
+		\bigskip
+        \item Styles de programmation OpenMP
+	\end{itemize}
+	\vfill
+\end{frame}
+
+\begin{frame}
+\frametitle{Rappels d'architecture}
+	
+	Exemple d\'ej\`a vu \`a la premi\`ere s\'eance de vue interne d'un n\oe ud (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
+	
+	\begin{center}
+		\includegraphics[scale=0.3]{architecture2}
+	\end{center}
+
+\end{frame}
+	
+\begin{frame}
+	\begin{tabular}{lcl}
+		Une machine &=& un ou plusieurs processeurs \\
+		& + & une m\'emoire centrale ($\approx 10^{10}$ octets) partag\'ee \\
+		& & (accessible directement par tous les processeurs)\\ \\
+		Un processeur & = & un ou plusieurs c\oe urs \\
+		& + & un ensemble de zones m\'emoire rapides ou\\
+		& & mémoire cache ($\approx 10^{4}$ \`a $10^{6}$ octets)(caches) \\
+		& & partag\'ees entre tous ou une partie des c\oe urs \\
+		\\
+		Un c\oe ur & = & une unit\'e de traitement capable d'ex\'ecuter \\
+		& & un thread (une s\'equence d'instructions)
+	\end{tabular}
+\end{frame}
+
+\begin{frame}
+	\vfill
+	En g\'en\'eral, une machine qui contient $N$ processeurs o\`u chaque processeur est compos\'e de $M$ c\oe urs peut ex\'ecuter au maximum $N\times M$ threads (s\'equences d'instructions) simultan\'ement.
+	
+	\vfill
+	La gestion dans un programme de cet ensemble de threads s'appelle la programmation multi-threads
+	\vfill
+	
+	Plusieurs outils logiciels permettent de faire cette gestion:
+	\begin{itemize}
+		\item pthreads
+		\item OpenMP
+		\item Threading Building Blocks
+		\item ...
+	\end{itemize}
+
+	\vfill
+	On utilisera ici l'outil OpenMP
+\end{frame}
+
+\begin{frame}
+	\vfill
+	\vfill
+\end{frame}
+\end{document}

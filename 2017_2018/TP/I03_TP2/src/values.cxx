@@ -25,6 +25,7 @@ Values::Values(Parameters & prm,
       ymin = 0,
       zmin = 0;
     
+#pragma omp parallel for private(i,j,k) default(shared)
     for (i=0; i<n; i++)
       for (j=0; j<m; j++)
         for (k=0; k<p; k++)

@@ -91,9 +91,10 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
 bool Parameters::help()
 {
   if (m_help) {
-    std::cerr << "Usage : ./PoissonSeq <list of options>\n\n";
+    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+	      << "threads=<int> : nombre de threads OpenMP"
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n=<int>       : number of internal points in the X direction (default: 400)\n"
