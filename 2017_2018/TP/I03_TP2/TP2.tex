@@ -98,11 +98,26 @@
 \end{frame}
 
 \begin{frame}
-	\textcolor{blue}{\bf Q1. Utiliser la derni\`ere version du code vue aux 2 premi\`eres s\'eances}
+	\textcolor{blue}{\bf Compl\'eter les fichiers sources pour utiliser la parall\'elisation OpenMP}
 	
 	\begin{itemize}
-		\item Faire une copie du code dans une 
+		\item Dans les fichiers du r\'epertoire src, rep\'erer la partie du code qui prend le plus de temps
+		\item Ajouter une ``pragma" OpenMP pour essayer d'acc\'elerer cette partie du code (prendre comme exemple ce qui est fait dans le fichier values.cxx).
+		\item Comparer en utilisant de 1 \`a 4 threads. (id\'ealement, on devrait aussi comparer avec la version sans OpenMP). 
 	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\textcolor{blue}{\bf Second exercice:}
+        \vfill
+	\begin{enumerate}
+		\item Se mettre dans le r\'epertoire {\tt ExempleOpenMP}, qui contient un exemple simple: g\'en\'eration d'un ensemble de valeurs enti\`eres entre 0 et 19,
+			comptage du pourcentage de valeurs \'egales \`a $k$ pour $0<=k<20$.
+	        \item Parall\'eliser avec OpenMP
+		\item Interpr\'eter les r\'esultats. S'ils ne sont pas ceux esp\'er\'es, revenir sur le point pr\'ec\'edent.
+	\end{enumerate}
+	\vfill
+	\vfill
 \end{frame}
 
 \end{document}
