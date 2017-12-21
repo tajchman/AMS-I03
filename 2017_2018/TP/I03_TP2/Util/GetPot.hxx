@@ -1695,6 +1695,10 @@ inline void
 GetPot::set(const char* VarName, const int Value, const bool Requested /* = yes */)
 { __set_variable(VarName, __int2string(Value).c_str()); }
 
+inline void 
+GetPot::set(const char* VarName, const long Value, const bool Requested /* = yes */)
+{ __set_variable(VarName, __int2string(Value).c_str()); }
+
 inline void
 GetPot::set(const char* VarName, const bool Value, const bool Requested /* = yes */)
 { __set_variable(VarName, (Value ? "true" : "false")); }

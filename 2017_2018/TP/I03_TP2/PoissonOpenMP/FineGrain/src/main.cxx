@@ -28,7 +28,8 @@ int main(int argc, char **argv)
   if (P.help()) return 0;
 
   std::cout << P << std::endl;
-  P.out() << P << std::endl;
+  if (P.output() > 0)
+    P.out() << P << std::endl;
 
   Timer T;
   T.start();
@@ -64,14 +65,15 @@ int main(int argc, char **argv)
     
     std::ostringstream out;
     out << std::setw(8) << it
-        << " t = " << std::setw(10) << std::setprecision(5)
-        << std::fixed << t
-        << " delta u = " << std::setw(10) << std::setprecision(5)
-        << std::fixed << du << " (cpu: " << std::setprecision(5)
-        << T2.elapsed() << "s, i/o: "<< T3.elapsed() << "s)";
+	<< " t = " << std::setw(10) << std::setprecision(5)
+	<< std::fixed << t
+	<< " delta u = " << std::setw(10) << std::setprecision(5)
+	<< std::fixed << du << " (cpu: " << std::setprecision(5)
+	<< T2.elapsed() << "s, i/o: "<< T3.elapsed() << "s)";
     std::cout << out.str() << "\r";
     std::cout.flush();
-    P.out() << out.str() << "\n";
+    if (P.output() > 0)
+      P.out() << out.str() << "\n";
     
   }
   std::cout << "\n\n";
