@@ -1,3 +1,4 @@
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -15,6 +16,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -47,7 +49,7 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
   else {
 #pragma omp parallel
     if (omp_get_thread_num() == 0)
-      m_nthreads = omp_get_num_threads();
+      m_nthreads = (*this)("threads", omp_get_num_threads());
     }
 #endif
 
@@ -130,16 +132,11 @@ Parameters::~Parameters()
   }
 }
 
-std::ostream & operator<<(std::ostream &f, const Parameters & p)
+std::ostream & operator << (std::ostream &f, const Parameters & P)
 {
-  f << "Domain :   "
-    << "[" << 0 << "," << p.n(0) - 1  << "] x "
-    << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]"
-    << "\n\n";
-
-  f << "It. max : " << p.itmax() << "\n"
-    << "Dt :      " << p.dt() << "\n";
-
-  return f;
+  auto & l = P.variables;
+  for (auto & k : l)
+    f << std::setw(20) << k.name << ": " << k.original << std::endl;
+	return f;
 }
+

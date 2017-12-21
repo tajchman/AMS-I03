@@ -11,6 +11,9 @@ public:
 
   Parameters(int argc, char **argv);
   ~Parameters();
+
+  bool contains(const char *varname);
+  friend std::ostream & operator << (std::ostream &f, const Parameters & P);
   std::ostream & out() { return *m_out; }
   void info();
 
@@ -29,8 +32,8 @@ public:
   std::string resultPath() { return m_path; }
   bool help();
 
-  bool convection() { return m_convection; }
-  bool diffusion() { return m_diffusion; }
+  bool convection()  const{ return m_convection; }
+  bool diffusion() const { return m_diffusion; }
 
   void convection(bool b) { m_convection = b; }
   void diffusion(bool b) { m_diffusion = b; }
@@ -54,7 +57,6 @@ private:
 
 };
 
-std::ostream & operator<<(std::ostream &f, const Parameters & p);
-
+std::ostream & operator << (std::ostream &f, const Parameters & P);
 
 #endif

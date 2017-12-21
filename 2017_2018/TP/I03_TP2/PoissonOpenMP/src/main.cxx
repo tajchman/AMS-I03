@@ -22,6 +22,7 @@ double f(double x, double y, double z)
 int main(int argc, char **argv)
 {
   int iOut = 0;
+  int nThreads = 1;
 
   Parameters P(argc, argv);
   if (P.help()) return 0;
@@ -73,18 +74,9 @@ int main(int argc, char **argv)
     P.out() << out.str() << "\n";
     
   }
-  std::cout << "\n\nresults in " << P.resultPath() << "\n\n";
+  std::cout << "\n\n";
+  if (P.output() > 0)
+    std::cout << "\n\nresults in " << P.resultPath() << "\n\n";
    
-  if (P.convection())
-    std::cout << "convection ";
-  else
-    std::cout << "           ";
-  if (P.diffusion())
-    std::cout << "diffusion  ";
-  else
-    std::cout << "           ";
-
-  std::cout << "cpu time " << std::setprecision(5) << T2.elapsed() << " s "
-             << std::setprecision(5) << T2.elapsed()/(it-1) << " s/iteration\n";
   return 0;
 }

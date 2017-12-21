@@ -87,6 +87,8 @@ public:
     // (*) direct access to command line arguments -----------------------------
     inline const std::string    operator[](unsigned Idx) const;
     inline int                  get(unsigned Idx, int           Default) const;
+    inline bool                 get(unsigned Idx, bool          Default) const;
+    inline long                 get(unsigned Idx, long          Default) const;
     inline double               get(unsigned Idx, const double& Default) const;
     inline const std::string    get(unsigned Idx, const char*   Default) const;
     inline unsigned             size() const;
@@ -98,11 +100,15 @@ public:
 
     // (*) variables -----------------------------------------------------------
     //     -- scalar values
-    inline int                operator()(const char* VarName, int           Default) const;
-    inline double             operator()(const char* VarName, const double& Default) const;
-    inline const std::string  operator()(const char* VarName, const char*   Default) const;
+    inline int                operator()(const char* VarName, int           Default);
+    inline long               operator()(const char* VarName, long          Default);
+    inline double             operator()(const char* VarName, const double& Default);
+    inline bool               operator()(const char* VarName, bool          Default);
+    inline const std::string  operator()(const char* VarName, const char*   Default);
     //     -- vectors
     inline int                operator()(const char* VarName, int Default, unsigned Idx) const;
+    inline bool               operator()(const char* VarName, bool Default, unsigned Idx) const;
+    inline long               operator()(const char* VarName, long Default, unsigned Idx) const;
     inline double             operator()(const char* VarName, const double& Default, unsigned Idx) const;
     inline const std::string  operator()(const char* VarName, const char* Default, unsigned Idx) const;
 
@@ -111,7 +117,14 @@ public:
     //                  ii) from inside, use '__set_variable()' below
     inline void            set(const char* VarName, const char* Value, const bool Requested = true);
     inline void            set(const char* VarName, const double& Value, const bool Requested = true);
+    inline void            set(const char* VarName, const long Value, const bool Requested = true);
     inline void            set(const char* VarName, const int Value, const bool Requested = true);
+    inline void            set(const char* VarName, const bool Value, const bool Requested = true);
+    inline void            get(const char* VarName, std::string &value);
+    inline void            get(const char* VarName, long &value);
+    inline void            get(const char* VarName, double &value);
+    inline void            get(const char* VarName, bool &value);
+    inline void            get(const char* VarName, int &value);
     
     inline unsigned        vector_variable_size(const char* VarName) const;
     inline STRING_VECTOR   get_variable_names() const;
@@ -232,10 +245,11 @@ private:
     int                   nominus_cursor;  // cursor for nominus_pointers
     std::vector<unsigned> idx_nominus;     // indecies of 'no minus' arguments
 
+protected:
     //     -- variables
     //       (arguments of the form "variable=value")
     std::vector<variable> variables;
-    
+private:
     //     -- comment delimiters
     std::string           _comment_start;
     std::string           _comment_end;
@@ -279,6 +293,8 @@ private:
     inline bool               __check_flags(const std::string& Str, const char* FlagList) const;
     //        * type conversion if possible
     inline int                __convert_to_type(const std::string& String, int Default) const;
+    inline bool               __convert_to_type(const std::string& String, bool Default) const;
+    inline long               __convert_to_type(const std::string& String, long Default) const;
     inline double             __convert_to_type(const std::string& String, double Default) const;
     //        * prefix extraction
     const std::string         __get_remaining_string(const std::string& String, 
@@ -331,6 +347,19 @@ private:
         snprintf(tmp, (int)sizeof(char)*128, "%i", Value);
 #else
         _snprintf(tmp, sizeof(char)*128, "%i", Value);
+#endif
+        std::string result(tmp);
+        delete [] tmp;
+        return result;
+    }
+
+    std::string  __long2string(const long& Value) const {
+        // -- converts an integer into a string
+        char* tmp = new char[128];
+#ifndef WIN32
+        snprintf(tmp, (int)sizeof(char)*128, "%ld", Value);
+#else
+        _snprintf(tmp, sizeof(char)*128, "%ld", Value);
 #endif
         std::string result(tmp);
         delete [] tmp;
@@ -394,9 +423,6 @@ GetPot::GetPot(const int argc_, char ** argv_,
                const char* FieldSeparator /* =0x0 */)     
     // leave 'char**' non-const to honor less capable compilers ... 
 {
-    // TODO: Ponder over the problem when the argument list is of size = 0.
-    //       This is 'sabotage', but it can still occur if the user specifies
-    //       it himself.
     assert(argc_ >= 1);
     __basic_initialization();
 
@@ -808,6 +834,17 @@ GetPot::__convert_to_type(const std::string& String, double Default) const
     return tmp;
 }
 
+// convert string to BOOL, if not possible return Default
+inline bool
+GetPot::__convert_to_type(const std::string& String, bool Default) const
+{
+    std::string t = String;
+    std::transform(t.begin(), t.end(), t.begin(), ::tolower);
+    if ((t == "true") || (t == "yes") || (t == "1") || (t == "on")) return true;
+    if ((t == "false") || (t == "no")  || (t == "0") || (t == "off")) return false;
+    return Default;
+}
+
 // convert string to INT, if not possible return Default
 inline int
 GetPot::__convert_to_type(const std::string& String, int Default) const
@@ -816,6 +853,16 @@ GetPot::__convert_to_type(const std::string& String, int Default) const
     //       may look like 2.0e1 (i.e. float format) => use float conversion
     //       in any case.
     return (int)__convert_to_type(String, (double)Default);
+}
+
+// convert string to LONG, if not possible return Default
+inline long
+GetPot::__convert_to_type(const std::string& String, long Default) const
+{
+    // NOTE: intermediate results may be floating points, so that the string
+    //       may look like 2.0e1 (i.e. float format) => use float conversion
+    //       in any case.
+    return (long)__convert_to_type(String, (double)Default);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1472,29 +1519,62 @@ GetPot::next_nominus()
 //.............................................................................
 //
 inline int
-GetPot::operator()(const char* VarName, int Default) const
+GetPot::operator()(const char* VarName, int Default)
 {
     // (*) recording of requested variables happens in '__find_variable()'
     const variable*  sv = __find_variable(VarName);
-    if( sv == 0 ) return Default;
+    if( sv == 0 ) {
+      set(VarName, Default, false);
+      return Default;
+    }
+    return __convert_to_type(sv->original, Default);
+}
+
+inline bool
+GetPot::operator()(const char* VarName, bool Default)
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable*  sv = __find_variable(VarName);
+    if( sv == 0 ) {
+      set(VarName, Default, false);
+      return Default;
+    }
+    return __convert_to_type(sv->original, Default);
+}
+
+inline long
+GetPot::operator()(const char* VarName, long Default)
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable*  sv = __find_variable(VarName);
+    if( sv == 0 ) {
+      set(VarName, Default, false);
+      return Default;
+    }
     return __convert_to_type(sv->original, Default);
 }
 
 inline double
-GetPot::operator()(const char* VarName, const double& Default) const
+GetPot::operator()(const char* VarName, const double& Default)
 {
     // (*) recording of requested variables happens in '__find_variable()'
     const variable*  sv = __find_variable(VarName);
-    if( sv == 0 ) return Default;
+    if( sv == 0 ) {
+      set(VarName, Default, false);
+      return Default;
+    }
     return __convert_to_type(sv->original, Default);
 }
 
 inline const std::string
-GetPot::operator()(const char* VarName, const char* Default) const
+GetPot::operator()(const char* VarName, const char* Default) 
 {
     // (*) recording of requested variables happens in '__find_variable()'
     const variable*  sv = __find_variable(VarName);
-    if( sv == 0 ) return Default;
+    if( sv == 0 ) {
+      set(VarName, Default, false);
+      return Default;
+    }
     // -- returning a c_str() pointer is OK here, since the variable remains existant,
     //    while 'sv' of course is delete at the end of the function.
     return sv->original;
@@ -1502,6 +1582,28 @@ GetPot::operator()(const char* VarName, const char* Default) const
 
 inline int
 GetPot::operator()(const char* VarName, int Default, unsigned Idx) const
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable* sv = __find_variable(VarName);
+    if( sv == 0 ) return Default;
+    const std::string*  element = sv->get_element(Idx);
+    if( element == 0 ) return Default;
+    return __convert_to_type(*element, Default);
+}
+
+inline bool
+GetPot::operator()(const char* VarName, bool Default, unsigned Idx) const
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable* sv = __find_variable(VarName);
+    if( sv == 0 ) return Default;
+    const std::string*  element = sv->get_element(Idx);
+    if( element == 0 ) return Default;
+    return __convert_to_type(*element, Default);
+}
+
+inline long
+GetPot::operator()(const char* VarName, long Default, unsigned Idx) const
 {
     // (*) recording of requested variables happens in '__find_variable()'
     const variable* sv = __find_variable(VarName);
@@ -1590,8 +1692,49 @@ GetPot::set(const char* VarName, const double& Value, const bool /* Requested  =
 { __set_variable(VarName, __double2string(Value).c_str()); }
 
 inline void 
-GetPot::set(const char* VarName, const int Value, const bool /* Requested = yes */)
+GetPot::set(const char* VarName, const int Value, const bool Requested /* = yes */)
 { __set_variable(VarName, __int2string(Value).c_str()); }
+
+inline void
+GetPot::set(const char* VarName, const bool Value, const bool Requested /* = yes */)
+{ __set_variable(VarName, (Value ? "true" : "false")); }
+
+inline void
+GetPot::get(const char* VarName, int &value)
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable*  sv = __find_variable(VarName);
+    if( sv == 0 ) return;
+    value = __convert_to_type(sv->original, (int) 0);
+}
+
+inline void
+GetPot::get(const char* VarName, bool &value)
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable*  sv = __find_variable(VarName);
+    if( sv == 0 ) return;
+    value = __convert_to_type(sv->original, true);
+}
+
+inline void
+GetPot::get(const char* VarName, double &value)
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable*  sv = __find_variable(VarName);
+    if( sv == 0 ) return;
+    value = __convert_to_type(sv->original, 0.0);
+}
+
+inline void
+GetPot::get(const char* VarName, std::string &value)
+{
+    // (*) recording of requested variables happens in '__find_variable()'
+    const variable*  sv = __find_variable(VarName);
+    if( sv == 0 ) return;
+    value = sv->original;
+}
+
 
 
 inline unsigned
