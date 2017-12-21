@@ -14,12 +14,12 @@ int main(int argc, char **argv)
   long iSamples;
   void * params;
   
-  fprintf(stderr, "\nTP2 %s\n", argv[0]);
   
   params = parseArgs(argc, argv);
-  nSamples = getLong(params, "n", 1000L * 200000L);
+  printf("\nTP2 %s\n", argv[0]);
   
-  printf(" %lld samples\n\n", nSamples);
+  nSamples = getLong(params, "n", 1000L * 200000L);
+  printf("\n%lld samples\n\n", nSamples);
     
   s = countAllocate();
   initRandom(time(NULL), 0, NVAL);

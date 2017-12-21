@@ -3,7 +3,7 @@ if (OPENMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-add_executable(compteMT
+add_executable(compteMT_1
   main.c 
   count.c
   random.c

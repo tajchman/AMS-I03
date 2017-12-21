@@ -1,10 +1,25 @@
 #include "parameters.h"
 #include "GetPot.hxx"
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 void usage(char *progName) {
+
+  int nThreads = 1;
+  
+#if defined(_OPENMP)
+#pragma omp parallel
+#pragma omp master
+  nThreads = omp_get_num_threads();
+#endif
+  
   std::cerr << "usage : " << progName << " [list of <option>]\n\n";
   std::cerr << "where <option> may be:\n"
 	    << "\t -h|--help : print this message\n"
+	    << "\t t=<int>   : number of threads (default : "
+	    << nThreads << ")\n"
 	    << "\t n=<int>   : number of samples (default : "
 	    << 1000L * 200000L << ")\n\n";
   exit(-1);

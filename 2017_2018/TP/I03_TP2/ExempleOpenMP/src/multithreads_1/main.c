@@ -37,17 +37,23 @@ int main(int argc, char **argv)
 #endif
   
   s = countAllocate();
-  initRandom(time(NULL), 0, NVAL);
+  initRandom(time(NULL), 0, NVAL, nThreads);
 
-#pragma omp parallel for default(shared) private(iSamples)
-  for (iSamples=0; iSamples<nSamples; iSamples++) {
-    s[nextRnd()] += 1.0;
+#pragma omp parallel private(iSamples) default(shared)
+  {
+    int iThread = omp_get_thread_num();
+    int seed = getSeed(iThread);
+    
+#pragma omp for
+    for (iSamples=0; iSamples<nSamples; iSamples++) {
+      s[nextRnd(&seed)] += 1.0;
+    }
   }
-  
   countNormalize(s);
   countPrint(s);
   
   countDelete(&s);
+  cleanRandom();
   
   return 0;
 }

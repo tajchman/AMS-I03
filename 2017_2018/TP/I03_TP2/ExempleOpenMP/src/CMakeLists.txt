@@ -15,4 +15,6 @@ find_package(OpenMP)
  
 add_subdirectory(sequentiel)
 add_subdirectory(multithreads)
+add_subdirectory(multithreads_1)
+add_subdirectory(multithreads_2)
 

@@ -1,5 +1,5 @@
 add_executable(compteSeq
-  mainSeq.c
+  main.c
   count.c
   random.c
   parameters.cxx
