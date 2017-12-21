@@ -5,31 +5,20 @@
 
 #include "count.h"
 #include "random.h"
-
-void setOptions(int argc, char **argv, long long * nSamples)
-{
-  char c;
-  *nSamples = 1000L * 200000L;
-  while ((c = getopt(argc , argv, "n:")) != -1)
-    switch (c) {
-    case 'n':
-      *nSamples = 1000L * strtoll(optarg, NULL, 10);
-      break;
-
-    default:
-      abort ();
-    }
-}
+#include "parameters.h"
 
 int main(int argc, char **argv)
 {
   long long nSamples;
   double *s;
   long iSamples;
+  void * params;
   
   fprintf(stderr, "\nTP2 %s\n", argv[0]);
-  setOptions(argc, argv, &nSamples);
-
+  
+  params = parseArgs(argc, argv);
+  nSamples = getLong(params, "n", 1000L * 200000L);
+  
   printf(" %lld samples\n\n", nSamples);
     
   s = countAllocate();
