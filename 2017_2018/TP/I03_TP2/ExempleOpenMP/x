@@ -1,9 +1,0 @@
--- Configuring done
--- Generating done
--- Build files have been written to: /opt/devs/workspace/AMS_I03/2017_2018/TP/I03_TP2/ExempleOpenMP/build
-Scanning dependencies of target compteSeq
-[ 11%] Building CXX object sequentiel/CMakeFiles/compteSeq.dir/parameters.cxx.o
-[ 22%] Linking CXX executable compteSeq
-[ 55%] Built target compteSeq
-[100%] Built target compteMT
-/opt/devs/workspace/AMS_I03/2017_2018/TP/I03_TP2/ExempleOpenMP
