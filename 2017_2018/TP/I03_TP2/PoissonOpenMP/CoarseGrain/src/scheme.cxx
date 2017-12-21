@@ -7,6 +7,7 @@
 #include "scheme.hxx"
 #include <iostream>
 #include <cmath>
+#include <omp.h>
 
 double iterate(const Values & u1, Values & u2,
                double dt, Parameters &P)
@@ -19,10 +20,11 @@ double iterate(const Values & u1, Values & u2,
   if (not P.diffusion()) lambda = 0.0;
   if (not P.convection())  mu = 0.0;
   
+  int iThread = omp_get_thread_num()
   int i, j, k;
   int   di = P.di(0),     dj = P.di(1),     dk = P.di(2);
-  int imin = P.imin(0), jmin = P.imin(1), kmin = P.imin(2);
-  int imax = P.imax(0), jmax = P.imax(1), kmax = P.imax(2);
+  int imin = P.imin(0, iThread), jmin = P.imin(1, iThread), kmin = P.imin(2, iThread);
+  int imax = P.imax(0, iThread), jmax = P.imax(1, iThread), kmax = P.imax(2, iThread);
   
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
@@ -32,7 +34,7 @@ double iterate(const Values & u1, Values & u2,
                       - u1(i+di,j,k) - u1(i-di,j,k)
                       - u1(i,j+dj,k) - u1(i,j-dj,k)
                       - u1(i,j,k+dk) - u1(i,j,k-dk))
-          - mu*(u1(i,j,k) - u1(i-1, j, k));
+          - mu*(u1(i,j,k) - u1(i-di, j, k));
 	du_sum += std::abs(u2(i,j,k) - u1(i,j,k));
     }
    
