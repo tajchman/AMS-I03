@@ -44,7 +44,7 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
 		       + m_n[1]*m_n[1]
 		       + m_n[2]*m_n[2]);
   m_dt = (*this)("dt", dt_max);
-  m_output = (*this)("out", -1);;
+  m_output = (*this)("out", -1);
 
   m_convection = (*this)("convection", 1) == 1;
   m_diffusion = (*this)("diffusion", 1) == 1;
@@ -85,7 +85,8 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
     s << m_path << "/out.txt";
     m_out = new std::ofstream(s.str().c_str());
   }
-
+  else
+    m_out = NULL;
 }
 
 bool Parameters::help()

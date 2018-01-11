@@ -22,12 +22,13 @@ include_directories(
   timer
   )
 
-add_executable(PoissonSeq 
-	main.cxx 
-	parameters.cxx 
-	values.cxx 
-	scheme.cxx
-	)
+add_executable(
+  PoissonSeq 
+  main.cxx
+  parameters.cxx 
+  values.cxx 
+  scheme.cxx
+  )
 
 target_link_libraries(
    PoissonSeq
