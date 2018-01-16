@@ -16,3 +16,5 @@ double elapsedTime(struct sTime *t)
 }
 
 #endif
+
+int dummy_windows() { return 0; }

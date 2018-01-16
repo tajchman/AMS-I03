@@ -68,7 +68,18 @@ Parameters::Parameters(int *argc, char *** argv) : GetPot(*argc, *argv)
 		<< ") is greater then the recommended maximum (" <<  dt_max
 		<< ")" << std::endl;
 
-  MPI_Init(argc, argv);
+  int provided, required = MPI_THREAD_MULTIPLE;
+
+  MPI_Init_thread( argc, argv, required, &provided );
+
+  std::cerr << "required = " << required << " provided = " << provided << std::endl;
+
+  char name[1024];
+  int res;
+  MPI_Get_processor_name(name, &res );
+  name[res] = '\0';
+  std::cerr << "proc name = " << name << std::endl;
+
   MPI_Comm_size(MPI_COMM_WORLD, &m_size);
 
   int periods[3], coords[3];

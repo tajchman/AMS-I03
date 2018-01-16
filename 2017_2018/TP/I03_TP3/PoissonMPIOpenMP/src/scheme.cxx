@@ -5,10 +5,10 @@
 #include <sstream>
 #include <iomanip>
 
-Scheme::Scheme(const Parameters *P) : codeName("PoissonMPI"), m_P(P), m_u(P), m_v(P)
+Scheme::Scheme(const Parameters *P) : codeName("PoissonMPIOpenMP"), m_P(P), m_u(P), m_v(P)
 {
   if (m_P->rank() == 0)
-    std::cerr << "new " << codeName << std::endl;
+    std::cout << "new " << codeName << std::endl;
 
   int i;
   for (i=0; i<3; i++) {
@@ -31,7 +31,7 @@ Scheme::Scheme(const Parameters *P) : codeName("PoissonMPI"), m_P(P), m_u(P), m_
 Scheme::~Scheme()
 {
   if (m_P->rank() == 0)
-    std::cerr << "delete " << codeName << std::endl;
+    std::cout << "delete " << codeName << std::endl;
 }
 
 double Scheme::present()
@@ -106,19 +106,19 @@ bool Scheme::solve(unsigned int nSteps)
 
     m_u.swap(m_v);
     m_t += dt;
-    kStep++;
-
+    
     if (m_P->rank() == 0) {
-      std::cerr << " iteration " << std::setw(4) << kStep
+      std::cout << " iteration " << std::setw(4) << kStep
               << " variation " << std::setw(12) << std::setprecision(6) << du_max;
       size_t i, n = m_timers.size();
-      std::cerr << " (times :";
+      std::cout << " (times :";
       for (i=0; i<n; i++)
-	std::cerr << " " << std::setw(5) << m_timers[i].name()
+	std::cout << " " << std::setw(5) << m_timers[i].name()
 	          << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
 
-      std::cerr	  << ")   \r";
+      std::cout	  << ")   \n";
     }
+    kStep++;
   }
 
   m_duv = du_max;
@@ -134,7 +134,7 @@ double Scheme::variation()
 
 void Scheme::terminate() {
   if (m_P->rank() == 0)
-    std::cerr << "\n\nterminate " << codeName << std::endl;
+    std::cout << "\n\nterminate " << codeName << std::endl;
 }
 
 const Values & Scheme::getOutput()
