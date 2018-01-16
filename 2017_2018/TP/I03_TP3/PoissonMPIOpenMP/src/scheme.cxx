@@ -79,6 +79,7 @@ bool Scheme::solve(unsigned int nSteps)
 
     du_max = 0.0;
 
+#pragma omp parallel for private(i,j,k), reduction(+:du_max)
     for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
         for (k = kmin; k < kmax; k++) {
@@ -116,7 +117,7 @@ bool Scheme::solve(unsigned int nSteps)
 	std::cerr << " " << std::setw(5) << m_timers[i].name()
 	          << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
 
-      std::cerr	  << ")   \n";
+      std::cerr	  << ")   \r";
     }
   }
 

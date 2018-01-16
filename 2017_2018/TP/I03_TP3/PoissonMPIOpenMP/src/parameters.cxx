@@ -1,4 +1,3 @@
-
 #if defined(_WIN32)
 #define _CRT_SECURE_NO_WARNINGS
 #include <direct.h>
@@ -9,6 +8,11 @@
 #ifdef _MPI
 #include <mpi.h>
 #endif
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 
 #include "parameters.hxx"
 #include <iostream>
@@ -41,9 +45,9 @@ Parameters::Parameters(int *argc, char *** argv) : GetPot(*argc, *argv)
 {
   m_help = options_contain("h") or long_options_contain("help");
   int i;
+  m_nthreads = (*this)("threads", 1);
 
   m_command = (*argv)[0];
-  m_help = (*this).search(2, "-h", "--help");
 
   m_diffusion = (*this)("diffusion", true);
   m_convection = (*this)("convection", true);
@@ -135,6 +139,7 @@ bool Parameters::help()
 
     std::cerr << "Options:\n\n"
               << "-h|--help : display this message\n"
+	      << "threads=<int> : nombre de threads OpenMP\n"
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n=<int>       : number of internal points in the X direction (default: " << m_nmax[0] << ")\n"
@@ -160,7 +165,13 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
   f << "Process(es)  : " << p.size()
     << " (" << p.p(0) << " x " << p.p(1) << " x " << p.p(2) << ")\n";
+  
+  int nthreads;
+  #pragma omp parallel
+  #pragma omp master
+     nthreads = omp_get_num_threads();
 
+  f << "Threads/process : " << nthreads << "\n\n";
   f << "Whole domain :   "
     << "[" << 0 << "," << p.nmax(0) - 1  << "] x "
     << "[" << 0 << "," << p.nmax(1) - 1  << "] x "

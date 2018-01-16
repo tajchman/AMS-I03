@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+#$ -N PoissonMPIOpenMP
+#$ -pe orte 1
+#$ -cwd
+#$ -j y
+#
+OMP_NUM_THREADS=JJ
+mpirun --map-by core -display-map -x OMP_NUM_THREADS ./build/PoissonMPIOpenMP n=400 m=400 p=400
+
