@@ -7,6 +7,7 @@
 
 #include "timer.hxx"
 #include <cstdlib>
+#include <iostream>
 
 void Timer::reset()
 {

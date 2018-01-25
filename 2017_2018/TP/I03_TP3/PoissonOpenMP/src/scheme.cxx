@@ -75,7 +75,7 @@ bool Scheme::solve(unsigned int nSteps)
     du_max = 0.0;
 
 #pragma omp parallel for default(shared), private(i,j,k,du), reduction(+:du_max) 
-   for (i = imin; i < imax; i++)
+    for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
         for (k = kmin; k < kmax; k++) {
           du = 6 * m_u(i, j, k) 

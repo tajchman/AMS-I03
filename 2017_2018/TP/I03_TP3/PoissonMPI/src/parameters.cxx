@@ -6,7 +6,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef _MPI
+#ifdef USE_MPI
 #include <mpi.h>
 #endif
 
@@ -37,10 +37,9 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int *argc, char *** argv) : GetPot(*argc, *argv)
+Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
   m_help = options_contain("h") or long_options_contain("help");
-  int i;
 
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
@@ -67,9 +66,11 @@ Parameters::Parameters(int *argc, char *** argv) : GetPot(*argc, *argv)
 		<< ") is greater then the recommended maximum (" <<  dt_max
 		<< ")" << std::endl;
 
-  MPI_Init(argc, argv);
+  MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &m_size);
+  std::cerr << m_size << std::endl;
 
+  int i;
   int periods[3], coords[3];
   for (i=0; i<3; i++) {
     m_p[i] = (m_nmax[i] > 1) ? 0 : 1;
@@ -105,29 +106,7 @@ Parameters::Parameters(int *argc, char *** argv) : GetPot(*argc, *argv)
 
     m_xmin[i] = m_dx[i] * m_p0[i];
   }
-
-   char buffer[256];
-   if (m_rank == 0)
-     stime(buffer, 256);
-
-    MPI_Bcast(buffer,256, MPI_CHAR, 0, m_comm);
-
-    std::ostringstream pth;
-    pth << "results"
-	<< "_n_" << m_nmax[0] << "x" << m_nmax[1] << "x" << m_nmax[2]
-	<< "_p_" << m_p[0] << "x" << m_p[1] << "x" << m_p[2]
-	<< "_" << buffer << "/";
-    m_path = pth.str();
-
-#if defined(_WIN32)
-    (void) _mkdir(m_path.c_str());
-#else 
-    mkdir(m_path.c_str(), 0777);
-#endif
-
-    std::ostringstream s;
-    s << m_path << "/out_" << m_rank << ".txt";
-    m_out = new std::ofstream(s.str().c_str());
+}
 }
 
 bool Parameters::help()
@@ -137,14 +116,14 @@ bool Parameters::help()
 	      << "where <nproc> is the number of MPI processes\n\n";
 
     std::cerr << "Options:\n\n"
-              << "-h|--help : display this message\n"
+              << "-h|--help     : display this message\n"
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
-              << "n=<int>       : number of internal points in the X direction (default: " << m_nmax[0] << ")\n"
-              << "m=<int>       : number of internal points in the Y direction (default: " << m_nmax[1] << ")\n"
-              << "p=<int>       : number of internal points in the Z direction (default: " << m_nmax[2] << ")\n"
+              << "n=<int>       : number of internal points in the X direction (default: 400)\n"
+              << "m=<int>       : number of internal points in the Y direction (default: 400)\n"
+              << "p=<int>       : number of internal points in the Z direction (default: 400)\n"
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
-              << "it=<int>      : number of time steps (default : " << m_itmax << ")\n"
+              << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"
               << "                (default : no output)\n\n";
   }
@@ -174,4 +153,31 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "Dt :      " << p.dt() << "\n";
 
   return f;
+}
+
+std::ostream & Parameters::out()
+{
+  if (not m_out) {
+
+    char buffer[256];
+    stime(buffer, 256);
+
+    std::ostringstream pth;
+    pth << "results"
+    << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+    << "_" << buffer << "/";
+    m_path = pth.str();
+
+#if defined(_WIN32)
+    (void) _mkdir(m_path.c_str());
+#else
+    mkdir(m_path.c_str(), 0777);
+#endif
+
+
+    std::ostringstream s;
+    s << m_path << "/out.txt";
+    m_out = new std::ofstream(s.str().c_str());
+  }
+  return *m_out;
 }

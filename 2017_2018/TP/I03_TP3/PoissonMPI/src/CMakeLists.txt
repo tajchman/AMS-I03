@@ -12,7 +12,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
+#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
 endif()
 
 add_subdirectory(timer)
@@ -24,12 +24,16 @@ include_directories(
 find_package(MPI)
 include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
 
+add_definitions("-DUSE_MPI")
 add_executable(
   PoissonMPI
   main.cxx
   parameters.cxx
+  parameters.hxx
   values.cxx
+  values.hxx
   scheme.cxx
+  scheme.hxx
   )
 
 target_link_libraries(

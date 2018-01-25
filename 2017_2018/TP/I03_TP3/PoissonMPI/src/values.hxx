@@ -26,7 +26,6 @@ public:
   int size(int i) const { return m_n[i]; }
   void synchronize();
 
-
 private:
   
   int n1, n2;
@@ -34,7 +33,7 @@ private:
   int m_n[3];
   double m_dx[3];
   double m_xmin[3];
-  const Parameters * m_P;
+  const Parameters * m_p;
 };
 				   
 

@@ -13,7 +13,7 @@ public:
 
   Parameters(int argc, char **argv);
   ~Parameters();
-  std::ostream & out() { return *m_out; }
+  std::ostream & out();
   void info();
 
   MPI_Comm comm() const { return m_comm; }
@@ -43,30 +43,30 @@ public:
   int freq() const { return m_freq; }
   std::string resultPath() const { return m_path; }
   bool help();
-  
+
   bool convection() const { return m_convection; }
   bool diffusion() const { return m_diffusion; }
 
   void convection(bool b) { m_convection = b; }
   void diffusion(bool b) { m_diffusion = b; }
-
+  
 private:
+  std::ostream * m_out;
 
   std::string m_command;
-  std::ostream * m_out;
   int m_rank, m_size, m_p[3];
 
   MPI_Comm m_comm;
 
   int m_neigh[3][2];
   int m_p0[3], m_n[3], m_nmax[3];
-  double m_dx[3], m_xmin[3];
+  double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];
   
   int m_itmax;
   double m_dt;
   bool m_convection, m_diffusion;
-
+  
   int m_freq;
 
   std::string m_path;
