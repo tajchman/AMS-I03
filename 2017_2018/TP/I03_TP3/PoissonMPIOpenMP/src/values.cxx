@@ -9,7 +9,6 @@ Values::Values(const Parameters * prm,
 {
   int i, nn = 1;
   int n = m_P->n(0), m = m_P->n(1), p = m_P->n(2);
-
   for (i=0; i<3; i++)
     nn *= (m_n[i] = m_P->n(i));
 
