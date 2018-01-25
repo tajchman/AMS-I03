@@ -67,13 +67,13 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
   m_diffusion = (*this)("diffusion", 1) == 1;
   
   if (!m_help) {
- 
+    int i;
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
 		<< ") is greater then the recommended maximum (" <<  dt_max
 		<< ")" << std::endl;
-    
-    for (int i=0; i<3; i++) {
+        
+    for (i=0; i<3; i++) {
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
       m_di[i] = 1;
       m_imin[i] = 1;
@@ -137,6 +137,6 @@ std::ostream & operator << (std::ostream &f, const Parameters & P)
   auto & l = P.variables;
   for (auto & k : l)
     f << std::setw(20) << k.name << ": " << k.original << std::endl;
-	return f;
+  return f;
 }
 

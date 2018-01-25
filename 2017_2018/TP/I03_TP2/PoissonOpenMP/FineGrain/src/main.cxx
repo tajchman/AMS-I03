@@ -22,14 +22,12 @@ double f(double x, double y, double z)
 int main(int argc, char **argv)
 {
   int iOut = 0;
-  int nThreads = 1;
 
-  Parameters P(argc, argv);
+  Parameters P(&argc, &argv);
   if (P.help()) return 0;
 
   std::cout << P << std::endl;
-  if (P.output() > 0)
-    P.out() << P << std::endl;
+  P.out() << P << std::endl;
 
   Timer T;
   T.start();
@@ -75,10 +73,11 @@ int main(int argc, char **argv)
     if (P.output() > 0)
       P.out() << out.str() << "\n";
     
+      if (P.output() > 0 && it % P.output() == 0) {
+	u1.plot(iOut++);
+     }
   }
-  std::cout << "\n\n";
-  if (P.output() > 0)
-    std::cout << "\n\nresults in " << P.resultPath() << "\n\n";
    
+  std::cerr << "\n\nresults in " << P.resultPath() << "\nEnd of run\n\n";
   return 0;
 }

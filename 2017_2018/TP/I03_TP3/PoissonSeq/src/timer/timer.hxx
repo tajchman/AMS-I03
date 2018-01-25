@@ -10,7 +10,7 @@
 
 #if defined(_WIN32)
 #include  "time_windows.h"
-#elif defined(__unix)
+#else
 #include  "time_unix.h"
 #endif
 

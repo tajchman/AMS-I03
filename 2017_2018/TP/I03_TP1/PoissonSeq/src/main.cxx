@@ -29,11 +29,19 @@ int main(int argc, char **argv)
   std::cout << P << std::endl;
   P.out() << P << std::endl;
 
+  Timer T;
+  T.start();
   Values u1(P, f);
   Values u2(u1);
-
+  T.stop();
+  std::cout << "initialisation " << T.elapsed() << " s" << std::endl;
+  
+  Timer T2, T3;
+  
   if (P.output() > 0) {
+    T3.start();
     u1.plot(iOut++);
+    T3.stop();
   }
 
   double dt = P.dt(), t, du;
@@ -41,17 +49,28 @@ int main(int argc, char **argv)
 
   for (it = 1, t=0; it <= P.itmax(); it++) {
 
-      t += dt;
-      du = iterate(u1, u2, dt, P);
-      u2.swap(u1);
-
-      std::ostringstream out;
+    T2.start();
+    t += dt;
+    du = iterate(u1, u2, dt, P);
+    u2.swap(u1);
+    T2.stop();
+    
+    if (P.output() > 0 && it % P.output() == 0) {
+      T3.start();
+      u1.plot(iOut++);
+      T3.stop();
+    }
+    
+    std::ostringstream out;
     out << std::setw(8) << it
-        << " t = " << std::setw(10) << std::setprecision(5)
-          << std::fixed << t
-	  << " delta u = " << std::setw(10) << std::setprecision(5)
-          << std::fixed << du;
-      std::cerr << out.str() << "\r";
+	<< " t = " << std::setw(10) << std::setprecision(5)
+	<< std::fixed << t
+	<< " delta u = " << std::setw(10) << std::setprecision(5)
+	<< std::fixed << du << " (cpu: " << std::setprecision(5)
+	<< T2.elapsed() << "s, i/o: "<< T3.elapsed() << "s)";
+    std::cout << out.str() << "\r";
+    std::cout.flush();
+    if (P.output() > 0)
       P.out() << out.str() << "\n";
     
       if (P.output() > 0 && it % P.output() == 0) {

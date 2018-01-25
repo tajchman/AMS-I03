@@ -2,8 +2,6 @@
 #ifndef __TIME_UNIX__
 #define __TIME_UNIX__
 
-#ifdef __unix
-
 #include <stdint.h>
 #include <sys/time.h>
 
@@ -19,8 +17,5 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-#endif
-
 
 #endif

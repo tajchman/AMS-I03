@@ -4,11 +4,16 @@
 #include <iostream>
 #include <string>
 
-class Parameters {
+#include "GetPot.hxx"
+
+class Parameters : public GetPot {
 public:
 
-  Parameters(int *, char ***);
+  Parameters(int argc, char **argv);
   ~Parameters();
+
+  bool contains(const char *varname);
+  friend std::ostream & operator << (std::ostream &f, const Parameters & P);
   std::ostream & out() { return *m_out; }
   void info();
 
@@ -26,6 +31,12 @@ public:
   std::string resultPath() { return m_path; }
   bool help();
 
+  bool convection()  const{ return m_convection; }
+  bool diffusion() const { return m_diffusion; }
+
+  void convection(bool b) { m_convection = b; }
+  void diffusion(bool b) { m_diffusion = b; }
+  
 private:
   std::ostream * m_out;
 
@@ -35,7 +46,8 @@ private:
   
   int m_itmax;
   double m_dt;
-  
+  bool m_convection, m_diffusion;
+
   int m_output;
 
   std::string m_path;
@@ -43,7 +55,6 @@ private:
 
 };
 
-std::ostream & operator<<(std::ostream &f, const Parameters & p);
-
+std::ostream & operator << (std::ostream &f, const Parameters & P);
 
 #endif

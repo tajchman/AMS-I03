@@ -16,7 +16,6 @@
 
 \Large
 \begin{frame}
-  	\frametitle{Plan (2 premières s\'eances)}
   	\tableofcontents
 \end{frame}
 
@@ -80,36 +79,49 @@ Situation actuelle (et encore pour plusieurs ann\'ees):
 
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}
 Fonctionnement :
 
 \begin{itemize}
-	\item Les donn\'ees sont envoy\'ees dans les registres du processeur qui va les utiliser, en laissant des copies dans les diff\'erents niveaux de cache de ce processeur. 
+	\item Quand un c\oe ur  a besoin d'une donn\'ee, il la demande au gestionnaire m\'emoire.
 	\vfill
 	
-	\item Les zones m\'emoires sont copi\'ees par bloc entre la m\'emoire centrale et les m\'emoires cache. Donc si une donn\'ee est proche d'une autre qui vient d'\^etre utilis\'ee, elle a peut-\^etre d\'ej\`a \'et\'e copi\'ee (et l'utilisation de cette 2nde donn\'ee est plus rapide)	
+	\item Le gestionnaire m\'emoire regarde si la donn\'ee est dans la m\'emoire cache L1, L2 ou L3 de ce processeur, sinon le bloc de la m\'emoire centrale qui contient la donn\'ee est recopi\'e dans la m\'emoire cache (dans L3, puis L2 et  L1).
+	
+	\vfill
+	\item Ensuite, la donn\'ee est recopi\'ee dans un registre de ce c\oe ur.
+	
+	\vfill
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+
+\vfill
+\begin{itemize}
+\item Quand un c\oe ur a modifi\'e une donn\'ee, il le notifie au gestionnaire m\'emoire
+\vfill
+\item Le gestionnaire m\'emoire recopie la donn\'ee vers la m\'emoire cache (L1, L2 puis L3) et vers la m\'emoire centrale
+\vfill
+\item Il v\'erifie aussi qu'une autre copie de la donn\'ee n'existe pas dans la m\'emoire cache d'un autre c\oe ur.
+\vfill
+\item Si c'est la cas, les autres copies sont mises \`a jour
 \end{itemize}
 	\vfill
 \end{frame}
 
 \begin{frame}[fragile]
 	
-\begin{itemize}
-	\item Si une donn\'ee est utilis\'ee $n$ fois par le m\^eme processeur dans des instructions proches, les $n-1$ derni\`eres utilisations seront plus rapides (parce que la donn\'ee sera peut-\^etre encore dans une m\'emoire cache).
-\vfill
-
-	\item Si un processeur a modifi\'e une donn\'ee dans une de ses m\'emoires, il faut r\'epercuter cette modification dans les diff\'erentes copies de cette donn\'ee.
 	\vfill
-\end{itemize}
-	\vfill
-
 {\bf Cette gestion peut repr\'esenter une partie im\-por\-tante du temps d'ex\'ecution (pour assurer la coh\'erence des diff\'erentes parties de la m\'emoire et leurs mises \`a jour correctes).}
 	\vfill
 
 
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}
+\section{Programmation s\'equentielle efficace}
+\frametitle{Programmation s\'equentielle efficace}
 
 \bf
 \textcolor{blue}{Pour obtenir un code efficace (en temps d'ex\'ecution), il faut:}
@@ -126,17 +138,12 @@ Fonctionnement :
 \end{frame}
 
 \begin{frame}
-\section{Programmation s\'equentielle efficace}
-\frametitle{Programmation s\'equentielle efficace}
-\end{frame}
-
-\begin{frame}
 \frametitle{Localit\'e spatiale}
 Règle:  \textcolor{red}{autant que possible, utiliser des zones m\'emoires proches les unes des autres dans une s\'equence d'instructions}
 \begin{quote}
 	Le transfert entre m\'emoire centrale et m\'emoire cache se fait par bloc.
 	
-	Donc, si une donn\'ee est \'a c\^ot\'e d'une donn\'ee qui vient d'\^etre utilis\'ee (et donc transf\'er\'ee en m\'emoire cache), un nouveau transfert sera peut-\^etre inutile.
+	Donc, si une donn\'ee est \`a c\^ot\'e d'une donn\'ee qui vient d'\^etre utilis\'ee (et donc transf\'er\'ee en m\'emoire cache), un nouveau transfert sera peut-\^etre inutile.
 \end{quote}
 
 \vfill

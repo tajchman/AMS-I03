@@ -33,7 +33,7 @@ double iterate(const Values & u1, Values & u2,
                       - u1(i+di,j,k) - u1(i-di,j,k)
                       - u1(i,j+dj,k) - u1(i,j-dj,k)
                       - u1(i,j,k+dk) - u1(i,j,k-dk))
-          - mu*(u1(i,j,k) - u1(i-1, j, k));
+          - mu*(u1(i,j,k) - u1(i-di, j, k));
 	du_sum += std::abs(u2(i,j,k) - u1(i,j,k));
     }
    

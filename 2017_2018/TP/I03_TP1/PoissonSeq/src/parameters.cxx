@@ -11,6 +11,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -31,51 +32,30 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int *argc, char *** argv)
+Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
 {
-  int i;
-  for (i=0; i<3; i++)
-    m_n[i] = 200;
-  m_itmax = 10;
-  m_dt = -1.0;
-  m_output = -1;
-  m_help = false;
+  m_help = options_contain("h") or long_options_contain("help");
   
-  for (int iargc=1; iargc<*argc; iargc++) {
+  m_n[0] = (*this)("n", 400);
+  m_n[1] = (*this)("m", 400);
+  m_n[2] = (*this)("p", 400);
+  m_itmax = (*this)("it", 10);
+  double dt_max = 1.5/(m_n[0]*m_n[0]
+		       + m_n[1]*m_n[1]
+		       + m_n[2]*m_n[2]);
+  m_dt = (*this)("dt", dt_max);
+  m_output = (*this)("out", -1);;
 
-    char * s = new char[strlen((*argv)[iargc])+1];
-    strcpy(s, (*argv)[iargc]);
-    if (strcmp(s, "-h") == 0 || strcmp(s, "--help") == 0) {
-      m_help = true;
-      break;
-    }
-    
-    char * p = strchr(s, '=');
-    if (p) {
-      *p++ = '\0';
-      if (strcmp(s, "n") == 0)
-        m_n[0] = atoi(p);
-      else if (strcmp(s, "m") == 0)
-        m_n[1] = atoi(p);
-      else if (strcmp(s, "p") == 0)
-        m_n[2] = atoi(p);
-      else if (strcmp(s, "it") == 0)
-        m_itmax = atoi(p);
-      else if (strcmp(s, "dt") == 0)
-        m_dt = atof(p);
-      else if (strcmp(s, "out") == 0)
-        m_output = atoi(p);
-
-    }
-  }
+  m_convection = (*this)("convection", 1) == 1;
+  m_diffusion = (*this)("diffusion", 1) == 1;
   
   if (!m_help) {
-
-    if (m_dt <= 0.0)
-      m_dt = 1.5/(m_n[0]*m_n[0]
-                  + m_n[1]*m_n[1]
-                  + m_n[2]*m_n[2]);
-    
+    int i;
+    if (m_dt > dt_max)
+      std::cerr << "Warning : provided dt (" << m_dt
+		<< ") is greater then the recommended maximum (" <<  dt_max
+		<< ")" << std::endl;
+        
     for (i=0; i<3; i++) {
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
       m_di[i] = 1;
@@ -114,9 +94,11 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonSeq <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help : display this message\n"
-              << "n=<int>       : number of internal points in the X direction (default: 1)\n"
-              << "m=<int>       : number of internal points in the Y direction (default: 1)\n"
-              << "p=<int>       : number of internal points in the Z direction (default: 1)\n"
+              << "convection=0/1: convection term (default: 1)\n"
+              << "diffusion=0/1 : convection term (default: 1)\n"
+              << "n=<int>       : number of internal points in the X direction (default: 400)\n"
+              << "m=<int>       : number of internal points in the Y direction (default: 400)\n"
+              << "p=<int>       : number of internal points in the Z direction (default: 400)\n"
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
               << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"
@@ -132,16 +114,11 @@ Parameters::~Parameters()
   }
 }
 
-std::ostream & operator<<(std::ostream &f, const Parameters & p)
+std::ostream & operator << (std::ostream &f, const Parameters & P)
 {
-  f << "Domain :   "
-    << "[" << 0 << "," << p.n(0) - 1  << "] x "
-    << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]"
-    << "\n\n";
-
-  f << "It. max : " << p.itmax() << "\n"
-    << "Dt :      " << p.dt() << "\n";
-
+  auto & l = P.variables;
+  for (auto & k : l)
+    f << std::setw(20) << k.name << ": " << k.original << std::endl;
   return f;
 }
+
