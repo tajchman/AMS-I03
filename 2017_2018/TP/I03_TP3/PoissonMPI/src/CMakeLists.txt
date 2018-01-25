@@ -7,7 +7,7 @@ endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
@@ -37,3 +37,4 @@ target_link_libraries(
    timer
    ${MPI_CXX_LIBRARIES}
 )
+

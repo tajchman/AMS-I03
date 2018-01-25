@@ -2,7 +2,7 @@
 #ifndef __TIME_UNIX__
 #define __TIME_UNIX__
 
-#ifdef __unix
+#if defined(__unix__) || defined(__linux__) || defined(__APPLE__) 
 
 #include <stdint.h>
 #include <sys/time.h>

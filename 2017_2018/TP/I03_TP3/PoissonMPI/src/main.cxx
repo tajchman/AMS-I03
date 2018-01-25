@@ -1,5 +1,11 @@
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+
 #include "parameters.hxx"
+#include "values.hxx"
 #include "scheme.hxx"
+#include "timer.hxx"
 
 double f(double x, double y, double z)
 {
@@ -43,9 +49,34 @@ int main(int argc, char *argv[])
 	C.solve(ksteps);
 	if (output) C.getOutput().plot(i);
     }
-
-    C.terminate();
+    
+    std::ostringstream out;
+    out << std::setw(8) << it
+        << " t = " << std::setw(10) << std::setprecision(5)
+        << std::fixed << t
+        << " delta u = " << std::setw(10) << std::setprecision(5)
+        << std::fixed << du << " (cpu: " << std::setprecision(5)
+        << T2.elapsed() << "s, i/o: "<< T3.elapsed() << "s)";
+    std::cout << out.str() << "\r";
+    std::cout.flush();
+    P.out() << out.str() << "\n";
+    
   }
 
+if (P.rank() == 0) (
+  std::cout << "\n\nresults in " << P.resultPath() << "\n\n";
+   
+  if (P.convection())
+    std::cout << "convection ";
+  else
+    std::cout << "           ";
+  if (P.diffusion())
+    std::cout << "diffusion  ";
+  else
+    std::cout << "           ";
+
+  std::cout << "cpu time " << std::setprecision(5) << T2.elapsed() << " s "
+             << std::setprecision(5) << T2.elapsed()/(it-1) << " s/iteration\n";
+)
   return 0;
 }

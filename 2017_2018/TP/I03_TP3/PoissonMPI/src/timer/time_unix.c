@@ -1,4 +1,4 @@
-#ifdef __unix
+#if defined(__unix__) || defined(__linux__) || defined(__APPLE__) 
 
 #include <stdlib.h>
 #include "time_unix.h"

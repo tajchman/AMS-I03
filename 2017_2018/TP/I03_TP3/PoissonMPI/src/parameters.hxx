@@ -11,7 +11,7 @@
 class Parameters : public GetPot {
 public:
 
-  Parameters(int *, char ***);
+  Parameters(int argc, char **argv);
   ~Parameters();
   std::ostream & out() { return *m_out; }
   void info();

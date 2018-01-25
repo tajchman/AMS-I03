@@ -14,7 +14,6 @@ endif()
 if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
 #	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -O3")
 
 add_subdirectory(timer)
 
@@ -25,12 +24,16 @@ include_directories(
 add_executable(
   PoissonSeq 
   main.cxx
-  parameters.cxx 
-  values.cxx 
+  parameters.cxx
+  parameters.hxx
+  values.cxx
+  values.hxx
   scheme.cxx
+  scheme.hxx
   )
 
 target_link_libraries(
    PoissonSeq
    timer
 )
+

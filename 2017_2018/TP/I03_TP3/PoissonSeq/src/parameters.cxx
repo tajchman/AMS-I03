@@ -1,3 +1,4 @@
+
 #if defined(_WIN32)
 #define _CRT_SECURE_NO_WARNINGS
 #include <direct.h>
@@ -11,6 +12,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -31,20 +33,24 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
+Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
   m_help = options_contain("h") or long_options_contain("help");
 
-  m_nthreads = (*this)("threads", 1);
-  m_n[0] = (*this)("n", 400);
-  m_n[1] = (*this)("m", 400);
-  m_n[2] = (*this)("p", 400);
+  m_command = (*argv)[0];
+  m_help = (*this).search(2, "-h", "--help");
+
+  m_diffusion = (*this)("diffusion", true);
+  m_convection = (*this)("convection", true);
+  m_n[0] = (*this)("n", 100);
+  m_n[1] = (*this)("m", 100);
+  m_n[2] = (*this)("p", 100);
   m_itmax = (*this)("it", 10);
   double dt_max = 1.5/(m_n[0]*m_n[0]
 		       + m_n[1]*m_n[1]
 		       + m_n[2]*m_n[2]);
   m_dt = (*this)("dt", dt_max);
-  m_output = (*this)("out", -1);;
+  m_freq = (*this)("out", -1);
 
   m_convection = (*this)("convection", 1) == 1;
   m_diffusion = (*this)("diffusion", 1) == 1;
@@ -62,28 +68,10 @@ Parameters::Parameters(int argc, char **argv) : GetPot(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+       	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
       }
     }
-  
-    char buffer[256];
-    stime(buffer, 256);
-    
-    std::ostringstream pth;
-    pth << "results"
-        << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-        << "_" << buffer << "/";
-    m_path = pth.str();
-
-#if defined(_WIN32)
-    (void) _mkdir(m_path.c_str());
-#else 
-    mkdir(m_path.c_str(), 0777);
-#endif
-
-    std::ostringstream s;
-    s << m_path << "/out.txt";
-    m_out = new std::ofstream(s.str().c_str());
+    m_out = nullptr;
   }
 
 }
@@ -110,7 +98,7 @@ bool Parameters::help()
 
 Parameters::~Parameters()
 {
-  if (!m_help) {
+  if (m_out) {
     delete m_out;
   }
 }
@@ -127,4 +115,31 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "Dt :      " << p.dt() << "\n";
 
   return f;
+}
+
+std::ostream & Parameters::out()
+{
+  if (not m_out) {
+
+    char buffer[256];
+    stime(buffer, 256);
+
+    std::ostringstream pth;
+    pth << "results"
+    << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+    << "_" << buffer << "/";
+    m_path = pth.str();
+
+#if defined(_WIN32)
+    (void) _mkdir(m_path.c_str());
+#else
+    mkdir(m_path.c_str(), 0777);
+#endif
+
+
+    std::ostringstream s;
+    s << m_path << "/out.txt";
+    m_out = new std::ofstream(s.str().c_str());
+  }
+  return *m_out;
 }

@@ -57,8 +57,11 @@ Parameters::Parameters(int *argc, char *** argv) : GetPot(*argc, *argv)
   m_dt = (*this)("dt", dt_max);
   m_freq = (*this)("out", -1);
 
-  if (m_help) return;
-
+  m_convection = (*this)("convection", 1) == 1;
+  m_diffusion = (*this)("diffusion", 1) == 1;
+  
+  if (!m_help) {
+ 
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
 		<< ") is greater then the recommended maximum (" <<  dt_max

@@ -12,7 +12,7 @@
 
 #if defined(_WIN32)
 #include  "time_windows.h"
-#elif defined(__unix)
+#elif defined(__unix__) || defined(__APPLE__)
 #include  "time_unix.h"
 #endif
 

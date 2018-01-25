@@ -8,7 +8,7 @@ class Values {
 
 public:
 
-  Values(Parameters & p,
+  Values(const Parameters * p,
          double (*f)(double, double, double) = 0L);
 
   double & operator() (int i,int j,int k) {
@@ -18,7 +18,7 @@ public:
     return m_u[n2*i + n1*j + k];
   }
 
-  void plot(int order);
+  void plot(int order) const;
   void swap(Values & other);
   int size(int i) const { return m_n[i]; }
   
@@ -27,7 +27,7 @@ private:
   int n1, n2;
   std::vector<double> m_u;
   int m_n[3];
-  Parameters & m_p;
+  const Parameters * m_p;
 };
 				   
 

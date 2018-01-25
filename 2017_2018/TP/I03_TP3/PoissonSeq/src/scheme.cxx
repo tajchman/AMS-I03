@@ -1,41 +1,137 @@
-/*
- * scheme.cxx
- *
- *  Created on: 5 janv. 2016
- *      Author: tajchman
- */
 #include "scheme.hxx"
-#include <iostream>
-#include <cmath>
+#include "parameters.hxx"
 
-double iterate(const Values & u1, Values & u2,
-               double dt, Parameters &P)
+#include <sstream>
+#include <iomanip>
+
+Scheme::Scheme(const Parameters *P) : codeName("Poisson"), m_u(P), m_v(P), m_P(P)
 {
-  double du_sum = 0.0, du;
-  double mu = 0.5*dt/P.dx(0);
-  double dx2 = P.dx(0)*P.dx(0) + P.dx(1)*P.dx(1) + P.dx(2)*P.dx(2);
-  double lambda = 0.25*dt/dx2;
+  int i;
+  for (i=0; i<3; i++) {
+    m_n[i] = m_P->n(i);
+    m_dx[i] = m_P->dx(i);
+    m_di[i] = (m_n[i] < 2) ? 0 : 1;
+  }
 
-  if (not P.diffusion()) lambda = 0.0;
-  if (not P.convection())  mu = 0.0;
-  
-  int i, j, k;
-  int   di = P.di(0),     dj = P.di(1),     dk = P.di(2);
-  int imin = P.imin(0), jmin = P.imin(1), kmin = P.imin(2);
-  int imax = P.imax(0), jmax = P.imax(1), kmax = P.imax(2);
+  kStep = 1;
+  m_t = 0.0;
 
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-      for (k=kmin; k<kmax; k++) {
-        u2(i,j,k) = u1(i,j,k)
-          - lambda * (6*u1(i,j,k)
-                      - u1(i+di,j,k) - u1(i-di,j,k)
-                      - u1(i,j+dj,k) - u1(i,j-dj,k)
-                      - u1(i,j,k+dk) - u1(i,j,k-dk))
-          - mu*(u1(i,j,k) - u1(i-di, j, k));
-	du_sum += std::abs(u2(i,j,k) - u1(i,j,k));
-      }
-   
-  return du_sum;
+  m_timers.resize(2);
+  m_timers[0].name("init");
+  m_timers[1].name("solve");
+
+  m_duv = 0.0;
 }
+
+Scheme::~Scheme()
+{
+}
+
+double Scheme::present()
+{
+  return m_t;
+}
+
+size_t Scheme::getDomainSize(int dim) const
+{
+  size_t d;
+  switch (dim) {
+    case 0:
+      d = m_n[0];
+      break;
+    case 1:
+      d = m_n[1];
+      break;
+    case 2:
+      d = m_n[2];
+      break;
+    default:
+      d = 1;
+  }
+  return d;
+}
+
+
+bool Scheme::solve(unsigned int nSteps)
+{
+  m_timers[1].start();
+
+  double du_max = 0.0, du;
+  double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
+  double dt = 0.5*(dx2 + 1e-12);
+  double lambda = 0.25*dt/(dx2 + 1e-12);
+
+  int i, j, k;
+  size_t iStep;
+  int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
+  int imin = 1, imax = m_n[0] - 1;
+  int jmin = 1, jmax = m_n[1] - 1;
+  int kmin = 1, kmax = m_n[2] - 1;
+
+  for (iStep=0; iStep < nSteps; iStep++) {
+
+    m_timers[1].start();
+    
+    du_max = 0.0;
+
+    for (i = imin; i < imax; i++)
+      for (j = jmin; j < jmax; j++)
+        for (k = kmin; k < kmax; k++) {
+          du = 6 * m_u(i, j, k) 
+              - m_u(i + di, j, k) - m_u(i - di, j, k)
+              - m_u(i, j + dj, k) - m_u(i, j - dj, k) 
+              - m_u(i, j, k + dk) - m_u(i, j, k - dk);
+          du *= lambda;
+          m_v(i, j, k) = m_u(i, j, k) - du;
+          du_max += du > 0 ? du : -du;
+        }
+
+    m_u.swap(m_v);
+    m_t += dt;
+
+    m_timers[1].stop();
+
+    std::cerr << " iteration " << std::setw(4) << kStep
+            << " variation " << std::setw(12) << std::setprecision(6) << du_max;
+      size_t i, n = m_timers.size();
+      std::cerr << " (times :";
+      for (i=0; i<n; i++)
+	      std::cerr << " " << std::setw(5) << m_timers[i].name()
+	                << " " << std::setw(9) << std::fixed
+                  << m_timers[i].elapsed();
+
+      std::cerr	  << ")   \n";
+
+    kStep++;
+  }
+
+  m_duv = du_max;
+
+  return true;
+}
+
+double Scheme::variation()
+{
+  return m_duv;
+}
+
+void Scheme::terminate() {
+    std::cerr << "\n\nterminate " << codeName << std::endl;
+}
+
+const Values & Scheme::getOutput()
+{
+  return m_u;
+}
+
+void Scheme::setInput(const Values & u)
+{
+  m_u = u;
+  m_v = u;
+}
+
+void Scheme::save(const char * /*fName*/)
+{
+}
+
 

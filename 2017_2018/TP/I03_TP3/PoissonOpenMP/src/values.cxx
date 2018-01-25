@@ -4,13 +4,13 @@
 #include <cstdlib>
 #include <cstring>
 
-Values::Values(Parameters & prm,
+Values::Values(const Parameters * prm,
                double (*f)(double, double, double)) : m_p(prm)
 {
   int i, nn = 1;
-  int n = m_p.n(0), m = m_p.n(1), p = m_p.n(2);
+  int n = m_p->n(0), m = m_p->n(1), p = m_p->n(2);
   for (i=0; i<3; i++)
-    nn *= (m_n[i] = m_p.n(i));
+    nn *= (m_n[i] = m_p->n(i));
 
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
@@ -20,12 +20,12 @@ Values::Values(Parameters & prm,
 
     int j, k;
 
-    double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
+    double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
     double xmin =  0,
       ymin = 0,
       zmin = 0;
 
-#pragma omp parallel for private(i,j,k)
+#pragma omp parallel for default(shared) private(i,j,k)
     for (i=0; i<n; i++)
       for (j=0; j<m; j++)
         for (k=0; k<p; k++)
@@ -46,33 +46,33 @@ void Values::swap(Values & other)
   }
 }
 
-void Values::plot(int order) {
+void Values::plot(int order) const {
 
   std::ostringstream s;
   int i, j, k;
-  s << m_p.resultPath() << "/plot_"
+  s << m_p->resultPath() << "plot_"
     << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << 0 << " " << m_p.n(0) - 1  << " " 
-    << 0 << " " << m_p.n(1) - 1  << " " 
-    << 0 << " " << m_p.n(2) - 1 
+    << 0 << " " << m_p->n(0) - 1  << " " 
+    << 0 << " " << m_p->n(1) - 1  << " " 
+    << 0 << " " << m_p->n(2) - 1 
     << "\">\n"
     << "<Piece Extent=\""
-    << 0 << " " << m_p.n(0) - 1 << " " 
-    << 0 << " " << m_p.n(1) - 1 << " " 
-    << 0 << " " << m_p.n(2) - 1 
+    << 0 << " " << m_p->n(0) - 1 << " " 
+    << 0 << " " << m_p->n(1) - 1 << " " 
+    << 0 << " " << m_p->n(2) - 1 
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";
   f << "  <DataArray type=\"Float64\" Name=\"values\" format=\"ascii\">\n";
   
-  for (k=0; k< m_p.n(2); k++) {
-    for (j=0; j< m_p.n(1); j++) {
-      for (i=0; i< m_p.n(0); i++) {
+  for (k=0; k< m_p->n(2); k++) {
+    for (j=0; j< m_p->n(1); j++) {
+      for (i=0; i< m_p->n(0); i++) {
         f << " " << operator()(i,j,k);
       }
       f << "\n";
@@ -88,8 +88,8 @@ void Values::plot(int order) {
     f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\"" 
       << " format=\"ascii\">";
     
-    for (i=0; i<m_p.n(k); i++)
-      f << " " << i * m_p.dx(k);
+    for (i=0; i<m_p->n(k); i++)
+      f << " " << i * m_p->dx(k);
     f << "   </DataArray>\n";
   }
   f << " </Coordinates>\n";
