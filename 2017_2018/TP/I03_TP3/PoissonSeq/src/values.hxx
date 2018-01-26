@@ -8,7 +8,9 @@ class Values {
 
 public:
 
-  Values(const Parameters * p,
+  Values() : m_p(nullptr) {}
+
+  void init(const Parameters * p,
          double (*f)(double, double, double) = 0L);
 
   double & operator() (int i,int j,int k) {

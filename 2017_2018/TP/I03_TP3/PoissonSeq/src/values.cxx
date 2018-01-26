@@ -4,9 +4,10 @@
 #include <cstdlib>
 #include <cstring>
 
-Values::Values(const Parameters * prm,
-               double (*f)(double, double, double)) : m_p(prm)
+void Values::init(const Parameters * prm,
+               double (*f)(double, double, double))
 {
+  m_p = prm;
   int i, nn = 1;
   int n = m_p->n(0), m = m_p->n(1), p = m_p->n(2);
   for (i=0; i<3; i++)

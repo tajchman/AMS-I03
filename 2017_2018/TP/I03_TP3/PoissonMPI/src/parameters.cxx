@@ -66,47 +66,47 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 		<< ") is greater then the recommended maximum (" <<  dt_max
 		<< ")" << std::endl;
 
-  MPI_Init(&argc, &argv);
-  MPI_Comm_size(MPI_COMM_WORLD, &m_size);
-  std::cerr << m_size << std::endl;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &m_size);
 
-  int i;
-  int periods[3], coords[3];
-  for (i=0; i<3; i++) {
-    m_p[i] = (m_nmax[i] > 1) ? 0 : 1;
-    periods[i] = 0;
-  }
-
-  // Creation d'une "grille" de processus MPI
-  MPI_Dims_create(m_size, 3, m_p);
-
-  MPI_Cart_create(MPI_COMM_WORLD, 3, m_p, periods, 1, &m_comm);
-  MPI_Comm_rank(m_comm, &m_rank);
-  MPI_Cart_coords(m_comm, m_rank, 3, coords);
-
-  for (i=0; i<3; i++) {
-    m_neigh[i][0] = MPI_PROC_NULL;
-    m_neigh[i][1] = MPI_PROC_NULL;
-    MPI_Cart_shift(m_comm, i, 1, &m_neigh[i][0], &m_neigh[i][1]);
-  }
-
-  for (i=0; i<3; i++) {
-    m_dx[i] = m_nmax[i]>1 ? 1.0/(m_nmax[i]-1) : 0.0;
-    m_n[i] = (m_nmax[i]-2)/m_p[i]+2;
-    m_p0[i] = (m_n[i]-2) * coords[i];
-    if ((coords[i] == m_p[i]-1) && ((m_n[i]-2)*m_p[i] < m_nmax[i])-2)
-      m_n[i] += m_nmax[i]-2 - (m_n[i]-2)*m_p[i];
-
-    m_di[i] = 1;
-    m_imin[i] = 1;
-    m_imax[i] = m_n[i]-1;
-    if (m_n[i] < 2) {
-      m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+    int i;
+    int periods[3], coords[3];
+    for (i=0; i<3; i++) {
+      m_p[i] = (m_nmax[i] > 1) ? 0 : 1;
+      periods[i] = 0;
     }
 
-    m_xmin[i] = m_dx[i] * m_p0[i];
+    // Creation d'une "grille" de processus MPI
+    MPI_Dims_create(m_size, 3, m_p);
+
+    MPI_Cart_create(MPI_COMM_WORLD, 3, m_p, periods, 1, &m_comm);
+    MPI_Comm_rank(m_comm, &m_rank);
+    MPI_Cart_coords(m_comm, m_rank, 3, coords);
+
+    for (i=0; i<3; i++) {
+      m_neigh[i][0] = MPI_PROC_NULL;
+      m_neigh[i][1] = MPI_PROC_NULL;
+      MPI_Cart_shift(m_comm, i, 1, &m_neigh[i][0], &m_neigh[i][1]);
+    }
+
+    for (i=0; i<3; i++) {
+      m_dx[i] = m_nmax[i]>1 ? 1.0/(m_nmax[i]-1) : 0.0;
+      m_n[i] = (m_nmax[i]-2)/m_p[i]+2;
+      m_p0[i] = (m_n[i]-2) * coords[i];
+      if ((coords[i] == m_p[i]-1) && ((m_n[i]-2)*m_p[i] < m_nmax[i])-2)
+	m_n[i] += m_nmax[i]-2 - (m_n[i]-2)*m_p[i];
+
+      m_di[i] = 1;
+      m_imin[i] = 1;
+      m_imax[i] = m_n[i]-1;
+      if (m_n[i] < 2) {
+	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+      }
+
+      m_xmin[i] = m_dx[i] * m_p0[i];
+    }
   }
-}
+  m_out = nullptr;
 }
 
 bool Parameters::help()
@@ -132,10 +132,11 @@ bool Parameters::help()
 
 Parameters::~Parameters()
 {
-  if (!m_help) {
+  if (!m_help)
     MPI_Finalize();
+
+  if (m_out)
     delete m_out;
-  }
 }
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
@@ -164,8 +165,8 @@ std::ostream & Parameters::out()
 
     std::ostringstream pth;
     pth << "results"
-    << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-    << "_" << buffer << "/";
+	<< "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+	<< "_" << buffer << "/";
     m_path = pth.str();
 
 #if defined(_WIN32)

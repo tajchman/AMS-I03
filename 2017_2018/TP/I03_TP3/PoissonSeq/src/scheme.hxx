@@ -16,10 +16,15 @@
 class Scheme {
 
 public:
-  Scheme(const Parameters *P);
+  Scheme() : codeName("Poisson"), m_timers(3)  {
+   m_timers[0].name("init");
+   m_timers[1].name("solve");
+   m_timers[2].name("other");
+  }
   ~Scheme();
   size_t getDomainSize(int dim) const;
 
+  void initialize(const Parameters *P);
   double present();
   bool solve(unsigned int nSteps);
   double variation();

@@ -37,13 +37,12 @@ int main(int argc, char *argv[])
   int ksteps = freq > 0 ? freq : itMax;
 
   {
-    Scheme C(&Prm);
-    Values u_0(&Prm, f);
-
+    Values u_0;
+    Scheme C;
     C.timer(0).start();
-
+    C.initialize(&Prm);
+    u_0.init(&Prm, f);
     C.setInput(u_0);
-
     C.timer(0).stop();
 
     if (output) C.getOutput().plot(0);

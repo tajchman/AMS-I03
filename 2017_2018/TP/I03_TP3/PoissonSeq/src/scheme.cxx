@@ -4,8 +4,12 @@
 #include <sstream>
 #include <iomanip>
 
-Scheme::Scheme(const Parameters *P) : codeName("Poisson"), m_u(P), m_v(P), m_P(P)
+
+void Scheme::initialize(const Parameters *P)
 {
+  m_P = P;
+  m_u.init(P);
+  m_v.init(P);
   int i;
   for (i=0; i<3; i++) {
     m_n[i] = m_P->n(i);
@@ -15,10 +19,6 @@ Scheme::Scheme(const Parameters *P) : codeName("Poisson"), m_u(P), m_v(P), m_P(P
 
   kStep = 1;
   m_t = 0.0;
-
-  m_timers.resize(2);
-  m_timers[0].name("init");
-  m_timers[1].name("solve");
 
   m_duv = 0.0;
 }
@@ -90,17 +90,16 @@ bool Scheme::solve(unsigned int nSteps)
     m_t += dt;
 
     m_timers[1].stop();
-
+    m_timers[2].start();
     std::cerr << " iteration " << std::setw(4) << kStep
-            << " variation " << std::setw(12) << std::setprecision(6) << du_max;
-      size_t i, n = m_timers.size();
-      std::cerr << " (times :";
-      for (i=0; i<n; i++)
-	      std::cerr << " " << std::setw(5) << m_timers[i].name()
-	                << " " << std::setw(9) << std::fixed
-                  << m_timers[i].elapsed();
-
-      std::cerr	  << ")   \n";
+              << " variation " << std::setw(12) << std::setprecision(6) << du_max;
+    size_t i, n = m_timers.size();
+    std::cerr << " (times :";
+    for (i=0; i<n; i++)
+      std::cerr << " " << std::setw(5) << m_timers[i].name()
+	        << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
+    std::cerr	  << ")   \n";
+    m_timers[2].stop();
 
     kStep++;
   }
