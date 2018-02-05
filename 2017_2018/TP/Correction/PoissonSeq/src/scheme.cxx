@@ -66,6 +66,7 @@ bool Scheme::iteration()
     for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
         for (k = kmin; k < kmax; k++) {
+   
           du = 6 * m_u(i, j, k)
               - m_u(i + di, j, k) - m_u(i - di, j, k)
               - m_u(i, j + dj, k) - m_u(i, j - dj, k)

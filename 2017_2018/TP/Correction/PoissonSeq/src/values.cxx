@@ -135,3 +135,15 @@ void Values::deallocate()
        m_u = NULL;
 	}
 }
+
+void Values::operator= (const Values &other)
+{
+  int i;
+  size_t nn = 1;
+  
+  for (i=0; i<3; i++)
+    nn *= (m_n[i] = other.m_n[i]);
+  
+  allocate(nn);
+  memcpy(m_u, other.m_u, nn*sizeof(double));
+}

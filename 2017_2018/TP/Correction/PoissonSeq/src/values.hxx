@@ -9,8 +9,9 @@ class Values {
 
 public:
 
-  Values() : m_p(nullptr) {}
-
+  Values() : m_p(NULL), m_u(NULL) {}
+  void operator= (const Values &);
+  
   void init(const Parameters * p,
          double (*f)(double, double, double) = 0L);
 
@@ -28,6 +29,7 @@ public:
   
 private:
   
+  Values(const Values &) {};
   int n1, n2;
   double * m_u;
   int m_n[3];

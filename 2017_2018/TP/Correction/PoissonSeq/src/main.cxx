@@ -42,7 +42,6 @@ int main(int argc, char *argv[])
     C.timer(0).start();
     C.initialize(&Prm);
     u_0.init(&Prm, f);
-    u_0.print(std::cerr);
 
     C.setInput(u_0);
     C.timer(0).stop();
@@ -52,7 +51,6 @@ int main(int argc, char *argv[])
     int i;
     for (i=0; i<nsteps; i++) {
 	     C.solve(ksteps);
-             C.getOutput().print(std::cerr);
 	     if (output) C.getOutput().plot(i);
     }
 
