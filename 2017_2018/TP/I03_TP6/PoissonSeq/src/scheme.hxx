@@ -20,12 +20,18 @@ public:
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
+   m_duv = 0.0;
+   m_P = NULL;
+   m_t = 0.0;
+   kStep = 0;
   }
   ~Scheme();
   size_t getDomainSize(int dim) const;
 
   void initialize(const Parameters *P);
   double present();
+
+  bool iteration();
   bool solve(unsigned int nSteps);
   double variation();
   void terminate();
@@ -36,7 +42,7 @@ public:
   std::string codeName;
 
 protected:
-  double m_t;
+  double m_t, m_dt, m_lambda;
   size_t m_n[3];
   size_t m_dx[3];
   size_t m_di[3];

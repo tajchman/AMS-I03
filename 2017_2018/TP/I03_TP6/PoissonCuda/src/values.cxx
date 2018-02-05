@@ -16,11 +16,10 @@ void Values::init(const Parameters * prm,
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
+  allocate(nn);
+
+  int j, k;
   if (f) {
-    m_u.resize(nn);
-
-    int j, k;
-
     double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
     double xmin =  0,
       ymin = 0,
@@ -31,13 +30,21 @@ void Values::init(const Parameters * prm,
         for (k=0; k<p; k++)
           operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
   }
-  else
-    m_u.assign(nn, 0.0);
+  else {
+	    for (i=0; i<n; i++)
+	      for (j=0; j<m; j++)
+	        for (k=0; k<p; k++)
+	          operator()(i,j,k) = 0.0;
+
+  }
 }
 
 void Values::swap(Values & other)
 {
-  m_u.swap(other.m_u);
+  double * dtemp = m_u;
+  m_u = other.m_u;
+  other.m_u = dtemp;
+
   int i, temp;
   for (i=0; i<3; i++) {
     temp = m_n[i];
@@ -97,4 +104,18 @@ void Values::plot(int order) const {
   f << "</Piece>\n"
     << "</RectilinearGrid>\n"
     << "</VTKFile>\n" <<std::endl;
+}
+
+void Values::allocate(size_t n)
+{
+	deallocate();
+	m_u = new double [n];
+}
+
+void Values::deallocate()
+{
+	if (m_u == NULL) {
+       delete [] m_u;
+       m_u = NULL;
+	}
 }

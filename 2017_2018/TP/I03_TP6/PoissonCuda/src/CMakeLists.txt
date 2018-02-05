@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.8)
-project(POISSON)
+project(POISSON LANGUAGES C CXX CUDA)
 
 if(POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
@@ -23,7 +23,7 @@ include_directories(
   timer
   )
 
-add_executable(
+cuda_add_executable(
   PoissonCuda 
   main.cxx
   parameters.cxx
@@ -32,10 +32,19 @@ add_executable(
   values.hxx
   scheme.cxx
   scheme.hxx
+  gpu_scheme.cu
+  gpu_scheme.hxx
+  gpu_values.cu
+  gpu_values.hxx
   )
 
+set_property(TARGET PoissonCuda 
+             PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+             
 target_link_libraries(
    PoissonCuda
    timer
+   cuda
+   ${CUDA_LIBRARIES}
 )
 
