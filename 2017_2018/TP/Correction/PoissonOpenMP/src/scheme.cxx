@@ -68,6 +68,10 @@ bool Scheme::iteration()
    std::ofstream fu(s);
    m_v.print(fu);
    
+   fu << "u(5,5,5) = " << m_u(5,j,k) << std::endl;
+   fu << "u(5+di,5,5) = " << m_u(5+di,5,5) << std::endl;
+   fu << "u(5-di,5,5) = " << m_u(5-di,5,5) << std::endl;
+   
 #pragma omp parallel for default(shared), private(i,j,k,du), reduction(+:du_max) 
     for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
