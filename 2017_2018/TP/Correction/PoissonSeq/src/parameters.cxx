@@ -61,8 +61,8 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       std::cerr << "Warning : provided dt (" << m_dt
 		<< ") is greater then the recommended maximum (" <<  dt_max
 		<< ")" << std::endl;
-    
-    for (int i=0; i<3; i++) {
+    int i;
+    for (i=0; i<3; i++) {
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
       m_di[i] = 1;
       m_imin[i] = 1;

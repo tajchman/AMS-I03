@@ -36,12 +36,11 @@ int main(int argc, char *argv[])
   int nsteps = freq > 0 ? itMax/freq : 1;
   int ksteps = freq > 0 ? freq : itMax;
 
-  {
-    Values u_0;
-    Scheme C;
+    Values u_0(&Prm);
+    Scheme C(&Prm);
     C.timer(0).start();
-    C.initialize(&Prm);
-    u_0.init(&Prm, f);
+    C.initialize();
+    u_0.init(f);
 
     C.setInput(u_0);
     C.timer(0).stop();
