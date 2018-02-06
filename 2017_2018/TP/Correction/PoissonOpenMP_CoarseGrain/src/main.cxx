@@ -30,34 +30,41 @@ int main(int argc, char *argv[])
   int freq = Prm.freq();
   bool output = freq > 0;
   if (output) Prm.out();
-  
+
   int itMax = Prm.itmax();
 
   int nsteps = freq > 0 ? itMax/freq : 1;
   int ksteps = freq > 0 ? freq : itMax;
 
-  Values u_0;
-  Scheme C;
-  
+  Values u_0(&Prm);
+  Scheme C(&Prm);
+
 #pragma omp parallel
   {    
 #pragma omp master
     {
       C.timer(0).start();
-      C.initialize(&Prm);
-      u_0.init(&Prm, f);
-      
+      C.initialize();
+    }
+
+    u_0.init(f);
+
+#pragma omp single
+    {
       C.setInput(u_0);
       C.timer(0).stop();
-      
+
       if (output) C.getOutput().plot(0);
-      
-      int i;
-      for (i=0; i<nsteps; i++) {
+    }
+
+    int i;
+    for (i=0; i<nsteps; i++) {
 	C.solve(ksteps);
 	if (output) C.getOutput().plot(i);
-      }
-      
+    }
+
+#pragma omp master
+    {
       if (Prm.convection())
 	std::cout << "convection ";
       else
@@ -68,8 +75,9 @@ int main(int argc, char *argv[])
 	std::cout << "           ";
     }
   }
+
   T_global.stop();
   std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed()
-	    << " s\n";
+			<< " s\n";
   return 0;
 }

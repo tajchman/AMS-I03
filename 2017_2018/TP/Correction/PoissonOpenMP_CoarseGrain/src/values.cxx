@@ -3,9 +3,11 @@
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
 
-void Values::init(const Parameters * prm,
-               double (*f)(double, double, double))
+Values::Values(const Parameters * prm)
 {
   m_p = prm;
   int i, nn = 1;
@@ -17,23 +19,35 @@ void Values::init(const Parameters * prm,
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
   allocate(nn);
+}
 
-  int j, k;
+void Values::init(double (*f)(double, double, double))
+{
+  int ith = omp_get_thread_num();
+  int i, j, k;
+  int imin = m_p->thread_imin(0, ith) ;
+  int jmin = m_p->thread_imin(1, ith) ;
+  int kmin = m_p->thread_imin(2, ith) ;
+
+  int imax = m_p->thread_imax(0, ith) ;
+  int jmax = m_p->thread_imax(1, ith) ;
+  int kmax = m_p->thread_imax(2, ith) ;
+
   if (f) {
     double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
-    double xmin =  0,
-      ymin = 0,
-      zmin = 0;
+    double xmin =  m_p->xmin(0);
+    double ymin =  m_p->xmin(1);
+    double zmin =  m_p->xmin(2);
 
-    for (i=0; i<n; i++)
-      for (j=0; j<m; j++)
-        for (k=0; k<p; k++)
+    for (i=imin; i<imax; i++)
+      for (j=jmin; j<jmax; j++)
+        for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
   }
   else {
-    for (i=0; i<n; i++)
-      for (j=0; j<m; j++)
-        for (k=0; k<p; k++)
+    for (i=imin; i<imax; i++)
+      for (j=jmin; j<jmax; j++)
+        for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = 0.0;
 
   }
@@ -130,10 +144,10 @@ void Values::allocate(size_t n)
 
 void Values::deallocate()
 {
-	if (m_u == NULL) {
-       delete [] m_u;
-       m_u = NULL;
-	}
+  if (m_u == NULL) {
+      delete [] m_u;
+      m_u = NULL;
+  }
 }
 
 void Values::operator= (const Values &other)

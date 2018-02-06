@@ -9,11 +9,11 @@ class Values {
 
 public:
 
-  Values() : m_p(NULL), m_u(NULL) {}
+  Values(const Parameters * p);
+  virtual ~Values() {}
   void operator= (const Values &);
   
-  void init(const Parameters * p,
-         double (*f)(double, double, double) = 0L);
+  void init(double (*f)(double, double, double) = 0L);
 
   double & operator() (int i,int j,int k) {
     return m_u[n2*i + n1*j + k];
@@ -29,7 +29,7 @@ public:
   
 private:
   
-  Values(const Values &) {};
+  Values(const Values &) : m_p(NULL), m_u(NULL), n1(0), n2(0) {};
   int n1, n2;
   double * m_u;
   int m_n[3];

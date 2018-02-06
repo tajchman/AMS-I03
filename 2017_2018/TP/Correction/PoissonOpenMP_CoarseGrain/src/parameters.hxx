@@ -21,6 +21,8 @@ public:
 
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
+  int thread_imin(int i, int ith) const { return m_thread_imin[i][ith]; }
+  int thread_imax(int i, int ith) const { return m_thread_imax[i][ith]; }
   int di(int i) const { return m_di[i]; }
   
   int itmax() const { return m_itmax; }
