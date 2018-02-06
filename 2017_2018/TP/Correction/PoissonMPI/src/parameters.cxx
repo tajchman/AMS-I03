@@ -60,7 +60,9 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_diffusion = (*this)("diffusion", 1) == 1;
   
   if (!m_help) {
- 
+
+    int p[3];
+    
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
 		<< ") is greater then the recommended maximum (" <<  dt_max
@@ -72,14 +74,14 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 
     int i;
     for (i=0; i<3; i++) {
-      m_p[i] = (m_nmax[i] > 1) ? 0 : 1;
+      p[i] = (m_nmax[i] > 1) ? 0 : 1;
       periods[i] = 0;
     }
 
     // Creation d'une "grille" de processus MPI
-    MPI_Dims_create(m_size, 3, m_p);
+    MPI_Dims_create(m_size, 3, p);
 
-    MPI_Cart_create(MPI_COMM_WORLD, 3, m_p, periods, 1, &m_comm);
+    MPI_Cart_create(MPI_COMM_WORLD, 3, p, periods, 1, &m_comm);
     MPI_Comm_rank(m_comm, &m_rank);
     MPI_Cart_coords(m_comm, m_rank, 3, coords);
 
@@ -91,17 +93,21 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 
     for (i=0; i<3; i++) {
       m_dx[i] = m_nmax[i]>1 ? 1.0/(m_nmax[i]-1) : 0.0;
-      m_n[i] = (m_nmax[i]-2)/m_p[i]+2;
-      m_p0[i] = (m_n[i]-2) * coords[i];
-      if ((coords[i] == m_p[i]-1) && ((m_n[i]-2)*m_p[i] < m_nmax[i])-2)
-	m_n[i] += m_nmax[i]-2 - (m_n[i]-2)*m_p[i];
+      m_n[i] = (m_nmax[i]-2)/p[i]+2;
+      
+      m_imin[i] = (m_n[i]-2) * coords[i] + 1;
+      m_xmin[i] = m_dx[i] * (m_imin[i]-1);
 
-      m_xmin[i] = m_dx[i] * m_p0[i];
+      if (coords[i] < p[i]-1)
+        m_imax[i] = m_imin[i] + m_n[i];
+      else {
+        m_imax[i] = m_nmax[i]-1;
+        m_n[i] = m_imax[i] - m_imin[i] + 2;
+      }
+      
       m_di[i] = 1;
-      m_imin[i] = 1;
-      m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-       	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+       	m_imax[i] = m_imin[i] + 1; m_di[i] = 0;
       }
     }
   }
@@ -140,13 +146,19 @@ Parameters::~Parameters()
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
-  f << "Process(es)  : " << p.size()
-    << " (" << p.p(0) << " x " << p.p(1) << " x " << p.p(2) << ")\n";
+  f << "Process : " << p.rank()+1 << "/" << p.size() << "\n";
 
-  f << "Whole domain :   "
-    << "[" << 0 << "," << p.nmax(0) - 1  << "] x "
-    << "[" << 0 << "," << p.nmax(1) - 1  << "] x "
-    << "[" << 0 << "," << p.nmax(2) - 1  << "]"
+  if (p.rank() == 0) 
+    f << "Whole domain :   "
+      << "[" << 1 << "," << p.nmax(0) - 1  << "] x "
+      << "[" << 1 << "," << p.nmax(1) - 1  << "] x "
+      << "[" << 1 << "," << p.nmax(2) - 1  << "]"
+      << "\n\n";
+
+  f << "Domain :   "
+    << "[" << p.imin(0) << "," << p.imax(0)-1  << "] x "
+    << "[" << p.imax(1) << "," << p.imax(1)-1 << "] x "
+    << "[" << p.imax(2) << "," << p.imax(2)-1  << "]"
     << "\n\n";
 
   f << "It. max : " << p.itmax() << "\n"

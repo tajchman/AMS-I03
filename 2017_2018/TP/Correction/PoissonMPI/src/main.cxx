@@ -25,8 +25,7 @@ int main(int argc, char *argv[])
 
   Parameters Prm(argc, argv);
   if (Prm.help()) return 0;
-  if (Prm.rank() == 0)
-    std::cout << Prm << std::endl;
+  std::cout << Prm << std::endl;
 
   int freq = Prm.freq();
   bool output = freq > 0;
@@ -53,17 +52,6 @@ int main(int argc, char *argv[])
     C.solve(ksteps);
     if (output) C.getOutput().plot(i);
     }
-
-  if (Prm.rank() == 0) {
-    if (Prm.convection())
-      std::cout << "convection ";
-    else
-      std::cout << "           ";
-    if (Prm.diffusion())
-      std::cout << "diffusion  ";
-    else
-      std::cout << "           ";
-  }
   
   T_global.stop();
   std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
