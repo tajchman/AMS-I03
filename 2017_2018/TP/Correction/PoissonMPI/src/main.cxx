@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
 
   Parameters Prm(argc, argv);
   if (Prm.help()) return 0;
-  std::cout << Prm << std::endl;
+  if (Prm.rank() == 0)
+    std::cout << Prm << std::endl;
 
   int freq = Prm.freq();
   bool output = freq > 0;
@@ -40,37 +41,31 @@ int main(int argc, char *argv[])
   Scheme C(&Prm);
   C.timer(0).start();
   C.initialize();
+  u_0.init(f);
 
-#pragma omp parallel 
-  {
-    u_0.init(f);
+  C.setInput(u_0);
+  C.timer(0).stop();
 
-#pragma omp single
-    {
-      C.setInput(u_0);
-      C.timer(0).stop();
+  if (output) C.getOutput().plot(0);
 
-      if (output) C.getOutput().plot(0);
+  int i;
+  for (i=0; i<nsteps; i++) {
+    C.solve(ksteps);
+    if (output) C.getOutput().plot(i);
     }
 
-    int i;
-    for (i=0; i<nsteps; i++) {
-	    C.solve(ksteps);
-	    if (output) C.getOutput().plot(i);
-    }
+  if (Prm.rank() == 0) {
+    if (Prm.convection())
+      std::cout << "convection ";
+    else
+      std::cout << "           ";
+    if (Prm.diffusion())
+      std::cout << "diffusion  ";
+    else
+      std::cout << "           ";
   }
-
-  if (Prm.convection())
-    std::cout << "convection ";
-  else
-    std::cout << "           ";
-  if (Prm.diffusion())
-    std::cout << "diffusion  ";
-  else
-    std::cout << "           ";
-
+  
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) 
-            << T_global.elapsed() << " s\n";
+  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
   return 0;
 }

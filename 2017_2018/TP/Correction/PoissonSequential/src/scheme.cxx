@@ -6,7 +6,7 @@
 
 
 Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_FineGrain"), m_u(P), m_v(P), m_timers(3)  {
+  codeName("Poisson_Sequential"), m_u(P), m_v(P), m_timers(3)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
@@ -88,19 +88,17 @@ bool Scheme::iteration()
 
   du_max = 0.0;
     
-#pragma omp parallel for default(shared), private(i,j,k,du), reduction(+:du_max) 
-    for (i = imin; i < imax; i++)
-      for (j = jmin; j < jmax; j++)
-        for (k = kmin; k < kmax; k++) {
-   
-          du = 6 * m_u(i, j, k)
-              - m_u(i + di, j, k) - m_u(i - di, j, k)
-              - m_u(i, j + dj, k) - m_u(i, j - dj, k)
-              - m_u(i, j, k + dk) - m_u(i, j, k - dk);
-          du *= m_lambda;
-          m_v(i, j, k) = m_u(i, j, k) - du;
-          du_max += du > 0 ? du : -du;
-        }
+  for (i = imin; i < imax; i++)
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) { 
+        du = 6 * m_u(i, j, k)
+            - m_u(i + di, j, k) - m_u(i - di, j, k)
+            - m_u(i, j + dj, k) - m_u(i, j - dj, k)
+            - m_u(i, j, k + dk) - m_u(i, j, k - dk);
+        du *= m_lambda;
+        m_v(i, j, k) = m_u(i, j, k) - du;
+        du_max += du > 0 ? du : -du;
+      }
 
     m_duv = du_max;
     return true;

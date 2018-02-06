@@ -1,6 +1,7 @@
 #include "scheme.hxx"
 #include "parameters.hxx"
 
+#include <mpi.h>
 #include <sstream>
 #include <iomanip>
 
@@ -9,7 +10,8 @@ Scheme::Scheme(const Parameters *P) :
   codeName("Poisson_Sequential"), m_u(P), m_v(P), m_timers(3)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
-   m_timers[2].name("other");
+   m_timers[2].name("comm");
+   m_timers[3].name("other");
    m_duv = 0.0;
    m_P = P;
    m_t = 0.0;
@@ -33,12 +35,6 @@ void Scheme::initialize()
 {
   m_u.init();
   m_v.init();
-  int i;
-  for (i=0; i<3; i++) {
-    m_n[i] = m_P->n(i);
-    m_dx[i] = m_P->dx(i);
-    m_di[i] = (m_n[i] < 2) ? 0 : 1;
-  }
 
   kStep = 1;
   m_t = 0.0;
@@ -120,21 +116,30 @@ bool Scheme::solve(unsigned int nSteps)
     m_timers[1].start();
     
     iteration();
+
+    double du_max = m_duv, du_max_global;
+    MPI_Allreduce(&du_max, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
+    du_max = du_max_global;
+
+    m_v.synchronize();
+
     m_t += m_dt;
 
     m_u.swap(m_v);
 
     m_timers[1].stop();
-    m_timers[2].start();
-    std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
-    size_t i, n = m_timers.size();
-    std::cerr << " (times :";
-    for (i=0; i<n; i++)
-      std::cerr << " " << std::setw(5) << m_timers[i].name()
-	        << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
-    std::cerr	  << ")   \n";
-    m_timers[2].stop();
+    if (m_P->rank() == 0) {
+      m_timers[3].start();
+      std::cerr << " iteration " << std::setw(4) << kStep
+              << " variation " << std::setw(12) << std::setprecision(6) << du_max;
+      size_t i, n = m_timers.size();
+      std::cerr << " (times :";
+      for (i=0; i<n; i++)
+	std::cerr << " " << std::setw(5) << m_timers[i].name()
+	          << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
+      std::cerr	  << ")   \n";
+      m_timers[3].stop();
+    }
 
     kStep++;
   }
@@ -148,6 +153,7 @@ double Scheme::variation()
 }
 
 void Scheme::terminate() {
+  if (m_P->rank() == 0)
     std::cerr << "\n\nterminate " << codeName << std::endl;
 }
 

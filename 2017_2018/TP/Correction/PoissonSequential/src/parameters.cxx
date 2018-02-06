@@ -72,9 +72,8 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
        	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
       }
     }
-    m_out = NULL;
   }
-
+  m_out = NULL;
 }
 
 bool Parameters::help()

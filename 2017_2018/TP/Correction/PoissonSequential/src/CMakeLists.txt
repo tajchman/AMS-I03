@@ -23,6 +23,10 @@ include_directories(
   timer
   )
 
+find_package(MPI)
+include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
+
+add_definitions("-DUSE_MPI")
 add_executable(
   ${ProjectName} 
   main.cxx

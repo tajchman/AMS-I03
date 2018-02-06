@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     std::cout << "           ";
 
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+  std::cout << "cpu time " << std::setprecision(5) 
+            << T_global.elapsed() << " s\n";
   return 0;
 }
