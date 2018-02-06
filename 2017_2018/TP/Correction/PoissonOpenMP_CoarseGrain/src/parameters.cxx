@@ -91,7 +91,6 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       
       if (i == 0) {
 	int d =  (m_imax[0] - m_imin[0] + m_nthreads)/m_nthreads, dd;
-	std::cerr << d << std::endl;
 	if (d == 0) d = 1;
 	m_thread_imin[0][0] = m_imin[0];
 	m_thread_imax[0][0] = m_imin[0] + d;
@@ -111,12 +110,6 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       }
     }
 
-    for (i=0; i<1; i++)
-      for (j=0; j<m_nthreads; j++) {
-	std::cerr << "thread " << j
-		  << ": (" << m_thread_imin[i][j] << ","
-		  << m_thread_imax[i][j]<< ")\n";
-      };
     m_out = NULL;
   }
 

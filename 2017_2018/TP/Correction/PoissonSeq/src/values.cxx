@@ -8,7 +8,6 @@ Values::Values(const Parameters * prm)
 {
   m_p = prm;
   int i, nn = 1;
-  int n = m_p->n(0), m = m_p->n(1), p = m_p->n(2);
   for (i=0; i<3; i++)
     nn *= (m_n[i] = m_p->n(i));
 
@@ -21,13 +20,13 @@ Values::Values(const Parameters * prm)
 void Values::init(double (*f)(double, double, double))
 {
   int i, j, k;
-   int imin = prm->imin[0];
-   int jmin = 1;
-   int kmin = 1;
+   int imin = m_p->imin(0);
+   int jmin = m_p->imin(1);
+   int kmin = m_p->imin(2);
 
-   int imax = n-1;
-   int jmax = m-1;
-   int kmax = p-1;
+   int imax = m_p->imax(0);
+   int jmax = m_p->imax(1);
+   int kmax = m_p->imax(2);
 
   if (f) {
     double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
@@ -35,15 +34,15 @@ void Values::init(double (*f)(double, double, double))
     double ymin =  m_p->xmin(1);
     double zmin =  m_p->xmin(2);
 
-    for (i=0; i<n; i++)
-      for (j=0; j<m; j++)
-        for (k=0; k<p; k++)
+    for (i=imin; i<imax; i++)
+      for (j=jmin; j<jmax; j++)
+        for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
   }
   else {
-    for (i=0; i<n; i++)
-      for (j=0; j<m; j++)
-        for (k=0; k<p; k++)
+    for (i=imin; i<imax; i++)
+      for (j=jmin; j<jmax; j++)
+        for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = 0.0;
 
   }
@@ -51,13 +50,18 @@ void Values::init(double (*f)(double, double, double))
 
 void Values::print(std::ostream & f) const
 {
-    size_t i, n = m_n[0];
-    size_t j, m = m_n[1];
-    size_t k, p = m_n[2];
+    int i, j, k;
+    int imin = m_p->imin(0);
+    int jmin = m_p->imin(1);
+    int kmin = m_p->imin(2);
 
-    for (i=0; i<n; i++) {
-      for (j=0; j<m; j++) {
-        for (k=0; k<p; k++)
+    int imax = m_p->imax(0);
+    int jmax = m_p->imax(1);
+    int kmax = m_p->imax(2);
+
+    for (i=imin; i<imax; i++) {
+      for (j=jmin; j<jmax; j++) {
+        for (k=kmin; k<kmax; k++)
           f << " " << operator()(i,j,k);
         f << std::endl;
         }
@@ -83,6 +87,14 @@ void Values::plot(int order) const {
 
   std::ostringstream s;
   int i, j, k;
+  int imin = m_p->imin(0);
+  int jmin = m_p->imin(1);
+  int kmin = m_p->imin(2);
+
+  int imax = m_p->imax(0);
+  int jmax = m_p->imax(1);
+  int kmax = m_p->imax(2);
+
   s << m_p->resultPath() << "plot_"
     << order << ".vtr";
   std::ofstream f(s.str().c_str());
@@ -90,27 +102,25 @@ void Values::plot(int order) const {
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << 0 << " " << m_p->n(0) - 1  << " " 
-    << 0 << " " << m_p->n(1) - 1  << " " 
-    << 0 << " " << m_p->n(2) - 1 
+    << imin << " " << imax  << " " 
+    << jmin << " " << jmax  << " " 
+    << kmin << " " << kmax 
     << "\">\n"
     << "<Piece Extent=\""
-    << 0 << " " << m_p->n(0) - 1 << " " 
-    << 0 << " " << m_p->n(1) - 1 << " " 
-    << 0 << " " << m_p->n(2) - 1 
+    << imin << " " << imax  << " " 
+    << jmin << " " << jmax  << " " 
+    << kmin << " " << kmax 
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";
   f << "  <DataArray type=\"Float64\" Name=\"values\" format=\"ascii\">\n";
   
-  for (k=0; k< m_p->n(2); k++) {
-    for (j=0; j< m_p->n(1); j++) {
-      for (i=0; i< m_p->n(0); i++) {
+  for (k=kmin; k<kmax; k++)
+    for (j=jmin; j<jmax; j++) {
+      for (i=imin; i<imax; i++)
         f << " " << operator()(i,j,k);
-      }
       f << "\n";
     }
-  }
   f << " </DataArray>\n";
    
   f << "</PointData>\n";
@@ -121,7 +131,9 @@ void Values::plot(int order) const {
     f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\"" 
       << " format=\"ascii\">";
     
-    for (i=0; i<m_p->n(k); i++)
+    int imin = m_p->imin(k);
+    int imax = m_p->imax(k);
+    for (i=imin; i<imax; i++)
       f << " " << i * m_p->dx(k);
     f << "   </DataArray>\n";
   }
@@ -134,16 +146,16 @@ void Values::plot(int order) const {
 
 void Values::allocate(size_t n)
 {
-	deallocate();
-	m_u = new double [n];
+  deallocate();
+  m_u = new double [n];
 }
 
 void Values::deallocate()
 {
-	if (m_u == NULL) {
-       delete [] m_u;
-       m_u = NULL;
-	}
+  if (m_u == NULL) {
+    delete [] m_u;
+    m_u = NULL;
+  }
 }
 
 void Values::operator= (const Values &other)

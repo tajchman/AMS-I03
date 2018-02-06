@@ -31,17 +31,16 @@ Scheme::Scheme(const Parameters *P) :
    m_lambda = 0.25*m_dt/(dx2 + 1e-12);
 }
 
-void Scheme::initialize(const Parameters *P)
+void Scheme::initialize()
 {
-  m_P = P;
-  m_u.init(P);
-  m_v.init(P);
+  m_u.init();
+  m_v.init();
   int i;
   for (i=0; i<3; i++) {
     m_n[i] = m_P->n(i);
     m_dx[i] = m_P->dx(i);
     m_di[i] = (m_n[i] < 2) ? 0 : 1;
-}
+  }
 
   kStep = 1;
   m_t = 0.0;
@@ -95,16 +94,6 @@ double Scheme::iteration()
    int jmax = m_P->thread_imax(1, ith) ;
    int kmax = m_P->thread_imax(2, ith) ;
 
-#pragma omp critical
-   {
-     std::cerr << "thread : " << ith << std::endl;
-     std::cerr
-	  << "(" << imin  << ","  << imax - 1 << ") x "
-	  << "(" << jmin  << ","  << kmax - 1  << ") x "
-	  << "(" << kmin  << ","  << kmax - 1  << ")"
-	  << std::endl;
-   }
-
    du_max = 0.0;
     for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
@@ -124,7 +113,6 @@ double Scheme::iteration()
 
 bool Scheme::solve(unsigned int nSteps)
 {
-  m_timers[1].start();
 
   int iStep;
 
@@ -139,16 +127,13 @@ bool Scheme::solve(unsigned int nSteps)
     {
        m_duv = 0.0;
     }
-    std::cerr << "m_duv = " << m_duv << std::endl;
-#pragma omp barrier
+
     double du_partiel = iteration();
-    std::cerr << " du_partiel " << du_partiel << std::endl;
+
 #pragma omp atomic
     m_duv += du_partiel;
     
-#pragma omp barrier
-    std::cerr << "m_duv = " << m_duv << std::endl;
-
+#pragma omp barrier 
 #pragma omp single
     {
       m_t += m_dt;

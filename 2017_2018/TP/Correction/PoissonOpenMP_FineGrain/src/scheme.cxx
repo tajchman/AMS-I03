@@ -5,11 +5,34 @@
 #include <iomanip>
 
 
-void Scheme::initialize(const Parameters *P)
+Scheme::Scheme(const Parameters *P) :
+  codeName("Poisson_FineGrain"), m_u(P), m_v(P), m_timers(3)  {
+   m_timers[0].name("init");
+   m_timers[1].name("solve");
+   m_timers[2].name("other");
+   m_duv = 0.0;
+   m_P = P;
+   m_t = 0.0;
+   kStep = 0;
+   m_dt = 0.0;
+   m_lambda = 0.0;
+
+   int i;
+   for (i=0; i<3; i++) {
+     m_n[i] = m_P->n(i);
+     m_dx[i] = m_P->dx(i);
+     m_di[i] = (m_n[i] < 2) ? 0 : 1;
+   }
+
+   double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
+   m_dt = 0.5*(dx2 + 1e-12);
+   m_lambda = 0.25*m_dt/(dx2 + 1e-12);
+}
+
+void Scheme::initialize()
 {
-  m_P = P;
-  m_u.init(P);
-  m_v.init(P);
+  m_u.init();
+  m_v.init();
   int i;
   for (i=0; i<3; i++) {
     m_n[i] = m_P->n(i);
@@ -92,8 +115,9 @@ bool Scheme::solve(unsigned int nSteps)
     m_timers[1].start();
     
     iteration();
-    m_u.swap(m_v);
     m_t += m_dt;
+
+    m_u.swap(m_v);
 
     m_timers[1].stop();
     m_timers[2].start();

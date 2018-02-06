@@ -6,7 +6,7 @@
 
 
 Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_CoarseGrain"), m_u(P), m_v(P), m_timers(3)  {
+  codeName("Poisson_Sequential"), m_u(P), m_v(P), m_timers(3)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
@@ -29,11 +29,10 @@ Scheme::Scheme(const Parameters *P) :
    m_lambda = 0.25*m_dt/(dx2 + 1e-12);
 }
 
-void Scheme::initialize(const Parameters *P)
+void Scheme::initialize()
 {
-  m_P = P;
-  m_u.init(P);
-  m_v.init(P);
+  m_u.init();
+  m_v.init();
   int i;
   for (i=0; i<3; i++) {
     m_n[i] = m_P->n(i);
@@ -81,26 +80,31 @@ size_t Scheme::getDomainSize(int dim) const
 
 bool Scheme::iteration()
 {
-   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
-   int i, j, k;
-   double du, du_max;
-   int imin = 1, imax = m_n[0] - 1;
-   intj min = 1, jmax = m_n[1] - 1;
-   int kmin = 1, kmax = m_n[2] - 1;
+  int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
+  int i, j, k;
+  double du, du_max;
 
-   du_max = 0.0;
-    for (i = imin; i < imax; i++)
-      for (j = jmin; j < jmax; j++)
-        for (k = kmin; k < kmax; k++) {
-   
-          du = 6 * m_u(i, j, k)
-              - m_u(i + di, j, k) - m_u(i - di, j, k)
-              - m_u(i, j + dj, k) - m_u(i, j - dj, k)
-              - m_u(i, j, k + dk) - m_u(i, j, k - dk);
-          du *= m_lambda;
-          m_v(i, j, k) = m_u(i, j, k) - du;
-          du_max += du > 0 ? du : -du;
-        }
+  int imin = m_P->imin(0) ;
+  int jmin = m_P->imin(1) ;
+  int kmin = m_P->imin(2) ;
+
+  int imax = m_P->imax(0) ;
+  int jmax = m_P->imax(1) ;
+  int kmax = m_P->imax(2) ;
+
+  du_max = 0.0;
+    
+  for (i = imin; i < imax; i++)
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) { 
+        du = 6 * m_u(i, j, k)
+            - m_u(i + di, j, k) - m_u(i - di, j, k)
+            - m_u(i, j + dj, k) - m_u(i, j - dj, k)
+            - m_u(i, j, k + dk) - m_u(i, j, k - dk);
+        du *= m_lambda;
+        m_v(i, j, k) = m_u(i, j, k) - du;
+        du_max += du > 0 ? du : -du;
+      }
 
     m_duv = du_max;
     return true;
@@ -108,7 +112,6 @@ bool Scheme::iteration()
 
 bool Scheme::solve(unsigned int nSteps)
 {
-  m_timers[1].start();
 
   int iStep;
 
