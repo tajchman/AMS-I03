@@ -47,6 +47,7 @@ private:
   int m_n[3];
   double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];
+  int *m_thread_imin[3], *m_thread_imax[3];
   
   int m_itmax;
   double m_dt;
