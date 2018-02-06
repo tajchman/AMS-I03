@@ -63,6 +63,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 		<< ")" << std::endl;
     int i;
     for (i=0; i<3; i++) {
+      m_xmin[i] = 0.0;
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
       m_di[i] = 1;
       m_imin[i] = 1;

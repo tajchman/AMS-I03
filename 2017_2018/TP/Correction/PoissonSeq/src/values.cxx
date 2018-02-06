@@ -4,8 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
-void Values::init(const Parameters * prm,
-               double (*f)(double, double, double))
+Values::Values(const Parameters * prm)
 {
   m_p = prm;
   int i, nn = 1;
@@ -17,13 +16,24 @@ void Values::init(const Parameters * prm,
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
   allocate(nn);
+}
 
-  int j, k;
+void Values::init(double (*f)(double, double, double))
+{
+  int i, j, k;
+   int imin = prm->imin[0];
+   int jmin = 1;
+   int kmin = 1;
+
+   int imax = n-1;
+   int jmax = m-1;
+   int kmax = p-1;
+
   if (f) {
     double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
-    double xmin =  0,
-      ymin = 0,
-      zmin = 0;
+    double xmin =  m_p->xmin(0);
+    double ymin =  m_p->xmin(1);
+    double zmin =  m_p->xmin(2);
 
     for (i=0; i<n; i++)
       for (j=0; j<m; j++)
