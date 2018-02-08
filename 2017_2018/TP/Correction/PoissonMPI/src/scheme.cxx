@@ -33,8 +33,12 @@ Scheme::Scheme(const Parameters *P) :
 
 void Scheme::initialize()
 {
+  std::cerr << "ok ici 1.1" << std::endl;
+
   m_u.init();
+  std::cerr << "ok ici 1.2" << std::endl;
   m_v.init();
+  std::cerr << "ok ici 1.3" << std::endl;
 
   kStep = 1;
   m_t = 0.0;

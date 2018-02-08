@@ -99,7 +99,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       m_xmin[i] = m_dx[i] * (m_imin[i]-1);
 
       if (coords[i] < p[i]-1)
-        m_imax[i] = m_imin[i] + m_n[i];
+        m_imax[i] = m_imin[i] + m_n[i] - 2;
       else {
         m_imax[i] = m_nmax[i]-1;
         m_n[i] = m_imax[i] - m_imin[i] + 2;
@@ -149,16 +149,16 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
   f << "Process : " << p.rank()+1 << "/" << p.size() << "\n";
 
   if (p.rank() == 0) 
-    f << "Whole domain :   "
-      << "[" << 1 << "," << p.nmax(0) - 1  << "] x "
-      << "[" << 1 << "," << p.nmax(1) - 1  << "] x "
-      << "[" << 1 << "," << p.nmax(2) - 1  << "]"
+    f << "Whole domain :   " << std::endl << "   "
+      << "[" << 0 << "," << p.nmax(0) - 1  << "] x "
+      << "[" << 0 << "," << p.nmax(1) - 1  << "] x "
+      << "[" << 0 << "," << p.nmax(2) - 1  << "]"
       << "\n\n";
 
-  f << "Domain :   "
+  f << "Domain (interior points) :   " << std::endl << "   "
     << "[" << p.imin(0) << "," << p.imax(0)-1  << "] x "
-    << "[" << p.imax(1) << "," << p.imax(1)-1 << "] x "
-    << "[" << p.imax(2) << "," << p.imax(2)-1  << "]"
+    << "[" << p.imin(1) << "," << p.imax(1)-1 << "] x "
+    << "[" << p.imin(2) << "," << p.imax(2)-1  << "]"
     << "\n\n";
 
   f << "It. max : " << p.itmax() << "\n"
