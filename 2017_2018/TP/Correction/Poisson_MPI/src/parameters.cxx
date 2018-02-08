@@ -46,13 +46,13 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 
   m_diffusion = (*this)("diffusion", true);
   m_convection = (*this)("convection", true);
-  m_nmax[0] = (*this)("n", 400);
-  m_nmax[1] = (*this)("m", 400);
-  m_nmax[2] = (*this)("p", 400);
+  m_n_global[0] = (*this)("n", 400);
+  m_n_global[1] = (*this)("m", 400);
+  m_n_global[2] = (*this)("p", 400);
   m_itmax = (*this)("it", 10);
-  double dt_max = 1.5/(m_nmax[0]*m_nmax[0]
-		       + m_nmax[1]*m_nmax[1]
-		       + m_nmax[2]*m_nmax[2]);
+  double dt_max = 1.5/(m_n_global[0]*m_n_global[0]
+		       + m_n_global[1]*m_n_global[1]
+		       + m_n_global[2]*m_n_global[2]);
   m_dt = (*this)("dt", dt_max);
   m_freq = (*this)("out", -1);
 
@@ -74,7 +74,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 
     int i;
     for (i=0; i<3; i++) {
-      p[i] = (m_nmax[i] > 1) ? 0 : 1;
+      p[i] = (m_n_global[i] > 1) ? 0 : 1;
       periods[i] = 0;
     }
 
@@ -92,23 +92,25 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
     }
 
     for (i=0; i<3; i++) {
-      m_dx[i] = m_nmax[i]>1 ? 1.0/(m_nmax[i]-1) : 0.0;
-      m_n[i] = (m_nmax[i]-2)/p[i]+2;
+      m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
+      m_n[i] = (m_n_global[i]-2)/p[i]+2;
       
-      m_imin[i] = (m_n[i]-2) * coords[i] + 1;
-      m_xmin[i] = m_dx[i] * (m_imin[i]-1);
+      m_imin_global[i] = (m_n[i]-2) * coords[i] + 1;
+      m_xmin[i] = m_dx[i] * (m_imin_global[i]-1);
 
       if (coords[i] < p[i]-1)
-        m_imax[i] = m_imin[i] + m_n[i] - 2;
+        m_imax_global[i] = m_imin_global[i] + m_n[i] - 2;
       else {
-        m_imax[i] = m_nmax[i]-1;
-        m_n[i] = m_imax[i] - m_imin[i] + 2;
+        m_imax_global[i] = m_n_global[i]-1;
+        m_n[i] = m_imax_global[i] - m_imin_global[i] + 2;
       }
       
       m_di[i] = 1;
       if (m_n[i] < 2) {
-       	m_imax[i] = m_imin[i] + 1; m_di[i] = 0;
+       	m_imax_global[i] = m_imin_global[i] + 1; m_di[i] = 0;
       }
+      m_imin[i] = 1;
+      m_imax[i] = m_n[i] - 1;
     }
   }
   m_out = NULL;
@@ -150,15 +152,15 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 
   if (p.rank() == 0) 
     f << "Whole domain :   " << std::endl << "   "
-      << "[" << 0 << "," << p.nmax(0) - 1  << "] x "
-      << "[" << 0 << "," << p.nmax(1) - 1  << "] x "
-      << "[" << 0 << "," << p.nmax(2) - 1  << "]"
+      << "[" << 0 << "," << p.n_global(0) - 1  << "] x "
+      << "[" << 0 << "," << p.n_global(1) - 1  << "] x "
+      << "[" << 0 << "," << p.n_global(2) - 1  << "]"
       << "\n\n";
 
   f << "Domain (interior points) :   " << std::endl << "   "
-    << "[" << p.imin(0) << "," << p.imax(0)-1  << "] x "
-    << "[" << p.imin(1) << "," << p.imax(1)-1 << "] x "
-    << "[" << p.imin(2) << "," << p.imax(2)-1  << "]"
+    << "[" << p.imin_global(0) << "," << p.imax_global(0)-1  << "] x "
+    << "[" << p.imin_global(1) << "," << p.imax_global(1)-1 << "] x "
+    << "[" << p.imin_global(2) << "," << p.imax_global(2)-1  << "]"
     << "\n\n";
 
   f << "It. max : " << p.itmax() << "\n"

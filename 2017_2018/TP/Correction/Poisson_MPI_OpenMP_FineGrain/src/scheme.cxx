@@ -7,7 +7,7 @@
 
 
 Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_Sequential"), m_u(P), m_v(P), m_timers(3)  {
+  codeName("Poisson_MPI_OpenMP_FineGrain"), m_u(P), m_v(P), m_timers(4)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("comm");
@@ -33,12 +33,8 @@ Scheme::Scheme(const Parameters *P) :
 
 void Scheme::initialize()
 {
-  std::cerr << "ok ici 1.1" << std::endl;
-
   m_u.init();
-  std::cerr << "ok ici 1.2" << std::endl;
   m_v.init();
-  std::cerr << "ok ici 1.3" << std::endl;
 
   kStep = 1;
   m_t = 0.0;
@@ -94,9 +90,11 @@ bool Scheme::iteration()
 
   du_max = 0.0;
     
+#pragma omp parallel for default(shared), private(i,j,k,du), reduction(+:du_max) 
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) { 
+   
         du = 6 * m_u(i, j, k)
             - m_u(i + di, j, k) - m_u(i - di, j, k)
             - m_u(i, j + dj, k) - m_u(i, j - dj, k)
@@ -106,8 +104,8 @@ bool Scheme::iteration()
         du_max += du > 0 ? du : -du;
       }
 
-    m_duv = du_max;
-    return true;
+  m_duv = du_max;
+  return true;
 }
 
 bool Scheme::solve(unsigned int nSteps)
@@ -117,15 +115,17 @@ bool Scheme::solve(unsigned int nSteps)
 
   for (iStep=0; iStep < nSteps; iStep++) {
 
+    m_timers[2].start();
+    m_u.synchronize();
+    m_timers[2].stop();
+    
     m_timers[1].start();
     
     iteration();
 
-    double du_max = m_duv, du_max_global;
-    MPI_Allreduce(&du_max, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
-    du_max = du_max_global;
-
-    m_v.synchronize();
+    double du_max_global;
+    MPI_Allreduce(&m_duv, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
+    m_duv = du_max_global;
 
     m_t += m_dt;
 
@@ -135,7 +135,7 @@ bool Scheme::solve(unsigned int nSteps)
     if (m_P->rank() == 0) {
       m_timers[3].start();
       std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << du_max;
+              << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
       size_t i, n = m_timers.size();
       std::cerr << " (times :";
       for (i=0; i<n; i++)

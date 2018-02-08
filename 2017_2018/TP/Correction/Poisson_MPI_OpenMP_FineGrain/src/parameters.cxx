@@ -6,6 +6,13 @@
 #include <unistd.h>
 #endif
 
+#ifdef USE_MPI
+#include <mpi.h>
+#endif
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
+
 #include "parameters.hxx"
 #include <iostream>
 #include <sstream>
@@ -17,9 +24,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
-#if defined(_OPENMP)
-   #include <omp.h>
-#endif
 
 void stime(char * buffer, int size)
 {
@@ -55,13 +59,13 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 
   m_diffusion = (*this)("diffusion", true);
   m_convection = (*this)("convection", true);
-  m_n[0] = (*this)("n", 400);
-  m_n[1] = (*this)("m", 400);
-  m_n[2] = (*this)("p", 400);
+  m_n_global[0] = (*this)("n", 400);
+  m_n_global[1] = (*this)("m", 400);
+  m_n_global[2] = (*this)("p", 400);
   m_itmax = (*this)("it", 10);
-  double dt_max = 1.5/(m_n[0]*m_n[0]
-		       + m_n[1]*m_n[1]
-		       + m_n[2]*m_n[2]);
+  double dt_max = 1.5/(m_n_global[0]*m_n_global[0]
+		       + m_n_global[1]*m_n_global[1]
+		       + m_n_global[2]*m_n_global[2]);
   m_dt = (*this)("dt", dt_max);
   m_freq = (*this)("out", -1);
 
@@ -69,21 +73,57 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_diffusion = (*this)("diffusion", 1) == 1;
   
   if (!m_help) {
- 
+
+    int p[3];
+    
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
 		<< ") is greater then the recommended maximum (" <<  dt_max
 		<< ")" << std::endl;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &m_size);
+    int periods[3], coords[3];
+
     int i;
     for (i=0; i<3; i++) {
-      m_xmin[i] = 0.0;
-      m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
-      m_di[i] = 1;
-      m_imin[i] = 1;
-      m_imax[i] = m_n[i]-1;
-      if (m_n[i] < 2) {
-       	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+      p[i] = (m_n_global[i] > 1) ? 0 : 1;
+      periods[i] = 0;
+    }
+
+    // Creation d'une "grille" de processus MPI
+    MPI_Dims_create(m_size, 3, p);
+
+    MPI_Cart_create(MPI_COMM_WORLD, 3, p, periods, 1, &m_comm);
+    MPI_Comm_rank(m_comm, &m_rank);
+    MPI_Cart_coords(m_comm, m_rank, 3, coords);
+
+    for (i=0; i<3; i++) {
+      m_neigh[i][0] = MPI_PROC_NULL;
+      m_neigh[i][1] = MPI_PROC_NULL;
+      MPI_Cart_shift(m_comm, i, 1, &m_neigh[i][0], &m_neigh[i][1]);
+    }
+
+    for (i=0; i<3; i++) {
+      m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
+      m_n[i] = (m_n_global[i]-2)/p[i]+2;
+      
+      m_imin_global[i] = (m_n[i]-2) * coords[i] + 1;
+      m_xmin[i] = m_dx[i] * (m_imin_global[i]-1);
+
+      if (coords[i] < p[i]-1)
+        m_imax_global[i] = m_imin_global[i] + m_n[i] - 2;
+      else {
+        m_imax_global[i] = m_n_global[i]-1;
+        m_n[i] = m_imax_global[i] - m_imin_global[i] + 2;
       }
+      
+      m_di[i] = 1;
+      if (m_n[i] < 2) {
+       	m_imax_global[i] = m_imin_global[i] + 1; m_di[i] = 0;
+      }
+      m_imin[i] = 1;
+      m_imax[i] = m_n[i] - 1;
     }
   }
   m_out = NULL;
@@ -92,7 +132,9 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 bool Parameters::help()
 {
   if (m_help) {
-    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
+    std::cerr << "Usage : mpirun -n <nproc> " << m_command << " <list of options>\n\n"
+	      << "where <nproc> is the number of MPI processes\n\n";
+
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
 	      << "threads=<int> : nombre de threads OpenMP"
@@ -111,17 +153,28 @@ bool Parameters::help()
 
 Parameters::~Parameters()
 {
-  if (m_out) {
+  if (!m_help)
+    MPI_Finalize();
+
+  if (m_out)
     delete m_out;
-  }
 }
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
-  f << "Domain :   "
-    << "[" << 0 << "," << p.n(0) - 1  << "] x "
-    << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]"
+  f << "Process : " << p.rank()+1 << "/" << p.size() << "\n";
+
+  if (p.rank() == 0) 
+    f << "Whole domain :   " << std::endl << "   "
+      << "[" << 0 << "," << p.n_global(0) - 1  << "] x "
+      << "[" << 0 << "," << p.n_global(1) - 1  << "] x "
+      << "[" << 0 << "," << p.n_global(2) - 1  << "]"
+      << "\n\n";
+
+  f << "Domain (interior points) :   " << std::endl << "   "
+    << "[" << p.imin_global(0) << "," << p.imax_global(0)-1  << "] x "
+    << "[" << p.imin_global(1) << "," << p.imax_global(1)-1 << "] x "
+    << "[" << p.imin_global(2) << "," << p.imax_global(2)-1  << "]"
     << "\n\n";
 
   f << p.nthreads() << " thread(s)\n"
@@ -140,8 +193,8 @@ std::ostream & Parameters::out()
 
     std::ostringstream pth;
     pth << "results"
-    << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-    << "_" << buffer << "/";
+	<< "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+	<< "_" << buffer << "/";
     m_path = pth.str();
 
 #if defined(_WIN32)

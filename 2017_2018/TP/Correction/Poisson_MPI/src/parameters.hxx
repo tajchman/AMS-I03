@@ -22,7 +22,7 @@ public:
   int rank() const { return m_rank; }
   int neighbor(int idim, int j) const { return m_neigh[idim][j]; }
   
-  int nmax(int i) const { return m_nmax[i]; }
+  int n_global(int i) const { return m_n_global[i]; }
  
   int n(int i) const { return m_n[i]; }
   double dx(int i) const { return m_dx[i]; }
@@ -30,6 +30,8 @@ public:
 
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
+  int imin_global(int i) const { return m_imin_global[i]; }
+  int imax_global(int i) const { return m_imax_global[i]; }
   int di(int i) const { return m_di[i]; }
   
   int itmax() const { return m_itmax; }
@@ -54,9 +56,10 @@ private:
   MPI_Comm m_comm;
 
   int m_neigh[3][2];
-  int m_n[3], m_nmax[3];
+  int m_n[3], m_n_global[3];
   double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];
+  int m_imin_global[3], m_imax_global[3];
   
   int m_itmax;
   double m_dt;

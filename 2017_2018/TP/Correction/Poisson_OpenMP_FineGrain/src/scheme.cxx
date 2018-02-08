@@ -6,7 +6,7 @@
 
 
 Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_FineGrain"), m_u(P), m_v(P), m_timers(3)  {
+  codeName("Poisson_OpenMP_FineGrain"), m_u(P), m_v(P), m_timers(3)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
