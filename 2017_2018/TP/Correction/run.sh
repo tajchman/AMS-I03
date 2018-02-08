@@ -1,4 +1,4 @@
 #! /bin/bash
 
-./Poisson_MPI/build/Release/Poisson_MPI $@ >& log_$$
+./Poisson_MPI_OpenMP_FineGrain/build/Release/Poisson_MPI threads=2 $@ >& log_$$
 

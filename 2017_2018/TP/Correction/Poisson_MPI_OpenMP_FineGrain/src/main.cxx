@@ -56,8 +56,11 @@ int main(int argc, char *argv[])
     // std::cerr << "solution " << i << std::endl;
     // C.getOutput().print(std::cerr);
   }
-  
+
+  MPI_Barrier(MPI_COMM_WORLD);
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+  if (Prm.rank() == 0)
+    std::cout << "cpu time " << std::setprecision(5)
+	      << T_global.elapsed() << " s\n";
   return 0;
 }
