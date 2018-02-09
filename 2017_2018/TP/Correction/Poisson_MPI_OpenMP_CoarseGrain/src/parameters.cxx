@@ -21,6 +21,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
 
 void stime(char * buffer, int size)
 {
@@ -44,6 +47,16 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
 
+  m_nthreads = (*this)("threads", 1);
+
+#if defined(_OPENMP)
+  const char * omp_var = std::getenv("OMP_NUM_THREADS");
+  if (omp_var) m_nthreads = strtol(omp_var, NULL, 10);
+  omp_set_num_threads(m_nthreads);
+#else
+  m_nthreads = 1;
+#endif
+
   m_diffusion = (*this)("diffusion", true);
   m_convection = (*this)("convection", true);
   m_n_global[0] = (*this)("n", 400);
@@ -62,12 +75,12 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   if (!m_help) {
 
     int p[3];
-    
+ 
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
-		<< ") is greater then the recommended maximum (" <<  dt_max
-		<< ")" << std::endl;
-
+                << ") is greater then the recommended maximum (" <<  dt_max
+                << ")" << std::endl;
+    
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &m_size);
     int periods[3], coords[3];
@@ -94,7 +107,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
     for (i=0; i<3; i++) {
       m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
       m_n[i] = (m_n_global[i]-2)/p[i]+2;
-      
+
       m_imin_global[i] = (m_n[i]-2) * coords[i] + 1;
       m_xmin[i] = m_dx[i] * (m_imin_global[i]-1);
 
@@ -104,6 +117,34 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
         m_imax_global[i] = m_n_global[i]-1;
         m_n[i] = m_imax_global[i] - m_imin_global[i] + 2;
       }
+
+      m_imin[i] = 1;
+      m_imax[i] = m_n[i]-1;
+      if (m_n[i] < 2) {
+	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+      }
+      
+      m_thread_imin[i] = new int[m_nthreads];
+      m_thread_imax[i] = new int[m_nthreads];
+      
+      if (i == 0) {
+        int d =  (m_imax[0] - m_imin[0] + m_nthreads)/m_nthreads, dd;
+        if (d == 0) d = 1;
+        m_thread_imin[0][0] = m_imin[0];
+        m_thread_imax[0][0] = m_imin[0] + d;
+        for (j=1; j<m_nthreads; j++) {
+          m_thread_imin[0][j] = m_thread_imax[0][j-1];
+          m_thread_imax[0][j] = m_thread_imin[0][j] + d;
+          if (m_thread_imax[0][j] > m_imax[0])
+            m_thread_imax[0][j] = m_imax[0];
+        }
+        m_thread_imax[0][m_nthreads-1] = m_imax[0];
+      }
+      else {
+        for (j=0; j<m_nthreads; j++) {
+          m_thread_imin[i][j] = m_imin[i];
+          m_thread_imax[i][j] = m_imax[i];
+        }
       
       m_di[i] = 1;
       if (m_n[i] < 2) {
@@ -112,7 +153,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i] - 1;
     }
-  }
+  } 
   m_out = NULL;
 }
 
@@ -124,6 +165,7 @@ bool Parameters::help()
 
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+              << "threads=<int> : nombre de threads OpenMP"
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n=<int>       : number of internal points in the X direction (default: 400)\n"
@@ -155,16 +197,11 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
       << "[" << 0 << "," << p.n_global(0) - 1  << "] x "
       << "[" << 0 << "," << p.n_global(1) - 1  << "] x "
       << "[" << 0 << "," << p.n_global(2) - 1  << "]"
-      << "\n\n";
-
-  f << "Domain (interior points) :   " << std::endl << "   "
-    << "[" << p.imin_global(0) << "," << p.imax_global(0)-1  << "] x "
-    << "[" << p.imin_global(1) << "," << p.imax_global(1)-1 << "] x "
-    << "[" << p.imin_global(2) << "," << p.imax_global(2)-1  << "]"
     << "\n\n";
 
-    f << "It. max : " << p.itmax() << "\n"
-      << "Dt :      " << p.dt() << "\n";
+  f << p.nthreads() << " thread(s)\n"
+    << "It. max : " << p.itmax() << "\n"
+    << "Dt :      " << p.dt() << "\n";
 
   return f;
 }
@@ -178,8 +215,8 @@ std::ostream & Parameters::out()
 
     std::ostringstream pth;
     pth << "results"
-	<< "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-	<< "_" << buffer << "/";
+        << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+        << "_" << buffer << "/";
     m_path = pth.str();
 
 #if defined(_WIN32)

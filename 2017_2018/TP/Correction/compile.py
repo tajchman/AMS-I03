@@ -23,7 +23,7 @@ else:
     shell = False
 
 for b in BUILD_MODE:
-    for i in ('Sequential', 'OpenMP_FineGrain', 'OpenMP_CoarseGrain', 'MPI', 'MPI_OpenMP_FineGrain'):
+    for i in ('Sequential', 'OpenMP_FineGrain', 'OpenMP_CoarseGrain', 'MPI', 'MPI_OpenMP_FineGrain', 'MPI_OpenMP_CoarseGrain'):
         sys.stderr.write(i + '\n')
         SRC_DIR=os.path.join(DIR, 'Poisson_' + i, 'src')
         BUILD_DIR=os.path.join(DIR, 'Poisson_' + i, 'build', b)

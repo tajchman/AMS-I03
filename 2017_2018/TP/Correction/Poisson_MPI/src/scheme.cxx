@@ -74,7 +74,7 @@ size_t Scheme::getDomainSize(int dim) const
   return d;
 }
 
-bool Scheme::iteration()
+double Scheme::iteration()
 {
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
@@ -101,8 +101,8 @@ bool Scheme::iteration()
         m_v(i, j, k) = m_u(i, j, k) - du;
         du_max += du > 0 ? du : -du;
       }
-  m_duv = du_max;
-  return true;
+
+  return du_max;
 }
 
 bool Scheme::solve(unsigned int nSteps)
@@ -118,11 +118,11 @@ bool Scheme::solve(unsigned int nSteps)
     
     m_timers[1].start();
     
-    iteration();
+    m_duv = iteration();
 
-    double du_max = m_duv, du_max_global;
-    MPI_Allreduce(&du_max, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
-    du_max = du_max_global;
+    double du_max_global;
+    MPI_Allreduce(&m_duv, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
+    m_duv = du_max_global;
 
     m_t += m_dt;
 
@@ -132,7 +132,7 @@ bool Scheme::solve(unsigned int nSteps)
     if (m_P->rank() == 0) {
       m_timers[3].start();
       std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << du_max;
+                << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
       size_t i, n = m_timers.size();
       std::cerr << " (times :";
       for (i=0; i<n; i++)

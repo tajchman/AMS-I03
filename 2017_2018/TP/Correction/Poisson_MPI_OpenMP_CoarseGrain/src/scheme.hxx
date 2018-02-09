@@ -35,7 +35,10 @@ public:
 
 protected:
   double m_t, m_dt, m_lambda;
-  int m_di[3], m_n[3];
+  size_t m_n[3];
+  size_t m_dx[3];
+  size_t m_di[3];
+
   Values m_u, m_v;
   double m_duv;
   const Parameters *m_P;
