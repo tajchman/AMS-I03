@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.8)
-project(POISSON)
+set(ProjectName "Poisson_Sequential")
+
+project(${ProjectName})
 
 if(POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
@@ -22,7 +24,7 @@ include_directories(
   )
 
 add_executable(
-  PoissonSeq 
+  ${ProjectName} 
   main.cxx
   parameters.cxx
   parameters.hxx
@@ -33,7 +35,7 @@ add_executable(
   )
 
 target_link_libraries(
-   PoissonSeq
+   ${ProjectName}
    timer
 )
 

@@ -16,19 +16,11 @@
 class Scheme {
 
 public:
-  Scheme() : codeName("Poisson"), m_timers(3)  {
-   m_timers[0].name("init");
-   m_timers[1].name("solve");
-   m_timers[2].name("other");
-   m_duv = 0.0;
-   m_P = NULL;
-   m_t = 0.0;
-   kStep = 0;
-  }
+  Scheme(const Parameters *P);
   ~Scheme();
   size_t getDomainSize(int dim) const;
 
-  void initialize(const Parameters *P);
+  void initialize();
   double present();
 
   bool iteration();

@@ -53,15 +53,6 @@ int main(int argc, char *argv[])
     if (output) C.getOutput().plot(i);
     }
 
-  if (Prm.convection())
-    std::cout << "convection ";
-  else
-    std::cout << "           ";
-  if (Prm.diffusion())
-    std::cout << "diffusion  ";
-  else
-    std::cout << "           ";
-
   T_global.stop();
   std::cout << "cpu time " << std::setprecision(5) 
             << T_global.elapsed() << " s\n";

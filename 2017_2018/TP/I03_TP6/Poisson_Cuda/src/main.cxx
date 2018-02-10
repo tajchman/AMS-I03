@@ -32,12 +32,13 @@ void run(Parameters & Prm) {
 	int nsteps = output ? itMax/freq : 1;
 	int ksteps = output ? freq : itMax;
 
-	Values u_0;
-	SchemeType C;
+	Values u_0(&Prm);
+	SchemeType C(&Prm);
 
 	C.timer(0).start();
-	C.initialize(&Prm);
-	u_0.init(&Prm, f);
+	C.initialize();
+	u_0.init(f);
+
 	C.setInput(u_0);
 	C.timer(0).stop();
 
@@ -48,18 +49,20 @@ void run(Parameters & Prm) {
 		C.solve(ksteps);
 		if (output) C.getOutput().plot(i);
 	}
+
 	T_global.stop();
+
 	std::cout << C.deviceName << " time " << std::setprecision(5) << T_global.elapsed() << " s\n\n";
 }
 
 int main(int argc, char *argv[])
 {
-	Parameters Prm(argc, argv);
-	if (Prm.help()) return 0;
-	std::cout << Prm << std::endl;
+  Parameters Prm(argc, argv);
+  if (Prm.help()) return 0;
+  std::cout << Prm << std::endl;
 
-	run<Scheme>(Prm);
-	run<GPUScheme>(Prm);
+  run<Scheme>(Prm);
+  run<GPUScheme>(Prm);
 
-	return 0;
+  return 0;
 }

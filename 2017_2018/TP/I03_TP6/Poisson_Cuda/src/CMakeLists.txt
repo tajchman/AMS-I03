@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8.8)
-project(POISSON LANGUAGES C CXX CUDA)
+set(ProjectName "Poisson_Cuda")
+
+project(${ProjectName} LANGUAGES C CXX CUDA)
+
 
 if(POLICY CMP0054)
   cmake_policy(SET CMP0054 OLD)
@@ -23,8 +26,8 @@ include_directories(
   timer
   )
 
-cuda_add_executable(
-  PoissonCuda 
+add_executable(
+  ${ProjectName} 
   main.cxx
   parameters.cxx
   parameters.hxx
@@ -42,7 +45,7 @@ set_property(TARGET PoissonCuda
              PROPERTY CUDA_SEPARABLE_COMPILATION ON)
              
 target_link_libraries(
-   PoissonCuda
+   ${ProjectName}
    timer
    cuda
    ${CUDA_LIBRARIES}
