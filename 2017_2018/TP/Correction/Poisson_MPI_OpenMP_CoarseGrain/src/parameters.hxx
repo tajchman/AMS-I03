@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include "GetPot.hxx"
+#include <mpi.h>
 
 class Parameters : public GetPot {
 public:

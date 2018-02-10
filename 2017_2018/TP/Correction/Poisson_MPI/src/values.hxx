@@ -26,7 +26,7 @@ public:
   void swap(Values & other);
   int size(int i) const { return m_n[i]; }
   void print(std::ostream &f) const;
-
+  
   void synchronize();
   
 private:

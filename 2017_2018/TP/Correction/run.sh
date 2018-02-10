@@ -1,4 +1,9 @@
 #! /bin/bash
 
-./Poisson_MPI_OpenMP_FineGrain/build/Release/Poisson_MPI threads=2 $@ >& log_$$
+if [ "x$version" == "x" ] 
+then
+	version=Poisson_MPI_OpenMP_CoarseGrain
+fi
+
+./${version}/build/Release/${version} $@ >& log_$$
 

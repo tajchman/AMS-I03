@@ -23,7 +23,12 @@ else:
     shell = False
 
 for b in BUILD_MODE:
-    for i in ('Sequential', 'OpenMP_FineGrain', 'OpenMP_CoarseGrain', 'MPI', 'MPI_OpenMP_FineGrain', 'MPI_OpenMP_CoarseGrain'):
+    for i in ('Sequential',
+              'OpenMP_FineGrain',
+              'OpenMP_CoarseGrain',
+              'MPI',
+              'MPI_OpenMP_FineGrain',
+              'MPI_OpenMP_CoarseGrain'):
         sys.stderr.write(i + '\n')
         SRC_DIR=os.path.join(DIR, 'Poisson_' + i, 'src')
         BUILD_DIR=os.path.join(DIR, 'Poisson_' + i, 'build', b)
@@ -41,10 +46,24 @@ for b in BUILD_MODE:
             e['CC']  = mCC
             e['CXX'] = mCXX
             pass
- 
-        retCode = subprocess.check_call(['cmake',
-                                         '-DCMAKE_BUILD_TYPE=' + b,
-                                         SRC_DIR],
+        
+        CMAKE_FLAGS=[]
+        CMAKE_FLAGS.append("-G")
+        if CMAKE_GEN.startswith('Eclipse'):
+            CMAKE_FLAGS.append("Eclipse CDT4 - Unix Makefiles")
+            CMAKE_FLAGS.append("-DCMAKE_ECLIPSE_VERSION=4.4")
+            CMAKE_FLAGS.append("-DCMAKE_ECLIPSE_GENERATE_SOURCE_PROJECT=TRUE")
+            pass
+        else:
+            CMAKE_FLAGS.append(CMAKE_GEN)
+            pass
+        
+        CMAKE_FLAGS.append("-DCMAKE_BUILD_TYPE=" + b)
+
+        cmakeCmd = ['cmake'] + \
+                   CMAKE_FLAGS + \
+                   [ SRC_DIR ]
+        retCode = subprocess.check_call(cmakeCmd,
                                         env=e,
                                         stderr=subprocess.STDOUT,
                                         shell=shell)

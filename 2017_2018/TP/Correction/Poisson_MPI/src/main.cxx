@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   C.timer(0).start();
   C.initialize();
   u_0.init(f);
-  //  u_0.print(std::cerr);
+
   
   C.setInput(u_0);
   C.timer(0).stop();
@@ -52,12 +52,10 @@ int main(int argc, char *argv[])
   for (i=0; i<nsteps; i++) {
     C.solve(ksteps);
     if (output) C.getOutput().plot(i);
-
-    // std::cerr << "solution " << i << std::endl;
-    // C.getOutput().print(std::cerr);
   }
   
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+  std::cout << "cpu time " << std::setprecision(5) 
+            << T_global.elapsed() << " s\n";
   return 0;
 }

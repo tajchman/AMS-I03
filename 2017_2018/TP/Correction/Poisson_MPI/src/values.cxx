@@ -8,9 +8,8 @@ Values::Values(const Parameters * prm)
 {
   m_p = prm;
   int i, nn = 1;
-  for (i=0; i<3; i++) {
+  for (i=0; i<3; i++)
     nn *= (m_n[i] = m_p->n(i));
-  }
   
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
