@@ -1,34 +1,35 @@
 /*
- * scheme.hxx
+ * AbstractScheme.hxx
  *
- *  Created on: 5 janv. 2016
- *      Author: tajchman
+ *  Created on: 12 févr. 2018
+ *      Author: marc
  */
 
-#ifndef SCHEME_HXX_
-#define SCHEME_HXX_
+#ifndef ABSTRACTSCHEME_HXX_
+#define ABSTRACTSCHEME_HXX_
 
 #include <vector>
-#include "values.hxx"
+#include "AbstractValues.hxx"
 #include "parameters.hxx"
 #include "timer.hxx"
 
-class Scheme {
+class AbstractScheme {
 
 public:
-  Scheme(const Parameters *P);
-  ~Scheme();
+
+  AbstractScheme(const Parameters *P);
+  virtual ~AbstractScheme();
   size_t getDomainSize(int dim) const;
 
-  void initialize();
+  virtual void initialize();
   double present();
 
-  virtual bool iteration();
+  virtual bool iteration() = 0;
   bool solve(unsigned int nSteps);
   double variation();
   void terminate();
-  const Values & getOutput();
-  void setInput(const Values & u);
+  const AbstractValues & getOutput();
+  void setInput(const AbstractValues & u);
   void save(const char * /*fName*/);
   Timer & timer(int k) { return m_timers[k]; }
   std::string codeName;
@@ -40,11 +41,11 @@ protected:
   size_t m_dx[3];
   size_t m_di[3];
 
-  Values m_u, m_v;
-  double m_duv;
+  AbstractValues *m_u, *m_v;
+  double m_duv_max;
   const Parameters *m_P;
   std::vector<Timer> m_timers;
   int kStep;
 };
 
-#endif /* SCHEME_HXX_ */
+#endif /* ABSTRACTSCHEME_HXX_ */

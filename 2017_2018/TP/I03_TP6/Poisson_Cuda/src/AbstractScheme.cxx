@@ -1,16 +1,19 @@
-#include "scheme.hxx"
-#include "parameters.hxx"
+/*
+ * AbstractScheme.cxx
+ *
+ *  Created on: 12 févr. 2018
+ *      Author: marc
+ */
 
-#include <sstream>
+#include "AbstractScheme.hxx"
 #include <iomanip>
+#include <iostream>
 
-
-Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_Sequential"), m_u(P), m_v(P), m_timers(3)  {
+AbstractScheme::AbstractScheme(const Parameters *P) : m_timers(3)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
-   m_duv = 0.0;
+   m_duv_max = 0.0;
    m_P = P;
    m_t = 0.0;
    kStep = 0;
@@ -27,33 +30,38 @@ Scheme::Scheme(const Parameters *P) :
    double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
    m_dt = 0.5*(dx2 + 1e-12);
    m_lambda = 0.25*m_dt/(dx2 + 1e-12);
+
+   m_u = NULL;
+   m_v = NULL;
+   codeName = "";
+   deviceName = "";
 }
 
-void Scheme::initialize()
+void AbstractScheme::initialize()
 {
-  m_u.init();
-  m_v.init();
+  m_u->init();
+  m_v->init();
 
   kStep = 1;
   m_t = 0.0;
 
-  m_duv = 0.0;
+  m_duv_max = 0.0;
 
   double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
   m_dt = 0.5*(dx2 + 1e-12);
   m_lambda = 0.25*m_dt/(dx2 + 1e-12);
 }
 
-Scheme::~Scheme()
+AbstractScheme::~AbstractScheme()
 {
 }
 
-double Scheme::present()
+double AbstractScheme::present()
 {
   return m_t;
 }
 
-size_t Scheme::getDomainSize(int dim) const
+size_t AbstractScheme::getDomainSize(int dim) const
 {
   size_t d;
   switch (dim) {
@@ -72,39 +80,8 @@ size_t Scheme::getDomainSize(int dim) const
   return d;
 }
 
-bool Scheme::iteration()
-{
-  int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
-  int i, j, k;
-  double du, du_max;
 
-  int imin = m_P->imin(0) ;
-  int jmin = m_P->imin(1) ;
-  int kmin = m_P->imin(2) ;
-
-  int imax = m_P->imax(0) ;
-  int jmax = m_P->imax(1) ;
-  int kmax = m_P->imax(2) ;
-
-  du_max = 0.0;
-    
-  for (i = imin; i < imax; i++)
-    for (j = jmin; j < jmax; j++)
-      for (k = kmin; k < kmax; k++) { 
-        du = 6 * m_u(i, j, k)
-            - m_u(i + di, j, k) - m_u(i - di, j, k)
-            - m_u(i, j + dj, k) - m_u(i, j - dj, k)
-            - m_u(i, j, k + dk) - m_u(i, j, k - dk);
-        du *= m_lambda;
-        m_v(i, j, k) = m_u(i, j, k) - du;
-        du_max += du > 0 ? du : -du;
-      }
-
-    m_duv = du_max;
-    return true;
-}
-
-bool Scheme::solve(unsigned int nSteps)
+bool AbstractScheme::solve(unsigned int nSteps)
 {
 
   int iStep;
@@ -112,17 +89,18 @@ bool Scheme::solve(unsigned int nSteps)
   for (iStep=0; iStep < nSteps; iStep++) {
 
     m_timers[1].start();
-    
+
     iteration();
 
     m_t += m_dt;
 
-    m_u.swap(m_v);
+    m_u->swap(*m_v);
 
     m_timers[1].stop();
     m_timers[2].start();
     std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
+              << " variation " << std::setw(12) << std::setprecision(6)
+	      << m_duv_max;
     size_t i, n = m_timers.size();
     std::cerr << " (times :";
     for (i=0; i<n; i++)
@@ -137,28 +115,26 @@ bool Scheme::solve(unsigned int nSteps)
   return true;
 }
 
-double Scheme::variation()
+double AbstractScheme::variation()
 {
-  return m_duv;
+  return m_duv_max;
 }
 
-void Scheme::terminate() {
+void AbstractScheme::terminate() {
     std::cerr << "\n\nterminate " << codeName << std::endl;
 }
 
-const Values & Scheme::getOutput()
+const AbstractValues & AbstractScheme::getOutput()
 {
-  return m_u;
+  return *m_u;
 }
 
-void Scheme::setInput(const Values & u)
+void AbstractScheme::setInput(const AbstractValues & u)
 {
-  m_u = u;
-  m_v = u;
+  *m_u = u;
+  *m_v = u;
 }
 
-void Scheme::save(const char * /*fName*/)
+void AbstractScheme::save(const char * /*fName*/)
 {
 }
-
-

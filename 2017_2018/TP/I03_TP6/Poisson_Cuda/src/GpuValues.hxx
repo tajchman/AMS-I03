@@ -8,10 +8,12 @@
 #ifndef GPUVALUES_HPP_
 #define GPUVALUES_HPP_
 
-#include "values.hxx"
+#include "AbstractValues.hxx"
 
-class GPUValues : public Values {
+class GpuValues : public AbstractValues {
 public:
+  GpuValues(const Parameters * p);
+  virtual ~GpuValues() {}
 
 protected :
     void allocate(size_t nn);

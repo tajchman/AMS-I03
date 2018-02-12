@@ -31,17 +31,21 @@ add_executable(
   main.cxx
   parameters.cxx
   parameters.hxx
-  values.cxx
-  values.hxx
-  scheme.cxx
-  scheme.hxx
-  gpu_scheme.cu
-  gpu_scheme.hxx
-  gpu_values.cu
-  gpu_values.hxx
+  AbstractScheme.cxx
+  AbstractScheme.hxx
+  CpuScheme.cxx
+  CpuScheme.hxx
+  GpuScheme.cu
+  GpuScheme.hxx
+  AbstractValues.cxx
+  AbstractValues.hxx
+  GpuValues.cu
+  GpuValues.hxx
+  CpuValues.cxx
+  CpuValues.hxx
   )
 
-set_property(TARGET PoissonCuda 
+set_property(TARGET ${ProjectName}
              PROPERTY CUDA_SEPARABLE_COMPILATION ON)
              
 target_link_libraries(

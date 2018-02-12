@@ -1,10 +1,17 @@
-#include "values.hxx"
+/*
+ * AbstractValues.cxx
+ *
+ *  Created on: 12 févr. 2018
+ *      Author: marc
+ */
+
+#include "AbstractValues.hxx""
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
 
-Values::Values(const Parameters * prm)
+AbstractValues::AbstractValues(const Parameters * prm)
 {
   m_p = prm;
   int i, nn = 1;
@@ -13,11 +20,13 @@ Values::Values(const Parameters * prm)
 
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
-  
+
+  m_u = NULL;
+
   allocate(nn);
 }
 
-void Values::init(double (*f)(double, double, double))
+void AbstractValues::init(double (*f)(double, double, double))
 {
   int i, j, k;
   int imin = m_p->imin(0);
@@ -48,7 +57,7 @@ void Values::init(double (*f)(double, double, double))
   }
 }
 
-void Values::print(std::ostream & f) const
+void AbstractValues::print(std::ostream & f) const
 {
     int i, j, k;
     int imin = m_p->imin(0);
@@ -69,7 +78,7 @@ void Values::print(std::ostream & f) const
       }
 }
 
-void Values::swap(Values & other)
+void AbstractValues::swap(AbstractValues & other)
 {
   double * dtemp = m_u;
   m_u = other.m_u;
@@ -83,7 +92,7 @@ void Values::swap(Values & other)
   }
 }
 
-void Values::plot(int order) const {
+void AbstractValues::plot(int order) const {
 
   std::ostringstream s;
   int i, j, k;
@@ -102,19 +111,19 @@ void Values::plot(int order) const {
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax  << " "
+    << jmin << " " << jmax  << " "
+    << kmin << " " << kmax
     << "\">\n"
     << "<Piece Extent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax  << " "
+    << jmin << " " << jmax  << " "
+    << kmin << " " << kmax
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";
   f << "  <DataArray type=\"Float64\" Name=\"values\" format=\"ascii\">\n";
-  
+
   for (k=kmin; k<kmax; k++)
     for (j=jmin; j<jmax; j++) {
       for (i=imin; i<imax; i++)
@@ -122,15 +131,15 @@ void Values::plot(int order) const {
       f << "\n";
     }
   f << " </DataArray>\n";
-   
+
   f << "</PointData>\n";
 
   f << " <Coordinates>\n";
-  
+
   for (k=0; k<3; k++) {
-    f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\"" 
+    f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\""
       << " format=\"ascii\">";
-    
+
     int imin = m_p->imin(k);
     int imax = m_p->imax(k);
     for (i=imin; i<imax; i++)
@@ -138,34 +147,10 @@ void Values::plot(int order) const {
     f << "   </DataArray>\n";
   }
   f << " </Coordinates>\n";
-  
+
   f << "</Piece>\n"
     << "</RectilinearGrid>\n"
     << "</VTKFile>\n" <<std::endl;
 }
 
-void Values::allocate(size_t n)
-{
-  deallocate();
-  m_u = new double [n];
-}
 
-void Values::deallocate()
-{
-  if (m_u == NULL) {
-    delete [] m_u;
-    m_u = NULL;
-  }
-}
-
-void Values::operator= (const Values &other)
-{
-  int i;
-  size_t nn = 1;
-  
-  for (i=0; i<3; i++)
-    nn *= (m_n[i] = other.m_n[i]);
-  
-  allocate(nn);
-  memcpy(m_u, other.m_u, nn*sizeof(double));
-}
