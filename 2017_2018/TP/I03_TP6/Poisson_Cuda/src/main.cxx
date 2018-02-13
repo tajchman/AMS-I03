@@ -41,6 +41,7 @@ void run(int argc, char *argv[]) {
 	C.timer(0).stop();
 
 	if (output) C.getOutput().plot(0);
+	C.getOutput().print(std::cerr);
 
 	int i;
 	for (i=0; i<nsteps; i++) {

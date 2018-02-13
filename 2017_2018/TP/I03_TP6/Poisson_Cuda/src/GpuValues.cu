@@ -26,8 +26,10 @@ gpu_init(double *u, size_t nx, size_t ny, size_t nz,
 	const int k = blockIdx.z * blockDim.z + threadIdx.z ;
 
 	int i_j_k  = i + j*nx + k*nx*ny;
-	if (i>0 && i<nx-1 && j>0 && j<ny-1 && k>0 && k<nz-1)
+	if (i>0 && i<nx-1 && j>0 && j<ny-1 && k>0 && k<nz-1) {
 		u[i_j_k] = f_GPU(xmin + i*dx, ymin + j*dx, zmin + k*dz);
+		printf("u %d %d %d = %g\n", i,j,k, u[i_j_k]);
+	}
 }
 
 void GpuValues::init_f()
