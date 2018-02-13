@@ -1,12 +1,11 @@
 #include "CpuScheme.hxx"
 #include "CpuValues.hxx"
-#include "parameters.hxx"
+#include "CpuParameters.hxx"
 
 #include <sstream>
 #include <iomanip>
 
-
-CpuScheme::CpuScheme(const Parameters *P) : AbstractScheme(P) {
+CpuScheme::CpuScheme(const CpuParameters *P) : AbstractScheme(P) {
 
 	m_u = new CpuValues(P);
 	m_v = new CpuValues(P);
@@ -44,7 +43,8 @@ bool CpuScheme::iteration()
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) { 
-        du = 6 * u(i, j, k)
+  	   printf("centre u(%d,%d,%d) = %g\n", i,j,k, u(i,j,k));
+       du = 6 * u(i, j, k)
             - u(i + di, j, k) - u(i - di, j, k)
             - u(i, j + dj, k) - u(i, j - dj, k)
             - u(i, j, k + dk) - u(i, j, k - dk);

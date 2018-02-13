@@ -1,8 +1,8 @@
-#ifndef __VALUES__
-#define __VALUES__
+#ifndef CPUVALUES_HXX_
+#define CPUVALUES_HXX_
 
 #include "AbstractValues.hxx"
-#include "parameters.hxx"
+#include "CpuParameters.hxx"
 #include <vector>
 #include <iostream>
 
@@ -10,9 +10,11 @@ class CpuValues : public AbstractValues {
 
 public:
 
-  CpuValues(const Parameters * p);
+  CpuValues(const CpuParameters * p);
   virtual ~CpuValues() {}
   void operator= (const CpuValues &);
+  void init();
+  void init_f();
 
 protected:
   

@@ -5,57 +5,34 @@
  *      Author: marc
  */
 
-#include "AbstractValues.hxx""
+#include "AbstractValues.hxx"
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
 
-AbstractValues::AbstractValues(const Parameters * prm)
+AbstractValues::AbstractValues(const AbstractParameters * prm)
 {
   m_p = prm;
-  int i, nn = 1;
+  int i;
   for (i=0; i<3; i++)
     nn *= (m_n[i] = m_p->n(i));
 
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
+  nn = m_n[0] * n2;
 
   m_u = NULL;
 
-  allocate(nn);
 }
 
-void AbstractValues::init(double (*f)(double, double, double))
+void AbstractValues::operator=(AbstractValues const& other)
 {
-  int i, j, k;
-  int imin = m_p->imin(0);
-  int jmin = m_p->imin(1);
-  int kmin = m_p->imin(2);
+   allocate(nn);
+   memcpy(m_u, other.m_u, sizeof(double)*nn);
 
-  int imax = m_p->imax(0);
-  int jmax = m_p->imax(1);
-  int kmax = m_p->imax(2);
-
-  if (f) {
-    double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
-    double xmin =  m_p->xmin(0);
-    double ymin =  m_p->xmin(1);
-    double zmin =  m_p->xmin(2);
-
-    for (i=imin; i<imax; i++)
-      for (j=jmin; j<jmax; j++)
-        for (k=kmin; k<kmax; k++)
-          operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
-  }
-  else {
-    for (i=imin; i<imax; i++)
-      for (j=jmin; j<jmax; j++)
-        for (k=kmin; k<kmax; k++)
-          operator()(i,j,k) = 0.0;
-
-  }
 }
+
 
 void AbstractValues::print(std::ostream & f) const
 {

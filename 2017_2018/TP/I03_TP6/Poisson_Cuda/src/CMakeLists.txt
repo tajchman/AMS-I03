@@ -22,6 +22,8 @@ find_package(CUDA)
 
 add_subdirectory(timer)
 
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets")
+
 include_directories(
   timer
   )
@@ -29,20 +31,24 @@ include_directories(
 add_executable(
   ${ProjectName} 
   main.cxx
-  parameters.cxx
-  parameters.hxx
   AbstractScheme.cxx
   AbstractScheme.hxx
+  AbstractValues.cxx
+  AbstractValues.cxx
+  AbstractParameters.cxx
+  AbstractParameters.hxx
   CpuScheme.cxx
   CpuScheme.hxx
   GpuScheme.cu
   GpuScheme.hxx
-  AbstractValues.cxx
-  AbstractValues.hxx
-  GpuValues.cu
-  GpuValues.hxx
   CpuValues.cxx
   CpuValues.hxx
+  GpuValues.cu
+  GpuValues.hxx
+  CpuParameters.cxx
+  CpuParameters.hxx
+  GpuParameters.cu
+  GpuParameters.hxx
   )
 
 set_property(TARGET ${ProjectName}

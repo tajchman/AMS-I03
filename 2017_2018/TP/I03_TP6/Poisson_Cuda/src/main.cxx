@@ -2,69 +2,61 @@
 #include <sstream>
 #include <iomanip>
 
-#include "parameters.hxx"
+#include "CpuParameters.hxx"
+#include "GpuParameters.hxx"
 #include "CpuValues.hxx"
 #include "GpuValues.hxx"
 #include "CpuScheme.hxx"
 #include "GpuScheme.hxx"
 #include "timer.hxx"
 
-double f(double x, double y, double z)
-{
-  x -= 0.5;
-  y -= 0.5;
-  z -= 0.5;
-  if (x*x+y*y+z*z < 0.1)
-    return 1.0;
-  else
-    return 0.0;
-}
+template<typename SchemeType, typename ValueType, typename ParamType>
+void run(int argc, char *argv[]) {
 
-template<typename SchemeType, typename ValueType>
-void run(Parameters & Prm) {
-  Timer T_global;
-  T_global.start();
+	ParamType P(argc, argv);
 
-  int freq = Prm.freq();
-  bool output = freq > 0;
-  if (output) Prm.out();
+	if (P.help()) exit(0);
+	std::cout << P << std::endl;
 
-  int itMax = Prm.itmax();
+	Timer T_global;
+	T_global.start();
 
-  int nsteps = output ? itMax/freq : 1;
-  int ksteps = output ? freq : itMax;
+	int freq = P.freq();
+	bool output = freq > 0;
+	if (output) P.out();
 
-  ValueType u_0(&Prm);
-  SchemeType C(&Prm);
+	int itMax = P.itmax();
 
-  C.timer(0).start();
-  C.initialize();
-  u_0.init(f);
+	int nsteps = output ? itMax/freq : 1;
+	int ksteps = output ? freq : itMax;
 
-  C.setInput(u_0);
-  C.timer(0).stop();
+	ValueType u_0(&P);
+	SchemeType C(&P);
 
-  if (output) C.getOutput().plot(0);
-  
-  int i;
-  for (i=0; i<nsteps; i++) {
-    C.solve(ksteps);
-    if (output) C.getOutput().plot(i);
-  }
+	C.timer(0).start();
+	C.initialize();
+	u_0.init_f();
 
-  T_global.stop();
+	C.setInput(u_0);
+	C.timer(0).stop();
 
-  std::cout << C.deviceName << " time " << std::setprecision(5) << T_global.elapsed() << " s\n\n";
+	if (output) C.getOutput().plot(0);
+
+	int i;
+	for (i=0; i<nsteps; i++) {
+		C.solve(ksteps);
+		if (output) C.getOutput().plot(i);
+	}
+
+	T_global.stop();
+
+	std::cout << C.deviceName << " time " << std::setprecision(5) << T_global.elapsed() << " s\n\n";
 }
 
 int main(int argc, char *argv[])
 {
-  Parameters Prm(argc, argv);
-  if (Prm.help()) return 0;
-  std::cout << Prm << std::endl;
+	run<CpuScheme, CpuValues, CpuParameters>(argc, argv);
+	run<GpuScheme, GpuValues, GpuParameters>(argc, argv);
 
-  run<CpuScheme, CpuValues>(Prm);
-  run<GpuScheme, GpuValues>(Prm);
-
-  return 0;
+	return 0;
 }

@@ -6,10 +6,12 @@
  */
 
 #include "AbstractScheme.hxx"
+#include "timer.hxx"
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
-AbstractScheme::AbstractScheme(const Parameters *P) : m_timers(3)  {
+AbstractScheme::AbstractScheme(const AbstractParameters *P) : m_timers(3)  {
    m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
@@ -85,6 +87,7 @@ bool AbstractScheme::solve(unsigned int nSteps)
 {
 
   int iStep;
+  m_duv_max = 0.0;
 
   for (iStep=0; iStep < nSteps; iStep++) {
 
@@ -99,8 +102,7 @@ bool AbstractScheme::solve(unsigned int nSteps)
     m_timers[1].stop();
     m_timers[2].start();
     std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6)
-	      << m_duv_max;
+              << " variation " << std::setw(12) << std::setprecision(6) << m_duv_max;
     size_t i, n = m_timers.size();
     std::cerr << " (times :";
     for (i=0; i<n; i++)

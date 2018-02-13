@@ -8,15 +8,18 @@
 #ifndef ABSTRACTVALUES_HXX_
 #define ABSTRACTVALUES_HXX_
 
-#include "parameters.hxx"
+#include "AbstractParameters.hxx"
 
 class AbstractValues {
 public:
 
-	AbstractValues(const Parameters * prm);
-	virtual ~AbstractValues();
+	AbstractValues(const AbstractParameters * prm);
+	virtual ~AbstractValues() {}
 
-	void init(double (*f)(double, double, double) = 0L);
+	virtual void init() = 0;
+	virtual void init_f() = 0;
+
+	void operator=(const AbstractValues & other);
 	void print(std::ostream & f) const;
 	void swap(AbstractValues & other);
 	void plot(int order) const;
@@ -37,10 +40,10 @@ protected:
 	virtual void allocate(size_t n) = 0;
     virtual	void deallocate() = 0;
 
-    int n1, n2;
+    int n1, n2, nn;
     double * m_u;
     int m_n[3];
-    const Parameters * m_p;
+    const AbstractParameters * m_p;
 
 };
 

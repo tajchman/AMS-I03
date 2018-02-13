@@ -5,17 +5,17 @@
  *      Author: tajchman
  */
 
-#ifndef SCHEME_HXX_
-#define SCHEME_HXX_
+#ifndef CPUSCHEME_HXX_
+#define CPUSCHEME_HXX_
 
 #include <vector>
-#include "parameters.hxx"
+#include "CpuParameters.hxx"
 #include "AbstractScheme.hxx"
 
 class CpuScheme : public AbstractScheme {
 
 public:
-  CpuScheme(const Parameters *P);
+  CpuScheme(const CpuParameters *P);
   virtual ~CpuScheme();
 
   bool iteration();
@@ -23,4 +23,4 @@ public:
 protected:
 };
 
-#endif /* SCHEME_HXX_ */
+#endif /* CPUSCHEME_HXX_ */

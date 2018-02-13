@@ -9,21 +9,23 @@
 #define GPUSCHEME_HXX_
 
 #include "AbstractScheme.hxx"
+#include "CpuValues.hxx"
 #include "GpuValues.hxx"
-
-struct sGPU;
+#include "GpuParameters.hxx"
 
 class GpuScheme : public AbstractScheme {
 public:
-  GpuScheme(const Parameters *);
+  GpuScheme(const GpuParameters *);
   ~GpuScheme();
   
   void initialize();
   bool iteration();
+  const AbstractValues & getOutput();
+  void setInput(const AbstractValues & u);
 
 protected:
-  sGPU * m_GPU;
   GpuValues m_duv, m_duv2;
+  CpuValues * m_w;
 };
 
 #endif /* GPUSCHEME_HXX_ */

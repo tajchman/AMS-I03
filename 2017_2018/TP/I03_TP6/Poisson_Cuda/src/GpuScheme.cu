@@ -1,64 +1,30 @@
-#include "GPU.hxx"
 #include "GpuScheme.hxx"
 #include <math.h>
-#include <cuda.h>
 #include <iostream>
+#include "CpuValues.hxx"
+#include "cuda.h"
 
-struct sGPU {
+GpuScheme::GpuScheme(const GpuParameters *P) : AbstractScheme(P), m_duv(P), m_duv2(P)  {
+	m_u = new GpuValues(P);
+	m_v = new GpuValues(P);
+	m_w = new CpuValues(P);
 
-  CUdevice device;
-  CUcontext context;
-  dim3 dimBlock, dimGrid;
-};
-
-GpuScheme::GpuScheme(const Parameters *P) : Scheme(P), m_duv(P), m_duv2(P)  {
-  codeName = "Poisson_Cuda";
+  codeName = "Poisson_GPU";
   deviceName = "GPU";
-  m_GPU = new sGPU;
 
-  int deviceCount;
-  CHECK_CUDA_RESULT(cuInit(0));
-  CHECK_CUDA_RESULT(cuDeviceGetCount(&deviceCount));
-  if (deviceCount == 0) {
-    std::cerr << "GPU : no CUDA device found" << std::endl;
-    exit(1);
-  }
-  else {
-    std::cerr << "GPU : " << deviceCount << " CUDA device";
-    if (deviceCount > 1) std::cerr << "s";
-    std::cerr << " found\n" << std::endl;
-  }
-  CHECK_CUDA_RESULT(cuDeviceGet(&(m_GPU->device), 0));
-  CHECK_CUDA_RESULT(cuCtxCreate(&(m_GPU->context), 0, m_GPU->device));
-
-#define BLOCK_SIZE_X 4
-#define BLOCK_SIZE_Y 4
-#define BLOCK_SIZE_Z 4
-
-  m_GPU->dimBlock = dim3(BLOCK_SIZE_X, BLOCK_SIZE_Y, BLOCK_SIZE_Z);
-  m_GPU->dimGrid  = dim3( ceil(float(m_n[0])/float(m_GPU->dimBlock.x)),
-			  ceil(float(m_n[1])/float(m_GPU->dimBlock.y)),
-			  ceil(float(m_n[2])/float(m_GPU->dimBlock.z)));
-
-  std::cerr << "Block "
-            << m_GPU->dimBlock.x << " x "
-            << m_GPU->dimBlock.y << " x "
-            << m_GPU->dimBlock.z << std::endl;
-  std::cerr << "Grid  "
-            << m_GPU->dimGrid.x << " x "
-            << m_GPU->dimGrid.y << " x "
-            << m_GPU->dimGrid.z << std::endl << std::endl;
 }
 
 void GpuScheme::initialize()
 {
-  Scheme::initialize();
+  AbstractScheme::initialize();
   m_duv.init();
 }
 
 GpuScheme::~GpuScheme()
 {
-  CHECK_CUDA_RESULT(cuCtxDestroy(m_GPU->context));
+  const GpuParameters * p = dynamic_cast<const GpuParameters *>(m_P);
+  const sGPU * g = p->GpuInfo;
+  cuCtxDestroy(g->context);
 }
 
 __global__ void
@@ -81,7 +47,7 @@ gpu_iteration(const double *u, double *v, double lambda, int nx, int ny, int nz)
 
 //  printf(" %d %d %d ---- %d %d %d === %d \n", i>0, j>0, k>0, i<nx-1, j<ny-1, k<nz-1, i>0 && i<nx-1 && j>0 && j<ny-1 && k>0 && k<nz-1);
   if (i>0 && i<nx-1 && j>0 && j<ny-1 && k>0 && k<nz-1) {
-	    printf("centre u(%d,%d,%d) = %d\n", i,j,k, u[i_j_k]);
+	    printf("centre u(%d,%d,%d) = %g\n", i,j,k, u[i_j_k]);
     v[i_j_k] = u[i_j_k] - lambda *
       (6 * u[i_j_k] - u[ip_j_k] - u[im_j_k]
        - u[i_jp_k] - u[i_jm_k]
@@ -125,23 +91,42 @@ __global__ void gpu_reduction(double *g_idata, double *g_odata, int n)
 bool GpuScheme::iteration()
 {
 
+  const GpuParameters * p = dynamic_cast<const GpuParameters *>(m_P);
+  const sGPU * g = p->GpuInfo;
+
 //  std::cerr << "u:" << std::endl;
 //  m_u.print(std::cerr);
   
   cudaDeviceSynchronize();
-  gpu_iteration<<<m_GPU->dimBlock, m_GPU->dimGrid>>>
-    (m_u.data(), m_v.data(), m_lambda, m_n[0]-1, m_n[1]-1, m_n[2]-1);
+  gpu_iteration<<<g->dimBlock, g->dimGrid>>>
+    (m_u->data(), m_v->data(), m_lambda, m_n[0]-1, m_n[1]-1, m_n[2]-1);
   cudaDeviceSynchronize();
   std::exit(-1);
   
-  gpu_difference<<<m_GPU->dimBlock, m_GPU->dimGrid>>>
-    (m_u.data(), m_v.data(), m_duv.data(), m_n[0], m_n[1], m_n[2]);
+  gpu_difference<<<g->dimBlock, g->dimGrid>>>
+    (m_u->data(), m_v->data(), m_duv.data(), m_n[0], m_n[1], m_n[2]);
   cudaDeviceSynchronize();
-  gpu_reduction<<<m_GPU->dimBlock, m_GPU->dimGrid>>>
+  gpu_reduction<<<g->dimBlock, g->dimGrid>>>
     (m_duv.data(), m_duv2.data(), m_n[0]*m_n[1]*m_n[2]);
 
   m_duv_max = m_duv2.data()[0];
   std::cerr << m_duv_max << std::endl;
   return true;
+}
+
+const AbstractValues & GpuScheme::getOutput()
+{
+  m_w->init();
+
+  size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
+  cudaMemcpy(m_w->data(), m_u->data(), n, cudaMemcpyDeviceToHost);
+  return *m_w;
+}
+
+void GpuScheme::setInput(const AbstractValues & u)
+{
+	  size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
+	  cudaMemcpy(m_u->data(), u.data(), n, cudaMemcpyDeviceToDevice);
+
 }
 

@@ -5,19 +5,26 @@
  *      Author: marc
  */
 
-#ifndef GPUVALUES_HPP_
-#define GPUVALUES_HPP_
+#ifndef GPUVALUES_HXX_
+#define GPUVALUES_HXX_
 
+#include "GpuParameters.hxx"
 #include "AbstractValues.hxx"
 
 class GpuValues : public AbstractValues {
 public:
-  GpuValues(const Parameters * p);
-  virtual ~GpuValues() {}
+	GpuValues(const GpuParameters * p);
+	virtual ~GpuValues() {}
+	double * g_data() { return g_u; }
+	const double * g_data() const { return g_u; }
+
+    void init();
+	void init_f();
 
 protected :
-    void allocate(size_t nn);
-    void deallocate();
+	void allocate(size_t nn);
+	void deallocate();
+	double * g_u;
 };
 
-#endif /* GPUVALUES_HPP_ */
+#endif /* GPUVALUES_HXX_ */
