@@ -69,6 +69,8 @@ void CpuValues::init_f()
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++)
 	operator()(i,j,k) = f_CPU(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+
+  std::cerr << "cpu init" << std::endl;
 }
 
 void CpuValues::operator= (const CpuValues &other)

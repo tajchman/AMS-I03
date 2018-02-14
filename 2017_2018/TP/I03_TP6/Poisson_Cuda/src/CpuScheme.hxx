@@ -19,6 +19,8 @@ public:
   virtual ~CpuScheme();
 
   bool iteration();
+  const AbstractValues & getOutput();
+  void setInput(const AbstractValues & u);
 
 protected:
 };

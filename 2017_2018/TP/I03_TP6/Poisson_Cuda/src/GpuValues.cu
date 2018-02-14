@@ -28,7 +28,6 @@ gpu_init_f(double *u, size_t nx, size_t ny, size_t nz,
 	int i_j_k  = i + j*nx + k*nx*ny;
 	if (i<nx && j<ny && k<nz) {
 	   u[i_j_k] = f_GPU(xmin + i*dx, ymin + j*dx, zmin + k*dz);
-	   printf("gpu_init : %d %d %d = %g\n", i,j,k, u[i_j_k]);
  	   }
 }
 

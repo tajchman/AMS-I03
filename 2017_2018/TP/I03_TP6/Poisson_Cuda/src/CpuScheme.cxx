@@ -1,6 +1,7 @@
 #include "CpuScheme.hxx"
 #include "CpuValues.hxx"
 #include "CpuParameters.hxx"
+#include "GpuValues.hxx"
 
 #include <sstream>
 #include <iomanip>
@@ -59,4 +60,25 @@ bool CpuScheme::iteration()
   return true;
 }
 
+const AbstractValues & CpuScheme::getOutput()
+{
+  CpuValues * pu = dynamic_cast<CpuValues *>(m_u);
+  return *pu;
+}
+
+void CpuScheme::setInput(const AbstractValues & w)
+{
+  size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
+
+  CpuValues * pu = dynamic_cast<CpuValues *>(m_u);
+  CpuValues & u = *pu;
+
+  const CpuValues * w1 = dynamic_cast<const CpuValues *>(&w);
+  std::cerr << "u1 = " << w1 << std::endl;    
+  if (w1) {
+    memcpy(u.data(), w1->data(), n);
+    return;
+  }
+
+}
 
