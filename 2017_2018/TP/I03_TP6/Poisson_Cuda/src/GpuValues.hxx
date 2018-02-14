@@ -10,7 +10,6 @@
 
 #include "GpuParameters.hxx"
 #include "AbstractValues.hxx"
-#include <builtin_types.h>
 
 class GpuValues : public AbstractValues {
 public:
