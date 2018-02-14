@@ -21,26 +21,19 @@ AbstractValues::AbstractValues(const AbstractParameters * prm)
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   nn = m_n[0] * n2;
-}
-
-void AbstractValues::operator=(AbstractValues const& other)
-{
-   allocate(nn);
- 
+  m_u = NULL;
 }
 
 void AbstractValues::swap(AbstractValues & other)
 {
-  double * dtemp = m_u;
-  m_u = other.m_u;
-  other.m_u = dtemp;
+  std::swap(m_u, other.m_u);
 
-  int i, temp;
-  for (i=0; i<3; i++) {
-    temp = m_n[i];
-    m_n[i] = other.m_n[i];
-    other.m_n[i] = temp;
-  }
+  int i;
+  for (i=0; i<3; i++)
+	  std::swap(m_n[i], other.m_n[i]);
+
+  std::swap(n1, other.n1);
+  std::swap(n2, other.n2);
 }
 
 

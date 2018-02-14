@@ -126,17 +126,6 @@ void AbstractScheme::terminate() {
     std::cerr << "\n\nterminate " << codeName << std::endl;
 }
 
-const AbstractValues & AbstractScheme::getOutput()
-{
-  return *m_u;
-}
-
-void AbstractScheme::setInput(const AbstractValues & u)
-{
-  *m_u = u;
-  *m_v = u;
-}
-
 void AbstractScheme::save(const char * /*fName*/)
 {
 }

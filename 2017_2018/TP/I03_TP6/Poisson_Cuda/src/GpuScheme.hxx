@@ -24,7 +24,7 @@ public:
   void setInput(const AbstractValues & u);
 
 protected:
-  GpuValues g_duv, g_duv2, g_u, g_v;
+  GpuValues g_duv, g_duv2;
   CpuValues m_w;
 };
 

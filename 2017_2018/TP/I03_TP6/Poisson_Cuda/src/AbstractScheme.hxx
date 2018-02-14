@@ -28,8 +28,8 @@ public:
   bool solve(unsigned int nSteps);
   double variation();
   void terminate();
-  virtual const AbstractValues & getOutput();
-  virtual void setInput(const AbstractValues & u);
+  virtual const AbstractValues & getOutput()  = 0;
+  virtual void setInput(const AbstractValues & u) = 0;
   void save(const char * /*fName*/);
   Timer & timer(int k) { return m_timers[k]; }
   std::string codeName;
