@@ -18,10 +18,9 @@ double f_CPU(double x, double y, double z)
   x -= 0.5;
   y -= 0.5;
   z -= 0.5;
-  if (x*x+y*y+z*z < 0.1)
-    return 1.0;
-  else
-    return 0.0;
+  double f = (x*x+y*y+z*z < 0.1) ? 1.0 : 0.0;
+  printf("%g %g %g = %g\n", x, y, z, f);
+  return f;
 }
 
 

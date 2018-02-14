@@ -3,7 +3,9 @@
 
 GpuParameters::GpuParameters(int argc, char ** argv) : AbstractParameters(argc, argv)
 {
-		int deviceCount;
+		int deviceCount, devID;
+
+		devID = 0;
 		cuInit(0);
 		cuDeviceGetCount(&deviceCount);
 		if (deviceCount == 0) {
@@ -17,8 +19,16 @@ GpuParameters::GpuParameters(int argc, char ** argv) : AbstractParameters(argc, 
 		}
 
 		GpuInfo = new sGPU;
-		cuDeviceGet(&(GpuInfo->device), 0);
+		cuDeviceGet(&(GpuInfo->device), devID);
 		cuCtxCreate(&(GpuInfo->context), 0, GpuInfo->device);
+
+	    char deviceName[256];
+        int major, minor;
+        cuDeviceComputeCapability(&major, &minor, devID);
+        cuDeviceGetName(deviceName, 256, devID);
+        std::cerr << "Using Device " << devID
+        		  << ": \"" << deviceName << "\" with Compute capability "
+        		  << major << "." << minor << "\n";
 
 #define BLOCK_SIZE_X 4
 #define BLOCK_SIZE_Y 4

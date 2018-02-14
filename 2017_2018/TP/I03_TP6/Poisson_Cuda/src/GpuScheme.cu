@@ -65,7 +65,7 @@ gpu_difference(const double *u, const double *v, double * duv,
 
   int i_j_k  = i + j*nx + k*nx*ny;
 
-  if (i>0 && i<nx && j>0 && j<ny && k>0 && k<nz)
+  if (i<nx && j<ny && k<nz)
     duv[i_j_k] = fabs(v[i_j_k] - u[i_j_k]);
 }
 
