@@ -19,7 +19,7 @@ public:
   void init();
   void init_f();
   void print(std::ostream &) const  { throw std::string("non implemented"); }
-  void plot(int order) const { throw std::string("non implemented"); }
+  void plot(const char * prefix, int order) const { throw std::string("non implemented"); }
 
 protected :
   void allocate(size_t nn);

@@ -25,7 +25,7 @@ public:
   }
   
   void print(std::ostream &) const ;
-  void plot(int order) const ;
+  void plot(const char * prefix, int order) const ;
 
 protected:
   

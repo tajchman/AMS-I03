@@ -40,12 +40,12 @@ void run(int argc, char *argv[]) {
   C.setInput(u_0);
   C.timer(0).stop();
 
-  if (output) C.getOutput().plot(0);
+  if (output) C.getOutput().plot(C.deviceName.c_str(), 0);
 
   int i;
   for (i=0; i<nsteps; i++) {
     C.solve(ksteps);
-    if (output) C.getOutput().plot(i);
+    if (output) C.getOutput().plot(C.deviceName.c_str(), i);
   }
 
   T_global.stop();

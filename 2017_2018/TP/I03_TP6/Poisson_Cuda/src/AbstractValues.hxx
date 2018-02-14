@@ -19,14 +19,13 @@ public:
   double * data() { return m_u; }
   const double * data() const { return m_u; }
   
-  void operator=(const AbstractValues & other) = delete;
   void swap(AbstractValues & other);
   
   virtual void init() = 0;
   virtual void init_f() = 0;
   
   virtual void print(std::ostream & f) const = 0;
-  virtual void plot(int order) const = 0;
+  virtual void plot(const char * prefix, int order) const = 0;
   
   std::string codeName;
   std::string deviceName;
@@ -35,6 +34,7 @@ protected:
   virtual void allocate(size_t n) = 0;
   virtual void deallocate() = 0;
   
+  void operator=(const AbstractValues & other);
   int n1, n2, nn;
   int m_n[3];
   double * m_u;

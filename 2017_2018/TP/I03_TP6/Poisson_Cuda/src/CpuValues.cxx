@@ -106,33 +106,33 @@ void CpuValues::print(std::ostream & f) const
   }
 }
 
-void CpuValues::plot(int order) const {
+void CpuValues::plot(const char *prefix, int order) const {
 
   std::ostringstream s;
   int i, j, k;
-  int imin = m_p->imin(0);
-  int jmin = m_p->imin(1);
-  int kmin = m_p->imin(2);
+  int imin = m_p->imin(0)-1;
+  int jmin = m_p->imin(1)-1;
+  int kmin = m_p->imin(2)-1;
 
-  int imax = m_p->imax(0);
-  int jmax = m_p->imax(1);
-  int kmax = m_p->imax(2);
+  int imax = m_p->imax(0)+1;
+  int jmax = m_p->imax(1)+1;
+  int kmax = m_p->imax(2)+1;
 
-  s << m_p->resultPath() << "plot_"
+  s << m_p->resultPath() << "plot_" << prefix
     << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << imin << " " << imax  << " "
-    << jmin << " " << jmax  << " "
-    << kmin << " " << kmax
+    << imin << " " << imax-1  << " "
+    << jmin << " " << jmax-1  << " "
+    << kmin << " " << kmax-1
     << "\">\n"
     << "<Piece Extent=\""
-    << imin << " " << imax  << " "
-    << jmin << " " << jmax  << " "
-    << kmin << " " << kmax
+    << imin << " " << imax-1  << " "
+    << jmin << " " << jmax-1 << " "
+    << kmin << " " << kmax-1
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";
@@ -154,8 +154,8 @@ void CpuValues::plot(int order) const {
     f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\""
       << " format=\"ascii\">";
 
-    int imin = m_p->imin(k);
-    int imax = m_p->imax(k);
+    int imin = m_p->imin(k)-1;
+    int imax = m_p->imax(k)+1;
     for (i=imin; i<imax; i++)
       f << " " << i * m_p->dx(k);
     f << "   </DataArray>\n";
