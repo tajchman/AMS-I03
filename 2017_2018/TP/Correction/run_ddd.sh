@@ -1,4 +1,9 @@
 #! /bin/bash
 
-ddd ./Poisson_MPI/build/Poisson_MPI
+if [ "x$version" == "x" ] 
+then
+	version=Poisson_MPI_OpenMP_CoarseGrain
+fi
+
+ddd ./${version}/build/Debug/${version} &
 

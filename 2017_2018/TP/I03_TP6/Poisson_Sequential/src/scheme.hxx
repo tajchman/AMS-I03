@@ -23,7 +23,7 @@ public:
   void initialize();
   double present();
 
-  double iteration();
+  bool iteration();
   bool solve(unsigned int nSteps);
   double variation();
   void terminate();

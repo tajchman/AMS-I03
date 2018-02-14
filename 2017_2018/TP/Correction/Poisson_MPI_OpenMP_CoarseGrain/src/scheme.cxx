@@ -37,12 +37,6 @@ void Scheme::initialize()
 {
   m_u.init();
   m_v.init();
-  int i;
-  for (i=0; i<3; i++) {
-    m_n[i] = m_P->n(i);
-    m_dx[i] = m_P->dx(i);
-    m_di[i] = (m_n[i] < 2) ? 0 : 1;
-  }
 
   kStep = 1;
   m_t = 0.0;
@@ -87,7 +81,9 @@ double Scheme::iteration()
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
   double du, du_max;
+
   int ith = omp_get_thread_num();
+
   int imin = m_P->thread_imin(0, ith) ;
   int jmin = m_P->thread_imin(1, ith) ;
   int kmin = m_P->thread_imin(2, ith) ;
@@ -127,12 +123,9 @@ bool Scheme::solve(unsigned int nSteps)
       m_timers[2].stop();
     
       m_timers[1].start();
-    }
-
-#pragma omp single
-    {
       m_duv = 0.0;
     }
+#pragma omp barrier
 
     double du_partiel = iteration();
 
@@ -140,30 +133,29 @@ bool Scheme::solve(unsigned int nSteps)
     m_duv += du_partiel;
     
 #pragma omp barrier
- 
-    double du_max_global;
-    MPI_Allreduce(&m_duv, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
-    m_duv = du_max_global;
 
 #pragma omp master
     {
+      double du_max_global;
+      MPI_Allreduce(&m_duv, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
+      m_duv = du_max_global;
       m_t += m_dt;
 
       m_u.swap(m_v);
 
       m_timers[1].stop();
-    if (m_P->rank() == 0) {
-      m_timers[3].start();
-      std::cerr << " iteration " << std::setw(4) << kStep
-                << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
-      size_t i, n = m_timers.size();
-      std::cerr << " (times :";
-      for (i=0; i<n; i++)
-        std::cerr << " " << std::setw(5) << m_timers[i].name()
-	          << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
-      std::cerr	  << ")   \n";
-      m_timers[3].stop();
-    }
+      if (m_P->rank() == 0) {
+	m_timers[3].start();
+	std::cerr << " iteration " << std::setw(4) << kStep
+		  << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
+	size_t i, n = m_timers.size();
+	std::cerr << " (times :";
+	for (i=0; i<n; i++)
+	  std::cerr << " " << std::setw(5) << m_timers[i].name()
+		    << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
+	std::cerr	  << ")   \n";
+	m_timers[3].stop();
+      }
 
       kStep++;
     }
@@ -179,7 +171,7 @@ double Scheme::variation()
 
 void Scheme::terminate() {
   if (m_P->rank() == 0)
-  std::cerr << "\n\nterminate " << codeName << std::endl;
+    std::cerr << "\n\nterminate " << codeName << std::endl;
 }
 
 const Values & Scheme::getOutput()

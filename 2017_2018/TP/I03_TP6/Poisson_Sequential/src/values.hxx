@@ -27,8 +27,6 @@ public:
   int size(int i) const { return m_n[i]; }
   void print(std::ostream &f) const;
   
-  void synchronize();
-  
 private:
   
   Values(const Values &) : m_p(NULL), m_u(NULL), n1(0), n2(0) {};

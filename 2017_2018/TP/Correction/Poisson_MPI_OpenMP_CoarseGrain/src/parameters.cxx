@@ -85,7 +85,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
     MPI_Comm_size(MPI_COMM_WORLD, &m_size);
     int periods[3], coords[3];
 
-    int i;
+    int i, j;
     for (i=0; i<3; i++) {
       p[i] = (m_n_global[i] > 1) ? 0 : 1;
       periods[i] = 0;
@@ -121,7 +121,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+        m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
       }
       
       m_thread_imin[i] = new int[m_nthreads];
@@ -146,14 +146,15 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
           m_thread_imax[i][j] = m_imax[i];
         }
       
-      m_di[i] = 1;
-      if (m_n[i] < 2) {
-       	m_imax_global[i] = m_imin_global[i] + 1; m_di[i] = 0;
+	m_di[i] = 1;
+	if (m_n[i] < 2) {
+	  m_imax_global[i] = m_imin_global[i] + 1; m_di[i] = 0;
+	}
+	m_imin[i] = 1;
+	m_imax[i] = m_n[i] - 1;
       }
-      m_imin[i] = 1;
-      m_imax[i] = m_n[i] - 1;
     }
-  } 
+  }
   m_out = NULL;
 }
 
@@ -164,17 +165,17 @@ bool Parameters::help()
 	      << "where <nproc> is the number of MPI processes\n\n";
 
     std::cerr << "Options:\n\n"
-              << "-h|--help     : display this message\n"
-              << "threads=<int> : nombre de threads OpenMP"
-              << "convection=0/1: convection term (default: 1)\n"
-              << "diffusion=0/1 : convection term (default: 1)\n"
-              << "n=<int>       : number of internal points in the X direction (default: 400)\n"
-              << "m=<int>       : number of internal points in the Y direction (default: 400)\n"
-              << "p=<int>       : number of internal points in the Z direction (default: 400)\n"
-              << "dt=<real>     : time step size (default : value to assure stable computations)\n"
-              << "it=<int>      : number of time steps (default : 10)\n"
-              << "out=<int>     : number of time steps between saving the solution on files\n"
-              << "                (default : no output)\n\n";
+	      << "-h|--help     : display this message\n"
+	      << "threads=<int> : nombre de threads OpenMP"
+	      << "convection=0/1: convection term (default: 1)\n"
+	      << "diffusion=0/1 : convection term (default: 1)\n"
+	      << "n=<int>       : number of internal points in the X direction (default: 400)\n"
+	      << "m=<int>       : number of internal points in the Y direction (default: 400)\n"
+	      << "p=<int>       : number of internal points in the Z direction (default: 400)\n"
+	      << "dt=<real>     : time step size (default : value to assure stable computations)\n"
+	      << "it=<int>      : number of time steps (default : 10)\n"
+	      << "out=<int>     : number of time steps between saving the solution on files\n"
+	      << "                (default : no output)\n\n";
   }
   return m_help;
 }
@@ -197,7 +198,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
       << "[" << 0 << "," << p.n_global(0) - 1  << "] x "
       << "[" << 0 << "," << p.n_global(1) - 1  << "] x "
       << "[" << 0 << "," << p.n_global(2) - 1  << "]"
-    << "\n\n";
+      << "\n\n";
 
   f << p.nthreads() << " thread(s)\n"
     << "It. max : " << p.itmax() << "\n"
@@ -215,8 +216,8 @@ std::ostream & Parameters::out()
 
     std::ostringstream pth;
     pth << "results"
-        << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-        << "_" << buffer << "/";
+	<< "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+	<< "_" << buffer << "/";
     m_path = pth.str();
 
 #if defined(_WIN32)
