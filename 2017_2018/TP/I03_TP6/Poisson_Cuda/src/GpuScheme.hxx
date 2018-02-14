@@ -24,8 +24,8 @@ public:
   void setInput(const AbstractValues & u);
 
 protected:
-  GpuValues m_duv, m_duv2;
-  CpuValues * m_w;
+  GpuValues g_duv, g_duv2, g_u, g_v;
+  CpuValues m_w;
 };
 
 #endif /* GPUSCHEME_HXX_ */

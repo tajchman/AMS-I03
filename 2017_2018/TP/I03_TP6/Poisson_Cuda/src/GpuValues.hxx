@@ -13,18 +13,17 @@
 
 class GpuValues : public AbstractValues {
 public:
-	GpuValues(const GpuParameters * p);
-	virtual ~GpuValues() {}
-	double * g_data() { return g_u; }
-	const double * g_data() const { return g_u; }
-
-    void init();
-	void init_f();
+  GpuValues(const GpuParameters * p);
+  virtual ~GpuValues() {}
+  
+  void init();
+  void init_f();
+  void print(std::ostream &) const  { throw std::string("non implemented"); }
+  void plot(int order) const { throw std::string("non implemented"); }
 
 protected :
-	void allocate(size_t nn);
-	void deallocate();
-	double * g_u;
+  void allocate(size_t nn);
+  void deallocate();
 };
 
 #endif /* GPUVALUES_HXX_ */

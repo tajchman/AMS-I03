@@ -4,10 +4,9 @@
 #include "CpuValues.hxx"
 #include "cuda.h"
 
-GpuScheme::GpuScheme(const GpuParameters *P) : AbstractScheme(P), m_duv(P), m_duv2(P)  {
-	m_u = new GpuValues(P);
-	m_v = new GpuValues(P);
-	m_w = new CpuValues(P);
+GpuScheme::GpuScheme(const GpuParameters *P) : AbstractScheme(P),
+ g_u(P), g_v(P), g_duv(P), g_duv2(P), m_w(P) 
+{
 
   codeName = "Poisson_GPU";
   deviceName = "GPU";
@@ -16,8 +15,11 @@ GpuScheme::GpuScheme(const GpuParameters *P) : AbstractScheme(P), m_duv(P), m_du
 
 void GpuScheme::initialize()
 {
-  AbstractScheme::initialize();
-  m_duv.init();
+  m_w.init();
+  g_u.init();
+  g_v.init();
+  g_duv.init();
+  g_duv2.init();
 }
 
 GpuScheme::~GpuScheme()
@@ -45,8 +47,7 @@ gpu_iteration(const double *u, double *v, double lambda, int nx, int ny, int nz)
   int i_j_km = nz > 2 ? i + j*nx + (k-1)*nx*ny : i_j_k;
   int i_j_kp = nz > 2 ? i + j*nx + (k+1)*nx*ny : i_j_k;
 
-//  printf(" %d %d %d ---- %d %d %d === %d \n", i>0, j>0, k>0, i<nx-1, j<ny-1, k<nz-1, i>0 && i<nx-1 && j>0 && j<ny-1 && k>0 && k<nz-1);
-  if (i>0 && i<nx-1 && j>0 && j<ny-1 && k>0 && k<nz-1) {
+  if (i<nx-1 && j<ny-1 && k<nz-1) {
 	    printf("centre u(%d,%d,%d) = %g\n", i,j,k, u[i_j_k]);
     v[i_j_k] = u[i_j_k] - lambda *
       (6 * u[i_j_k] - u[ip_j_k] - u[im_j_k]
@@ -57,16 +58,12 @@ gpu_iteration(const double *u, double *v, double lambda, int nx, int ny, int nz)
 
 __global__ void
 gpu_difference(const double *u, const double *v, double * duv,
-	       int nx, int ny, int nz)
+	       int n)
 {
   const int i = blockIdx.x * blockDim.x + threadIdx.x ;
-  const int j = blockIdx.y * blockDim.y + threadIdx.y ;
-  const int k = blockIdx.z * blockDim.z + threadIdx.z ;
 
-  int i_j_k  = i + j*nx + k*nx*ny;
-
-  if (i<nx && j<ny && k<nz)
-    duv[i_j_k] = fabs(v[i_j_k] - u[i_j_k]);
+  if (i<n)
+    duv[i] = fabs(v[i] - u[i]);
 }
 
 __global__ void gpu_reduction(double *g_idata, double *g_odata, int n)
@@ -90,43 +87,58 @@ __global__ void gpu_reduction(double *g_idata, double *g_odata, int n)
 
 bool GpuScheme::iteration()
 {
-
   const GpuParameters * p = dynamic_cast<const GpuParameters *>(m_P);
   const sGPU * g = p->GpuInfo;
+  size_t n = m_n[0] * m_n[1] * m_n[2];
 
 //  std::cerr << "u:" << std::endl;
 //  m_u.print(std::cerr);
   
-  cudaDeviceSynchronize();
   gpu_iteration<<<g->dimBlock, g->dimGrid>>>
-    (m_u->data(), m_v->data(), m_lambda, m_n[0]-1, m_n[1]-1, m_n[2]-1);
+    (g_u.data(), g_v.data(), m_lambda, m_n[0], m_n[1], m_n[2]);
   cudaDeviceSynchronize();
   std::exit(-1);
   
   gpu_difference<<<g->dimBlock, g->dimGrid>>>
-    (m_u->data(), m_v->data(), m_duv.data(), m_n[0], m_n[1], m_n[2]);
+    (g_u.data(), g_v.data(), g_duv.data(), n);
   cudaDeviceSynchronize();
-  gpu_reduction<<<g->dimBlock, g->dimGrid>>>
-    (m_duv.data(), m_duv2.data(), m_n[0]*m_n[1]*m_n[2]);
 
-  m_duv_max = m_duv2.data()[0];
+  gpu_reduction<<<g->dimBlock, g->dimGrid>>>
+    (g_duv.data(), g_duv2.data(), n);
+  cudaDeviceSynchronize();
+
+  cudaMemcpy(&m_duv_max, g_duv2.data(), sizeof(double), cudaMemcpyDeviceToHost);
   std::cerr << m_duv_max << std::endl;
   return true;
 }
 
 const AbstractValues & GpuScheme::getOutput()
 {
-  m_w->init();
-
   size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
-  cudaMemcpy(m_w->data(), m_u->data(), n, cudaMemcpyDeviceToHost);
-  return *m_w;
+  cudaMemcpy(m_w.data(), g_u.data(), n, cudaMemcpyDeviceToHost);
+  std::cerr << m_w(6,4,5) << std::endl;
+  return m_w;
 }
 
 void GpuScheme::setInput(const AbstractValues & u)
 {
-	  size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
-	  cudaMemcpy(m_u->data(), u.data(), n, cudaMemcpyDeviceToDevice);
+  size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
+  std::cerr << "n = " << n << std::endl;    
+
+  const CpuValues * u1 = dynamic_cast<const CpuValues *>(&u);
+  std::cerr << "u1 = " << u1 << std::endl;    
+  if (u1) {
+    cudaMemcpy(g_u.data(), u1->data(), n, cudaMemcpyHostToDevice);
+    return;
+  }
+  const GpuValues * u2 = dynamic_cast<const GpuValues *>(&u);
+  std::cerr << "u2 = " << u2 << std::endl;    
+  if (u2) {
+    std::cerr << "setInput 1" << std::endl;
+    cudaMemcpy(g_u.data(), u2->data(), n, cudaMemcpyDeviceToDevice);
+    std::cerr << "setInput 2" << std::endl;
+    return;
+  }
 
 }
 
