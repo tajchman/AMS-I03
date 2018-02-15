@@ -30,11 +30,23 @@ GpuParameters::GpuParameters(int argc, char ** argv) : AbstractParameters(argc, 
         		  << ": \"" << deviceName << "\" with Compute capability "
         		  << major << "." << minor << "\n";
 
-#define BLOCK_SIZE_X 4
-#define BLOCK_SIZE_Y 4
-#define BLOCK_SIZE_Z 4
+        struct cudaDeviceProp properties;
+        cudaGetDeviceProperties(&properties, devID);
+        std::cerr<<"using "<<properties.multiProcessorCount<<" multiprocessors"<<std::endl;
+        std::cerr<<"max threads per processor: "<<properties.maxThreadsPerMultiProcessor<<std::endl;
 
-		GpuInfo->dimBlock = dim3(BLOCK_SIZE_X, BLOCK_SIZE_Y, BLOCK_SIZE_Z);
+        int bx = properties.maxThreadsDim[0];
+        int by = properties.maxThreadsDim[1];
+        int bz = properties.maxThreadsDim[2];
+        while (bx*by*bz > 256) {
+        	if (bx >= bz && bx >= by)
+        		bx /= 2;
+        	else if (by >= bz && by >= bx)
+                by /= 2;
+        	else if (bz >= bx && bz >= by)
+                bz /= 2;
+        }
+		GpuInfo->dimBlock = dim3(bx, by, bz);
 		GpuInfo->dimGrid  = dim3(
 				ceil(float(m_n[0])/float(GpuInfo->dimBlock.x)),
 				ceil(float(m_n[1])/float(GpuInfo->dimBlock.y)),
@@ -44,6 +56,7 @@ GpuParameters::GpuParameters(int argc, char ** argv) : AbstractParameters(argc, 
 				<< GpuInfo->dimBlock.x << " x "
 				<< GpuInfo->dimBlock.y << " x "
 				<< GpuInfo->dimBlock.z << std::endl;
+
 		std::cerr << "Grid  "
 				<< GpuInfo->dimGrid.x << " x "
 				<< GpuInfo->dimGrid.y << " x "

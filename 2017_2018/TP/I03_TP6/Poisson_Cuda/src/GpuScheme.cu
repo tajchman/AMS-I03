@@ -3,6 +3,7 @@
 #include <iostream>
 #include "CpuValues.hxx"
 #include "cuda.h"
+#include "ErrCheck.h"
 
 #define BLOCK_SIZE 512
 
@@ -30,7 +31,7 @@ void GpuScheme::initialize()
      numOutputElements++;
 
   host_out = (double*) malloc(numOutputElements * sizeof(double));
-  cudaMalloc(&dev_out, numOutputElements*sizeof(double));
+  CHECK_CUDA(cudaMalloc(&dev_out, numOutputElements*sizeof(double)));
 
 }
 
@@ -112,10 +113,11 @@ bool GpuScheme::iteration()
 
   gpu_iteration<<<g->dimBlock, g->dimGrid>>>
     (m_u->data(), m_v->data(), m_lambda, m_n[0], m_n[1], m_n[2]);
-  cudaDeviceSynchronize();
-  cudaMemcpy(m_v2.data(), m_v->data(), n * sizeof(double), cudaMemcpyDeviceToHost);
-  cudaDeviceSynchronize();
   
+  CHECK_CUDA(cudaDeviceSynchronize());
+  CHECK_CUDA(cudaMemcpy(m_v2.data(), m_v->data(), n * sizeof(double), cudaMemcpyDeviceToHost));
+  CHECK_CUDA(cudaDeviceSynchronize());
+
 //  dim3 DimGrid(numOutputElements, 1, 1);
 //  dim3 DimBlock(BLOCK_SIZE, 1, 1);
 //  gpu_zero<<<DimGrid, DimBlock>>>(dev_out, n);
@@ -136,7 +138,7 @@ bool GpuScheme::iteration()
 const AbstractValues & GpuScheme::getOutput()
 {
   //size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
-  //cudaMemcpy(m_w.data(), m_u->data(), n, cudaMemcpyDeviceToHost);
+  //CHECK_CUDA(cudaMemcpy(m_w.data(), m_u->data(), n, cudaMemcpyDeviceToHost));
   return m_u2;
 }
 
@@ -146,14 +148,14 @@ void GpuScheme::setInput(const AbstractValues & u)
 
   const CpuValues * u1 = dynamic_cast<const CpuValues *>(&u);
   if (u1) {
-    cudaMemcpy(m_u2.data(), u1->data(), n, cudaMemcpyHostToHost);
-    cudaMemcpy(m_u->data(), u1->data(), n, cudaMemcpyHostToDevice);
+	  CHECK_CUDA(cudaMemcpy(m_u2.data(), u1->data(), n, cudaMemcpyHostToHost));
+	  CHECK_CUDA(cudaMemcpy(m_u->data(), u1->data(), n, cudaMemcpyHostToDevice));
     return;
   }
   const GpuValues * u2 = dynamic_cast<const GpuValues *>(&u);
   if (u2) {
-    cudaMemcpy(m_u2.data(), u2->data(), n, cudaMemcpyDeviceToHost);
-    cudaMemcpy(m_u->data(), u2->data(), n, cudaMemcpyDeviceToDevice);
+	  CHECK_CUDA(cudaMemcpy(m_u2.data(), u2->data(), n, cudaMemcpyDeviceToHost));
+	  CHECK_CUDA(cudaMemcpy(m_u->data(), u2->data(), n, cudaMemcpyDeviceToDevice));
     return;
   }
 
