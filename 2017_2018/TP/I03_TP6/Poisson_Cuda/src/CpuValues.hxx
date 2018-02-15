@@ -18,10 +18,10 @@ public:
   void init_f();
 
   double & operator() (int i,int j,int k) {
-    return m_u[n2*i + n1*j + k];
+    return m_u[i + j*n1 + k*n2];
   }
   double operator() (int i,int j,int k) const {
-    return m_u[n2*i + n1*j + k];
+    return m_u[i + j*n1 + k*n2];
   }
   
   void print(std::ostream &) const ;

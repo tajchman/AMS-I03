@@ -7,7 +7,7 @@
 #define BLOCK_SIZE 512
 
 GpuScheme::GpuScheme(const GpuParameters *P) : AbstractScheme(P),
- g_duv(P), g_duv2(P), m_w(P)
+   host_out(NULL), dev_out(NULL), numOutputElements(0), m_u2(P), m_v2(P)
 {
 
   codeName = "Poisson_GPU";
@@ -15,15 +15,23 @@ GpuScheme::GpuScheme(const GpuParameters *P) : AbstractScheme(P),
 
   m_u = new GpuValues(P);
   m_v = new GpuValues(P);
+
 }
 
 void GpuScheme::initialize()
 {
-  m_w.init();
   m_u->init();
   m_v->init();
-  g_duv.init();
-  g_duv2.init();
+  m_u2.init();
+  m_v2.init();
+
+  numOutputElements = m_u->n_1D() / (BLOCK_SIZE<<1);
+  if (m_u->n_1D() % (BLOCK_SIZE<<1))
+     numOutputElements++;
+
+  host_out = (double*) malloc(numOutputElements * sizeof(double));
+  cudaMalloc(&dev_out, numOutputElements*sizeof(double));
+
 }
 
 GpuScheme::~GpuScheme()
@@ -60,28 +68,29 @@ gpu_iteration(const double *u, double *v, double lambda, int nx, int ny, int nz)
 }
 
 __global__ void
-gpu_difference(const double *u, const double *v, double * duv,
-	       int n)
+gpu_zero(double *u, int n)
 {
   const int i = blockIdx.x * blockDim.x + threadIdx.x ;
 
   if (i<n)
-    duv[i] = fabs(v[i] - u[i]);
+    u[i] = 0.0;
 }
 
 __global__  void
-gpu_reduction(double * input, double * output, int len)
+gpu_norm(const double * input1, const double * input2, double * output, int len)
 {
     __shared__ double partialSum[2*BLOCK_SIZE];
     int globalThreadId = blockIdx.x*blockDim.x + threadIdx.x;
     unsigned int t = threadIdx.x;
     unsigned int start = 2*blockIdx.x*blockDim.x;
 
-    partialSum[t] =
-    		((start + t) < len) ? input[start + t] : 0.0;
+    partialSum[t] =	((start + t) < len)
+    		? (input1[start + t] - input2[start + t])
+    		: 0.0;
 
-    partialSum[blockDim.x + t] =
-    		((start + blockDim.x + t) < len) ? input[start + blockDim.x + t] : 0.0;
+    partialSum[blockDim.x + t] = ((start + blockDim.x + t) < len)
+    		? (input1[start + blockDim.x + t] - input2[start + blockDim.x + t])
+    		: 0.0;
 
     for (unsigned int stride = blockDim.x; stride > 0; stride /= 2)
     {
@@ -104,57 +113,47 @@ bool GpuScheme::iteration()
   gpu_iteration<<<g->dimBlock, g->dimGrid>>>
     (m_u->data(), m_v->data(), m_lambda, m_n[0], m_n[1], m_n[2]);
   cudaDeviceSynchronize();
-  
-  gpu_difference<<<g->dimBlock, g->dimGrid>>>
-    (m_u->data(), m_v->data(), g_duv.data(), n);
+  cudaMemcpy(m_v2.data(), m_v->data(), n * sizeof(double), cudaMemcpyDeviceToHost);
   cudaDeviceSynchronize();
-
-  int numOutputElements = n / (BLOCK_SIZE<<1);
-  if (n % (BLOCK_SIZE<<1))
-     numOutputElements++;
-
-  double * dev_out = g_duv2.data();
-  double * dev_in = g_duv.data();
-  double * host_out = (double*) malloc(numOutputElements * sizeof(double));
-
-  dim3 DimGrid( numOutputElements, 1, 1);
-  dim3 DimBlock(BLOCK_SIZE, 1, 1);
-  gpu_reduction<<<DimGrid, DimBlock>>>(dev_in, dev_out, n);
-  cudaMemcpy(host_out, dev_out, numOutputElements * sizeof(double), cudaMemcpyDeviceToHost);
-
+  
+//  dim3 DimGrid(numOutputElements, 1, 1);
+//  dim3 DimBlock(BLOCK_SIZE, 1, 1);
+//  gpu_zero<<<DimGrid, DimBlock>>>(dev_out, n);
+//  //gpu_norm<<<DimGrid, DimBlock>>>(m_u->data(), m_v->data(), dev_out, n);
+//  cudaMemcpy(host_out, dev_out, numOutputElements * sizeof(double), cudaMemcpyDeviceToHost);
+//
   m_duv_max = 0.0;
-  for (int i = 0; i < numOutputElements; i++)
+  double * a = m_u2.data();
+  double * b = m_v2.data();
+  for (int i = 0; i < n; i++)
    {
-	  m_duv_max += host_out[i];
+	  m_duv_max += fabs(a[i] -  b[i]);
    }
+  m_u2.swap(m_v2);
   return true;
 }
 
 const AbstractValues & GpuScheme::getOutput()
 {
-  size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
-  cudaMemcpy(m_w.data(), m_u->data(), n, cudaMemcpyDeviceToHost);
-  std::cerr << m_w(6,4,5) << std::endl;
-  return m_w;
+  //size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
+  //cudaMemcpy(m_w.data(), m_u->data(), n, cudaMemcpyDeviceToHost);
+  return m_u2;
 }
 
 void GpuScheme::setInput(const AbstractValues & u)
 {
   size_t n = m_n[0] * m_n[1] * m_n[2] * sizeof(double);
-  std::cerr << "n = " << n << std::endl;    
 
   const CpuValues * u1 = dynamic_cast<const CpuValues *>(&u);
-  std::cerr << "u1 = " << u1 << std::endl;    
   if (u1) {
+    cudaMemcpy(m_u2.data(), u1->data(), n, cudaMemcpyHostToHost);
     cudaMemcpy(m_u->data(), u1->data(), n, cudaMemcpyHostToDevice);
     return;
   }
   const GpuValues * u2 = dynamic_cast<const GpuValues *>(&u);
-  std::cerr << "u2 = " << u2 << std::endl;    
   if (u2) {
-    std::cerr << "setInput 1" << std::endl;
+    cudaMemcpy(m_u2.data(), u2->data(), n, cudaMemcpyDeviceToHost);
     cudaMemcpy(m_u->data(), u2->data(), n, cudaMemcpyDeviceToDevice);
-    std::cerr << "setInput 2" << std::endl;
     return;
   }
 

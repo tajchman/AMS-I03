@@ -74,7 +74,6 @@ void CpuScheme::setInput(const AbstractValues & w)
   CpuValues & u = *pu;
 
   const CpuValues * w1 = dynamic_cast<const CpuValues *>(&w);
-  std::cerr << "u1 = " << w1 << std::endl;    
   if (w1) {
     memcpy(u.data(), w1->data(), n);
     return;

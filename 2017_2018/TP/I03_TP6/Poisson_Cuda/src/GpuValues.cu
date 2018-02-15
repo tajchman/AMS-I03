@@ -11,7 +11,7 @@ gpu_init(double *u, size_t nx, size_t ny, size_t nz) {
 	const int j = blockIdx.y * blockDim.y + threadIdx.y ;
 	const int k = blockIdx.z * blockDim.z + threadIdx.z ;
 
-	int i_j_k  = i + j*nx + k*nx*ny;
+	const int i_j_k  = i + j*nx + k*nx*ny;
 	if (i<nx && j<ny && k<nz)
 		u[i_j_k] = 0.;
 }

@@ -27,6 +27,8 @@ public:
   virtual void print(std::ostream & f) const = 0;
   virtual void plot(const char * prefix, int order) const = 0;
   
+  size_t n_1D() const { return nn; }
+
   std::string codeName;
   std::string deviceName;
   
