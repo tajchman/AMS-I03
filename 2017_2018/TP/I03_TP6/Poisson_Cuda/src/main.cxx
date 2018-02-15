@@ -30,7 +30,7 @@ void run(int argc, char *argv[]) {
   int nsteps = output ? itMax/freq : 1;
   int ksteps = output ? freq : itMax;
 
-  ValueType u_0(&P);
+  CpuValues u_0(&P);
   SchemeType C(&P);
 
   C.timer(0).start();

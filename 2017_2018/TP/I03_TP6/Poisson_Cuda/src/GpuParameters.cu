@@ -4,10 +4,10 @@
 GpuParameters::GpuParameters(int argc, char ** argv) : AbstractParameters(argc, argv)
 {
 		int deviceCount, devID;
+		cudaDeviceProp deviceProps;
 
 		devID = 0;
-		cuInit(0);
-		cuDeviceGetCount(&deviceCount);
+		cudaGetDeviceCount(&deviceCount);
 		if (deviceCount == 0) {
 			std::cerr << "GPU : no CUDA device found" << std::endl;
 			exit(1);
@@ -18,27 +18,23 @@ GpuParameters::GpuParameters(int argc, char ** argv) : AbstractParameters(argc, 
 			std::cerr << " found\n" << std::endl;
 		}
 
+		cudaSetDevice(devID);
+		cudaGetDeviceProperties(&deviceProps, devID);
+		std::cerr << "CUDA device [" << deviceProps.name << "] has "
+				  << deviceProps.multiProcessorCount << " Multi-Processors\n";
+
+		cudaSetDevice(devID);
+
 		GpuInfo = new sGPU;
-		cuDeviceGet(&(GpuInfo->device), devID);
-		cuCtxCreate(&(GpuInfo->context), 0, GpuInfo->device);
+		GpuInfo->device = devID;
 
-	    char deviceName[256];
-        int major, minor;
-        cuDeviceComputeCapability(&major, &minor, devID);
-        cuDeviceGetName(deviceName, 256, devID);
-        std::cerr << "Using Device " << devID
-        		  << ": \"" << deviceName << "\" with Compute capability "
-        		  << major << "." << minor << "\n";
+     std::cerr<<"using "<<deviceProps.multiProcessorCount<<" multiprocessors"<<std::endl;
+        std::cerr<<"max threads per processor: "<<deviceProps.maxThreadsPerMultiProcessor<<std::endl;
 
-        struct cudaDeviceProp properties;
-        cudaGetDeviceProperties(&properties, devID);
-        std::cerr<<"using "<<properties.multiProcessorCount<<" multiprocessors"<<std::endl;
-        std::cerr<<"max threads per processor: "<<properties.maxThreadsPerMultiProcessor<<std::endl;
-
-        int bx = properties.maxThreadsDim[0];
-        int by = properties.maxThreadsDim[1];
-        int bz = properties.maxThreadsDim[2];
-        while (bx*by*bz > 256) {
+        int bx = deviceProps.maxThreadsDim[0]; bx = 128;
+        int by = deviceProps.maxThreadsDim[1]; by = 4;
+        int bz = deviceProps.maxThreadsDim[2]; bz = 1;
+        while (bx*by*bz > 512) {
         	if (bx >= bz && bx >= by)
         		bx /= 2;
         	else if (by >= bz && by >= bx)

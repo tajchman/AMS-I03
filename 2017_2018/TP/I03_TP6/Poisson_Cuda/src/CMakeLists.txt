@@ -49,6 +49,7 @@ add_executable(
   CpuParameters.hxx
   GpuParameters.cu
   GpuParameters.hxx
+  cuda_helper.cu
   )
 
 set_property(TARGET ${ProjectName}
