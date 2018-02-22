@@ -1,0 +1,140 @@
+\documentclass{report}
+\setlength{\textwidth}{450pt}
+\setlength{\textheight}{600pt}
+\setlength{\oddsidemargin}{0pt}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\parindent 0pt
+\lstset{ 
+   keepspaces=true,
+   language=C++,
+   numbers=left
+}
+
+\def\Frac#1#2{\frac{\displaystyle #1}{\displaystyle #2}}
+
+\newcounter{cptQuestions}
+\newcommand\question[1]{\bigskip\par\addtocounter{cptQuestions}{1}{\bf Question #1 n\textsuperscript{o} \thecptQuestions}\par}
+
+\newcounter{cptProblems}
+\newcommand\problem{\bigskip\rule{3cm}{.1pt}\par\addtocounter{cptProblems}{1}{\bf Probl\` eme n\textsuperscript{o} \thecptProblems}\par}
+
+\begin{document}
+	\lhead{ENSTA - Master AMS M2 - Cours I03}
+	\rhead{2017-2018}
+	\begin{center}\Large\bf
+			Examen du cours I3\\
+			Programmation hybride et multi-c\oe urs\\[0.4cm]
+			Vendredi 23 f\'evrier 2018 - dur\'ee 3 heures\\
+			Supports de cours autoris\'es
+		\end{center}
+	\bigskip
+	Dans les questions o\`u on demande d'\'ecrire des lignes de code, les erreurs de syntaxe ne seront pas prises en compte (ponctuation, nom exact des fonctions, ordre des arguments, etc.). Du moment que vous indiquez clairement ce que fait chaque ligne de code ajout\'ee pour r\'epondre aux questions.
+	
+	\bigskip
+	\question{de cours}
+	
+	D\'efinissez les notions de localit\'e temporelle et localit\'e spatiale. Donnez un exemple simple pour illustrer chacune de ces deux notions.
+		
+	\question{de cours}
+
+	Rappeler les diff\'erences principales entre la programmation OpenMP \guillemotleft grain fin\guillemotright \ (fine-grain) et \guillemotleft gros grain\guillemotright \ (coarse-grain).
+	
+	
+	\question{de cours}
+	
+	Dans le mod\`ele de programmation hybride MPI-OpenMP, d\'ecrivez les principaux avantages esp\'er\'es par rapport \`a une programmation purement MPI et une programmation purement OpenMP. 
+	
+
+\problem
+
+Le but de cet exercice est de calculer une valeur approch\'ee de $\pi$ par int\'egration num\'erique en mod\`ele de programmation mixte MPI+OpenMP.
+
+La machine de callcul dispose de $N$ n\oe uds, chaque n\oe ud \'etant compos\'e de $P$ processeurs (on consid\`ere ici que 1 c\oe ur = 1 processeur). Le nombre total de processeurs (c\oe urs) est donc de $N\times P$.
+
+Soit la formule suivante utilis\'ee pour calculer la valeur du nombre $\pi$ :
+
+$$
+\pi = \int^1_0 \Frac{4}{1+x^2} dx
+$$
+
+Le programme s\'equentiel suivant permet de calculer une valeur approch\'ee de cette int\'egrale en utilisant la m\'ethode du trap\`eze. Cette m\'ethode simple consiste \`a remplir la surface sous la courbe par une s\'erie de petits rectangles. Lorsque la largeur des rectangles tend vers z\'ero, la somme de leur surface tend vers la valeur de l'int\'egrale (et donc vers $\pi$). 
+
+\begin{lstlisting}
+#include <iostream>
+
+int main() {
+  int lNumSteps = 1000000000;
+  double lStep = 1.0 / lNumSteps;
+  double lSum = 0,x;
+
+  for (int i =0; i < lNumSteps ; ++i ) {
+     x = (i+0.5) * lStep;
+     lSum += 4.0/(1.0 + x*x);
+   }
+  double pi = lSum*lStep;
+
+  std::cout.precision(15) ;
+  std::cout << "pi =" << pi << std::endl;
+
+  return 0;
+}
+\end{lstlisting}
+
+\question{}
+
+Ajouter une parall\'elisation OpenMP (type grain fin).
+
+\question{}
+
+Ajouter une parall\'elisation MPI pour obtenir une parall\'elisation hybride.
+
+	\problem
+	
+	Le but de cet exercice est de calculer la solution de 
+	$$
+	\Frac{\partial u}{\partial t} = \Frac{\partial}{\partial x} ( \kappa(u) \Frac{\partial u}{\partial x} )
+	$$
+	o\`u $\kappa(u)$ est une fonction non-lin\'eaire de $u$ et on suppose que le temps n\'ecessaire pour calculer $\kappa(u)$ est proportionnel \`a $\vert u\vert$.
+    
+    \medskip
+    Le sch\'ema num\'erique utilis\'e ici, calcule une approximation $u_i^{n}$ de $u(i \Delta x, n \Delta t)$.
+    
+    Il s'\'ecrit 
+    $$
+    u_i^{n+1} = u_i^{n}  +  \Frac{\Delta t}{\Delta x^2} \left( - \kappa(\frac{u_{i}^{n} + u_{i-1}^{n}}{2}) (u_{i}^{n} - u_{i-1}^{n}) + \kappa(\frac{u_{i+1}^{n} + u_{i}^{n}}{2}) (u_{i+1}^{n} - u_{i}^{n}) \right)
+    $$
+    
+     pour calculer $u_i^{n+1}, i=1,\ldots, N-1$ \`a partir de $u_i^{n}, i=0,\ldots N$ (on supposera $u$ nul au bord du domaine).
+     
+     On supposera que le sch\'ema est stable et sa pr\'ecision acceptable.
+
+    \bigskip
+     
+     En langage C, le sch\'ema pour passer de {\tt v[i]} =\ $ u_i^n$ \`a {\tt  w[i]} =\ $ u_i^{n+1}$ s'\'ecrit
+     
+
+     \begin{lstlisting}
+     for (i=1; i<N; i++)
+         w[k] = v[i] + dt/(dx*dx) * ( 
+                - k(0.5*(v[i] + v[i-1])) * (v[i] - v[i-1]) 
+                + k(0.5*(v[i+1] + v[i])) * (v[i+1] - v[i]))
+     \end{lstlisting} 
+     
+     
+	\question{}
+     
+     Ajouter un pragma OpenMP avant la boucle sur {\tt v[k]} pour parall\'eliser cette boucle sur plusieurs threads.
+     
+	\question{}
+     
+     Qu'est ce qui peut provoquer du d\'es\'equilibre de charge entre les diff\'erents threads dans la boucle ci-dessus ?
+          
+	\question{}
+     
+     Proposer une parall\'elisation type gros-grain qui essaie de mieux r\'epartir la charge.
+
+          
+\end{document}
