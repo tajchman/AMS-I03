@@ -14,12 +14,13 @@
 }
 
 \def\Frac#1#2{\frac{\displaystyle #1}{\displaystyle #2}}
+\newcounter{cptPoints}
 
 \newcounter{cptQuestions}
-\newcommand\question[1]{\bigskip\par\addtocounter{cptQuestions}{1}{\bf Question #1 n\textsuperscript{o} \thecptQuestions}\par}
+\newcommand\question[2]{\bigskip\par\addtocounter{cptQuestions}{1}\addtocounter{cptPoints}{#2}{\bf Question #1 n\textsuperscript{o} \thecptQuestions} (#2 points)\par}
 
 \newcounter{cptProblems}
-\newcommand\problem{\bigskip\rule{3cm}{.1pt}\par\addtocounter{cptProblems}{1}{\bf Probl\` eme n\textsuperscript{o} \thecptProblems}\par}
+\newcommand\problem[1]{\bigskip\rule{3cm}{.1pt}\par\addtocounter{cptProblems}{1}{\bf Probl\` eme n\textsuperscript{o} \thecptProblems \ (#1)}\medskip\par}
 
 \begin{document}
 	\lhead{ENSTA - Master AMS M2 - Cours I03}
@@ -34,21 +35,25 @@
 	Dans les questions o\`u on demande d'\'ecrire des lignes de code, les erreurs de syntaxe ne seront pas prises en compte (ponctuation, nom exact des fonctions, ordre des arguments, etc.). Du moment que vous indiquez clairement ce que fait chaque ligne de code ajout\'ee pour r\'epondre aux questions.
 	
 	\bigskip
-	\question{de cours}
+	
+	\question{de cours}2
+	
+Dans le mod\`ele de programmation hybride MPI-OpenMP, d\'ecrivez les principaux avantages esp\'er\'es par rapport \`a une programmation purement MPI et une programmation purement OpenMP. 
+
+	\question{de cours}1
+	
+	D\'ecrivez les quatre niveaux de compatibilit\'e entre MPI et OpenMP.
+	
+	\question{de cours}2
 	
 	D\'efinissez les notions de localit\'e temporelle et localit\'e spatiale. Donnez un exemple simple pour illustrer chacune de ces deux notions.
 		
-	\question{de cours}
+	\question{de cours}2
 
 	Rappeler les diff\'erences principales entre la programmation OpenMP \guillemotleft grain fin\guillemotright \ (fine-grain) et \guillemotleft gros grain\guillemotright \ (coarse-grain).
 	
-	
-	\question{de cours}
-	
-	Dans le mod\`ele de programmation hybride MPI-OpenMP, d\'ecrivez les principaux avantages esp\'er\'es par rapport \`a une programmation purement MPI et une programmation purement OpenMP. 
-	
 
-\problem
+\problem{parall\'elisation hybride}
 
 Le but de cet exercice est de calculer une valeur approch\'ee de $\pi$ par int\'egration num\'erique en mod\`ele de programmation mixte MPI+OpenMP.
 
@@ -67,10 +72,10 @@ Le programme s\'equentiel suivant permet de calculer une valeur approch\'ee de c
 
 int main() {
   int lNumSteps = 1000000000;
-  double lStep = 1.0 / lNumSteps;
-  double lSum = 0,x;
+  double lStep = 1.0/lNumSteps;
+  double lSum = 0.0, x;
 
-  for (int i =0; i < lNumSteps ; ++i ) {
+  for (int i=0; i<lNumSteps ; ++i ) {
      x = (i+0.5) * lStep;
      lSum += 4.0/(1.0 + x*x);
    }
@@ -83,25 +88,26 @@ int main() {
 }
 \end{lstlisting}
 
-\question{}
+\question{}2
 
-Ajouter une parall\'elisation OpenMP (type grain fin).
+Ajouter une parall\'elisation OpenMP (type ``grain fin'').
 
-\question{}
+\question{}4
 
 Ajouter une parall\'elisation MPI pour obtenir une parall\'elisation hybride.
 
-	\problem
+	\problem{parall\'elisation OpenMP ``gros grain'', d\'es\'equilibre de charge}
 	
 	Le but de cet exercice est de calculer la solution de 
 	$$
 	\Frac{\partial u}{\partial t} = \Frac{\partial}{\partial x} ( \kappa(u) \Frac{\partial u}{\partial x} )
 	$$
-	o\`u $\kappa(u)$ est une fonction non-lin\'eaire de $u$ et on suppose que le temps n\'ecessaire pour calculer $\kappa(u)$ est proportionnel \`a $\vert u\vert$.
+	o\`u $\kappa(u)$ est une fonction non-lin\'eaire de $u$ et {\bf on suppose que le temps n\'ecessaire pour calculer $\kappa(u)$ est proportionnel \`a $\vert u\vert$}.
     
     \medskip
-    Le sch\'ema num\'erique utilis\'e ici, calcule une approximation $u_i^{n}$ de $u(i \Delta x, n \Delta t)$.
-    
+    Le sch\'ema num\'erique utilis\'e ici est explicite et aux diff\'erences finies, il calcule une approximation $u_i^{n}$ de $u(i \Delta x, n \Delta t)$.
+   \medskip 
+
     Il s'\'ecrit 
     $$
     u_i^{n+1} = u_i^{n}  +  \Frac{\Delta t}{\Delta x^2} \left( - \kappa(\frac{u_{i}^{n} + u_{i-1}^{n}}{2}) (u_{i}^{n} - u_{i-1}^{n}) + \kappa(\frac{u_{i+1}^{n} + u_{i}^{n}}{2}) (u_{i+1}^{n} - u_{i}^{n}) \right)
@@ -117,24 +123,31 @@ Ajouter une parall\'elisation MPI pour obtenir une parall\'elisation hybride.
      
 
      \begin{lstlisting}
+     w[0] = v[0];
+     w[N] = v[N];
+
      for (i=1; i<N; i++)
-         w[k] = v[i] + dt/(dx*dx) * ( 
+         w[i] = v[i] + dt/(dx*dx) * ( 
                 - k(0.5*(v[i] + v[i-1])) * (v[i] - v[i-1]) 
                 + k(0.5*(v[i+1] + v[i])) * (v[i+1] - v[i]))
      \end{lstlisting} 
      
      
-	\question{}
+	\question{}3
      
-     Ajouter un pragma OpenMP avant la boucle sur {\tt v[k]} pour parall\'eliser cette boucle sur plusieurs threads.
+     Parall\'eliser avec le mod\`ele ``gros grain".
      
-	\question{}
+	\question{}2
      
-     Qu'est ce qui peut provoquer du d\'es\'equilibre de charge entre les diff\'erents threads dans la boucle ci-dessus ?
+     Qu'est ce qui peut provoquer du d\'es\'equilibre de charge entre les diff\'erents threads ?
           
-	\question{}
+	\question{}2
      
-     Proposer une parall\'elisation type gros-grain qui essaie de mieux r\'epartir la charge.
+     Proposer une parall\'elisation type ``gros grain" qui essaie de mieux r\'epartir la charge.
 
-          
+         
+\bigskip \rule{3cm}{.1pt}
+
+Total : \thecptPoints \ points
+ 
 \end{document}
