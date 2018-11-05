@@ -1,3 +1,5 @@
+#! /bin/bash
+
 rm -f r.gnp r1.gnp r2.gnp
 
 echo "
@@ -8,8 +10,8 @@ set output 'r.pdf'
 function run {
     rm -f r s && touch r s
     c=$1
-    code=./matmul${c}
-    for i in {1..20}
+    code=./build/matmul${c}
+    for i in {1..30}
     do
         let n=i*200
         echo $code $n
@@ -28,12 +30,13 @@ function run {
 
 function runb {
     rm -f r s && touch r s
-    code=./matmul3
-    p=$1
-    for i in {1..20}
+    c=$1
+    code=./build/matmul${c}
+    p=$2
+    for i in {1..30}
     do
         let n=i*200
-        echo matmul3 $n $p
+        echo matmul${c} $n $p
         echo $n >> s
         perf stat -e cache-misses ${code} $n $n $p >& x
         cat x >> r
@@ -42,9 +45,9 @@ function runb {
         sed -i -e 's/cache-misses//' -e 's/[^0-9]*//g' r1
     grep "seconds time elapsed" r > r2 && \
         sed -i -e 's/seconds time elapsed//' -e 's/,/./' -e 's/[^.0-9]*//g' r2
-    paste s r1 r2 > r_3_${p}
-    echo -n "'r_3_"${p}"' using 1:2 w lp title 'bloc "${p}"', " >> r1.gnp
-    echo -n "'r_3_"${p}"' using 1:3 w lp title 'bloc "${p}"', " >> r2.gnp
+    paste s r1 r2 > r_${c}_${p}
+    echo -n "'r_"${c}"_"${p}"' using 1:2 w lp title 'bloc "${p}" parcours "${c}"', " >> r1.gnp
+    echo -n "'r_"${c}"_"${p}"' using 1:3 w lp title 'bloc "${p}" parcours "${c}"', " >> r2.gnp
 }
 
 echo -n "plot " > r1.gnp
@@ -52,13 +55,17 @@ echo -n "plot " > r2.gnp
 
 run 1
 run 2
-for p in 50 40 30 20 10
+for c in 3 4
 do
-    runb $p
+for p in 100 80 60 50 40 30 20 10
+do
+    runb $c $p
 done
+done
+
 echo >> r1.gnp
 echo >> r2.gnp
 cat r1.gnp r2.gnp >> r.gnp
-
+sed -i -e "s/, *$//" r.gnp
 gnuplot r.gnp
 

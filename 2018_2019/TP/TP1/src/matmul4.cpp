@@ -1,4 +1,3 @@
-#include <vector>
 #include <cstring>
 #include <cmath>
 #include "Matrice.hpp"
