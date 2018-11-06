@@ -1,19 +1,7 @@
 #include <vector>
 #include <cstring>
 #include <cmath>
-
-class Matrice {
-
-public:
-  Matrice (int n, int m) : m_n(n), m_m(m), m_coefs(n*m) {
-    int i; for (i=0; i<n*m; i++) m_coefs[i] = 0.0;
-  }
-  double operator()(int i,int j) const { return m_coefs[m_m*i + j]; }
-  double & operator()(int i,int j) { return m_coefs[m_m*i + j]; }
-private:
-  int m_n, m_m;
-  std::vector<double> m_coefs;
-};
+#include "Matrice.hpp"
 
 int main(int argc, char **argv)
 {
@@ -23,9 +11,15 @@ int main(int argc, char **argv)
 
   Matrice a(n,m), b(m,n);
 
+  init(a);
+
   for (i=0; i<n; i++)
     for (j=0; j<m; j++)
       b(j,i) = a(i,j);
 
-  return 0;
+  if (n<10 && m<10) {
+     std::cout << "A" << std::endl << a << std::endl;
+     std::cout << "B" << std::endl << b << std::endl;
+  }
+ return 0;
 }

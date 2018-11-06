@@ -8,36 +8,26 @@
 #ifndef MATRICE_HPP_
 #define MATRICE_HPP_
 #include <vector>
+#include <iostream>
 
-template <typename T>
 class Matrice {
 public:
-	Matrice<T>(int n=0, int m=0) : m_n(n), m_m(m), m_coefs(n*m) {}
+	Matrice(int n=0, int m=0) : m_n(n), m_m(m), m_coefs(n*m) {}
 
-	void resize(int n, int m) { m_n = n; m_m = m; m_coefs.resize(m_n, m_m); }
+	void resize(int n, int m) { m_n = n; m_m = m; m_coefs.resize(m_n*m_m); }
 	int n() const { return m_n; }
 	int m() const { return m_m; }
-	T operator()(int i,int j) const { return m_coefs[i*m_m + j]; }
-	T & operator()(int i,int j) { return m_coefs[i*m_m + j]; }
+	double operator()(int i,int j) const { return m_coefs[i*m_m + j]; }
+	double & operator()(int i,int j) { return m_coefs[i*m_m + j]; }
+	const double * line(int i) const { return &m_coefs[i*m_m]; }
 protected:
 	int m_n, m_m;
-	std::vector<T> m_coefs;
+	std::vector<double> m_coefs;
 };
 
-inline
-void transpose(const double & A, double & B)
-{
-	B = A;
-}
+void transpose(Matrice & B, const Matrice & A);
 
-template<typename T>
-void transpose(const Matrice<T> & A, Matrice<T> & B)
-{
-	int n = A.n(), m = A.m(), i,j;
-
-	for(i=0; i<n; i++)
-		for(j=0; j<m; j++)
-			transpose(A(i,j), B(j,i));
-}
+void init(Matrice &A, int i0 = 0, int j0 = 0);
+std::ostream & operator<<(std::ostream & f, const Matrice & A);
 
 #endif /* MATRICE_HPP_ */

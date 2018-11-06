@@ -11,10 +11,10 @@ function run {
     rm -f r s && touch r s
     c=$1
     code=./build/matmul${c}
-    for i in {1..30}
+    for i in {1..50}
     do
         let n=i*200
-        echo $code $n
+        echo matmul${c} $n
         echo $n >> s
         perf stat -e cache-misses ${code} $n $n >& x
         cat x >> r
@@ -33,7 +33,7 @@ function runb {
     c=$1
     code=./build/matmul${c}
     p=$2
-    for i in {1..30}
+    for i in {1..50}
     do
         let n=i*200
         echo matmul${c} $n $p
@@ -55,9 +55,9 @@ echo -n "plot " > r2.gnp
 
 run 1
 run 2
-for c in 3 4
+for c in 3 4 5
 do
-for p in 100 80 60 50 40 30 20 10
+for p in 50
 do
     runb $c $p
 done
