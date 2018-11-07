@@ -1,6 +1,8 @@
 #set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
+add_executable(exo1 exo1.cpp)
+add_executable(exo2 exo2.cpp)
 add_executable(matmul1 matmul1.cpp Matrice.cpp)
 add_executable(matmul2 matmul2.cpp Matrice.cpp)
 add_executable(matmul3 matmul3.cpp Matrice.cpp)
