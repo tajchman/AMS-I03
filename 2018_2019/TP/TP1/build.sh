@@ -5,6 +5,7 @@ DIR=`pwd`
 module load intel
 CC=icc
 CXX=icpc
+FC=gfortran
 
 mkdir -p $DIR/build
 cd $DIR/build

@@ -1,4 +1,3 @@
-#include <vector>
 #include <cstring>
 #include <cmath>
 #include "Matrice.hpp"
@@ -13,11 +12,13 @@ int main(int argc, char **argv)
 
   init(a);
 
-  transpose(b, a);
+  for (i=0; i<n; i++)
+    for (j=0; j<m; j++)
+      b(j,i) = a(i,j);
 
   if (n<10 && m<10) {
      std::cout << "A" << std::endl << a << std::endl;
      std::cout << "B" << std::endl << b << std::endl;
   }
-  return 0;
+ return 0;
 }

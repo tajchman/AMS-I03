@@ -1,4 +1,3 @@
-#include <vector>
 #include <cstring>
 #include <cmath>
 #include "Matrice.hpp"
@@ -15,7 +14,7 @@ int main(int argc, char **argv)
 
   for (i=0; i<n; i++)
     for (j=0; j<m; j++)
-      b(j,i) = a(i,j);
+      b(i,j) = a(j,i);
 
   if (n<10 && m<10) {
      std::cout << "A" << std::endl << a << std::endl;

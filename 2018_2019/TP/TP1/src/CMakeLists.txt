@@ -1,10 +1,9 @@
+cmake_minimum_required(VERSION 3.0)
+project(TP1 CXX Fortran)
 #set(CMAKE_BUILD_TYPE Release)
-#set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_BUILD_TYPE RelWithDebInfo)
-add_executable(exo1 exo1.cpp)
-add_executable(exo2 exo2.cpp)
-add_executable(matmul1 matmul1.cpp Matrice.cpp)
-add_executable(matmul2 matmul2.cpp Matrice.cpp)
-add_executable(matmul3 matmul3.cpp Matrice.cpp)
-add_executable(matmul4 matmul4.cpp Matrice.cpp)
-add_executable(matmul5 matmul5.cpp Matrice.cpp MatriceBloc.cpp)
+set(CMAKE_BUILD_TYPE Debug)
+
+add_subdirectory(matrice)
+add_subdirectory(transposee)
+add_subdirectory(valeur_propre)
+
