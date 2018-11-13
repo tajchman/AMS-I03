@@ -2,10 +2,7 @@
 
 DIR=`pwd`
 
-module load intel
-CC=icc
-CXX=icpc
-FC=gfortran
+module load gnu 
 
 mkdir -p $DIR/build
 cd $DIR/build

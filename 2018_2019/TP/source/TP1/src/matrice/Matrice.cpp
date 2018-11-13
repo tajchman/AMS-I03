@@ -20,13 +20,6 @@ std::ostream & operator<<(std::ostream & f, const Matrice & A)
 	return f;
 }
 
-void init(Matrice &A, int i0, int j0)
-{
-	int i,j, n = A.n(), m = A.m();
-	for (i=0; i<n; i++)
-		for (j=0; j<m; j++)
-			A(i,j) = 1.0/(i+i0+2*(j+j0)+1.0);
-}
 
 void transpose(Matrice & B, const Matrice & A)
 {
