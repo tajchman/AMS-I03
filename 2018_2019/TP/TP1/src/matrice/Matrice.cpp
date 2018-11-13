@@ -10,6 +10,8 @@
 std::ostream & operator<<(std::ostream & f, const Matrice & A)
 {
 	int i,j, n = A.n(), m = A.m();
+
+	f << A.name() << std::endl;
 	for (i=0; i<n; i++) {
 		for (j=0; j<m; j++)
 			f << std::setw(12) << A(i,j);
@@ -30,10 +32,8 @@ void transpose(Matrice & B, const Matrice & A)
 {
 	int i,j, n = A.n(), m = A.m();
 
-	for (i=0; i<n; i++) {
-	//	const double *p = A.line(i);
+	for (i=0; i<n; i++)
 		for (j=0; j<m; j++)
 			B(j,i) = A(i,j);
-		//	B(j,i) = *p++;
-}
+
 }

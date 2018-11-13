@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     kmax = i + blocksize; if (kmax > n) kmax = n;
     for (j = 0; j < m; j += blocksize) {
       lmax = j + blocksize; if (lmax > m) lmax = m;
-      // transpose the block beginning at [i,j]
+
       for (k = i; k < kmax; ++k)
         for (l = j; l < lmax; ++l)
           b(l,k) = a(k,l);

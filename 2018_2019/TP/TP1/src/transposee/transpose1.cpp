@@ -1,6 +1,7 @@
 #include <cstring>
 #include <cmath>
 #include "Matrice.hpp"
+#include "timer.hpp"
 
 int main(int argc, char **argv)
 {
@@ -12,9 +13,15 @@ int main(int argc, char **argv)
 
   init(a);
 
+  Timer t;
+
+  t.start();
+
   for (i=0; i<n; i++)
     for (j=0; j<m; j++)
       b(i,j) = a(j,i);
+
+  t.stop();
 
   if (n<10 && m<10) {
      std::cout << "A" << std::endl << a << std::endl;

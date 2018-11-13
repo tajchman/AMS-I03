@@ -1,11 +1,6 @@
 #! /bin/bash
 
-rm -f r.gnp r1.gnp r2.gnp
-
-echo "
-set term pdf
-set output 'r.pdf'
-" > r.gnp
+DIR=`pwd`
 
 function run {
     rm -f r s && touch r s
@@ -51,6 +46,16 @@ function runb {
     echo -n "'r_"${c}"_"${p}"' using 1:2 w lp ps 0.3 title 'bloc "${p}" parcours "${c}"', " >> r1.gnp
     echo -n "'r_"${c}"_"${p}"' using 1:3 w lp ps 0.3 title 'bloc "${p}" parcours "${c}"', " >> r2.gnp
 }
+
+cd $DIR
+mkdir -p test
+cd test
+rm -f r.gnp r1.gnp r2.gnp
+
+echo "
+set term pdf
+set output 'r.pdf'
+" > r.gnp
 
 echo -n "plot " > r1.gnp
 echo -n "plot " > r2.gnp
