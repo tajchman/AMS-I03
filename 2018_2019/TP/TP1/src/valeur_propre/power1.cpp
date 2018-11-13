@@ -5,6 +5,7 @@
 #include <ctime>
 #include "Matrice.hpp"
 #include "Vecteur.hpp"
+#include "timer.hpp"
 
 void init(Matrice &a, Vecteur & v)
 {
@@ -32,38 +33,57 @@ double variation(double a, double b)
 
 int main(int argc, char **argv)
 {
+  Timer t_total;
+  t_total.start();
+
   int i, j;
   int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 1000;
 
-  Matrice a(n,n);
-  Vecteur v(n), w(n);
+  {
+    Timer t;
+    t.start();
 
-  init(a, v);
+    Matrice a(n,n);
+    Vecteur v(n), w(n);
 
-  double s, lambda = 0.0, lambda0;
-  int k, kmax = 100;
-  for(k=0; k < kmax; k++) {
+    init(a, v);
 
-    lambda0 = lambda;
+    t.stop();
+    std::cerr << "init    time : " << t.elapsed() << " s" << std::endl;
+
+    t.reinit();
+    t.start();
     
-    for (i=0; i<n; i++)
-      w(i) = 0;
+    double s, lambda = 0.0, lambda0;
+    int k, kmax = 100;
+    for(k=0; k < kmax; k++) {
+
+      lambda0 = lambda;
       
-    for (j=0; j<n; j++) {
-      s = v(j);
       for (i=0; i<n; i++)
-	w(i) += a(i,j) * s;
-    }
-    lambda = w.normalise();
-    v = w;
-    
-    std::cerr << std::setw(5) << k
-	      << std::setw(15) << std::setprecision(10) << lambda
-	      << '\r';
+        w(i) = 0;
 
-    if (variation(lambda,lambda0) < 1e-12)
-      break;
+      for (j=0; j<n; j++) {
+        s = v(j);
+        for (i=0; i<n; i++)
+          w(i) += a(i,j) * s;
+      }
+      lambda = w.normalise();
+      v = w;
+
+      std::cerr << std::setw(5) << k
+          << std::setw(15) << std::setprecision(10) << lambda
+          << '\r';
+
+      if (variation(lambda,lambda0) < 1e-12)
+        break;
+    }
+    std::cerr << std::endl;
+    t.stop();
+    std::cerr << "compute time : " << t.elapsed() << " s"  << std::endl;
   }
-  std::cerr << std::endl;
+  t_total.stop();
+  std::cerr << "cpu time     : " << t_total.elapsed() << " s"  << std::endl;
+
   return 0;
 }

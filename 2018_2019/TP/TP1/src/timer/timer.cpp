@@ -1,8 +1,6 @@
 /*
  * timer.cpp
  *
- *  Created on: 12 nov. 2018
- *      Author: marc
  */
 
 #include <chrono>
@@ -10,12 +8,19 @@
 
 void Timer::start()
 {
-   m_start = std::chrono::high_resolution_clock::now();
+  if (not m_running) {
+    m_start = std::chrono::high_resolution_clock::now();
+    m_running = true;
+  }
 }
 
-void Timer::end()
+void Timer::stop()
 {
-   m_end = std::chrono::high_resolution_clock::now();
-   m_elapsed = (m_end-m_start).count();
+  if  (m_running) {
+    m_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = m_end-m_start;
+    m_elapsed += diff.count();
+    m_running = false;
+  }
 }
 

@@ -14,3 +14,5 @@ install
 *.toc
 *.vrb
 .DS_Store
+.settings
+perf*
