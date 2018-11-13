@@ -10,6 +10,8 @@ rm -f r.gnp s1 s2 r
 echo "
 set term pdf
 set output 'r.pdf'
+set xlabel 'Taille de bloc'
+set ylabel 'Temps de calcul transposition'
 " > r.gnp
 
 function run {
@@ -38,7 +40,7 @@ done
 
 sed -i -e 's/cpu time     ://' -e 's/s//' s2
 paste s1 s2 > r
-echo "plot 'r' using 1:2 w lp ps 0.3 title 'transpose / bloc'" > r.gnp
+echo "plot 'r' using 1:2 w lp ps 0.3 title 'transpose / bloc'" >> r.gnp
 
 gnuplot r.gnp
 
