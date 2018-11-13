@@ -1,31 +1,54 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[latin1]{inputenc}
-\usepackage[francais]{babel}
+\usepackage[french]{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+
+\newenvironment{script}%
+{\vspace{-15pt}\begin{quotation}\obeylines\noindent\ignorespaces\tt}%
+{\par\noindent\ignorespacesafterend\end{quotation}}
+
 \title{TP 1. Optimisation séquentielle}
 \date{}
+
+\parindent=0pt
+
 \begin{document}
 	
 \maketitle
+\section*{Conseil}
+
+Dans les séances du cours I03 du master AMS, on fournira des fichiers à utiliser comme support de cours ou de TP.
+
+On conseille de créer un répertoire vide dans votre espace de travail où vous copierez ces fichiers et où vous travaillerez dans le cadre de ce cours.
+
+Ceci afin d'éviter de mélanger les fichiers de ce cours avec ceux utilisés lors d'autres enseignements.
+ 
 \section*{Préparation}
-Récupérer l'archive compressée {\tt TP1.tar.gz} et extraire les fichiers qui sont contenus dans cette archive.
-\begin{verbatim}
+Récupérer l'archive compressée {\tt TP1.tar.gz} et extraire les fichiers qui sont contenus dans cette archive:
+
+\begin{script}
 cd <repertoire dans votre espace de travail>
-cp /home/t/tajchman/AMS_I03/TP1.tar.gz .
+cp /home/t/tajchman/AMS\_I03/TP1.tar.gz .
 tar xvfz TP1.tar.gz
-\end{verbatim}
-	
-Compiler les codes contenus dans TP1 et essayez-les.	\begin{verbatim}
-	cp /home/t/tajchman/TP1.tar.gz 
-	\end{verbatim}
-	
-	Extraire les fichiers et compiler les codes qui sont contenus dans l'archive :tar.gz}
-	\begin{verbatim}
-	tar xvfz TP1.tar.gz
-	\end{verbatim}
+\end{script}
+
+Se placer dans le répertoire {\tt TP1}:
+
+\begin{script}
+cd TP1
+\end{script}
+
+et compiler avec les commandes ci-dessous:
+
+\begin{script}
+mkdir build
+cd build
+cmake ../src
+make 
+\end{script}
 	
 	\section{Outils de mesure du temps calcul}
 		Outil de mesure du temps calcul
