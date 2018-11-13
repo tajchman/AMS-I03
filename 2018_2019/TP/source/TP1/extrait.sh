@@ -13,5 +13,9 @@ cp -rf ${DIR}/src .
 cp ${DIR}/*.sh .
 rm -f extrait.sh
 cd ..
-tar cvfz ${BASE}.tar.gz ${BASE}
+tar cfz ../${BASE}.tar.gz ${BASE}
+cd ..
+\rm -rf temp
+
+
 
