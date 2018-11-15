@@ -1,58 +1,100 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage[latin1]{inputenc}
 \usepackage[french]{babel}
+\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
-
+\usepackage{layout}
 \newenvironment{script}%
 {\vspace{-15pt}\begin{quotation}\obeylines\noindent\ignorespaces\tt}%
 {\par\noindent\ignorespacesafterend\end{quotation}}
 
+\newenvironment{question}%
+{\vspace{-15pt}{\it Question}\begin{quotation}\obeylines\noindent\ignorespaces}%
+    {\par\noindent\ignorespacesafterend\end{quotation}}
+
 \title{TP 1. Optimisation séquentielle}
 \date{}
+\author{}
 
 \parindent=0pt
+\oddsidemargin=0pt
+\marginparwidth=0pt
+\textwidth=460pt
+\textheight=650pt
+
 
 \begin{document}
+    %\layout
+    \maketitle
+    \section*{Conseil}
+    
+    Dans les séances du cours I03 du master AMS, on fournira des fichiers à utiliser comme support de cours ou de TP.
+    
+    On vous conseille de créer un répertoire vide dans votre espace de travail où vous copierez ces fichiers et où vous travaillerez dans le cadre de ce cours.
+    
+    Ceci afin d'éviter de mélanger les fichiers de ce cours avec ceux utilisés lors d'autres enseignements.
+
+	\section*{Préparation}
+    
+    Récupérer l'archive compressée {\tt TP1.tar.gz} et extraire les fichiers qui sont contenus dans cette archive:
+    \begin{script}
+        cd <repertoire dans votre espace de travail>
+        cp /home/t/tajchman/AMSI03/2018-11-30/TP1.tar.gz .
+        tar xvfz TP1.tar.gz
+    \end{script}
+
+    Se placer dans le répertoire {\tt TP1}:
+    \begin{script}
+        cd TP1
+    \end{script}
+
+    et compiler avec la commande ci-dessous:
+    \begin{script}
+        ./build.sh
+    \end{script}
 	
-\maketitle
-\section*{Conseil}
+    Remarque
+    \begin{quotation}
+        {\tt build.sh} est un fichier de commandes unix (dans le répertoire {\tt TP1}) qui contient les commandes pour compiler les codes dans plusieurs configurations. N'hesitez pas à examiner ce fichier et à poser des questions dessus.
+    \end{quotation}
 
-Dans les séances du cours I03 du master AMS, on fournira des fichiers à utiliser comme support de cours ou de TP.
-
-On conseille de créer un répertoire vide dans votre espace de travail où vous copierez ces fichiers et où vous travaillerez dans le cadre de ce cours.
-
-Ceci afin d'éviter de mélanger les fichiers de ce cours avec ceux utilisés lors d'autres enseignements.
- 
-\section*{Préparation}
-Récupérer l'archive compressée {\tt TP1.tar.gz} et extraire les fichiers qui sont contenus dans cette archive:
-
-\begin{script}
-cd <repertoire dans votre espace de travail>
-cp /home/t/tajchman/AMSI03/2018-11-30/TP1.tar.gz .
-tar xvfz TP1.tar.gz
-\end{script}
-
-Se placer dans le répertoire {\tt TP1}:
-
-\begin{script}
-cd TP1
-\end{script}
-
-et compiler avec les commandes ci-dessous:
-
-\begin{script}
-mkdir build
-cd build
-cmake ../src
-make 
-\end{script}
-	
 	\section{Outils de mesure du temps calcul}
-		Outil de mesure du temps calcul
-	Localité spatiale et temporelle
-	
+    Il existe de nombreux moyen de mesurer le temps d'exécution de code ou de parties de code:
+    \begin{itemize}
+        \setlength{\itemsep}{5pt}
+        \item[\textbullet] commande unix {\tt time} : mesure globale (temps ressenti par l'utilisateur) 
+        
+        \item[\textbullet] fonctions définies par le langage et utilisables depuis l'intérieur du code : 
+        
+        \begin{quote}
+            {\tt time = second()} (fortran), {\tt gettimeofday(...)} (C/C++), {\tt tic/toc} (matlab), etc.
+        \end{quote}
+        
+        Permet de mesurer le temps d'exécution d'un groupe d'instructions.
+        
+        Penser à vérifier dans la documentation quelle est la précision des mesures.
+        
+        \item[\textbullet] Librairies, par exemple PAPI
+        
+         (\url{https://icl.cs.utk.edu/projects/papi/wiki/Main_Page})
+        
+        Permet de consulter des compteurs système très bas niveau (par exemple : nombre d'opérations flottantes, utilisation des caches, utilisation des registres, etc.)
+        
+        \item[\textbullet] Outils externes de ``profilage'', ajoutent automatiquement des points de mesure dans le code (gprof), s'interposent entre le code et le système pour récuperer des informations (valgrind, perf)
+        
+        \begin{quote}
+            par exemple: {\tt gprof}, {\tt perf}, {\\ callgrind (valgrind)} (outils sous unix/linux), vtune (intel), etc.
+        \end{quote}
+        
+        Permet de connaître des informations intermédiaires : nombre d'appels et temps moyen d'exécution de fonctions par exemple.
+        
+    \end{itemize}
+
+    \medskip
+    Les outils de mesure perturbent les temps de calcul, il donnent seulement une indication sur l'efficacité d'un code et parfois quels sont les endroits du code les plus intéressants à optimiser.
+    
 	
 \end{document}

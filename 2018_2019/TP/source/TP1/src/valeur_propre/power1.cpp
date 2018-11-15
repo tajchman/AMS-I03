@@ -25,6 +25,21 @@ void init(Matrice &a, Vecteur & v)
     a(i,i) = 5 + 1.0/n;
 }
 
+void produit_matrice_vecteur(Vecteur &w, Matrice &a, Vecteur & v)
+{
+  int n = a.n(),i,j;
+  double s;
+  
+  for (i=0; i<n; i++)
+    w(i) = 0;
+  
+  for (j=0; j<n; j++) {
+    s = v(j);
+    for (i=0; i<n; i++)
+      w(i) += a(i,j) * s;
+  }
+}
+
 double variation(double a, double b)
 {
   return std::abs(a-b)/(std::abs(a) + std::abs(a) + 1.0);
@@ -36,7 +51,6 @@ int main(int argc, char **argv)
   Timer t_total;
   t_total.start();
 
-  int i, j;
   int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 1000;
 
   {
@@ -54,20 +68,14 @@ int main(int argc, char **argv)
     t.reinit();
     t.start();
     
-    double s, lambda = 0.0, lambda0;
+    double lambda = 0.0, lambda0;
     int k, kmax = 100;
     for(k=0; k < kmax; k++) {
 
       lambda0 = lambda;
       
-      for (i=0; i<n; i++)
-        w(i) = 0;
+      produit_matrice_vecteur(w, a, v);
 
-      for (j=0; j<n; j++) {
-        s = v(j);
-        for (i=0; i<n; i++)
-          w(i) += a(i,j) * s;
-      }
       lambda = w.normalise();
       v = w;
 

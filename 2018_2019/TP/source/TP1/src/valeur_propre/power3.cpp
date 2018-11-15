@@ -64,6 +64,11 @@ int main(int argc, char **argv)
         s = 0;
         for (j=0; j<n; j+=4)
           s += a(i,j) * v(j) + a(i,j+1) * v(j+1) + a(i,j+2) * v(j+2) + a(i,j+3) * v(j+3);
+        if (j > n) {
+          j-=4;
+          for (; j<n; j++)
+            s += a(i,j) * v(j);
+        }
         w(i) = s;
       }
       lambda = w.normalise();
