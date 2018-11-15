@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   }
 
   t_total.stop();
-  std::cerr << "cpu time     : " << t_total.elapsed() << " s"  << std::endl;
+  std::cerr << "total time   : " << t_total.elapsed() << " s"  << std::endl;
 
   return 0;
 }

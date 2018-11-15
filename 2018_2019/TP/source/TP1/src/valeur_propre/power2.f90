@@ -7,17 +7,18 @@ program power1
   double precision, dimension(:), allocatable :: v, w
   double precision, dimension(:,:), allocatable :: a
   double precision :: normalise, variation
+  
   character(len=128) BUFFER
   double precision :: s, lambda, lambda0
   integer :: k, kmax
-
+  
   n = 1000
   nargs = iargc()
   if (nargs .gt. 0) then
      call getarg(1, BUFFER)
      read(BUFFER, *) n
   endif
-  write (*,*) 'n = ', n
+  
   allocate(a(n,n), v(n), w(n))
 
   call init(a, v, n)
@@ -28,11 +29,8 @@ program power1
   do k=1,kmax
 
      lambda0 = lambda
-     
-     w = 0.0
-     do j=1,n
-        w = w + a(:,j)*v(j)
-     enddo
+
+     call produit_matrice_vecteur(w, a, v, n)
      
      lambda = normalise(w, n)
      v = w
@@ -45,6 +43,22 @@ program power1
   
 end program power1
 
+subroutine produit_matrice_vecteur(w, a, v, n)
+  implicit none
+
+  integer :: i, j, n
+  double precision :: w(n), a(n,n), v(n), s
+
+  w = 0
+  do i=1,n
+     s = 0.0d0
+     do j=1,n
+        s = s + a(i,j)*v(j)
+     enddo
+     w(i) = s
+  enddo
+  
+end subroutine produit_matrice_vecteur
 
 subroutine init(a, v, n)
   implicit none
@@ -61,7 +75,7 @@ subroutine init(a, v, n)
 
   a = 1.0d0/n
   do i=1, n
-     a(i,i) = 5d0 + 1.0d0/n
+     a(i,i) = 5 + 1.0d0/n
   enddo
 
 end subroutine init

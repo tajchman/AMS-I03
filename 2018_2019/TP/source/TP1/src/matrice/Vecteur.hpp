@@ -7,8 +7,13 @@ public:
 
   double & operator()(int i) { return m_coeffs[i]; }
   double operator()(int i) const { return m_coeffs[i]; }
-
-  int size() { return m_coeffs.size(); }
+  void operator=(double d) {
+    int i, n = size();
+    for (i=0; i<n; i++)
+      (*this)(i) = d;
+  }
+  
+  int size() const { return m_coeffs.size(); }
   double normalise() ;
   
 private:

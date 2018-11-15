@@ -25,6 +25,19 @@ void init(Matrice &a, Vecteur & v)
     a(i,i) = 5 + 1.0/n;
 }
 
+void produit_matrice_vecteur(Vecteur &w, Matrice &a, Vecteur & v)
+{
+  int n = a.n(),i,j;
+  double s;
+  
+  for (i=0; i<n; i++) {
+    s = 0;
+    for (j=0; j<n; j++)
+      s += a(i,j) * v(j);
+    w(i) = s;
+  }
+}
+
 double variation(double a, double b)
 {
   return std::abs(a-b)/(std::abs(a) + std::abs(a) + 1.0);
@@ -60,18 +73,12 @@ int main(int argc, char **argv)
 
       lambda0 = lambda;
 
-      for (i=0; i<n; i++) {
-        s = 0;
-        for (j=0; j<n; j++)
-          s += a(i,j) * v(j);
-        w(i) = s;
-      }
+      produit_matrice_vecteur(w, a, v);
+     
       lambda = w.normalise();
       v = w;
 
-      std::cerr << std::setw(5) << k
-          << std::setw(15) << std::setprecision(10) << lambda
-          << '\r';
+      affiche(k, lambda);
 
       if (variation(lambda,lambda0) < 1e-12)
         break;
@@ -81,7 +88,7 @@ int main(int argc, char **argv)
     std::cerr << "compute time : " << t.elapsed() << " s"  << std::endl;
   }
   t_total.stop();
-  std::cerr << "cpu time     : " << t_total.elapsed() << " s"  << std::endl;
+  std::cerr << "total time   : " << t_total.elapsed() << " s"  << std::endl;
 
   return 0;
 }
