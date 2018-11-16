@@ -33,6 +33,8 @@ int main(int argc, char **argv)
   t.stop();
   std::cerr << "init    time : " << t.elapsed() << " s" << std::endl;
 
+  t.reinit();
+  t.start();
   const int blocksize = p;
 
   for (j = 0; j < m; j += blocksize) {
