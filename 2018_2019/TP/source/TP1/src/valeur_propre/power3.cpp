@@ -5,6 +5,7 @@
 #include <ctime>
 #include "Matrice.hpp"
 #include "Vecteur.hpp"
+#include "Util.h"
 #include "timer.hpp"
 
 void init(Matrice &a, Vecteur & v)
@@ -32,11 +33,12 @@ void produit_matrice_vecteur(Vecteur &w, Matrice &a, Vecteur & v)
   
       for (i=0; i<n; i++) {
         s = 0;
-        for (j=0; j<n; j+=4)
-          s += a(i,j) * v(j)
-            + a(i,j+1) * v(j+1)
-            + a(i,j+2) * v(j+2)
-            + a(i,j+3) * v(j+3);
+        for (j=0; j<n; j+=4) {
+          s += a(i,j) * v(j);
+          s += a(i,j+1) * v(j+1);
+          s += a(i,j+2) * v(j+2);
+          s += a(i,j+3) * v(j+3);
+        }	
         if (j > n) {
           j-=4;
           for (; j<n; j++)
@@ -58,7 +60,7 @@ int main(int argc, char **argv)
   t_total.start();
 
   int i, j;
-  int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 1000;
+  int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 3000;
 
   {
     Timer t;

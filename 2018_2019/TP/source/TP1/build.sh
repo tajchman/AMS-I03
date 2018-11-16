@@ -9,7 +9,7 @@ then
    NPROCS=10
 fi
 
-for i in Debug Release Profile
+for i in Debug Profile Release
 do
   mkdir -p $DIR/build/$i
   cd $DIR/build/$i

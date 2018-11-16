@@ -227,12 +227,54 @@ Examen du rapport de perf
 
 \vfill\eject
 
-\section{Optimisation de la localité spatiale et temporelle}
+\section{Techniques d'optimisation séquentielle}
 
-\subsection{Produit matrice-vecteur}
+On utilise ici un code qui calcule (une approximation de) la plus grande valeur propre d'une matrice, dans le fichier source {\tt src/valeur\_propre/power1.cpp} (voir le 1.1 page 2).
+L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_vecteur}.
 
-On utilise ici un code qui calcule (une approximation de) la plus grande valeur propre d'une matrice, dans le fichier source {\tt src/valeur\_propre/power1.cpp}.
-L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_vecteur}
+\subsection{Tentative d'optimisation 1}
 
+\begin{question}
+	Exécuter les codes {\tt install/Release/power1} et {\tt install/Release/power2}, comparer les temps de calcul.
 	
+	Expliquer les différences de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power1.cpp} (utilisé dans le code power1) \\ et {\tt src/valeur\_propre/power2.cpp} (utilisé dans le code power2).
+\end{question}
+
+\begin{question}
+	Faire la même comparaison avec les codes {\tt install/Release/power1f} et \linebreak {\tt install/Release/power2f}, qui utilisent respectivement des sources fortran {\tt src/valeur\_propre/power1.f90} et {\tt src/valeur\_propre/power2.f90}.
+\end{question}
+	
+\subsection{Tentative d'optimisation 2}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power2} et {\tt install/Release/power3}, comparer les temps de calcul.
+
+Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power2.cpp} (utilisé dans le code power2) \\ et {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3).
+\end{question}
+
+\subsection{Tentative d'optimisation 3}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power3} et {\tt install/Release/power4}, comparer les temps de calcul.
+	
+	Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3) \\ et {\tt src/valeur\_propre/power4.cpp} (utilisé dans le code power4).
+\end{question}
+
+\vfill\eject
+\section{Transposition de matrice}
+
+\subsection{Parcours par lignes ou par colonnes}
+
+On s'intéresse ici à l'opération de transposition des matrices:
+
+$$
+A^T_{i,j} = A_{j,i},\quad  i=1, \ldots, n\quad j=1,\ldots, n
+$$
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.
+	
+	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source {\tt src/transposee/transpose1.cpp} et
+	 {\tt src/transposee/transpose2.cpp}.
+\end{question}
 \end{document}

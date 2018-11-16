@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(TP1 CXX Fortran)
+project(TP1 C CXX Fortran)
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

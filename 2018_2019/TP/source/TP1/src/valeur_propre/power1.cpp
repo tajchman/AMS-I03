@@ -5,6 +5,7 @@
 #include <ctime>
 #include "Matrice.hpp"
 #include "Vecteur.hpp"
+#include "Util.h"
 #include "timer.hpp"
 
 void init(Matrice &a, Vecteur & v)
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
   Timer t_total;
   t_total.start();
 
-  int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 1000;
+  int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 3000;
 
   {
     Timer t;

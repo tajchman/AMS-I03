@@ -1,4 +1,4 @@
-program power1
+program power2
 
   implicit none
 
@@ -12,13 +12,13 @@ program power1
   double precision :: s, lambda, lambda0
   integer :: k, kmax
   
-  n = 1000
+  n = 3000
   nargs = iargc()
   if (nargs .gt. 0) then
      call getarg(1, BUFFER)
      read(BUFFER, *) n
   endif
-  
+  write (*,*) 'n = ', n
   allocate(a(n,n), v(n), w(n))
 
   call init(a, v, n)
@@ -35,13 +35,14 @@ program power1
      lambda = normalise(w, n)
      v = w
 
-     write (*,*) k, lambda
+     call affiche(k, lambda)
      if (variation(lambda,lambda0) < 1.0D-12) exit
   enddo
     
   deallocate(a,v,w)
+  write (*,*)
   
-end program power1
+end program power2
 
 subroutine produit_matrice_vecteur(w, a, v, n)
   implicit none
@@ -75,7 +76,7 @@ subroutine init(a, v, n)
 
   a = 1.0d0/n
   do i=1, n
-     a(i,i) = 5 + 1.0d0/n
+     a(i,i) = 5.0d0 + 1.0d0/n
   enddo
 
 end subroutine init

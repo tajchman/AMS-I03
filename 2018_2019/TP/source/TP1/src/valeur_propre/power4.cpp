@@ -31,12 +31,20 @@ void produit_matrice_vecteur(Vecteur &w, Matrice &a, Vecteur & v)
   int n = a.n(),i,j;
   double s;
   
-  for (i=0; i<n; i++) {
-    s = 0;
-    for (j=0; j<n; j++)
-      s += a(i,j) * v(j);
-    w(i) = s;
-  }
+      for (i=0; i<n; i++) {
+        s = 0;
+        for (j=0; j<n; j+=4)
+          s += a(i,j) * v(j)
+            + a(i,j+1) * v(j+1)
+            + a(i,j+2) * v(j+2)
+            + a(i,j+3) * v(j+3);
+        if (j > n) {
+          j-=4;
+          for (; j<n; j++)
+            s += a(i,j) * v(j);
+        }
+        w(i) = s;
+      }
 }
 
 double variation(double a, double b)
@@ -75,7 +83,7 @@ int main(int argc, char **argv)
       lambda0 = lambda;
 
       produit_matrice_vecteur(w, a, v);
-     
+
       lambda = w.normalise();
       v = w;
 
