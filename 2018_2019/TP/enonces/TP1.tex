@@ -268,8 +268,9 @@ Expliquer les différences éventuelles de temps calcul en examinant les fichiers 
 On s'intéresse ici à l'opération de transposition des matrices:
 
 $$
-A^T_{i,j} = A_{j,i},\quad  i=1, \ldots, n\quad j=1,\ldots, n
+A^T = (a^T_{i,j})_{i=1, \ldots, n, j=1,\ldots, n} = (a_{j,i})_{i=1, \ldots, n, j=1,\ldots, n}
 $$
+où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la colonne $j$
 
 \begin{question}
 	Exécuter les codes {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.
@@ -277,10 +278,23 @@ $$
 	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source {\tt src/transposee/transpose1.cpp} et
 	 {\tt src/transposee/transpose2.cpp}.
 \end{question}
-\subsection{Algorithme par bloc}
+\subsection{Algorithme par bloc - version 1}
+
+On garde la structure des matrices comme dans {\tt transpose1.cpp} et {\tt transpose2.cpp}.
+Par contre le parcours de indices de matrice est différent.
+
 \begin{question}
 	Exécuter le code {\tt install/Release/transpose3}.
 	
-	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cpp.
+	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cpp}.
 \end{question}
+\subsection{Algorithme par bloc - version 2}
+
+Dans cette version, on utilise une structure des matrices par bloc. Chaque bloc est lui-même une matrice à coefficients scalaires. L'algorithme s'écrit formellement de la même façon.
+
+\begin{question}
+	Exécuter le code {\tt install/Release/transpose4}.
+	
+	Comparer les temps de calcul avec la version précédente et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose4.cpp}.
+	\end{question}
 \end{document}
