@@ -3,20 +3,20 @@
 #include <cstring>
 #include <cmath>
 #include <ctime>
-#include "Matrice.hpp"
+#include "MatriceBloc.hpp"
 #include "Vecteur.hpp"
 #include "Util.h"
 #include "timer.hpp"
 
-void init(MatriceBloc &a, Vecteur & v)
+void init(MatriceBloc &A, Vecteur & V)
 {
-  int i, j, k, l, n = v.size(), p = a.p(), q = a.q();
+  int i, j, k, l, n = V.size(), p = A.p(), q = A.q(), nb = A.n(), mb = A.m();
   
   std::srand(std::time(nullptr));
   
   for (i=0; i<n; i++)
-    v(i) = std::rand();
-  v.normalise();
+    V(i) = std::rand();
+  V.normalise();
 
   for (i=0; i<nb; i++) {
     for (j=0; j<mb; j++) {
@@ -34,35 +34,37 @@ void init(MatriceBloc &a, Vecteur & v)
   }
 }
 
-void produit_matrice_vecteur(Vecteur &w, MatriceBloc &a, Vecteur & v)
+void produit_matrice_vecteur(Vecteur &W, MatriceBloc &A, Vecteur & V)
 {
-  int n = a.n(),i,j,k,l, p= a.p(), q = a.q();
+  int nb = A.n(),mb = A.m(), i,j,k,l, p= A.p(), q = A.q();
   double s;
+
+  int lmax = (q/4) * 4;
   
   for (i=0; i<nb; i++) {
-    double * bW = &(w(i*p));
+    double * bW = &(W(i*p));
     for (k=0; k<p; k++) bW[k] = 0.0;
     
     for (j=0; j<mb; j++) {
       
       Matrice & bA = A(i,j);
-      double * bV = &(v(j*q));
+      double * bV = &(V(j*q));
       
       for (k=0; k<p; k++) {
         s = 0;
-        for (l=0; j<q; l+=4)
+        for (l=0; l<lmax; l+=4)
           s += bA(k,l) * bV[l]
             + bA(k,l+1) * bV[l+1]
             + bA(k,l+2) * bV[l+2]
-            + bA(k,l+3) * bV[l+3]);
-        if (l > q) {
-          l-=4;
-          for (; l<q; l++)
-            s += bA(k,l) * bV[l];
-        }
-        bW[k] += s;
+            + bA(k,l+3) * bV[l+3];
+	for (; l<q; l++)
+	  s += bA(k,l) * bV[l];
+	bW[k] += s;
       }
+    }
+  }
 }
+
 
 double variation(double a, double b)
 {
@@ -77,7 +79,7 @@ int main(int argc, char **argv)
 
   int i, j;
   int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 3000;
-  int p = argc > 3 ? strtol(argv[3], nullptr, 10) : 50;  
+  int p = argc > 3 ? strtol(argv[3], nullptr, 10) : 100;  
 
   {
     Timer t;
