@@ -18,7 +18,7 @@ set(CMAKE_Fortran_FLAGS_PROFILE "${CMAKE_Fortran_FLAGS_DEBUG} -pg")
 set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
 set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -pg") 
 
-add_subdirectory(utile)
+add_subdirectory(util)
 add_subdirectory(matrice)
 add_subdirectory(transposee)
 add_subdirectory(valeur_propre)

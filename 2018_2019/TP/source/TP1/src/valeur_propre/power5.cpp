@@ -10,7 +10,7 @@
 
 void init(Matrice &A, Vecteur & V, int p)
 {
-  int i, j, k, l, kmax, lmax, n = A.n(), m = A.m();
+  int i, j, k, l, kmax, lmax, n = A.n();
   
   std::srand(std::time(nullptr));
   
@@ -18,19 +18,12 @@ void init(Matrice &A, Vecteur & V, int p)
     V(i) = std::rand();
   V.normalise();
 
-  for ( i = 0; i < n; i += p) {
-    kmax = i + p; if (kmax > n) kmax = n;
-    for (j = 0; j < m; j += p) {
-      lmax = j + p; if (lmax > m) lmax = m;
-
-      for (k = i; k < kmax; ++k)
-        for (l = j; l < lmax; ++l)
-          A(k,l) = 1.0/n;
-    }
+  double *pA = &A(0,0);
+  double s = 1.0/n;
+  for ( i = 0; i < n*n; i++) *pA++ = s;
   
-    for (k=i; k<kmax; k++)
-      A(k,k) += 5.0;
-  }
+  for (i=0; i<n; i++)
+    A(i,i) += 5.0;
 }
 
 void produit_matrice_vecteur(Vecteur &W, Matrice &A, Vecteur & V, int p)
