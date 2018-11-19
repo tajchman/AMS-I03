@@ -26,25 +26,31 @@ void init(Matrice &A, Vecteur & V)
     A(i,i) = 5 + 1.0/n;
 }
 
+inline
+double dot(double *a, double *b, int n, int nmax)
+{
+  int l = 0;
+  double s = 0;
+  for (; l<nmax; l+=4) {
+    s += a[l] * b[l];
+    s += a[l+1] * b[l+1];
+    s += a[l+2] * b[l+2];
+    s += a[l+3] * b[l+3];
+  }
+  for (; l<n; l++)
+     s += a[l] * b[l];
+  return s;
+}
+
 void produit_matrice_vecteur(Vecteur &W, Matrice &A, Vecteur & V)
 {
-  int n = A.n(),i,j, jmax;
-  double s;
-  
-  jmax = (n/4) * 4;
-  for (i=0; i<n; i++) {
-    s = 0;
-    for (j=0; j<jmax; j+=4) {
-      s += A(i,j) * V(j);
-      s += A(i,j+1) * V(j+1);
-      s += A(i,j+2) * V(j+2);
-      s += A(i,j+3) * V(j+3);
-    }	
-    for (; j<n; j++)
-      s += A(i,j) * V(j);
+  int n = A.n(),i,j, nmax = (n/4) * 4;
 
-    W(i) = s;
-  }
+  double * pV = &(V(0));
+  double * pA = &(A(0, 0));
+
+  for (i=0; i<n; i++) 
+    W(i) = dot(pA + i*n, pV, n, nmax);
 }
 
 double variation(double a, double b)

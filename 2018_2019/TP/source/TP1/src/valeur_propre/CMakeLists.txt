@@ -2,7 +2,7 @@
 include_directories(../matrice)
 include_directories(../timer)
 
-foreach(i 1 2 3 4 5)
+foreach(i 1 2 3 4 5 6)
   add_executable(power${i} power${i}.cpp ../matrice/Util.c)
   target_link_libraries(power${i} linalg timer)
   install(TARGETS power${i} DESTINATION .)
