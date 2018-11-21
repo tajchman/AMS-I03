@@ -5,7 +5,7 @@
 #include <ctime>
 #include "Matrice.hpp"
 #include "Vecteur.hpp"
-#include "Util.h"
+#include "util.h"
 #include "timer.hpp"
 
 void init(Matrice &a, Vecteur & v)
