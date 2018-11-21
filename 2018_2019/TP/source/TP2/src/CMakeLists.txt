@@ -23,7 +23,7 @@ include_directories(${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d moyenne_seq moyenne_openmp_1)
+foreach(d sinus_seq sinus_openmp_1 sinus_openmp_2)
    add_subdirectory(${d})
 endforeach()
 

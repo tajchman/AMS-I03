@@ -17,6 +17,7 @@ double mon_sinus(double x)
      m = 2*i*(2*i+1);
      coef *= -x2/m;
      y += coef;
+     if (std::abs(coef) < 1e-12) break;
    } 
    return y;
 }
@@ -26,7 +27,7 @@ void init(std::vector<double> & exact, std::vector<double> & v)
   double x, pi = 3.14159;
   int i, n = v.size();
   
-#pragma omp parallel for shared(x)
+#pragma omp parallel for default(none) private(x) shared(exact, v, n, pi)
   for (i=0; i<n; i++) {
     x = i*2*pi/n;
     v[i] = mon_sinus(x);
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
   init(v, w);
   t_init.stop();
 
-  if (n < 1000)
+  if (n < 10000)
     save("sinus.dat", v, w);
   
   t_moyenne.start();
