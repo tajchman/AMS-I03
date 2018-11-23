@@ -23,7 +23,7 @@ include_directories(${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d sinus_seq sinus_openmp_1 sinus_openmp_2)
+foreach(d sinus_seq sinus_openmp_1 sinus_std_threads)
    add_subdirectory(${d})
 endforeach()
 

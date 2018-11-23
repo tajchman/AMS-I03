@@ -1,0 +1,144 @@
+\include{debut}
+
+
+\begin{document}
+%    \layout
+    
+    \begin{center}
+    	\LARGE TP 2. Programmation multi-threads
+    \end{center}
+
+	\section*{Préparation}
+    
+    Récupérer l'archive compressée {\tt TP2.tar.gz} et extraire les fichiers qui sont contenus dans cette archive:
+    \begin{script}
+        cd <repertoire dans votre espace de travail>
+        cp /home/t/tajchman/AMSI03/2018-11-30/TP2.tar.gz .
+        tar xvfz TP2.tar.gz
+    \end{script}
+
+    Se placer dans le répertoire {\tt TP2}:
+    \begin{script}
+        cd TP2
+    \end{script}
+
+    et préparer les compilations dans les points suivants avec les commandes ci-dessous:
+    \begin{script}
+        mkdir -p build
+        cd build
+        cmake ../src
+    \end{script}
+	
+
+\section{Code séquentiel}
+
+Le fichier {\tt src/sinus\_seq/sinus.cxx} calcule une approximation par série de Taylor de la fonction $x \mapsto \sin(x)$ pour un ensemble de valeur de $x \in [0, 2\pi]$. Les résultats sont sauvegardés dans un fichier.
+
+Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résultats (graphes du sinus calculé par la machine et par la formule approchée, en utilisant {\tt gnuplot}).
+
+\begin{question}
+	Se placer dans le répertoire TP2.
+	
+	Compiler le code en tapant 
+    \begin{script}
+        make -C build sinus\_seq
+    \end{script}
+    
+    Exécuter le code en tapant 
+    \begin{script}
+		./build/sinus\_seq/sinus\_seq 500
+	\end{script}
+
+    Tracer le graphe des résultats et le visualiser en tapant
+    \begin{script}
+		./trace.sh
+ 	\end{script}
+   
+   Les courbes sur le graphe représentent les valeurs calculées par le sinus de la librairie standard et celles calculées par la formule de Taylor du programme 
+\end{question}
+
+\section{Première version multi-threads avec OpenMP}
+
+    On peut choisir a priori le nombre maximum de threads qui seront utilisés dans l'exécution d'un code, ce choix peut se faire de plusieurs façons.
+    
+    Ici, l'utilisateur définira une variable d'environnement {\tt OMP\_NUM\_THREADS} avec une valeur entière (entre 1 et le nombre de c\oe urs disponibles dans le processeur).
+    
+    On peut aussi utiliser la fonction {\tt omp\_set\_num\_threads()} dans le code.
+    
+    \medskip
+\begin{question}
+	Compiler, exécuter le code en utilisant 3 threads et tracer les résultats en tapant 
+\begin{script}
+	make -C build sinus\_openmp\_1
+	OMP\_NUM\_THREADS=3 ./build/sinus\_openmp\_1/sinus\_openmp\_1
+	./trace.sh
+\end{script}
+\end{question}
+
+\begin{question}
+	Comparer les temps de calcul entre 
+	\begin{itemize}
+		\item la version séquentielle
+		\item la version multi-threads en utilisant 1 thread
+		\item la version multi-threads en utilisant 2 threads
+		\item la version multi-threads en utilisant 3 threads
+		\item ...
+		\item la version multi-threads en utilisant 6 threads
+	\end{itemize}
+	Interpréter les résultats.	
+\end{question}
+	
+\section{Version multi-threads en utilisant les {\tt std::threads}}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power2} et {\tt install/Release/power3}, comparer les temps de calcul.
+
+Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power2.cpp} (utilisé dans le code power2) \\ et {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3).
+\end{question}
+
+\subsection{Tentative d'optimisation 3}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power3} et {\tt install/Release/power4}, comparer les temps de calcul.
+	
+	Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3) \\ et {\tt src/valeur\_propre/power4.cpp} (utilisé dans le code power4).
+\end{question}
+
+\vfill\eject
+\section{Transposition de matrice}
+
+\subsection{Parcours par lignes ou par colonnes}
+
+On s'intéresse ici à l'opération de transposition des matrices:
+
+$$
+A^T = (a^T_{i,j})_{i=1, \ldots, n, j=1,\ldots, n} = (a_{j,i})_{i=1, \ldots, n, j=1,\ldots, n}
+$$
+où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la colonne $j$
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.
+	
+	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source {\tt src/transposee/transpose1.cpp} et
+	 {\tt src/transposee/transpose2.cpp}.
+\end{question}
+\subsection{Algorithme par bloc - version 1}
+
+On garde la structure des matrices comme dans {\tt transpose1.cpp} et {\tt transpose2.cpp}.
+Par contre le parcours de indices de matrice est différent.
+
+\begin{question}
+	Exécuter le code {\tt install/Release/transpose3}.
+	
+	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cpp}.
+\end{question}
+\subsection{Algorithme par bloc - version 2}
+
+Dans cette version, on utilise une structure des matrices par bloc. Chaque bloc est lui-même une matrice à coefficients scalaires. L'algorithme s'écrit formellement de la même façon.
+
+\begin{question}
+	Exécuter le code {\tt install/Release/transpose4}.
+	
+	Comparer les temps de calcul avec la version précédente et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose4.cpp}.
+	\end{question}
+\end{document}
