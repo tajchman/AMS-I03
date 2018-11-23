@@ -22,7 +22,7 @@ void stat(const std::vector<double> & v, double & moyenne, double & ecart_type)
   double s1 = 0.0, s2 = 0.0;
   int i, n = v.size();
 
-#pragma omp parallel for reduction(+,s1), reduction(+,s2)
+#pragma omp parallel for reduction(+:s1), reduction(+:s2)
   for (i=0; i<n; i++) {
     s1 += v[i];
     s2 += v[i]*v[i];
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 {
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 10000000;
 
-  std::cout << "moyenne 1 : taille vecteur = " << n << std::endl;
+  std::cout << "version 2 : taille vecteur = " << n << std::endl;
 
   Timer t_init, t_moyenne;
 

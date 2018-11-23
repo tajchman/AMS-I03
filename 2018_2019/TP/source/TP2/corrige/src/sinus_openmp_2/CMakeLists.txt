@@ -1,4 +1,4 @@
-set(code "moyenne_openmp_1")
+set(code "sinus_openmp_2")
 
 set_source_files_properties(${code}.cxx
   PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})

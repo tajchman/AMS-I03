@@ -9,12 +9,8 @@ then
    NPROCS=10
 fi
 
-for i in Debug Profile Release
-do
-  mkdir -p $DIR/build/$i
-  cd $DIR/build/$i
-  cmake -DCMAKE_BUILD_TYPE=$i -DCMAKE_INSTALL_PREFIX=$DIR/install/$i $DIR/src
+  mkdir -p $DIR/build
+  cd $DIR/build
+  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
   make -j
   make -j install
-done
-

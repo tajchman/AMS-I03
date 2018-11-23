@@ -8,62 +8,41 @@
 #include <cmath>
 #include <iomanip>
 
-void pause()
+double mon_sinus(double x)
 {
-  volatile double z;
-  int k, l, n = 1;
-  
-  for (k=1; k<100*n; k++)
-    for (l=1; l<100*n; l++) z = k+l;
-}
-
-
-double exact(const double &x)
-{
-  double y = sin(x);
-  return y;
-}
-
-double approche(const double & x)
-{
-  double y = x;
-   int i, imax = 20, m;
+  double y = x, x2 = x*x;
+   int i, imax = 8, m;
    double coef = x;
    for (i=1; i<imax; i++) {
      m = 2*i*(2*i+1);
-     coef *= -x*x/m;
+     coef *= -x2/m;
      y += coef;
      if (std::abs(coef) < 1e-12) break;
-   }
+   } 
    return y;
 }
 
-void init(std::vector<double> & v1, std::vector<double> & v2)
+void init(std::vector<double> & exact, std::vector<double> & v)
 {
   double x, pi = 3.14159;
-  int i, n = v1.size();
+  int i, n = v.size();
   
-#pragma omp parallel for
+#pragma omp parallel for default(none) private(x) shared(exact, v, n, pi)
   for (i=0; i<n; i++) {
-    x = i*2*pi/(n-1);    
-    v1[i] = exact(x);
-  }
-  
-#pragma omp parallel for
-  for (i=0; i<n; i++) {
-    x = i*2*pi/(n-1);
-    v2[i] = approche(x);
+    x = i*2*pi/n;
+    v[i] = mon_sinus(x);
+    exact[i] = sin(x);
   }
 }
 
 void save(const char *filename,
-	  const std::vector<double> & v1,
-	  const std::vector<double> & v2)
+	  std::vector<double> & v1,
+	  std::vector<double> & v2)
 {
   std::ofstream f(filename);
   int i, n = v1.size();
   for (i=0; i<n; i++)
-    f << v1[i] << " " << v2[i] + 0.05 << std::endl;
+    f << v1[i] << " " << v2[i] << std::endl;
 }
 
 double erreur(const std::vector<double> & v1, const std::vector<double> & v2)
