@@ -33,8 +33,9 @@ void produit_matrice_vecteur(Vecteur &W, Matrice &A, Vecteur & V)
   
   for (i=0; i<n; i++) {
     s = 0;
-    for (j=0; j<n; j++)
+    for (j=0; j<n; j++) {
       s += A(i,j) * V(j);
+    }
     W(i) = s;
   }
 }
@@ -50,7 +51,6 @@ int main(int argc, char **argv)
   Timer t_total;
   t_total.start();
 
-  int i, j;
   int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 3000;
 
   {
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     t.reinit();
     t.start();
     
-    double s, lambda = 0.0, lambda0;
+    double lambda = 0.0, lambda0;
     int k, kmax = 100;
     for(k=0; k < kmax; k++) {
 

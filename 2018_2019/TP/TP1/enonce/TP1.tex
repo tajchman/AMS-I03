@@ -37,7 +37,7 @@
     \begin{remarque}
 {\tt build.sh} est un fichier de commandes unix (dans le répertoire {\tt TP1}) qui contient les commandes pour compiler les codes dans plusieurs configurations. Les différentes configurations sont : 
 \begin{itemize}
-	\item une version optimisée (répertoire {\tt install/Release}),
+	\item une version ``release'', optimisée par le compilateur (répertoire {\tt install/Release}),
 	\item une version ``debug'' permettant le suivi de l'exécution par un ``debugger'' et qui donne plus d'informations avec les outils présentés plus loin (répertoire {\tt install/Debug}),
 	\item une version ``profile''  : ``debug'' + comptage des appels de fonctions + échantillonage en cours d'exécution (répertoire {\tt install/Profile}).
 \end{itemize}
@@ -45,7 +45,7 @@
 Règle suggérée :
 \begin{itemize}
 	\item Pendant la mise au point du code: utiliser la version debug.
-	\item Pour optimiser le temps d'exécution : utiliser la version profile ou la version debug + outil de mesure du temps
+	\item Pour (essayer d') améliorer le temps d'exécution : utiliser la version profile ou la version debug + outil de mesure du temps
 	\item Quand on est satisfait de l'état du code : utiliser la version optimisée.
 \end{itemize}
 \end{remarque}
@@ -87,27 +87,27 @@ Règle suggérée :
     \end{itemize}
 
     \medskip
-    Les outils de mesure perturbent les temps de calcul, ils donnent seulement une indication sur l'efficacité d'un code et parfois quels sont les endroits du code les plus intéressants à optimiser.
+    Les outils de mesure perturbent les temps de calcul et, en général, il faut les utiliser avec une version debug. Ils donnent seulement une indication sur les endroits du code les plus intéressants à optimiser. De toute façon, à la fin, il faut mesurer les temps calculs sur la version ``release'' (on a parfois des surprises) .
     
     \subsection{Appels explicites de fonctions système depuis le code source}
     
-    Les fichiers source {\tt src/timer/timer.cpp} et {\tt src/timer/timer.hpp} contiennent une classe C++ qui utilise la fonction standard C++11 
+    Les fichiers source {\tt src/util/timer.cpp} et {\tt src/util/timer.hpp} contiennent une classe C++ qui utilise la fonction standard C++11 
     \begin{quote}
     	\tt std::chrono::high\_resolution\_clock::now
     \end{quote}
      pour mesurer le temps entre 2 positions dans un code. 
     
-    Cette classe est utilisée dans le fichier source {\tt src/valeur\_propre/power1.cpp} qui initialise une matrice $100\times100$ et calcule sa plus grande valeur propre (en valeur absolue, par la méthode de la puissance : 
+    Cette classe est utilisée dans le fichier source {\tt src/valeur\_propre/power1.cpp} qui initialise une matrice $100\times100$ et calcule sa plus grande valeur propre (en valeur absolue), par la méthode de la puissance : 
     $$\lim_{k \rightarrow \infty} \vert\vert A^k v\vert\vert / \vert\vert A^{k-1} v\vert\vert$$.
     
     \begin{question}    	
-    	Examiner le fichier {\tt src/valeur\_propre/power1.cpp} et la classe {\tt Timer}.
+    	Examiner le fichier {\tt src/valeur\_propre/power1.cpp} et la classe {\tt Timer} (fichiers {\tt src/util/timer.cpp} et {\tt src/util/timer.hpp}).
     	
-    	Exécutez le code {\tt install/Release/valeur\_propre/power1} (compilé au début du TP). Le code affiche, entre autres, le temps d'initialisation de la matrice, le temps de calcul de la valeur propre et le temps total de calcul.
+    	Exécutez le code {\tt install/Release/power1} (compilé au début du TP). Le code affiche, entre autres, le temps d'initialisation de la matrice, le temps de calcul de la valeur propre et le temps total de calcul.
     	
     	Ré-exécutez le code plusieurs fois.
     	
-    	Les résultats varient légèrement. Expliquer cette variation.
+    	Les temps mésurés varient légèrement. Expliquer cette variation.
     \end{question}
 
 \vfill\eject
@@ -166,7 +166,7 @@ On utilise souvent {\tt valgrind} pour vérifier l'utilisation correcte de la mém
 	Exécuter le code en version ``debug'' sous contrôle de {\tt valgrind}:
 	
     \begin{quote}
-	\tt valgrind --tool=callgrind install/Debug/power1
+	\tt valgrind {-}-tool=callgrind install/Debug/power1
     \end{quote}
 	
 	L'outil produit des informations dans un fichier {\tt callgrind.out.XXX} (chaque exécution de {\tt valgrind} génère un fichier de nom différent).
@@ -183,9 +183,9 @@ On utilise souvent {\tt valgrind} pour vérifier l'utilisation correcte de la mém
 
 \subsection{Utilisation de l'outil perf}
 
-perf, un outil disponible sous linux peut être très intéressant, en particulier pour des études de très bas niveau (mesure précise des accès mémoire, profilage du langage machine, compteurs bas niveau, etc.). L'outil utilise les fonctionnalités du noyau Linux pour mesurer les événements (compteurs internes du systèmes). Son utilisation efficace requiert une certaine expertise.
+{\tt perf}, un outil disponible sous linux peut être très intéressant, en particulier pour des études de très bas niveau (mesure précise des accès mémoire, profilage du langage machine, compteurs bas niveau, etc.). L'outil utilise les fonctionnalités du noyau Linux pour mesurer les événements (compteurs internes du systèmes). Son utilisation efficace requiert une certaine expertise.
 
-Il n'est pas disponible sur les machines utilisées pendant les TP, mais vous êtes encouragés à le tester.
+Il n'est pas disponible sur les machines utilisées pendant les TP, mais vous êtes encouragés à le tester s'il est installé sur d'autres machines.
 
 Il s'utilise sur des codes compilés en mode debug en 2 étapes :
 
@@ -218,6 +218,8 @@ L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_ve
 
 \begin{question}
 	Faire la même comparaison avec les codes {\tt install/Release/power1f} et \linebreak {\tt install/Release/power2f}, qui utilisent respectivement des sources fortran {\tt src/valeur\_propre/power1.f90} et {\tt src/valeur\_propre/power2.f90}.
+
+        Expliquer les différences de résultats entre la version C++ ({\tt power1.cpp} et {\tt power2.cpp}) et fortran 90 ({\tt power1.f90} et {\tt power2.f90}).
 \end{question}
 	
 \subsection{Tentative d'optimisation 2}
@@ -246,7 +248,7 @@ On s'intéresse ici à l'opération de transposition des matrices:
 $$
 A^T = (a^T_{i,j})_{i=1, \ldots, n, j=1,\ldots, n} = (a_{j,i})_{i=1, \ldots, n, j=1,\ldots, n}
 $$
-où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la colonne $j$
+où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la colonne $j$.
 
 \begin{question}
 	Exécuter les codes {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.

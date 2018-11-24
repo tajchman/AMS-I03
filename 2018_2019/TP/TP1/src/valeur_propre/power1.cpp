@@ -8,35 +8,35 @@
 #include "util.h"
 #include "timer.hpp"
 
-void init(Matrice &a, Vecteur & v)
+void init(Matrice &A, Vecteur & V)
 {
-  int i, j, n = v.size();
+  int i, j, n = V.size();
   
   std::srand(std::time(nullptr));
   
   for (i=0; i<n; i++)
-    v(i) = std::rand();
-  v.normalise();
+    V(i) = std::rand();
+  V.normalise();
 
   for (i=0; i<n; i++)
     for (j=0; j<n; j++)
-      a(i,j) = 1.0/n;
+      A(i,j) = 1.0/n;
   
   for (i=0; i<n; i++)
-    a(i,i) = 5 + 1.0/n;
+    A(i,i) = 5 + 1.0/n;
 }
 
-void produit_matrice_vecteur(Vecteur &w, Matrice &a, Vecteur & v)
+void produit_matrice_vecteur(Vecteur &W, Matrice &A, Vecteur & V)
 {
-  int n = a.n(),i,j;
+  int n = A.n(),i,j;
   double s;
   
-  w = 0.0;
+  W = 0.0;
   
   for (j=0; j<n; j++) {
-    s = v(j);
+    s = V(j);
     for (i=0; i<n; i++)
-      w(i) += a(i,j) * s;
+      W(i) += A(i,j) * s;
   }
 }
 
@@ -57,10 +57,10 @@ int main(int argc, char **argv)
     Timer t;
     t.start();
 
-    Matrice a(n,n);
-    Vecteur v(n), w(n);
+    Matrice A(n,n);
+    Vecteur V(n), W(n);
 
-    init(a, v);
+    init(A, V);
 
     t.stop();
     std::cerr << "init    time : " << t.elapsed() << " s" << std::endl;
@@ -74,10 +74,10 @@ int main(int argc, char **argv)
 
       lambda0 = lambda;
       
-      produit_matrice_vecteur(w, a, v);
+      produit_matrice_vecteur(W, A, V);
 
-      lambda = w.normalise();
-      v = w;
+      lambda = W.normalise();
+      V = W;
 
       affiche(k, lambda);
 
