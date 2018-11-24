@@ -2,7 +2,11 @@
 \usepackage[T1]{fontenc}
 %\usepackage[utf8]{inputenc}
 \usepackage[latin1]{inputenc}
+
 \usepackage[french]{babel}
+\frenchbsetup{StandardLists=true}
+\usepackage{enumitem}
+
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -23,6 +27,10 @@
 {\vspace{2pt}{\it Remarque}\begin{quote}\obeylines\ignorespaces}%
 	{\par\noindent\ignorespacesafterend\end{quote}}
 
+
+\newenvironment{liste}[1]%
+{\begin{itemize}[label=#1, parsep=50pt]}%
+{\end{itemize}}
 
 \parindent=0pt
 \oddsidemargin=0pt

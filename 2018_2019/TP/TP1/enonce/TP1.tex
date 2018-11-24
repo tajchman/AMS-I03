@@ -38,10 +38,17 @@
 {\tt build.sh} est un fichier de commandes unix (dans le répertoire {\tt TP1}) qui contient les commandes pour compiler les codes dans plusieurs configurations. Les différentes configurations sont : 
 \begin{itemize}
 	\item une version optimisée (répertoire {\tt install/Release}),
-	\item une version ``debug'' permettant le suivi de l'exécution (répertoire {\tt install/Debug}),
+	\item une version ``debug'' permettant le suivi de l'exécution par un ``debugger'' et qui donne plus d'informations avec les outils présentés plus loin (répertoire {\tt install/Debug}),
 	\item une version ``profile''  : ``debug'' + comptage des appels de fonctions + échantillonage en cours d'exécution (répertoire {\tt install/Profile}).
 \end{itemize}
-    \end{remarque}
+
+Règle suggérée :
+\begin{itemize}
+	\item Pendant la mise au point du code: utiliser la version debug.
+	\item Pour optimiser le temps d'exécution : utiliser la version profile ou la version debug + outil de mesure du temps
+	\item Quand on est satisfait de l'état du code : utiliser la version optimisée.
+\end{itemize}
+\end{remarque}
 
 	\section{Outils de mesure du temps calcul}
     Il existe de nombreux moyens de mesurer le temps d'exécution de code ou de parties de code:
@@ -51,7 +58,7 @@
         
         \item[\textbullet] fonctions définies par le langage et utilisables depuis l'intérieur du code : 
         
-    	\begin{itemize}
+    	\begin{itemize}[parsep=5pt]
     		\item {\tt second(...)} (fortran),
     		\item {\tt gettimeofday(...)} (C/C++),
     		\item {\tt std::clock} (C++),
