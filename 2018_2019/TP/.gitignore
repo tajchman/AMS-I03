@@ -1,6 +1,5 @@
 r_*
 *.gnp
-*.pdf
 temp*
 callgrind*
 perf*

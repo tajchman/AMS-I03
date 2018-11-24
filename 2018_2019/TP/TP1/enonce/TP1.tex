@@ -1,35 +1,4 @@
-\documentclass[12pt,a4paper]{article}
-\usepackage[T1]{fontenc}
-%\usepackage[utf8]{inputenc}
-\usepackage[latin1]{inputenc}
-\usepackage[french]{babel}
-\usepackage{hyperref}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{layout}
-\newenvironment{script}%
-{\vspace{-15pt}\begin{quotation}\obeylines\noindent\ignorespaces\tt}%
-{\par\noindent\ignorespacesafterend\end{quotation}}
-
-\newcounter{question}
-\newenvironment{question}[1][]%
-{\refstepcounter{question}\vspace{2pt}\textbf{Question \thequestion. #1}%
-	\begin{quote}\obeylines\ignorespaces}%
-	{\par\noindent\ignorespacesafterend\end{quote}}
-
-\newenvironment{remarque}%
-{\vspace{2pt}{\it Remarque}\begin{quote}\obeylines\ignorespaces}%
-	{\par\noindent\ignorespacesafterend\end{quote}}
-
-
-\parindent=0pt
-\oddsidemargin=0pt
-\marginparwidth=0pt
-\textwidth=460pt
-\textheight=650pt
-\headsep=0pt
+\include{debut}
 
 \begin{document}
 %    \layout
