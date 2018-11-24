@@ -1,4 +1,9 @@
 r_*
 *.gnp
 *.pdf
-
+temp*
+callgrind*
+perf*
+*.aux
+*.log
+*.out
