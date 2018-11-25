@@ -26,6 +26,7 @@
         mkdir -p build
         cd build
         cmake ../src
+        cd ..
     \end{script}
 	
 
@@ -86,9 +87,11 @@ Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résulta
 	\end{itemize}
 	Interpréter les résultats.	
 \end{question}
-	
+\section{Seconde version multi-threads avec OpenMP}
+
 \section{Version multi-threads en utilisant les {\tt std::threads}}
 
+Dans le langage C++, une gestion des threads a été récemment introduite : les {\tt std::threads}. 
 \begin{question}
 	Exécuter les codes {\tt install/Release/power2} et {\tt install/Release/power3}, comparer les temps de calcul.
 

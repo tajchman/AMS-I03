@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(TP2 CXX)
+set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../install
+    CACHE PATH "chemin d'installation par defaut" FORCE)
+endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
@@ -13,18 +18,14 @@ else ()
   set (CMAKE_CXX_STANDARD 11)
 endif ()
 
-set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_DEBUG} -pg") 
-set(CMAKE_Fortran_FLAGS_PROFILE "${CMAKE_Fortran_FLAGS_DEBUG} -pg") 
-set(CMAKE_EXE_LINKER_FLAGS_PROFILE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -pg")
-
 include(FindOpenMP)
 
 include_directories(${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d sinus_seq sinus_openmp_1 sinus_openmp_2)
-   add_subdirectory(${d})
+foreach(d seq openmp_1 std_threads)
+   add_subdirectory(sinus_${d})
 endforeach()
 
 

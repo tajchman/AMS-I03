@@ -14,22 +14,25 @@
 \usepackage{graphicx}
 \usepackage{layout}
 \newenvironment{script}%
-{\vspace{-15pt}\begin{quotation}\obeylines\noindent\ignorespaces\tt}%
-{\par\noindent\ignorespacesafterend\end{quotation}}
+{\vspace{-22pt}\begin{quote}\obeylines\noindent\ignorespaces\tt}%
+{\par\noindent\ignorespacesafterend\end{quote}}
 
 \newcounter{question}
 \newenvironment{question}[1][]%
-{\refstepcounter{question}\vspace{2pt}\textbf{Question \thequestion. #1}%
+{\vspace{5pt}\refstepcounter{question}\vspace{2pt}\textbf{Question \thequestion. #1}%
 	\begin{quote}\obeylines\ignorespaces}%
 	{\par\noindent\ignorespacesafterend\end{quote}}
 
 \newenvironment{remarque}%
-{\vspace{2pt}{\it Remarque}\begin{quote}\obeylines\ignorespaces}%
+{\vspace{2pt}\textit{Remarque}\begin{quote}\obeylines\ignorespaces}%
 	{\par\noindent\ignorespacesafterend\end{quote}}
 
+\newenvironment{commandes}%
+{\vspace{2pt}\textbf{Commandes}\begin{quote}\obeylines\ignorespaces}%
+	{\par\noindent\ignorespacesafterend\end{quote}}
 
-\newenvironment{liste}[1]%
-{\begin{itemize}[label=#1, parsep=50pt]}%
+\newenvironment{liste}%
+{\begin{itemize}[parsep=1pt]}%
 {\end{itemize}}
 
 \parindent=0pt
