@@ -24,7 +24,7 @@ include_directories(${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d seq openmp_1 openmp_2 std_threads)
+foreach(d seq openmp_1 openmp_2 openmp_3 std_threads)
    add_subdirectory(sinus_${d})
 endforeach()
 

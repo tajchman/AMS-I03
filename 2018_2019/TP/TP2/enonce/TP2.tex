@@ -46,7 +46,7 @@ Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résulta
     
     Exécuter le code en tapant 
     \begin{script}
-		./build/sinus\_seq/sinus\_seq 500
+		./build/sinus\_seq/sinus\_seq
 	\end{script}
 
     Tracer le graphe des résultats et le visualiser en tapant
@@ -67,80 +67,118 @@ Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résulta
     
     \medskip
 \begin{question}
+	Examinez le fichier {\tt src/sinus\_openmp\_1/sinus.cxx}, en particulier les lignes 47 à 52 et 86 à 91.
+	
 	Compiler, exécuter le code en utilisant 3 threads et tracer les résultats en tapant 
 \begin{script}
 	make -C build sinus\_openmp\_1
 	OMP\_NUM\_THREADS=3 ./build/sinus\_openmp\_1/sinus\_openmp\_1
 	./trace.sh
 \end{script}
+    Relancer l'exécution et le tracé ci-dessus 3 ou 4 fois. Constater que les résultats sont (visuellement) similaires au cas séquentiel.
 \end{question}
 
 \begin{question}
 	Comparer les temps de calcul entre 
 	\begin{itemize}
-		\item la version séquentielle
+		\item la version séquentielle 
+		\begin{script}
+			./build/sinus\_seq/sinus\_seq 10000000
+		\end{script}
 		\item la version multi-threads en utilisant 1 thread
+		\begin{script}
+	OMP\_NUM\_THREADS=1 \textbackslash
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+		\end{script}
 		\item la version multi-threads en utilisant 2 threads
+		\begin{script}
+	OMP\_NUM\_THREADS=2 \textbackslash
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+\end{script}
 		\item la version multi-threads en utilisant 3 threads
-		\item ...
-		\item la version multi-threads en utilisant 6 threads
+		\begin{script}
+	OMP\_NUM\_THREADS=3 \textbackslash
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+\end{script}
+		\item la version multi-threads en utilisant 4 threads
+		\begin{script}
+	OMP\_NUM\_THREADS=4 \textbackslash
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+\end{script}
 	\end{itemize}
 	Interpréter les résultats.	
 \end{question}
+
 \section{Seconde version multi-threads avec OpenMP}
 
-\section{Version multi-threads en utilisant les {\tt std::threads}}
+La seconde version diffère de la première en essayant de diminuer le temps d'exécution d'une itération.
 
-Dans le langage C++, une gestion des threads a été récemment introduite : les {\tt std::threads}. 
 \begin{question}
-	Exécuter les codes {\tt install/Release/power2} et {\tt install/Release/power3}, comparer les temps de calcul.
+Comparer les fichiers source {\tt src/sinus\_openmp\_1/sinus.cxx}\\ et {\tt src/sinus\_openmp\_2/sinus.cxx}.
 
-Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power2.cpp} (utilisé dans le code power2) \\ et {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3).
+Compiler l'exécutable 
+\begin{script}
+	make -C build sinus\_openmp\_2
+\end{script}
+
+Exécutez (avec un argument égal à 1000) et tracez les résultats 
+\begin{script}
+OMP\_NUM\_THREADS=2 \textbackslash
+\quad ./build/sinus\_openmp\_2/sinus\_openmp\_2 1000 \&\& ./trace.sh
+\end{script}
+
+Répéter la commande plusieurs fois et interpréter les graphes des résultats.
+
+Suggérer et tester une possibilité d'amélioration.
 \end{question}
 
-\subsection{Tentative d'optimisation 3}
+\section{Troisième version multi-threads avec OpenMP}
+
+Dans la troisième version, on parallélise une autre boucle (qui calcule la moyenne des valeurs)
 
 \begin{question}
-	Exécuter les codes {\tt install/Release/power3} et {\tt install/Release/power4}, comparer les temps de calcul.
+	Examinez le fichier source {\tt src/sinus\_openmp\_3/sinus.cxx}.
 	
-	Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3) \\ et {\tt src/valeur\_propre/power4.cpp} (utilisé dans le code power4).
+	Comparez-le avec les versions précédente.
+	
+	Compilez l'exécutable {\tt sinus\_openmp\_3} et refaire les tests parallèles.
 \end{question}
 
 \vfill\eject
-\section{Transposition de matrice}
 
-\subsection{Parcours par lignes ou par colonnes}
+\section{Version multi-threads en utilisant les {\tt std::threads}}
 
-On s'intéresse ici à l'opération de transposition des matrices:
+Dans cette partie, il est utile d'avoir des notions de programmation objet C++.
 
-$$
-A^T = (a^T_{i,j})_{i=1, \ldots, n, j=1,\ldots, n} = (a_{j,i})_{i=1, \ldots, n, j=1,\ldots, n}
-$$
-où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la colonne $j$
+\begin{quote}
+	Dans le langage C++, une gestion des threads a été récemment introduite : les {\tt std::threads}. Ceux-ci sont inspirés des {\tt pthreads} (librairie ``historique'' de gestion des threads) mais adaptés au style de programmation objet C++.
+	
+	Par rapport à OpenMP, l'utilisateur doit définir ``manuellement'' plus de paramètres du calcul (par exemple, le découpage des boucles).
+	
+	Par contre, les std::threads (et les autres fonctionnalités C++ liées au multi-threading) offrent la puissance de la programmation objet.
+\end{quote}
+
+Le répertoire {\tt src/std\_threads} contient 2 versions.
+
+Dans la première version (fichier {src/std\_threads/\tt sinus\_v1.cxx}), les threads créés sont chargés d'exécuter des fonctions (au sens C).
+
+Dans la seconde version (fichier {src/std\_threads/\tt sinus\_v2.cxx}), les threads créés sont chargés d'exécuter des ``objets fonctions''.
 
 \begin{question}
-	Exécuter les codes {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.
-	
-	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source {\tt src/transposee/transpose1.cpp} et
-	 {\tt src/transposee/transpose2.cpp}.
+	Compiler les codes et exécutez-les avec les commandes (le premier paramètre de l'exécution est le nombre de threads à utiliser, le second paramètre est la taille des vecteurs)
+	\begin{script}
+		make -C build sinus\_std\_threads sinus\_std\_threads\_2
+		
+		./build/sinus\_std\_threads/sinus\_std\_threads\_v1 1 10000000
+		./build/sinus\_std\_threads/sinus\_std\_threads\_v1 3 10000000
+
+		./build/sinus\_std\_threads/sinus\_std\_threads\_v2 1 10000000
+		./build/sinus\_std\_threads/sinus\_std\_threads\_v2 3 10000000
+	\end{script}
+
+	Comparer les fichiers sources.
+
 \end{question}
-\subsection{Algorithme par bloc - version 1}
 
-On garde la structure des matrices comme dans {\tt transpose1.cpp} et {\tt transpose2.cpp}.
-Par contre le parcours de indices de matrice est différent.
 
-\begin{question}
-	Exécuter le code {\tt install/Release/transpose3}.
-	
-	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cpp}.
-\end{question}
-\subsection{Algorithme par bloc - version 2}
-
-Dans cette version, on utilise une structure des matrices par bloc. Chaque bloc est lui-même une matrice à coefficients scalaires. L'algorithme s'écrit formellement de la même façon.
-
-\begin{question}
-	Exécuter le code {\tt install/Release/transpose4}.
-	
-	Comparer les temps de calcul avec la version précédente et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose4.cpp}.
-	\end{question}
 \end{document}

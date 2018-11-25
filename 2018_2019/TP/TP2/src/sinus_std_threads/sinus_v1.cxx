@@ -40,10 +40,12 @@ void init_partiel(std::vector<double> & pos,
   double pi = 3.14159265;
   int i, n = pos.size();
 
+  double x;
   for (i=i1; i<i2; i++) {
-    pos[i] = i*2*pi/n;
-    v1[i] = sinus_machine(pos[i]);
-    v2[i] = sinus_taylor(pos[i]);
+    x = i*2*pi/n;
+    pos[i] = x ;
+    v1[i] = sinus_machine(x);
+    v2[i] = sinus_taylor(x);
   }
 }
 
@@ -141,7 +143,7 @@ int main(int argc, char **argv)
     ? strtol(argv[1], nullptr, 10)
     : std::thread::hardware_concurrency();
   
-  size_t n = argc > 2 ? strtol(argv[2], nullptr, 10) : 10000000;
+  size_t n = argc > 2 ? strtol(argv[2], nullptr, 10) : 2000;
   
   imax = argc > 3 ? strtol(argv[3], nullptr, 10) : 6;
 

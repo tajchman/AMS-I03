@@ -8,7 +8,9 @@
 #include <cmath>
 #include <iomanip>
 
-#include <thread>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 int imax;
 
@@ -32,54 +34,23 @@ double sinus_machine(double x)
   return y;
 }
 
-class init_partiel {
-public:
-  init_partiel(std::vector<double> & pos,
-               std::vector<double> & v1,
-               std::vector<double> & v2,
-               int ithread, int nthread)
-    : m_pos(pos), m_v1(v1), m_v2(v2) {
-    m_n = pos.size();
-    int dn = m_n/nthread;
-    m_i1 = dn * ithread;
-    m_i2 = dn *(ithread+1);
-    m_pi = 3.14159265;
-  }
-
-  void operator()() {
-    int i;
-
-    for (i=m_i1; i<m_i2; i++) {
-      m_pos[i] = i*2*m_pi/m_n;
-      m_v1[i] = sinus_machine(m_pos[i]);
-      m_v2[i] = sinus_taylor(m_pos[i]);
-    }
-  }
-  
-  std::vector<double> & m_pos;
-  std::vector<double> & m_v1;
-  std::vector<double> & m_v2;
-  int m_i1, m_i2, m_n;
-  double m_pi;
-};
-
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
-          std::vector<double> & v2,
-          int nthreads=1) {
-
+          std::vector<double> & v2)
+{
+  double x, pi = 3.14159265;
   int i, n = pos.size();
-  
+
   v1.resize(n);
   v2.resize(n);
-  
-  std::vector<std::thread> threads(nthreads-1);
- 
-  for (i=0; i<nthreads; i++)
-    threads[i] = std::thread(init_partiel(pos, v1, v2, i, nthreads));
-    
-  for (auto& t : threads)
-    t.join();
+
+#pragma omp parallel for private(x)
+  for (i=0; i<n; i++) {
+    x= i*2*pi/n;
+    pos[i] = x ;
+    v1[i] = sinus_machine(x);
+    v2[i] = sinus_taylor(x);
+  }
 }
 
 void save(const char *filename,
@@ -101,6 +72,8 @@ void stat(const std::vector<double> & v1,
 {
   double s1 = 0.0, s2 = 0.0, err;
   int i, n = v1.size();
+
+  #pragma omp parallel for private(err) shared(n,v1,v2) reduction(+:s1,s2)
   for (i=0; i<n; i++) {
     err = v1[i] - v2[i];
     s1 += err;
@@ -113,15 +86,17 @@ void stat(const std::vector<double> & v1,
 
 int main(int argc, char **argv)
 {
-  int nthreads = argc > 1
-    ? strtol(argv[1], nullptr, 10)
-    : std::thread::hardware_concurrency();
-  
-  size_t n = argc > 2 ? strtol(argv[2], nullptr, 10) : 10000000;
-  
-  imax = argc > 3 ? strtol(argv[3], nullptr, 10) : 6;
+  int nthreads;
+  #pragma omp parallel
+  {
+    #pragma omp single
+    nthreads = omp_get_num_threads();
+  }
 
-  std::cout << "\n\nversion 3 : \n\t" << nthreads << " thread(s)\n"
+  size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
+  imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 6;
+
+  std::cout << "\n\nversion OpenMP 2 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;
@@ -130,7 +105,7 @@ int main(int argc, char **argv)
 
   t_init.start();
   std::vector<double> pos(n), v1, v2;
-  init(pos, v1, v2, nthreads);
+  init(pos, v1, v2);
   t_init.stop();
 
   if (n < 10000)

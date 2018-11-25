@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     nthreads = omp_get_num_threads();
   }
 
-  size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 10000000;
+  size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
   imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 6;
 
   std::cout << "\n\nversion OpenMP 2 : \n\t" << nthreads << " thread(s)\n"
