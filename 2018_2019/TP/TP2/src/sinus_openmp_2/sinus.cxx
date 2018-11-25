@@ -38,7 +38,7 @@ void init(std::vector<double> & pos,
           std::vector<double> & v1,
           std::vector<double> & v2)
 {
-  double pi = 3.14159265;
+  double x, pi = 3.14159265;
   int i, n = pos.size();
 
   v1.resize(n);
@@ -46,9 +46,10 @@ void init(std::vector<double> & pos,
 
   #pragma omp parallel for
   for (i=0; i<n; i++) {
-    pos[i] = i*2*pi/n;
-    v1[i] = sinus_machine(pos[i]);
-    v2[i] = sinus_taylor(pos[i]);
+    x= i*2*pi/n;
+    pos[i] = x ;
+    v1[i] = sinus_machine(x);
+    v2[i] = sinus_taylor(x);
   }
 }
 
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 10000000;
   imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 6;
 
-  std::cout << "\n\nversion OpenMP 1 : \n\t" << nthreads << " thread(s)\n"
+  std::cout << "\n\nversion OpenMP 2 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;
