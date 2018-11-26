@@ -82,7 +82,7 @@ bool Scheme::iteration()
 {
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
-  double du, du_max;
+  double du, du_sum;
 
   int imin = m_P->imin(0) ;
   int jmin = m_P->imin(1) ;

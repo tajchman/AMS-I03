@@ -151,6 +151,5 @@ void Values::operator= (const Values &other)
   for (i=0; i<3; i++)
     nn *= (m_n[i] = other.m_n[i]);
   
-  allocate(nn);
-  memcpy(m_u, other.m_u, nn*sizeof(double));
+  m_u = other.m_u;
 }

@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
     std::cout << "diffusion  ";
   else
     std::cout << "           ";
-  }
 
   T_global.stop();
   std::cout << "cpu time " << std::setprecision(5) 

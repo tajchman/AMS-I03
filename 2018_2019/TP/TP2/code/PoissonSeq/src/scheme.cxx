@@ -36,12 +36,7 @@ void Scheme::initialize()
 
   kStep = 1;
   m_t = 0.0;
-
   m_duv = 0.0;
-
-  double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
-  m_dt = 0.5*(dx2 + 1e-12);
-  m_lambda = 0.25*m_dt/(dx2 + 1e-12);
 }
 
 Scheme::~Scheme()
@@ -76,7 +71,7 @@ bool Scheme::iteration()
 {
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
-  double du, du_max;
+  double du, du_sum;
 
   int imin = m_P->imin(0) ;
   int jmin = m_P->imin(1) ;
@@ -86,23 +81,21 @@ bool Scheme::iteration()
   int jmax = m_P->imax(1) ;
   int kmax = m_P->imax(2) ;
 
-  du_max = 0.0;
+  du_sum = 0.0;
     
-#pragma omp parallel for default(shared), private(i,j,k,du), reduction(+:du_max) 
     for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
         for (k = kmin; k < kmax; k++) {
-   
           du = 6 * m_u(i, j, k)
               - m_u(i + di, j, k) - m_u(i - di, j, k)
               - m_u(i, j + dj, k) - m_u(i, j - dj, k)
               - m_u(i, j, k + dk) - m_u(i, j, k - dk);
           du *= m_lambda;
           m_v(i, j, k) = m_u(i, j, k) - du;
-          du_max += du > 0 ? du : -du;
+          du_sum += du > 0 ? du : -du;
         }
 
-    m_duv = du_max;
+    m_duv = du_sum;
     return true;
 }
 
@@ -135,7 +128,6 @@ bool Scheme::solve(unsigned int nSteps)
 
     kStep++;
   }
-
   return true;
 }
 

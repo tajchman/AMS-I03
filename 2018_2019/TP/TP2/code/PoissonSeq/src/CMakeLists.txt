@@ -1,18 +1,21 @@
 cmake_minimum_required(VERSION 2.8)
-project(POISSON)
+
+get_filename_component(BASE_DIR ${CMAKE_SOURCE_DIR} PATH)
+get_filename_component(VERSION ${BASE_DIR} NAME)
+
+project(${VERSION})
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Debug' as none was specified.")
   set(CMAKE_BUILD_TYPE "Debug" CACHE
       STRING "Choose the type of build." FORCE)
-  # Set the possible values of build type for cmake-gui
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../install
-    CACHE PATH "chemin d'installation par defaut" FORCE)
+  set(CMAKE_INSTALL_PREFIX ${BASE}/install
+      CACHE PATH "chemin d'installation par defaut" FORCE)
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -35,7 +38,7 @@ include_directories(
   )
 
 add_executable(
-  PoissonSeq 
+  ${VERSION} 
   main.cxx
   parameters.cxx
   parameters.hxx
@@ -46,7 +49,7 @@ add_executable(
   )
 
 target_link_libraries(
-   PoissonSeq
+   ${VERSION}
    timer
 )
 
