@@ -16,16 +16,14 @@
 class Scheme {
 
 public:
-  Scheme() : codeName("Poisson"), m_timers(3)  {
-   m_timers[0].name("init");
-   m_timers[1].name("solve");
-   m_timers[2].name("other");
-  }
+  Scheme(const Parameters *P);
   ~Scheme();
   size_t getDomainSize(int dim) const;
 
-  void initialize(const Parameters *P);
+  void initialize();
   double present();
+
+  double iteration();
   bool solve(unsigned int nSteps);
   double variation();
   void terminate();
@@ -36,7 +34,7 @@ public:
   std::string codeName;
 
 protected:
-  double m_t;
+  double m_t, m_dt, m_lambda;
   size_t m_n[3];
   size_t m_dx[3];
   size_t m_di[3];

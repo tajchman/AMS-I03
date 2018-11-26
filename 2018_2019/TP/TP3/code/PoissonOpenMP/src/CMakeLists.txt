@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(POISSON)
 
+get_filename_component(DIR get_file${CMAKE_SOURCE_DIR} NAME)
+message(${DIR})
+
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Debug' as none was specified.")
   set(CMAKE_BUILD_TYPE "Debug" CACHE
@@ -26,12 +29,18 @@ else ()
   set (CMAKE_CXX_STANDARD 11)
 endif ()
 
+include(FindOpenMP)
+if (OPENMP_FOUND)
+  set (CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  set (CMAKE_EXE_LINKER_FLAGS 
+    "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include(FindOpenMP)
-
-if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
-#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 add_subdirectory(timer)
@@ -41,7 +50,7 @@ include_directories(
   )
 
 add_executable(
-  PoissonSeq 
+  PoissonOpenMP 
   main.cxx
   parameters.cxx
   parameters.hxx
@@ -52,7 +61,8 @@ add_executable(
   )
 
 target_link_libraries(
-   PoissonSeq
+   PoissonOpenMP
    timer
 )
+
 

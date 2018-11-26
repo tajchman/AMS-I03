@@ -40,18 +40,25 @@ int main(int argc, char *argv[])
   Scheme C(&Prm);
   C.timer(0).start();
   C.initialize();
-  u_0.init(f);
 
-  C.setInput(u_0);
-  C.timer(0).stop();
+#pragma omp parallel 
+  {
+    u_0.init(f);
 
-  if (output) C.getOutput().plot(0);
+#pragma omp single
+    {
+      C.setInput(u_0);
+      C.timer(0).stop();
 
-  int i;
-  for (i=0; i<nsteps; i++) {
-    C.solve(ksteps);
-    if (output) C.getOutput().plot(i);
+      if (output) C.getOutput().plot(0);
     }
+
+    int i;
+    for (i=0; i<nsteps; i++) {
+	    C.solve(ksteps);
+	    if (output) C.getOutput().plot(i);
+    }
+  }
 
   if (Prm.convection())
     std::cout << "convection ";
@@ -63,6 +70,7 @@ int main(int argc, char *argv[])
     std::cout << "           ";
 
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+  std::cout << "cpu time " << std::setprecision(5) 
+            << T_global.elapsed() << " s\n";
   return 0;
 }

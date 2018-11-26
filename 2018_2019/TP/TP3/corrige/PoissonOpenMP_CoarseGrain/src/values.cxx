@@ -3,6 +3,9 @@
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
 
 Values::Values(const Parameters * prm)
 {
@@ -14,19 +17,21 @@ Values::Values(const Parameters * prm)
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
-  m_u.resize(nn);;
+  m_u = NULL;
+  allocate(nn);
 }
 
 void Values::init(double (*f)(double, double, double))
 {
   int i, j, k;
-   int imin = m_p->imin(0);
-   int jmin = m_p->imin(1);
-   int kmin = m_p->imin(2);
+  int ith = omp_get_thread_num();
+  int imin = m_p->thread_imin(0, ith) ;
+  int jmin = m_p->thread_imin(1, ith) ;
+  int kmin = m_p->thread_imin(2, ith) ;
 
-   int imax = m_p->imax(0);
-   int jmax = m_p->imax(1);
-   int kmax = m_p->imax(2);
+  int imax = m_p->thread_imax(0, ith) ;
+  int jmax = m_p->thread_imax(1, ith) ;
+  int kmax = m_p->thread_imax(2, ith) ;
 
   if (f) {
     double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
@@ -34,14 +39,12 @@ void Values::init(double (*f)(double, double, double))
     double ymin =  m_p->xmin(1);
     double zmin =  m_p->xmin(2);
 
-#pragma omp parallel for default(shared) private(i,j,k)
     for (i=imin; i<imax; i++)
       for (j=jmin; j<jmax; j++)
         for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
   }
   else {
-#pragma omp parallel for default(shared) private(i,j,k)
     for (i=imin; i<imax; i++)
       for (j=jmin; j<jmax; j++)
         for (k=kmin; k<kmax; k++)
@@ -143,6 +146,20 @@ void Values::plot(int order) const {
     << "</VTKFile>\n" <<std::endl;
 }
 
+void Values::allocate(size_t n)
+{
+  deallocate();
+  m_u = new double [n];
+}
+
+void Values::deallocate()
+{
+  if (m_u == NULL) {
+    delete [] m_u;
+    m_u = NULL;
+  }
+}
+
 void Values::operator= (const Values &other)
 {
   int i;
@@ -151,5 +168,6 @@ void Values::operator= (const Values &other)
   for (i=0; i<3; i++)
     nn *= (m_n[i] = other.m_n[i]);
   
-  m_u = other.m_u;
+  allocate(nn);
+  memcpy(m_u, other.m_u, nn*sizeof(double));
 }

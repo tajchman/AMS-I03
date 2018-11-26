@@ -35,6 +35,8 @@ private:
   int m_n[3];
   const Parameters * m_p;
 
+  virtual void allocate(size_t nn);
+  virtual void deallocate();
 };
 				   
 
