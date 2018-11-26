@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
-project(TP2 CXX)
-set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
+project(POISSON)
+
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 OLD)
+endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../install
@@ -18,14 +21,33 @@ else ()
   set (CMAKE_CXX_STANDARD 11)
 endif ()
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 include(FindOpenMP)
 
-include_directories(${CMAKE_SOURCE_DIR}/util)
+if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
+#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie")
+endif()
 
-add_subdirectory(util)
+add_subdirectory(timer)
 
-foreach(d sinus_seq sinus_openmp_1 sinus_std_threads)
-   add_subdirectory(${d})
-endforeach()
+include_directories(
+  timer
+  )
 
+add_executable(
+  PoissonSeq 
+  main.cxx
+  parameters.cxx
+  parameters.hxx
+  values.cxx
+  values.hxx
+  scheme.cxx
+  scheme.hxx
+  )
+
+target_link_libraries(
+   PoissonSeq
+   timer
+)
 
