@@ -35,6 +35,7 @@ void stime(char * buffer, int size)
 
 Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
+  m_out = nullptr;
   m_help = options_contain("h") or long_options_contain("help");
 
   m_command = (*argv)[0];
@@ -71,7 +72,6 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
        	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
       }
     }
-    m_out = nullptr;
   }
 
 }
