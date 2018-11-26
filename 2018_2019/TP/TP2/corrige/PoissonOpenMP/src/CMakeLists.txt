@@ -17,6 +17,12 @@ else ()
   set (CMAKE_CXX_STANDARD 11)
 endif ()
 
+include(FindOpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -30,7 +36,7 @@ include_directories(
   )
 
 add_executable(
-  PoissonSeq 
+  PoissonOpenMP 
   main.cxx
   parameters.cxx
   parameters.hxx
@@ -41,7 +47,7 @@ add_executable(
   )
 
 target_link_libraries(
-   PoissonSeq
+   PoissonOpenMP
    timer
 )
 

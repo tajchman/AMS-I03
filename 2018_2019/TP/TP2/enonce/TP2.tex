@@ -180,5 +180,55 @@ Dans la seconde version (fichier {src/std\_threads/\tt sinus\_v2.cxx}), les thre
 
 \end{question}
 
+\section{Parallélisation d'un (mini-)code avec OpenMP}
+
+On fournit un code C++ qui calcule une solution approchée de l'équation de la chateur $\partial u/\partial t = \nabla u + f$ sur un cube $[0,1]^3$ avec des conditions aux limites de Dirichlet.
+
+\medskip
+Une version séquentielle du code se trouve dans {\tt code/PoissonSeq} (comme version de référence) et une version de travail se trouve dans {\tt code/PoissonOpenMP} à modifier suivant les indications ci-après.
+
+\vfill \eject
+\begin{commandes}
+Se placer dans {\tt code/PoissonSeq} et compiler le code séquentiel en mode Debug:
+   \begin{script}
+   mkdir -p build
+   cd build
+   cmake -DCMAKE\_BUILD\_TYPE=Debug ../src
+   make
+   cd ..
+   \end{script}
+
+Exécuter le code
+   \begin{script}
+   ./build/PoissonSeq n=300 m=300 p=300
+   \end{script}
+
+Conserver une copie de l'affichage pour comparaison avec les versions OpenMP.
+\end{commandes}
+
+Une seconde version se trouve dans le répertoire {\tt code/PoissonOpenMP} que vous modifierez.
+
+\begin{question}
+\begin{enumerate}
+\item Se placer dans {\tt code/PoissonOpenMP} et compiler cette version comme précédemment.
+
+\item Utiliser valgrind et kcachegrind pour repérer la partie du code qui prend le plus de temps calcul (comme dans le TP 1).
+
+\item Ajouter ou modifier la(les) directive(s) OpenMP pour paralléliser cette partie si possible.
+
+\item Recompiler le code. Il suffit de se placer dans {\tt code/PoissonOpenMP} et de taper :
+\begin{script}
+        make -C build
+\end{script}
+
+\item Exécuter plusieurs fois le code sur 1, 2, 3 et 4 threads.
+
+\item Comparer les résultats et temps calcul affichés avec ceux de la version séquentielle. Si les résultats sont différents, c'est qu'il y a une erreur dans les intractions de parallélisation. Corriger et reprendre en 3.
+\end{enumerate}
+\end{question}
+
+\begin{remarque}
+Quand on a parallélisé une partie du code ci-dessus, on refait une mesure avec {\tt valgrind/kcachegrind} (ou un autre outil de profiling) pour voir si une autre partie du code pourrait être intéressante à paralléliser. 
+\end{remarque}
 
 \end{document}
