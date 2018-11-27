@@ -33,20 +33,10 @@ void Scheme::initialize()
 {
   m_u.init();
   m_v.init();
-  int i;
-  for (i=0; i<3; i++) {
-    m_n[i] = m_P->n(i);
-    m_di[i] = (m_n[i] < 2) ? 0 : 1;
-  }
 
   kStep = 1;
   m_t = 0.0;
-
   m_duv = 0.0;
-
-  double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
-  m_dt = 0.5*(dx2 + 1e-12);
-  m_lambda = 0.25*m_dt/(dx2 + 1e-12);
 }
 
 Scheme::~Scheme()
@@ -81,7 +71,7 @@ double Scheme::iteration()
 {
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
-  double du, du_max;
+  double du, du_sum;
   int ith = omp_get_thread_num();
   int imin = m_P->thread_imin(0, ith) ;
   int jmin = m_P->thread_imin(1, ith) ;
@@ -91,7 +81,7 @@ double Scheme::iteration()
   int jmax = m_P->thread_imax(1, ith) ;
   int kmax = m_P->thread_imax(2, ith) ;
 
-  du_max = 0.0;
+  du_sum = 0.0;
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
@@ -102,10 +92,10 @@ double Scheme::iteration()
           - m_u(i, j, k + dk) - m_u(i, j, k - dk);
         du *= m_lambda;
         m_v(i, j, k) = m_u(i, j, k) - du;
-        du_max += du > 0 ? du : -du;
+          du_sum += du > 0 ? du : -du;
       }
 
-  return du_max;
+  return du_sum;
 }
 
 bool Scheme::solve(unsigned int nSteps)
@@ -150,7 +140,6 @@ bool Scheme::solve(unsigned int nSteps)
       kStep++;
     }
   }
-
   return true;
 }
 

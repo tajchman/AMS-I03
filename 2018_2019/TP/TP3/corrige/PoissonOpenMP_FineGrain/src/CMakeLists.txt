@@ -15,7 +15,7 @@ endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX ${BASE}/install
-    CACHE PATH "chemin d'installation par defaut" FORCE)
+      CACHE PATH "chemin d'installation par defaut" FORCE)
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 

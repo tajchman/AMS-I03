@@ -55,11 +55,9 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_nthreads = 1;
 #endif
 
-  m_diffusion = (*this)("diffusion", true);
-  m_convection = (*this)("convection", true);
-  m_n[0] = (*this)("n", 400);
-  m_n[1] = (*this)("m", 400);
-  m_n[2] = (*this)("p", 400);
+  m_n[0] = (*this)("n", 200);
+  m_n[1] = (*this)("m", 200);
+  m_n[2] = (*this)("p", 200);
   m_itmax = (*this)("it", 10);
   double dt_max = 1.5/(m_n[0]*m_n[0]
                        + m_n[1]*m_n[1]
@@ -67,8 +65,8 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_dt = (*this)("dt", dt_max);
   m_freq = (*this)("out", -1);
 
-  m_convection = (*this)("convection", 1) == 1;
-  m_diffusion = (*this)("diffusion", 1) == 1;
+  m_convection = (*this)("convection", 0) == 1;
+  m_diffusion = (*this)("diffusion", 0) == 1;
   
   if (!m_help) {
  
@@ -77,8 +75,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
                 << ") is greater then the recommended maximum (" <<  dt_max
                 << ")" << std::endl;
     
-    int i,j;
-    for (i=0; i<3; i++) {
+    for (int i=0; i<3; i++) {
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
       m_di[i] = 1;
       m_imin[i] = 1;

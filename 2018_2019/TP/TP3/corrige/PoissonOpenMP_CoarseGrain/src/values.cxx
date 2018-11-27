@@ -17,8 +17,7 @@ Values::Values(const Parameters * prm)
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
-  m_u = NULL;
-  allocate(nn);
+  m_u.resize(nn);
 }
 
 void Values::init(double (*f)(double, double, double))
@@ -146,20 +145,6 @@ void Values::plot(int order) const {
     << "</VTKFile>\n" <<std::endl;
 }
 
-void Values::allocate(size_t n)
-{
-  deallocate();
-  m_u = new double [n];
-}
-
-void Values::deallocate()
-{
-  if (m_u == NULL) {
-    delete [] m_u;
-    m_u = NULL;
-  }
-}
-
 void Values::operator= (const Values &other)
 {
   int i;
@@ -168,6 +153,5 @@ void Values::operator= (const Values &other)
   for (i=0; i<3; i++)
     nn *= (m_n[i] = other.m_n[i]);
   
-  allocate(nn);
-  memcpy(m_u, other.m_u, nn*sizeof(double));
+  m_u = other.m_u;
 }
