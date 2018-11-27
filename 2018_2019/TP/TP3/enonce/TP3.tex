@@ -26,209 +26,78 @@
         mkdir -p build
         cd build
         cmake ../src
+        make install
         cd ..
     \end{script}
 	
 
-\section{Code OpenMP `grain grossier`}
+\section{Exemple OpenMP ``grain fin''}
 
-Le fichier {\tt src/sinus\_openmp\_fine/sinus.cxx} calcule une approximation par série de Taylor de la fonction $x \mapsto \sin(x)$ pour un ensemble de valeur de $x \in [0, 2\pi]$. Les résultats sont sauvegardés dans un fichier.
+Le fichier {\tt src/sinus\_fine/sinus.cxx} contient la version OpenMP ``grain fin'' obtenue à la fin du TP précédent.
 
-Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résultats (graphes du sinus calculé par la machine et par la formule approchée, en utilisant {\tt gnuplot}).
+On s'en servira de base pour les versions dites ``grain grossier''.
 
 \begin{question}
-	Se placer dans le répertoire TP3.
-	
-	Compiler le code en tapant 
+	Comparer les temps d'exécution de la version séquentielle et de cette version en tapant les commandes
     \begin{script}
-        make -C build sinus\_seq
-    \end{script}
-    
-    Exécuter le code en tapant 
-    \begin{script}
-		./build/sinus\_seq/sinus\_seq
+		./build/sinus\_seq/sinus\_seq 40000
+		OMP\_NUM\_THREADS=3 ./build/sinus\_fine/sinus\_fine 40000
 	\end{script}
-
-    Tracer le graphe des résultats et le visualiser en tapant
-    \begin{script}
-		./trace.sh
- 	\end{script}
-   
-   Les courbes sur le graphe représentent les valeurs calculées par le sinus de la librairie standard et celles calculées par la formule de Taylor du programme. 
 \end{question}
 
-\section{Première version multi-threads avec OpenMP}
+\section{Exemple OpenMP ``grain grossier''}
 
-    On peut choisir a priori le nombre maximum de threads qui seront utilisés dans l'exécution d'un code, ce choix peut se faire de plusieurs façons.
-    
-    Ici, l'utilisateur définira une variable d'environnement {\tt OMP\_NUM\_THREADS} avec une valeur entière (entre 1 et le nombre de c\oe urs disponibles dans le processeur).
-    
-    On peut aussi utiliser la fonction {\tt omp\_set\_num\_threads()} dans le code.
-    
-    \medskip
-\begin{question}
-	Examinez le fichier {\tt src/sinus\_openmp\_1/sinus.cxx}, en particulier les lignes 47 à 52 et 86 à 91.
-	
-	Compiler, exécuter le code en utilisant 3 threads et tracer les résultats en tapant 
-\begin{script}
-	make -C build sinus\_openmp\_1
-	OMP\_NUM\_THREADS=3 ./build/sinus\_openmp\_1/sinus\_openmp\_1
-	./trace.sh
-\end{script}
-    Relancer l'exécution et le tracé ci-dessus 3 ou 4 fois. Constater que les résultats sont (visuellement) similaires au cas séquentiel.
-\end{question}
+Le fichier {\tt src/sinus\_coarse\_1/sinus.cxx} contient une version OpenMP ``grain grossier''.
 
 \begin{question}
-	Comparer les temps de calcul entre 
-	\begin{itemize}
-		\item la version séquentielle 
-		\begin{script}
-			./build/sinus\_seq/sinus\_seq 10000000
-		\end{script}
-		\item la version multi-threads en utilisant 1 thread
-		\begin{script}
-	OMP\_NUM\_THREADS=1 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
-		\end{script}
-		\item la version multi-threads en utilisant 2 threads
-		\begin{script}
-	OMP\_NUM\_THREADS=2 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
-\end{script}
-		\item la version multi-threads en utilisant 3 threads
-		\begin{script}
-	OMP\_NUM\_THREADS=3 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
-\end{script}
-		\item la version multi-threads en utilisant 4 threads
-		\begin{script}
-	OMP\_NUM\_THREADS=4 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
-\end{script}
-	\end{itemize}
-	Interpréter les résultats.	
-\end{question}
-
-\section{Seconde version multi-threads avec OpenMP}
-
-La seconde version diffère de la première en essayant de diminuer le temps d'exécution d'une itération.
-
-\begin{question}
-Comparer les fichiers source {\tt src/sinus\_openmp\_1/sinus.cxx}\\ et {\tt src/sinus\_openmp\_2/sinus.cxx}.
-
-Compiler l'exécutable 
-\begin{script}
-	make -C build sinus\_openmp\_2
-\end{script}
-
-Exécutez (avec un argument égal à 1000) et tracez les résultats 
-\begin{script}
-OMP\_NUM\_THREADS=2 \textbackslash
-\quad ./build/sinus\_openmp\_2/sinus\_openmp\_2 1000 \&\& ./trace.sh
-\end{script}
-
-Répéter la commande plusieurs fois et interpréter les graphes des résultats.
-
-Suggérer et tester une possibilité d'amélioration.
-\end{question}
-
-\section{Troisième version multi-threads avec OpenMP}
-
-Dans la troisième version, on parallélise une autre boucle (qui calcule la moyenne des valeurs)
-
-\begin{question}
-	Examinez le fichier source {\tt src/sinus\_openmp\_3/sinus.cxx}.
+	Examiner ce fichier et comparez-le à la version ``grain fin''.
 	
-	Comparez-le avec les versions précédente.
-	
-	Compilez l'exécutable {\tt sinus\_openmp\_3} et refaire les tests parallèles.
-\end{question}
-
-\vfill\eject
-
-\section{Version multi-threads en utilisant les {\tt std::threads}}
-
-Dans cette partie, il est utile d'avoir des notions de programmation objet C++.
-
-\begin{quote}
-	Dans le langage C++, une gestion des threads a été récemment introduite : les {\tt std::threads}. Ceux-ci sont inspirés des {\tt pthreads} (librairie ``historique'' de gestion des threads) mais adaptés au style de programmation objet C++.
-	
-	Par rapport à OpenMP, l'utilisateur doit définir ``manuellement'' plus de paramètres du calcul (par exemple, le découpage des boucles).
-	
-	Par contre, les std::threads (et les autres fonctionnalités C++ liées au multi-threading) offrent la puissance de la programmation objet.
-\end{quote}
-
-Le répertoire {\tt src/std\_threads} contient 2 versions.
-
-Dans la première version (fichier {src/std\_threads/\tt sinus\_v1.cxx}), les threads créés sont chargés d'exécuter des fonctions (au sens C).
-
-Dans la seconde version (fichier {src/std\_threads/\tt sinus\_v2.cxx}), les threads créés sont chargés d'exécuter des ``objets fonctions''.
-
-\begin{question}
-	Compiler les codes et exécutez-les avec les commandes (le premier paramètre de l'exécution est le nombre de threads à utiliser, le second paramètre est la taille des vecteurs)
+	Comparer les temps d'exécution de la version ``grain fin''et de cette version en tapant les commandes
 	\begin{script}
-		make -C build sinus\_std\_threads sinus\_std\_threads\_2
-		
-		./build/sinus\_std\_threads/sinus\_std\_threads\_v1 1 10000000
-		./build/sinus\_std\_threads/sinus\_std\_threads\_v1 3 10000000
-
-		./build/sinus\_std\_threads/sinus\_std\_threads\_v2 1 10000000
-		./build/sinus\_std\_threads/sinus\_std\_threads\_v2 3 10000000
+		OMP\_NUM\_THREADS=3 \textbackslash
+		time -p ./build/sinus\_fine/sinus\_fine 40000
+		OMP\_NUM\_THREADS=3 \textbackslash
+		time -p ./build/sinus\_coarse\_1/sinus\_coarse\_1 40000
 	\end{script}
 
-	Comparer les fichiers sources.
-
+	Il y a peu de différence (normalement) entre les deux versions. Expliquer pourquoi.
+	
+	Le code affiche aussi les temps de calcul des différents threads.
 \end{question}
 
-\section{Parallélisation d'un (mini-)code avec OpenMP}
+\section{Exemple OpenMP ``grain grossier'' avec équilibrage de charge}
 
-On fournit un code C++ qui calcule une solution approchée de l'équation de la chateur $\partial u/\partial t = \nabla u + f$ sur un cube $[0,1]^3$ avec des conditions aux limites de Dirichlet.
+Le calcul du sinus en utilisant un développement de Taylor a été volontairement ralenti pour accentuer la différence de temps calcul de $x \mapsto \sin x$ pour différentes valeurs de $x$.
 
-\medskip
-Une version séquentielle du code se trouve dans {\tt code/PoissonSeq} (comme version de référence) et une version de travail se trouve dans {\tt code/PoissonOpenMP} à modifier suivant les indications ci-après.
+Il s'en suit que les threads ne prennent pas le même temps de calcul suivant la plage des valeurs de $x$ qui leur sont attribuée (et qui est la même que dans le cas ``grain fin"), voir le fichier {\tt src/sin.cxx}.
 
-\vfill \eject
-\begin{commandes}
-Se placer dans {\tt code/PoissonSeq} et compiler le code séquentiel en mode Debug:
-   \begin{script}
-   mkdir -p build
-   cd build
-   cmake -DCMAKE\_BUILD\_TYPE=Debug ../src
-   make
-   cd ..
-   \end{script}
-
-Exécuter le code
-   \begin{script}
-   ./build/PoissonSeq n=300 m=300 p=300
-   \end{script}
-
-Conserver une copie de l'affichage pour comparaison avec les versions OpenMP.
-\end{commandes}
-
-Une seconde version se trouve dans le répertoire {\tt code/PoissonOpenMP} que vous modifierez.
+Dans cette version, on utilise un algorithme d'équilibrage de charge entre les différents threads.
 
 \begin{question}
-\begin{enumerate}
-\item Se placer dans {\tt code/PoissonOpenMP} et compiler cette version comme précédemment.
-
-\item Utiliser valgrind et kcachegrind pour repérer la partie du code qui prend le plus de temps calcul (comme dans le TP 1).
-
-\item Ajouter ou modifier la(les) directive(s) OpenMP pour paralléliser cette partie si possible.
-
-\item Recompiler le code. Il suffit de se placer dans {\tt code/PoissonOpenMP} et de taper :
-\begin{script}
-        make -C build
-\end{script}
-
-\item Exécuter plusieurs fois le code sur 1, 2, 3 et 4 threads.
-
-\item Comparer les résultats et temps calcul affichés avec ceux de la version séquentielle. Si les résultats sont différents, c'est qu'il y a une erreur dans les intractions de parallélisation. Corriger et reprendre en 3.
-\end{enumerate}
+	Examiner le fichier {\tt src/sinus\_coarse\_2/charge.cxx} qui contient cet algorithme et le fichier {\tt src/sinus\_coarse\_2/sinus.cxx} qui l'utilise.
+	
+	Exécuter plusieurs fois la commande
+	\begin{script}
+		OMP\_NUM\_THREADS=3 \textbackslash
+		time ./build/sinus\_coarse\_2/sinus\_coarse\_2 40000
+	\end{script}
+	
+	Chaque exécution tente d'améliorer les temps calcul en adaptant la répartition de charge de mieux en mieux (si possible).
 \end{question}
 
 \begin{remarque}
-Quand on a parallélisé une partie du code ci-dessus, on refait une mesure avec {\tt valgrind/kcachegrind} (ou un autre outil de profiling) pour voir si une autre partie du code pourrait être intéressante à paralléliser. 
+L'algorithme d'équilibrage de charge utilisé ici n'est pas optimal. Vous êtes encouragés à l'étudier et à l'améliorer.
 \end{remarque}
+
+\vfill\eject
+\section{Parallélisation du (mini-)code avec le modèle OpenMP ``grain grossier''}
+
+Le répertoire {code/PoissonOpenMP\_CoarseGrain} contient la version du code parallélisé par de l'OpenMP ``grain fin''.
+
+\begin{question}
+Remplacer la parallélisation ``grain fin'' par le modèle ``gros grain'' (sans perte de charge).
+\end{question}
+
+\section{Parallélisation en utilisant le concept de tâches OpenMP}
 
 \end{document}
