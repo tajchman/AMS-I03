@@ -15,6 +15,7 @@
 #define ITHREAD  0
 #endif
 
+#include "charge.hxx"
 #include "pause.hpp"
 int imax;
 
@@ -110,22 +111,13 @@ int main(int argc, char **argv)
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
   imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 12;
 
-  std::cout << "\n\nversion OpenMP grossier 2 : \n\t" << nthreads << " thread(s)\n"
+  std::cout << "\n\nversion OpenMP grossier 3 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;
 
-  std::vector<int> n1(nthreads), n2(nthreads);  
-  int dn;
+  Charge C(n, nthreads);
   
-  for (int i=0; i<nthreads-1; i++) {
-    dn = n/nthreads;
-    n1[i] = i * dn;
-    n2[i] = (i+1) * dn;
-  }
-  n1[nthreads-1] = (nthreads-1)*dn;
-  n2[nthreads-1] = n;
-     
   std::vector<double> pos(n), v1, v2;
   double m, e;
 
@@ -134,14 +126,9 @@ int main(int argc, char **argv)
   
 #pragma omp parallel shared(pos, v1, v2, n)
   {
-    int n1, n2, dn;
-    int ithread = ITHREAD, nthreads = NTHREADS;
-
-    dn = n/nthreads;
-    
-    n1 = ithread * dn;
-    n2 = (ithread+1) * dn;
-    if (ithread == nthreads-1) n2 = n;
+    int ithread = ITHREAD;
+    int n1 = C.min(ithread);
+    int n2 = C.max(ithread);
     
     double t0 = omp_get_wtime();
     init(pos, v1, v2, n1, n2);
@@ -159,6 +146,8 @@ int main(int argc, char **argv)
   m = m/n;
   e = sqrt(e/n - m*m);
 
+  C.update(elapsed_init);
+  
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
     

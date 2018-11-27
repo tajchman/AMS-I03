@@ -23,7 +23,7 @@ include_directories(${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d coarse_1 coarse_2)
+foreach(d seq coarse_1 coarse_2 coarse_3)
    add_subdirectory(sinus_${d})
 endforeach()
 
