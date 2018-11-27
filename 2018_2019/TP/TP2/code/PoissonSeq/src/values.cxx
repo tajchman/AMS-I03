@@ -14,7 +14,7 @@ Values::Values(const Parameters * prm)
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
-  m_u.resize(nn);;
+  m_u.resize(nn);
 }
 
 void Values::init(double (*f)(double, double, double))

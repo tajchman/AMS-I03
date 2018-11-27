@@ -33,12 +33,6 @@ void Scheme::initialize()
 {
   m_u.init();
   m_v.init();
-  int i;
-  for (i=0; i<3; i++) {
-    m_n[i] = m_P->n(i);
-    m_dx[i] = m_P->dx(i);
-    m_di[i] = (m_n[i] < 2) ? 0 : 1;
-  }
 
   kStep = 1;
   m_t = 0.0;

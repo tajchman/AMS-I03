@@ -46,8 +46,8 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_n[2] = (*this)("p", 200);
   m_itmax = (*this)("it", 10);
   double dt_max = 1.5/(m_n[0]*m_n[0]
-		       + m_n[1]*m_n[1]
-		       + m_n[2]*m_n[2]);
+                       + m_n[1]*m_n[1]
+                       + m_n[2]*m_n[2]);
   m_dt = (*this)("dt", dt_max);
   m_freq = (*this)("out", -1);
 
@@ -58,8 +58,8 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
  
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
-		<< ") is greater then the recommended maximum (" <<  dt_max
-		<< ")" << std::endl;
+                << ") is greater then the recommended maximum (" <<  dt_max
+                << ")" << std::endl;
     
     for (int i=0; i<3; i++) {
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
@@ -67,7 +67,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-       	m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+        m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
       }
     }
   }
@@ -122,8 +122,8 @@ std::ostream & Parameters::out()
 
     std::ostringstream pth;
     pth << "results"
-    << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-    << "_" << buffer << "/";
+        << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
+        << "_" << buffer << "/";
     m_path = pth.str();
 
 #if defined(_WIN32)

@@ -34,7 +34,6 @@ private:
   std::vector<double> m_u;
   int m_n[3];
   const Parameters * m_p;
-
 };
 				   
 
