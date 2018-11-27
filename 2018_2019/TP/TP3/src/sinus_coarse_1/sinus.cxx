@@ -22,7 +22,7 @@ void init(std::vector<double> & pos,
           std::vector<double> & v2,
           int n1, int n2)
 {
-  double pi = 3.14159265;
+  double x, pi = 3.14159265;
   int i, n = pos.size();
 
 #pragma omp single
@@ -32,9 +32,10 @@ void init(std::vector<double> & pos,
   }
   
   for (i=n1; i<n2; i++) {
-    pos[i] = i*2*pi/n;
-    v1[i] = sinus_machine(pos[i]);
-    v2[i] = sinus_taylor(pos[i]);
+    x = i*2*pi/n;
+    pos[i] = x;
+    v1[i] = sinus_machine(x);
+    v2[i] = sinus_taylor(x);
   }
 }
 
@@ -56,10 +57,10 @@ void stat(const std::vector<double> & v1,
           int n1, int n2,
           double & somme1, double & somme2)
 {
-  int ithread = omp_get_thread_num();
 
   double s1 = 0.0, s2 = 0.0, err;
   int i;
+
   for (i=n1; i<n2; i++) {
     err = v1[i] - v2[i];
     s1 += err;
@@ -107,19 +108,25 @@ int main(int argc, char **argv)
 
   m = 0;
   e = 0;
+
+  std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
   
 #pragma omp parallel shared(pos, v1, v2, n)
   {
     int ithread = ITHREAD;
     int n1 = n_start[ithread], n2 = n_end[ithread];
     
+    double t0 = omp_get_wtime();
     init(pos, v1, v2, n1, n2);
+    elapsed_init[ithread] =  omp_get_wtime() - t0;
 
     #pragma omp single 
     if (n < 10000)
       save("sinus.dat", pos, v1, v2);
  
+    t0 = omp_get_wtime();
     stat(v1, v2, n1, n2, m, e);
+    elapsed_stat[ithread] =  omp_get_wtime() - t0;
   }
 
   m = m/n;
@@ -127,6 +134,10 @@ int main(int argc, char **argv)
 
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
+  
+  for (int i=0; i<nthreads; i++)
+    std::cout << "time (thread " << i << ") : init " << elapsed_init[i]
+              << "s stat " << elapsed_stat[i] << std::endl;
   
   return 0;
 }

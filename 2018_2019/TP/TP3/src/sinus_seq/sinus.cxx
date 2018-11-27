@@ -14,16 +14,17 @@ void init(std::vector<double> & pos,
           std::vector<double> & v1,
           std::vector<double> & v2)
 {
-  double pi = 3.14159265;
+  double x, pi = 3.14159265;
   int i, n = pos.size();
 
   v1.resize(n);
   v2.resize(n);
-  
+
   for (i=0; i<n; i++) {
-    pos[i] = i*2*pi/n;
-    v1[i] = sinus_machine(pos[i]);
-    v2[i] = sinus_taylor(pos[i]);
+    x = i*2*pi/n;
+    pos[i] = x;
+    v1[i] = sinus_machine(x);
+    v2[i] = sinus_taylor(x);
   }
 }
 
@@ -62,32 +63,34 @@ int main(int argc, char **argv)
   int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
 
-  std::cout << "version 1 : taille vecteur = " << n
-            << ", termes (formule Taylor) : " << imax
+  std::cout << "\n\nversion sequentielle : \n"
+            << "\ttaille vecteur = " << n << "\n"
+            << "\ttermes (formule Taylor) : " << imax
             << std::endl;
 
-  Timer t_init, t_moyenne;
+  Timer t_init, t_stat;
 
-  t_init.start();
   std::vector<double> pos(n), v1, v2;
+  double m, e;
+  
+  t_init.start();
   init(pos, v1, v2);
   t_init.stop();
 
   if (n < 10000)
     save("sinus.dat", pos, v1, v2);
   
-  t_moyenne.start();
-  double m, e;
+  t_stat.start();
   stat(v1, v2, m, e);
-  t_moyenne.stop();
+  t_stat.stop();
   
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
   
-  std::cout << "time init    : "
+  std::cout << "time init : "
             << std::setw(12) << t_init.elapsed() << " s" << std::endl; 
-  std::cout << "time moyenne : "
-            << std::setw(12) << t_moyenne.elapsed() << " s" << std::endl;
+  std::cout << "time stat : "
+            << std::setw(12) << t_stat.elapsed() << " s" << std::endl;
   
   return 0;
 }

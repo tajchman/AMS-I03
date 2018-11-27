@@ -15,6 +15,7 @@
 #define ITHREAD  0
 #endif
 
+#include "charge.hxx"
 #include "sin.hxx"
 
 void init(std::vector<double> & pos,
@@ -91,17 +92,8 @@ int main(int argc, char **argv)
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;
 
-  std::vector<int> n_start(nthreads), n_end(nthreads);  
-  int dn;
+  Charge C(n, nthreads);
   
-  dn = n/nthreads;
-  for (int i=0; i<nthreads-1; i++) {
-    n_start[i] = i * dn;
-    n_end[i] = (i+1) * dn;
-  }
-  n_start[nthreads-1] = (nthreads-1)*dn;
-  n_end[nthreads-1] = n;
-     
   std::vector<double> pos(n), v1, v2;
   double m, e;
 
@@ -110,10 +102,11 @@ int main(int argc, char **argv)
 
   std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
   
-#pragma omp parallel shared(pos, v1, v2, n)
+#pragma omp parallel shared(pos, v1, v2, n, C)
   {
     int ithread = ITHREAD;
-    int n1 = n_start[ithread], n2 = n_end[ithread];
+    int n1 = C.min(ithread);
+    int n2 = C.max(ithread);
     
     double t0 = omp_get_wtime();
     init(pos, v1, v2, n1, n2);
@@ -131,6 +124,8 @@ int main(int argc, char **argv)
   m = m/n;
   e = sqrt(e/n - m*m);
 
+  C.update(elapsed_init);
+  
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
   
