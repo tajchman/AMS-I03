@@ -8,27 +8,7 @@
 #include <cmath>
 #include <iomanip>
 
-int imax;
-
-double sinus_taylor(double x)
-{
-  double y = x, x2 = x*x;
-   int i, m;
-   double coef = x;
-   for (i=1; i<imax; i++) {
-     m = 2*i*(2*i+1);
-     coef *= -x2/m;
-     y += coef;
-     if (std::abs(coef) < 1e-12) break;
-   }
-   return y;
-}
-
-double sinus_machine(double x)
-{
-  double y = sin(x);
-  return y;
-}
+#include "sin.hxx"
 
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -79,7 +59,8 @@ void stat(const std::vector<double> & v1,
 int main(int argc, char **argv)
 {
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
-  imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 6;
+  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 10;
+  set_terms(imax);
 
   std::cout << "version 1 : taille vecteur = " << n
             << ", termes (formule Taylor) : " << imax

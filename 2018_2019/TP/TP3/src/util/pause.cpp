@@ -3,6 +3,6 @@
 #include <chrono>
 
 void pause(int n) {
-  std::this_thread::sleep_for(std::chrono::milliseconds{n});
+  std::this_thread::sleep_for(std::chrono::microseconds(n));
 }
-//std::chrono::microseconds
+

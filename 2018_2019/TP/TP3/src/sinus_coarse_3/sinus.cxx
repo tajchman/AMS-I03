@@ -16,31 +16,7 @@
 #endif
 
 #include "charge.hxx"
-#include "pause.hpp"
-int imax;
-
-double sinus_taylor(double x)
-{
-  double y = x, x2 = x*x;
-   int i, m;
-   double coef = x;
-   for (i=1; i<imax; i++) {
-     m = 2*i*(2*i+1);
-     coef *= -x2/m;
-     y += coef;
-     if (std::abs(coef) < 1e-8)
-       break;
-   }
-
-   pause(i*i/20);
-   return y;
-}
-
-double sinus_machine(double x)
-{
-  double y = sin(x);
-  return y;
-}
+#include "sin.hxx"
 
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -109,7 +85,8 @@ int main(int argc, char **argv)
   std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
 
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
-  imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 12;
+  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 10;
+  set_terms(imax);
 
   std::cout << "\n\nversion OpenMP grossier 3 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
@@ -124,7 +101,7 @@ int main(int argc, char **argv)
   m = 0;
   e = 0;
   
-#pragma omp parallel shared(pos, v1, v2, n)
+#pragma omp parallel shared(pos, v1, v2, n, C)
   {
     int ithread = ITHREAD;
     int n1 = C.min(ithread);

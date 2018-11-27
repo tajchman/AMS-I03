@@ -7,7 +7,7 @@ Charge::Charge(int n, int nthreads)
 
   int i;
   
-  m_fileName = std::string("times_") + std::to_string(n)
+  m_fileName = std::string("loads_") + std::to_string(n)
     + "_" + std::to_string(nthreads);
   
   std::ifstream f(m_fileName.c_str());

@@ -15,31 +15,7 @@
 #define ITHREAD  0
 #endif
 
-#include "pause.hpp"
-int imax;
-
-double sinus_taylor(double x)
-{
-  double y = x, x2 = x*x;
-   int i, m;
-   double coef = x;
-   for (i=1; i<imax; i++) {
-     m = 2*i*(2*i+1);
-     coef *= -x2/m;
-     y += coef;
-     if (std::abs(coef) < 1e-8)
-       break;
-   }
-
-   pause(i);
-   return y;
-}
-
-double sinus_machine(double x)
-{
-  double y = sin(x);
-  return y;
-}
+#include "sin.hxx"
 
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -108,8 +84,9 @@ int main(int argc, char **argv)
   std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
 
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
-  imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 12;
-
+  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 10;
+  set_terms(imax);
+  
   std::cout << "\n\nversion OpenMP grossier 2 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
             << "\ttermes (formule Taylor) : " << imax
@@ -134,17 +111,11 @@ int main(int argc, char **argv)
   
 #pragma omp parallel shared(pos, v1, v2, n)
   {
-    int n1, n2, dn;
     int ithread = ITHREAD, nthreads = NTHREADS;
 
-    dn = n/nthreads;
-    
-    n1 = ithread * dn;
-    n2 = (ithread+1) * dn;
-    if (ithread == nthreads-1) n2 = n;
     
     double t0 = omp_get_wtime();
-    init(pos, v1, v2, n1, n2);
+    init(pos, v1, v2, n1[ithread], n2[ithread]);
     elapsed_init[ithread] =  omp_get_wtime() - t0;
 
     #pragma omp single 
@@ -152,7 +123,7 @@ int main(int argc, char **argv)
       save("sinus.dat", pos, v1, v2);
  
     t0 = omp_get_wtime();
-    stat(v1, v2, n1, n2, m, e);
+    stat(v1, v2, n1[ithread], n2[ithread], m, e);
     elapsed_stat[ithread] =  omp_get_wtime() - t0;
   }
 
