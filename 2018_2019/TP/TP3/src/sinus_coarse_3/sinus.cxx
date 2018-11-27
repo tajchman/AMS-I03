@@ -32,7 +32,7 @@ double sinus_taylor(double x)
        break;
    }
 
-   pause(i);
+   pause(i*i/20);
    return y;
 }
 
