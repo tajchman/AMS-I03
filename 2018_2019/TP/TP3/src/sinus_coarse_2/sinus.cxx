@@ -81,41 +81,42 @@ int main(int argc, char **argv)
     #pragma omp master
     nthreads = NTHREADS;
   }
-  std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
 
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
-  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 10;
+  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
-  
+
   std::cout << "\n\nversion OpenMP grossier 2 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;
 
-  std::vector<int> n1(nthreads), n2(nthreads);  
+  std::vector<int> n_start(nthreads), n_end(nthreads);  
   int dn;
   
+  dn = n/nthreads;
   for (int i=0; i<nthreads-1; i++) {
-    dn = n/nthreads;
-    n1[i] = i * dn;
-    n2[i] = (i+1) * dn;
+    n_start[i] = i * dn;
+    n_end[i] = (i+1) * dn;
   }
-  n1[nthreads-1] = (nthreads-1)*dn;
-  n2[nthreads-1] = n;
+  n_start[nthreads-1] = (nthreads-1)*dn;
+  n_end[nthreads-1] = n;
      
   std::vector<double> pos(n), v1, v2;
   double m, e;
 
   m = 0;
   e = 0;
+
+  std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
   
 #pragma omp parallel shared(pos, v1, v2, n)
   {
-    int ithread = ITHREAD, nthreads = NTHREADS;
-
+    int ithread = ITHREAD;
+    int n1 = n_start[ithread], n2 = n_end[ithread];
     
     double t0 = omp_get_wtime();
-    init(pos, v1, v2, n1[ithread], n2[ithread]);
+    init(pos, v1, v2, n1, n2);
     elapsed_init[ithread] =  omp_get_wtime() - t0;
 
     #pragma omp single 
@@ -123,7 +124,7 @@ int main(int argc, char **argv)
       save("sinus.dat", pos, v1, v2);
  
     t0 = omp_get_wtime();
-    stat(v1, v2, n1[ithread], n2[ithread], m, e);
+    stat(v1, v2, n1, n2, m, e);
     elapsed_stat[ithread] =  omp_get_wtime() - t0;
   }
 
@@ -132,7 +133,7 @@ int main(int argc, char **argv)
 
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
-    
+  
   for (int i=0; i<nthreads; i++)
     std::cout << "time (thread " << i << ") : init " << elapsed_init[i]
               << "s stat " << elapsed_stat[i] << std::endl;

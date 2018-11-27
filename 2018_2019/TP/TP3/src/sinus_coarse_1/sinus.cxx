@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   }
 
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
-  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 10;
+  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
 
   std::cout << "\n\nversion OpenMP grossier 1 : \n\t" << nthreads << " thread(s)\n"
@@ -91,6 +91,17 @@ int main(int argc, char **argv)
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;
 
+  std::vector<int> n_start(nthreads), n_end(nthreads);  
+  int dn;
+  
+  dn = n/nthreads;
+  for (int i=0; i<nthreads-1; i++) {
+    n_start[i] = i * dn;
+    n_end[i] = (i+1) * dn;
+  }
+  n_start[nthreads-1] = (nthreads-1)*dn;
+  n_end[nthreads-1] = n;
+     
   std::vector<double> pos(n), v1, v2;
   double m, e;
 
@@ -99,23 +110,16 @@ int main(int argc, char **argv)
   
 #pragma omp parallel shared(pos, v1, v2, n)
   {
-    int n1, n2, dn;
-    int ithread = ITHREAD, nthreads = NTHREADS;
-
-    dn = n/nthreads;
-    
-    n1 = ithread * dn;
-    n2 = (ithread+1) * dn;
-    if (ithread == nthreads-1) n2 = n;
+    int ithread = ITHREAD;
+    int n1 = n_start[ithread], n2 = n_end[ithread];
     
     init(pos, v1, v2, n1, n2);
 
     #pragma omp single 
     if (n < 10000)
       save("sinus.dat", pos, v1, v2);
-  
+ 
     stat(v1, v2, n1, n2, m, e);
-    
   }
 
   m = m/n;
@@ -123,6 +127,6 @@ int main(int argc, char **argv)
 
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
-    
+  
   return 0;
 }

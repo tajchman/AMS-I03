@@ -82,10 +82,9 @@ int main(int argc, char **argv)
     #pragma omp master
     nthreads = NTHREADS;
   }
-  std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
 
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
-  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : 10;
+  int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
 
   std::cout << "\n\nversion OpenMP grossier 3 : \n\t" << nthreads << " thread(s)\n"
@@ -100,6 +99,8 @@ int main(int argc, char **argv)
 
   m = 0;
   e = 0;
+
+  std::vector<double> elapsed_init(nthreads), elapsed_stat(nthreads);
   
 #pragma omp parallel shared(pos, v1, v2, n, C)
   {
@@ -127,7 +128,7 @@ int main(int argc, char **argv)
   
   std::cout << "erreur moyenne : " << m << " ecart-type : " << e
             << std::endl << std::endl;
-    
+  
   for (int i=0; i<nthreads; i++)
     std::cout << "time (thread " << i << ") : init " << elapsed_init[i]
               << "s stat " << elapsed_stat[i] << std::endl;
