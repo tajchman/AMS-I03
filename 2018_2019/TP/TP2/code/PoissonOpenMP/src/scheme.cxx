@@ -83,17 +83,17 @@ bool Scheme::iteration()
 
   du_sum = 0.0;
     
-    for (i = imin; i < imax; i++)
-      for (j = jmin; j < jmax; j++)
-        for (k = kmin; k < kmax; k++) {
-          du = 6 * m_u(i, j, k)
-              - m_u(i + di, j, k) - m_u(i - di, j, k)
-              - m_u(i, j + dj, k) - m_u(i, j - dj, k)
-              - m_u(i, j, k + dk) - m_u(i, j, k - dk);
-          du *= m_lambda;
-          m_v(i, j, k) = m_u(i, j, k) - du;
+  for (i = imin; i < imax; i++)
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) {
+        du = 6 * m_u(i, j, k)
+          - m_u(i + di, j, k) - m_u(i - di, j, k)
+          - m_u(i, j + dj, k) - m_u(i, j - dj, k)
+          - m_u(i, j, k + dk) - m_u(i, j, k - dk);
+        du *= m_lambda;
+        m_v(i, j, k) = m_u(i, j, k) - du;
           du_sum += du > 0 ? du : -du;
-        }
+      }
 
     m_duv = du_sum;
     return true;
@@ -137,7 +137,7 @@ double Scheme::variation()
 }
 
 void Scheme::terminate() {
-    std::cerr << "\n\nterminate " << codeName << std::endl;
+  std::cerr << "\n\nterminate " << codeName << std::endl;
 }
 
 const Values & Scheme::getOutput()

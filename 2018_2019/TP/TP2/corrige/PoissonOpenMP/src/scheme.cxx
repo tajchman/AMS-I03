@@ -7,7 +7,7 @@
 
 Scheme::Scheme(const Parameters *P) :
   codeName("Poisson_OpenMP"), m_u(P), m_v(P), m_timers(3)  {
-  m_timers[0].name("init");
+   m_timers[0].name("init");
    m_timers[1].name("solve");
    m_timers[2].name("other");
    m_duv = 0.0;
@@ -33,12 +33,6 @@ void Scheme::initialize()
 {
   m_u.init();
   m_v.init();
-  int i;
-  for (i=0; i<3; i++) {
-    m_n[i] = m_P->n(i);
-    m_dx[i] = m_P->dx(i);
-    m_di[i] = (m_n[i] < 2) ? 0 : 1;
-  }
 
   kStep = 1;
   m_t = 0.0;
@@ -135,7 +129,7 @@ bool Scheme::solve(unsigned int nSteps)
 
     kStep++;
   }
- return true;
+  return true;
 }
 
 double Scheme::variation()
