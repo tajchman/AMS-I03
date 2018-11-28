@@ -23,8 +23,9 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d seq fine coarse_1 coarse_2)
+foreach(d seq fine coarse_1 coarse_2 tasks)
    add_subdirectory(sinus_${d})
 endforeach()
+add_subdirectory(exemple_tasks)
 
 

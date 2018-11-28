@@ -1,5 +1,5 @@
 #include <cmath>
-#include "pause.hpp"
+#include "pause.hxx"
 
 int imax;
 

@@ -89,17 +89,17 @@ Règle suggérée :
     
     \subsection{Appels explicites de fonctions système depuis le code source}
     
-    Les fichiers source {\tt src/util/timer.cpp} et {\tt src/util/timer.hpp} contiennent une classe C++ qui utilise la fonction standard C++11 
+    Le fichier d'inclusion {\tt src/util/timer.hxx} contient une classe C++ qui utilise la fonction standard C++11 
     \begin{quote}
     	\tt std::chrono::high\_resolution\_clock::now
     \end{quote}
      pour mesurer le temps entre 2 positions dans un code. 
     
-    Cette classe est utilisée dans le fichier source {\tt src/valeur\_propre/power1.cpp} qui initialise une matrice $100\times100$ et calcule sa plus grande valeur propre (en valeur absolue), par la méthode de la puissance : 
+    Cette classe est utilisée dans le fichier source {\tt src/valeur\_propre/power1.cxx} qui initialise une matrice $100\times100$ et calcule sa plus grande valeur propre (en valeur absolue), par la méthode de la puissance : 
     $$\lim_{k \rightarrow \infty} \vert\vert A^k v\vert\vert / \vert\vert A^{k-1} v\vert\vert.$$
     
     \begin{question}    	
-    	Examiner le fichier {\tt src/valeur\_propre/power1.cpp} et la classe {\tt Timer} (fichiers {\tt src/util/timer.cpp} et {\tt src/util/timer.hpp}).
+    	Examiner le fichier {\tt src/valeur\_propre/power1.cxx} et la classe {\tt Timer} (fichier {\tt src/util/timer.hxx}).
     	
     	Exécutez le code {\tt install/Release/power1} (compilé au début du TP). Le code affiche, entre autres, le temps d'initialisation de la matrice, le temps de calcul de la valeur propre et le temps total de calcul.
     	
@@ -204,7 +204,7 @@ Examen du rapport de perf
 
 \section{Techniques d'optimisation séquentielle}
 
-On utilise ici un code qui calcule (une approximation de) la plus grande valeur propre d'une matrice, dans le fichier source {\tt src/valeur\_propre/power1.cpp} (voir le 1.1 page 2).
+On utilise ici un code qui calcule (une approximation de) la plus grande valeur propre d'une matrice, dans le fichier source {\tt src/valeur\_propre/power1.cxx} (voir le 1.1 page 2).
 L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_vecteur}.
 
 \subsection{Tentative d'optimisation 1}
@@ -212,13 +212,13 @@ L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_ve
 \begin{question}
 	Exécuter les codes {\tt install/Release/power1} et {\tt install/Release/power2}, comparer les temps de calcul.
 	
-	Expliquer les différences de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power1.cpp} (utilisé dans le code power1) \\ et {\tt src/valeur\_propre/power2.cpp} (utilisé dans le code power2).
+	Expliquer les différences de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power1.cxx} (utilisé dans le code power1) \\ et {\tt src/valeur\_propre/power2.cxx} (utilisé dans le code power2).
 \end{question}
 
 \begin{question}
 	Faire la même comparaison avec les codes {\tt install/Release/power1f} et \linebreak {\tt install/Release/power2f}, qui utilisent respectivement des sources fortran {\tt src/valeur\_propre/power1.f90} et {\tt src/valeur\_propre/power2.f90}.
 
-        Expliquer les différences de résultats entre la version C++ ({\tt power1.cpp} et {\tt power2.cpp}) et fortran 90 ({\tt power1.f90} et {\tt power2.f90}).
+        Expliquer les différences de résultats entre la version C++ ({\tt power1.cxx} et {\tt power2.cxx}) et fortran 90 ({\tt power1.f90} et {\tt power2.f90}).
 \end{question}
 	
 \subsection{Tentative d'optimisation 2}
@@ -226,7 +226,7 @@ L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_ve
 \begin{question}
 	Exécuter les codes {\tt install/Release/power2} et {\tt install/Release/power3}, comparer les temps de calcul.
 
-Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power2.cpp} (utilisé dans le code power2) \\ et {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3).
+Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power2.cxx} (utilisé dans le code power2) \\ et {\tt src/valeur\_propre/power3.cxx} (utilisé dans le code power3).
 \end{question}
 
 \subsection{Tentative d'optimisation 3}
@@ -234,7 +234,7 @@ Expliquer les différences éventuelles de temps calcul en examinant les fichiers 
 \begin{question}
 	Exécuter les codes {\tt install/Release/power3} et {\tt install/Release/power4}, comparer les temps de calcul.
 	
-	Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power3.cpp} (utilisé dans le code power3) \\ et {\tt src/valeur\_propre/power4.cpp} (utilisé dans le code power4).
+	Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power3.cxx} (utilisé dans le code power3) \\ et {\tt src/valeur\_propre/power4.cxx} (utilisé dans le code power4).
 \end{question}
 
 \vfill\eject
@@ -252,17 +252,17 @@ où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la col
 \begin{question}
 	Exécuter les codes \\ {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.
 	
-	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source \\ {\tt src/transposee/transpose1.cpp} et {\tt src/transposee/transpose2.cpp}.
+	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source \\ {\tt src/transposee/transpose1.cxx} et {\tt src/transposee/transpose2.cxx}.
 \end{question}
 \subsection{Algorithme par bloc - version 1}
 
-On garde la structure des matrices comme dans {\tt transpose1.cpp} et {\tt transpose2.cpp}.
+On garde la structure des matrices comme dans {\tt transpose1.cxx} et {\tt transpose2.cxx}.
 Par contre le parcours de indices de matrice est différent.
 
 \begin{question}
 	Exécuter le code {\tt install/Release/transpose3}.
 	
-	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cpp}.
+	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cxx}.
 \end{question}
 \subsection{Algorithme par bloc - version 2}
 
@@ -271,6 +271,6 @@ Dans cette version, on utilise une structure des matrices par bloc. Chaque bloc 
 \begin{question}
 	Exécuter le code {\tt install/Release/transpose4}.
 	
-	Comparer les temps de calcul avec la version précédente et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose4.cpp}.
+	Comparer les temps de calcul avec la version précédente et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose4.cxx}.
 	\end{question}
 \end{document}

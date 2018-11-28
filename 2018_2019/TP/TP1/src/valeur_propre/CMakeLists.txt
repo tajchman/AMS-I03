@@ -2,8 +2,8 @@
 include_directories(../matrice)
 include_directories(../util)
 
-foreach(i 1 2 3 4 5 6)
-  add_executable(power${i} power${i}.cpp)
+foreach(i 1 2 3 4)
+  add_executable(power${i} power${i}.cxx)
   target_link_libraries(power${i} linalg util)
   install(TARGETS power${i} DESTINATION .)
 endforeach()

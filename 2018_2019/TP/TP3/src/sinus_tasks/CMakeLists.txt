@@ -1,4 +1,4 @@
-set(code "sinus_fine")
+set(code "sinus_tasks")
 
 set_source_files_properties(sinus.cxx
   PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})

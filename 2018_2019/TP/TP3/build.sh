@@ -11,6 +11,6 @@ fi
 
   mkdir -p $DIR/build
   cd $DIR/build
-  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
+  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
   make -j
   make -j install

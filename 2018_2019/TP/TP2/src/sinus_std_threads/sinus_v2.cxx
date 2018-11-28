@@ -1,5 +1,5 @@
-#include "timer.hpp"
-#include "keyPress.hpp"
+#include "timer.hxx"
+#include "keyPress.hxx"
 #include <vector>
 #include <iostream>
 #include <fstream>

@@ -1,1 +1,1 @@
-add_library(linalg Matrice.cpp MatriceBloc.cpp Vecteur.cpp)
+add_library(linalg Matrice.cxx MatriceBloc.cxx Vecteur.cxx)
