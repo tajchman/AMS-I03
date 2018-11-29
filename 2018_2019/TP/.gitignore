@@ -6,3 +6,5 @@ perf*
 *.aux
 *.log
 *.out
+*.dat
+load*
