@@ -6,17 +6,19 @@ add_executable(${CODE} sinus.cxx ../sin.cxx)
 
 target_link_libraries(${CODE}
   util
-  ${MPI_CXX_LIBRARIES} 
   ${MPI_CXX_LINK_FLAGS}
+  ${MPI_CXX_LIBRARIES} 
   ${OpenMP_CXX_FLAGS}
   ${OpenMP_CXX_LIBRARIES})
 
-target_include_directories(${code}
+target_include_directories(${CODE}
   PRIVATE ${MPI_CXX_INCLUDE_PATH})
 
-target_compile_options(${code}
-  PRIVATE ${MPI_CXX_COMPILE_FLAGS} ${OpenMP_CXX_FLAGS})
+target_compile_options(${CODE}
+  PRIVATE 
+  ${MPI_CXX_COMPILE_FLAGS}
+  ${OpenMP_CXX_FLAGS})
 
-install(TARGETS ${code} DESTINATION .)
+install(TARGETS ${CODE} DESTINATION .)
 
 

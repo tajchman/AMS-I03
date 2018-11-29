@@ -112,6 +112,7 @@ int main(int argc, char **argv)
   t_init.stop();
 
   MPI_Barrier(MPI_COMM_WORLD);
+
   if (n < 10000) {
     std::string s = "sinus_";
     s += std::to_string(iproc) + ".dat";

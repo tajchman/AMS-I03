@@ -25,7 +25,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d seq openmp mpi mpi_openmp)
+foreach(d seq openmp mpi mpi_openmp_fine mpi_openmp_coarse)
    add_subdirectory(sinus_${d})
 endforeach()
 

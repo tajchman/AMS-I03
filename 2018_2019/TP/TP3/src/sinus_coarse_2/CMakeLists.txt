@@ -1,11 +1,18 @@
-set(code "sinus_coarse_2")
+get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
 set_source_files_properties(sinus.cxx
   PROPERTIES COMPILE_FLAGS ${OpenMP_CXX_FLAGS})
   
-add_executable(${code} sinus.cxx ../sin.cxx charge.cxx)
-target_link_libraries(${code} util ${OpenMP_CXX_LIBRARIES})
+add_executable(${CODE} 
+  sinus.cxx
+  ../sin.cxx
+  charge.cxx
+)
 
-install(TARGETS ${code} DESTINATION .)
+target_link_libraries(${CODE}
+  util
+  ${OpenMP_CXX_LIBRARIES})
+
+install(TARGETS ${CODE} DESTINATION .)
 
 
