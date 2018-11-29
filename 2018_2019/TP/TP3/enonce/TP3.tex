@@ -52,7 +52,7 @@ Le fichier {\tt src/sinus\_coarse\_1/sinus.cxx} contient une version OpenMP ``gr
 \begin{question}
 	Examiner ce fichier et comparez-le à la version ``grain fin''.
 	
-	Comparer les temps d'exécution de la version ``grain fin''et de cette version en tapant les commandes
+	Comparer les temps d'exécution de la version ``grain fin'' et de cette version en tapant les commandes
 	\begin{script}
 		OMP\_NUM\_THREADS=3 \textbackslash
 		time -p ./build/sinus\_fine/sinus\_fine 40000
@@ -96,8 +96,28 @@ Le répertoire {code/PoissonOpenMP\_CoarseGrain} contient la version du code para
 
 \begin{question}
 Remplacer la parallélisation ``grain fin'' par le modèle ``gros grain'' (sans perte de charge).
+
+\textbf{Les fichiers source, que vous avez modifiés, seront à fournir avant la fin de la semaine suivante et vous seront renvoyés commentés et notés. La note obtenue pourra améliorer la note finale suivant les modalités précisées au premier cours.}
 \end{question}
 
 \section{Parallélisation en utilisant le concept de tâches OpenMP}
+
+\begin{question}
+Examiner le fichier {\tt src/exemple\_tasks/main\_seq.cxx}.
+
+Cet exemple est difficile à paralléliser avec OpenMP. Expliquer pourquoi.
+\end{question}
+
+Le modèle de programmation par tâches OpenMP a été conçu pour répondre à ce type de situation.
+
+\begin{question}
+Examiner le fichier {\tt src/exemple\_tasks/main\_tasks.cxx}.
+
+Compiler et exécuter. Comparer les temps calcul avec la version séquentielle.
+
+Pensez à vérifier que les résultats sont bien les mêmes dans les deux cas.
+\end{question}
+
+
 
 \end{document}

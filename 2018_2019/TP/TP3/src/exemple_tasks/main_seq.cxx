@@ -8,10 +8,6 @@
 #include "sin.hxx"
 #include "timer.hxx"
 
-void add(std::list<double> & L, double x)
-{
-}
-
 int main()
 {
   
@@ -25,11 +21,11 @@ int main()
   }
   std::cerr << "Liste de " << L.size() << " elements" << std::endl;
   
-  set_terms(20);
+  set_terms(40);
  
   Timer T;
   T.start();
-  
+
   for (auto e = L.begin(); e != L.end(); e++)
       e->second = sinus_taylor(e->first);
   

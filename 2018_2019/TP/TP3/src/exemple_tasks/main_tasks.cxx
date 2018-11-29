@@ -5,23 +5,12 @@
 #include <ctime>
 #include <cmath>
 
-#ifdef _OPENMP
-#include <omp.h>
-#define NTHREADS omp_get_num_threads()
-#define ITHREAD  omp_get_thread_num()
-#else
-#define NTHREADS 1
-#define ITHREAD  0
-#endif
-
 #include "sin.hxx"
-
-void add(std::list<double> & L, double x)
-{
-}
+#include "timer.hxx"
 
 int main()
 {
+  
   std::srand(0);
   
   std::list<std::pair<double, double>> L;
@@ -32,10 +21,10 @@ int main()
   }
   std::cerr << "Liste de " << L.size() << " elements" << std::endl;
   
-  set_terms(20);
-
-  double t0 = omp_get_wtime();
+  set_terms(40);
  
+  Timer T;
+  T.start();
 #pragma omp parallel
   {
 #pragma omp master
@@ -48,8 +37,10 @@ int main()
       
 #pragma omp taskwait
   }
+  
+  T.stop();
 
-  std::cerr << "temps de calcul : " <<  omp_get_wtime() - t0 << std::endl;
+  std::cerr  << "temps de calcul : " << T.elapsed() << std::endl;
 
   double erreur = 0.0;
   for (const auto & e:L)
