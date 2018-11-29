@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include "pause.hxx"
 
 int imax;
@@ -17,11 +18,11 @@ double sinus_taylor(double x)
      m = 2*i*(2*i+1);
      coef *= -x2/m;
      y += coef;
-     if (std::abs(coef) < 1e-8)
+     if (std::abs(coef) < 1e-12)
        break;
    }
 
-   pause(i*i*4);
+   pause(2*i*i);
    return y;
 }
 

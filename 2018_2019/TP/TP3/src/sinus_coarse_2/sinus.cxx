@@ -17,6 +17,7 @@
 
 #include "charge.hxx"
 #include "sin.hxx"
+#include "timer.hxx"
 
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -25,12 +26,6 @@ void init(std::vector<double> & pos,
 {
   double pi = 3.14159265;
   int i, n = pos.size();
-
-#pragma omp single
-  {
-    v1.resize(n);
-    v2.resize(n);
-  }
   
   for (i=n1; i<n2; i++) {
     pos[i] = i*2*pi/n;
@@ -57,7 +52,7 @@ void stat(const std::vector<double> & v1,
           int n1, int n2,
           double & somme1, double & somme2)
 {
-  int ithread = omp_get_thread_num();
+  int ithread = ITHREAD;
 
   double s1 = 0.0, s2 = 0.0, err;
   int i;
@@ -76,6 +71,9 @@ void stat(const std::vector<double> & v1,
 
 int main(int argc, char **argv)
 {
+  Timer T_total;
+  T_total.start();
+  
   int nthreads;
   #pragma omp parallel
   {
@@ -94,7 +92,7 @@ int main(int argc, char **argv)
 
   Charge C(n, nthreads);
   
-  std::vector<double> pos(n), v1, v2;
+  std::vector<double> pos(n), v1(n), v2(n);
   double m, e;
 
   m = 0;
@@ -104,21 +102,24 @@ int main(int argc, char **argv)
   
 #pragma omp parallel shared(pos, v1, v2, n, C)
   {
+    Timer T_init, T_stat;
     int ithread = ITHREAD;
     int n1 = C.min(ithread);
     int n2 = C.max(ithread);
     
-    double t0 = omp_get_wtime();
+    T_init.start();
     init(pos, v1, v2, n1, n2);
-    elapsed_init[ithread] =  omp_get_wtime() - t0;
+    T_init.stop();
+    elapsed_init[ithread] =  T_init.elapsed();;
 
     #pragma omp single 
     if (n < 10000)
       save("sinus.dat", pos, v1, v2);
  
-    t0 = omp_get_wtime();
+    T_stat.start();
     stat(v1, v2, n1, n2, m, e);
-    elapsed_stat[ithread] =  omp_get_wtime() - t0;
+    T_stat.stop();
+    elapsed_stat[ithread] =  T_stat.elapsed();
   }
 
   m = m/n;
@@ -132,6 +133,8 @@ int main(int argc, char **argv)
   for (int i=0; i<nthreads; i++)
     std::cout << "time (thread " << i << ") : init " << elapsed_init[i]
               << "s stat " << elapsed_stat[i] << std::endl;
-  
+
+  T_total.stop();
+  std::cout << "time : " << T_total.elapsed() << std::endl;
   return 0;
 }

@@ -15,16 +15,17 @@ if (CMAKE_VERSION VERSION_LESS "3.1")
   endif ()
 else ()
   set (CMAKE_CXX_STANDARD 11)
+  set (CMAKE_INSTALL_MESSAGE LAZY)
 endif ()
 
-include(FindOpenMP)
-include(FindMPI)
+find_package(OpenMP)
+find_package(MPI)
 
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d seq openmp mpi hybrid_1)
+foreach(d seq openmp mpi mpi_openmp)
    add_subdirectory(sinus_${d})
 endforeach()
 
