@@ -3,6 +3,8 @@
 
 #ifdef _OPENMP
 #include <omp.h>
+#elif __cpluplus <= 199711L
+#include <sys/time.h>
 #else
 #include <chrono>
 #endif
@@ -17,6 +19,8 @@ class Timer {
     if (not m_running) {
 #ifdef _OPENMP
       m_start = omp_get_wtime();
+#elif __cpluplus <= 199711L
+      gettimeofday(&m_start, NULL);
 #else
       m_start = std::chrono::high_resolution_clock::now();
 #endif
@@ -29,6 +33,10 @@ class Timer {
 #ifdef _OPENMP
       m_end = omp_get_wtime();
       m_elapsed += m_end - m_start;
+#elif __cplusplus <= 199711L
+      gettimeofday(&m_end  , NULL);
+      m_elapsed += (m_end.tv_sec - m_start.tv_sec) 
+                + 1e-6 * (m_end.tv_usec - m_start.tv_usec);
 #else
       m_end = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = m_end-m_start;
@@ -42,7 +50,9 @@ class Timer {
   protected:
   
 #ifdef _OPENMP
-  double m_start, m_end;
+    double m_start, m_end;
+#elif __cplusplus <= 199711L
+    struct timeval m_start, m_end;
 #else
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start, m_end;
 #endif
