@@ -3,7 +3,7 @@
 
 #ifdef _OPENMP
 #include <omp.h>
-#elif __cpluplus <= 199711L
+#elif __cplusplus <= 199711L
 #include <sys/time.h>
 #else
 #include <chrono>
@@ -19,7 +19,7 @@ class Timer {
     if (not m_running) {
 #ifdef _OPENMP
       m_start = omp_get_wtime();
-#elif __cpluplus <= 199711L
+#elif __cplusplus <= 199711L
       gettimeofday(&m_start, NULL);
 #else
       m_start = std::chrono::high_resolution_clock::now();
