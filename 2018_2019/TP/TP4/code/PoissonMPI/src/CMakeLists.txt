@@ -19,18 +19,23 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include(FindOpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
+if (CMAKE_VERSION VERSION_LESS "3.1")
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+  else ()
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  endif ()
+else ()
+  set (CMAKE_CXX_STANDARD 11)
+endif ()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(
-  util
-  )
 
+find_package(MPI)
+include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
+
+add_definitions("-DUSE_MPI")
 add_executable(
   ${VERSION} 
   main.cxx
@@ -45,6 +50,7 @@ add_executable(
 target_link_libraries(
    ${VERSION}
    util
+   ${MPI_CXX_LIBRARIES}
 )
 
 
