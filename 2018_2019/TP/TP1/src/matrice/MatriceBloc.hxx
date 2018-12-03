@@ -14,8 +14,8 @@
 class MatriceBloc {
 public:
 	MatriceBloc(int n=0, int m=0, int p=1, int q=1, const char *name = "") : m_n(n), m_m(m), m_p(p), m_q(q), m_coefs(n*m), m_name(name){
-	   for(auto &e : m_coefs)
-		   e.resize(p, q);
+	for (int i=0; i<n*m; i++)
+		   m_coefs[i].resize(p, q);
 	}
   
   int n() const { return m_n; }

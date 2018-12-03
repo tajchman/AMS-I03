@@ -76,10 +76,10 @@ void print_times(const std::vector<int> & binds,
   ymax += dy*0.1;
   ymin -= dy*0.1;
   
-  std::ofstream f("res_times");
+  std::ofstream f("r_times");
 
   f << "set terminal pdf\n"
-    << "set output 'res_times.pdf'\n";
+    << "set output 'r_times.pdf'\n";
 
   f << "set xrange[" << xmin << ":" << xmax << "]\n" 
     << "set yrange[" << ymin << ":" << ymax << "]\n";
@@ -224,6 +224,8 @@ int main(int argc, char **argv)
               << std::setw(9) << elapsed_init[i] << "s "
               << " stat (thread " << thread_task_stat[i] << ") "
               << std::setw(9) << elapsed_stat[i] << std::endl;
+
+  std::cout << "time :" << omp_get_wtime() - t0 << std::endl;
 
   print_times(thread_task_init, task_start_init, task_end_init, t0);
   return 0;

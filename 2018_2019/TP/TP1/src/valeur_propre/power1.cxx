@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include <ctime>
@@ -12,7 +13,7 @@ void init(Matrice &A, Vecteur & V)
 {
   int i, j, n = V.size();
   
-  std::srand(std::time(nullptr));
+  std::srand(std::time(NULL));
   
   for (i=0; i<n; i++)
     V(i) = std::rand();
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
   Timer t_total;
   t_total.start();
 
-  int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 3000;
+  int n = argc > 1 ? strtol(argv[1], NULL, 10) : 3000;
 
   {
     Timer t;

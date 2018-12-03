@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include "Matrice.hxx"
@@ -16,10 +17,10 @@ int main(int argc, char **argv)
   Timer t_total;
   t_total.start();
 
-  int n = argc > 1 ? strtol(argv[1], nullptr, 10) : 10000;
-  int m = argc > 2 ? strtol(argv[2], nullptr, 10) : n;
-  int p = argc > 3 ? strtol(argv[3], nullptr, 10) : 50;
-  int q = argc > 4 ? strtol(argv[4], nullptr, 10) : p;
+  int n = argc > 1 ? strtol(argv[1], NULL, 10) : 10000;
+  int m = argc > 2 ? strtol(argv[2], NULL, 10) : n;
+  int p = argc > 3 ? strtol(argv[3], NULL, 10) : 50;
+  int q = argc > 4 ? strtol(argv[4], NULL, 10) : p;
 
   std::cerr << "transpose 3 : taille matrice = (" << n << ", " << m 
             << ") bloc = " << "(" << p << "x" << q << ")" << std::endl;
