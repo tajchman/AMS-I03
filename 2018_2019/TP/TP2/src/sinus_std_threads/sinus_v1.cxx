@@ -10,27 +10,7 @@
 
 #include <thread>
 
-int imax;
-
-double sinus_taylor(double x)
-{
-  double y = x, x2 = x*x;
-   int i, m;
-   double coef = x;
-   for (i=1; i<imax; i++) {
-     m = 2*i*(2*i+1);
-     coef *= -x2/m;
-     y += coef;
-     if (std::abs(coef) < 1e-12) break;
-   }
-   return y;
-}
-
-double sinus_machine(double x)
-{
-  double y = sin(x);
-  return y;
-}
+#include "sin.hxx"
 
 void init_partiel(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -144,10 +124,10 @@ int main(int argc, char **argv)
     : std::thread::hardware_concurrency();
   
   size_t n = argc > 2 ? strtol(argv[2], nullptr, 10) : 2000;
-  
-  imax = argc > 3 ? strtol(argv[3], nullptr, 10) : 6;
+  int imax = argc > 3 ? strtol(argv[3], nullptr, 10) : IMAX;
+  set_terms(imax); 
 
-  std::cout << "\n\nversion 3 : \n\t" << nthreads << " thread(s)\n"
+  std::cout << "\n\nversion std::threads 1 : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
             << "\ttermes (formule Taylor) : " << imax
             << std::endl;

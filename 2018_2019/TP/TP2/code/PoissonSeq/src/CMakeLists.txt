@@ -42,4 +42,4 @@ target_link_libraries(
    util
 )
 
-
+install(TARGETS ${VERSION} DESTINATION .)

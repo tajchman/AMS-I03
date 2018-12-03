@@ -50,10 +50,8 @@ void save(const char *filename,
 void stat(const std::vector<double> & v1,
           const std::vector<double> & v2,
           int n1, int n2,
-          double & somme1, double & somme2)
+          double & sum1, double & sum2)
 {
-  int ithread = ITHREAD;
-
   double s1 = 0.0, s2 = 0.0, err;
   int i;
   for (i=n1; i<n2; i++) {
@@ -63,10 +61,10 @@ void stat(const std::vector<double> & v1,
   }
 
 #pragma omp atomic
-  somme1 += s1;
+  sum1 += s1;
 
 #pragma omp atomic
-  somme2 += s2;
+  sum2 += s2;
 }
 
 int main(int argc, char **argv)

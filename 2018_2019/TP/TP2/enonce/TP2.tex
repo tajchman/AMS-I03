@@ -46,7 +46,7 @@ Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résulta
     
     Exécuter le code en tapant 
     \begin{script}
-		./build/sinus\_seq/sinus\_seq
+		./build/sinus\_seq/sinus\_seq 5000
 	\end{script}
 
     Tracer le graphe des résultats et le visualiser en tapant
@@ -72,7 +72,7 @@ Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résulta
 	Compiler, exécuter le code en utilisant 3 threads et tracer les résultats en tapant 
 \begin{script}
 	make -C build sinus\_openmp\_1
-	OMP\_NUM\_THREADS=3 ./build/sinus\_openmp\_1/sinus\_openmp\_1
+	OMP\_NUM\_THREADS=3 ./build/sinus\_openmp\_1/sinus\_openmp\_1 5000
 	./trace.sh
 \end{script}
     Relancer l'exécution et le tracé ci-dessus 3 ou 4 fois. Constater que les résultats sont (visuellement) similaires au cas séquentiel.
@@ -83,27 +83,27 @@ Un script de commande unix {\tt trace.sh} est fourni pour visualiser les résulta
 	\begin{itemize}
 		\item la version séquentielle 
 		\begin{script}
-			./build/sinus\_seq/sinus\_seq 10000000
+			./build/sinus\_seq/sinus\_seq 100000
 		\end{script}
 		\item la version multi-threads en utilisant 1 thread
 		\begin{script}
 	OMP\_NUM\_THREADS=1 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 100000
 		\end{script}
 		\item la version multi-threads en utilisant 2 threads
 		\begin{script}
 	OMP\_NUM\_THREADS=2 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 100000
 \end{script}
 		\item la version multi-threads en utilisant 3 threads
 		\begin{script}
 	OMP\_NUM\_THREADS=3 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 100000
 \end{script}
 		\item la version multi-threads en utilisant 4 threads
 		\begin{script}
 	OMP\_NUM\_THREADS=4 \textbackslash
-	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 10000000
+	\quad ./build/sinus\_openmp\_1/sinus\_openmp\_1 100000
 \end{script}
 	\end{itemize}
 	Interpréter les résultats.	
@@ -216,14 +216,14 @@ Une seconde version se trouve dans le répertoire {\tt code/PoissonOpenMP} que vo
 
 \item Ajouter ou modifier la(les) directive(s) OpenMP pour paralléliser cette partie si possible.
 
-\item Recompiler le code. Il suffit de se placer dans {\tt code/PoissonOpenMP} et de taper :
+\item Recompiler le code. Il suffit de taper (dans {\tt code/PoissonOpenMP}) :
 \begin{script}
         make -C build
 \end{script}
 
 \item Exécuter plusieurs fois le code sur 1, 2, 3 et 4 threads.
 
-\item Comparer les résultats et temps calcul affichés avec ceux de la version séquentielle. Si les résultats sont différents, c'est qu'il y a une erreur dans les intractions de parallélisation. Corriger et reprendre en 3.
+\item Comparer les résultats et temps calcul affichés avec ceux de la version séquentielle. Si les résultats sont différents, c'est qu'il y a une erreur dans les instructions de parallélisation. Corriger et reprendre en 3.
 \end{enumerate}
 \end{question}
 

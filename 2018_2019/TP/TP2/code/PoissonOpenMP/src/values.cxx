@@ -144,10 +144,9 @@ void Values::plot(int order) const {
 void Values::operator= (const Values &other)
 {
   int i;
-  size_t nn = 1;
   
   for (i=0; i<3; i++)
-    nn *= (m_n[i] = other.m_n[i]);
+    m_n[i] = other.m_n[i];
   
   m_u = other.m_u;
 }

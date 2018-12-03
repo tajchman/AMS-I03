@@ -7,9 +7,9 @@
 
 Scheme::Scheme(const Parameters *P) :
   codeName("Poisson_OpenMP"), m_u(P), m_v(P), m_timers(3)  {
-   m_timers[0].name("init");
-   m_timers[1].name("solve");
-   m_timers[2].name("other");
+   m_timers[0].name() = "init";
+   m_timers[1].name() = "solve";
+   m_timers[2].name() = "other";
    m_duv = 0.0;
    m_P = P;
    m_t = 0.0;

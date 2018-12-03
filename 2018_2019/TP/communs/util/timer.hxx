@@ -1,6 +1,8 @@
 #ifndef _TIMER_HXX
 #define _TIMER_HXX
 
+#include <string>
+
 #ifdef _OPENMP
 #include <omp.h>
 #elif __cplusplus <= 199711L
@@ -10,10 +12,14 @@
 #endif
 
 class Timer {
-  public:
-    Timer() : m_elapsed(0.0), m_running(false) {}
+public:
+  Timer(const char * s = 0L) : m_elapsed(0.0), m_running(false) {
+    m_name = s ? s : "";
+  }
   
-    inline void reinit() { m_elapsed = 0.0; m_running = false; }
+  inline void reinit() { m_elapsed = 0.0; m_running = false; }
+ 
+  std::string & name() { return m_name; }
   
   void start() {
     if (not m_running) {
@@ -36,7 +42,7 @@ class Timer {
 #elif __cplusplus <= 199711L
       gettimeofday(&m_end  , NULL);
       m_elapsed += (m_end.tv_sec - m_start.tv_sec) 
-                + 1e-6 * (m_end.tv_usec - m_start.tv_usec);
+	+ 1e-6 * (m_end.tv_usec - m_start.tv_usec);
 #else
       m_end = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> diff = m_end-m_start;
@@ -46,18 +52,20 @@ class Timer {
     }
   }
   
-    inline double elapsed() { return m_elapsed; }
-  protected:
+  inline double elapsed() { return m_elapsed; }
+  
+protected:
   
 #ifdef _OPENMP
-    double m_start, m_end;
+  double m_start, m_end;
 #elif __cplusplus <= 199711L
-    struct timeval m_start, m_end;
+  struct timeval m_start, m_end;
 #else
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_start, m_end;
+  std::chrono::time_point<std::chrono::high_resolution_clock> m_start, m_end;
 #endif
-    double m_elapsed;
-    bool m_running;
+  double m_elapsed;
+  bool m_running;
+  std::string m_name;
 };
 
 #endif

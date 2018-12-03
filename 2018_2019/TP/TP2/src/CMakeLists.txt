@@ -19,7 +19,7 @@ endif ()
 
 include(FindOpenMP)
 
-include_directories(${CMAKE_SOURCE_DIR}/util)
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 

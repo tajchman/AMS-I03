@@ -133,7 +133,7 @@ int main(int argc, char **argv)
   int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
 
-  int ntasks = 5*nthreads;
+  int ntasks = 10*nthreads;
   std::cout << "\n\nversion OpenMP tasks : \n\t" << nthreads << " thread(s)"
             << "  " << ntasks << " tasks\n"
             << "\ttaille vecteur = " << n << "\n"

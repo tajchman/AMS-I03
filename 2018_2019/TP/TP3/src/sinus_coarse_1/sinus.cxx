@@ -16,6 +16,7 @@
 #endif
 
 #include "sin.hxx"
+#include "timer.hxx"
 
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -25,12 +26,6 @@ void init(std::vector<double> & pos,
   double x, pi = 3.14159265;
   int i, n = pos.size();
 
-#pragma omp single
-  {
-    v1.resize(n);
-    v2.resize(n);
-  }
-  
   for (i=n1; i<n2; i++) {
     x = i*2*pi/n;
     pos[i] = x;
@@ -55,9 +50,8 @@ void save(const char *filename,
 void stat(const std::vector<double> & v1,
           const std::vector<double> & v2,
           int n1, int n2,
-          double & somme1, double & somme2)
+          double & sum1, double & sum2)
 {
-
   double s1 = 0.0, s2 = 0.0, err;
   int i;
 
@@ -68,14 +62,17 @@ void stat(const std::vector<double> & v1,
   }
 
 #pragma omp atomic
-  somme1 += s1;
+  sum1 += s1;
 
 #pragma omp atomic
-  somme2 += s2;
+  sum2 += s2;
 }
 
 int main(int argc, char **argv)
 {
+  Timer T_total;
+  T_total.start();
+  
   int nthreads;
   #pragma omp parallel
   {
@@ -103,7 +100,7 @@ int main(int argc, char **argv)
   n_start[nthreads-1] = (nthreads-1)*dn;
   n_end[nthreads-1] = n;
      
-  std::vector<double> pos(n), v1, v2;
+  std::vector<double> pos(n), v1(n), v2(n);
   double m, e;
 
   m = 0;
@@ -113,20 +110,25 @@ int main(int argc, char **argv)
   
 #pragma omp parallel shared(pos, v1, v2, n)
   {
+    Timer T_init, T_stat;
     int ithread = ITHREAD;
     int n1 = n_start[ithread], n2 = n_end[ithread];
     
-    double t0 = omp_get_wtime();
+    T_init.start();
     init(pos, v1, v2, n1, n2);
-    elapsed_init[ithread] =  omp_get_wtime() - t0;
+    T_init.stop();
+    elapsed_init[ithread] =  T_init.elapsed();
 
-    #pragma omp single 
-    if (n < 10000)
-      save("sinus.dat", pos, v1, v2);
- 
-    t0 = omp_get_wtime();
+    #pragma omp single
+    {
+      if (n < 10000)
+        save("sinus.dat", pos, v1, v2);
+    }
+
+    T_stat.start();
     stat(v1, v2, n1, n2, m, e);
-    elapsed_stat[ithread] =  omp_get_wtime() - t0;
+    T_stat.stop();
+    elapsed_stat[ithread] =  T_stat.elapsed();
   }
 
   m = m/n;
@@ -139,5 +141,8 @@ int main(int argc, char **argv)
     std::cout << "time (thread " << i << ") : init " << elapsed_init[i]
               << "s stat " << elapsed_stat[i] << std::endl;
   
+  T_total.stop();
+  std::cout << "time : "
+            << std::setw(12) << T_total.elapsed() << " s" << std::endl;  
   return 0;
 }
