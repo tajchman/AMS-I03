@@ -12,5 +12,9 @@ fi
 MODE=Release
 mkdir -p $DIR/build
 cd $DIR/build
+
+export CC=gcc
+export CXX=g++
+
 cmake -DCMAKE_BUILD_TYPE=${MODE} -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
 make -j install
