@@ -1,5 +1,3 @@
-#include "timer.hxx"
-#include "keyPress.hxx"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -10,7 +8,17 @@
 
 #include <mpi.h>
 
+#ifdef _OPENMP
+#include <omp.h>
+#define NTHREADS omp_get_num_threads()
+#define ITHREAD  omp_get_thread_num()
+#else
+#define NTHREADS 1
+#define ITHREAD  0
+#endif
+
 #include "sin.hxx"
+#include "timer.hxx"
 
 void init(std::vector<double> & pos,
           std::vector<double> & v1,
@@ -69,8 +77,8 @@ void stat(const std::vector<double> & v1,
     s2 += err*err;
   }
 
-  sum1 += s1;
-  sum2 += s2;
+  sum1 = s1;
+  sum2 = s2;
 }
 
 int main(int argc, char **argv)
@@ -78,24 +86,39 @@ int main(int argc, char **argv)
   Timer T_total;
   T_total.start();
 
+  int nthreads;
+  #pragma omp parallel
+  {
+    #pragma omp master
+    nthreads = NTHREADS;
+  }
+
   size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
   int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
+  set_terms(imax);
   
   int nprocs, iproc;
   
   int required = MPI_THREAD_FUNNELED, provided;
   MPI_Init_thread(&argc, &argv, required, &provided);
-  
+  if (provided < required) {
+     std::cerr << "Interaction MPI - OpenMP insuffisante" << std::endl;
+     MPI_Finalize();
+     return -1;
+  }
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &iproc);
 
-  int dn = n/nprocs;
-  int n1_MPI = dn * iproc, n2_MPI = (iproc < nprocs-1) ? n1_MPI + dn : n;
+  int dn_MPI = n/nprocs;
+  int n1_MPI = dn_MPI * iproc;
+  int n2_MPI = (iproc < nprocs-1) ? n1_MPI + dn_MPI : n;
+  dn_MPI = n2_MPI - n1_MPI;
   
   set_terms(imax);
 
   if (iproc == 0)
-    std::cout << "\n\nversion mpi : \n"
+    std::cout << "\n\nversion mpi - openmp (fine grain) : \n"
+              << "\t" << nprocs << " processus MPI - " << nthreads << " threads/processus\n"
               << "\ttaille vecteur = " << n << "\n"
               << "\ttermes (formule Taylor) : " << imax << "\n";
   MPI_Barrier(MPI_COMM_WORLD);
@@ -104,7 +127,7 @@ int main(int argc, char **argv)
 
   Timer t_init, t_stat;
 
-  std::vector<double> pos(n2_MPI-n1_MPI), v1(pos.size()), v2(pos.size());
+  std::vector<double> pos(dn_MPI), v1(pos.size()), v2(pos.size());
   double m, e, m_local, e_local;
   
   t_init.start();
@@ -136,15 +159,16 @@ int main(int argc, char **argv)
               << std::endl << std::endl;
   }
   
-  MPI_Finalize();
-    
   std::cout << "time init (rank " << iproc << ") : "
             << std::setw(12) << t_init.elapsed() << " s" << std::endl; 
   std::cout << "time stat (rank " << iproc << ") : "
             << std::setw(12) << t_stat.elapsed() << " s" << std::endl;
 
+  MPI_Finalize();
+
   T_total.stop();
-  std::cout << "time (rank " << iproc << ") : "
+  if (iproc == 0)
+    std::cout << "time : "
             << std::setw(12) << T_total.elapsed() << " s" << std::endl;  
   return 0;
 }

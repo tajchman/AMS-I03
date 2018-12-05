@@ -98,19 +98,26 @@ int main(int argc, char **argv)
   
   int nprocs, iproc;
   
-  MPI_Init(&argc, &argv);
-  
+  int required = MPI_THREAD_FUNNELED, provided;
+  MPI_Init_thread(&argc, &argv, required, &provided);
+  if (provided < required) {
+     std::cerr << "Interaction MPI - OpenMP insuffisante" << std::endl;
+     MPI_Finalize();
+     return -1;
+  }
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &iproc);
 
-  int dn_mpi = n/nprocs;
-  int n1_MPI = dn_mpi * iproc;
-  int n2_MPI = (iproc < nprocs-1) ? n1_MPI + dn_mpi : n;
-  
+  int dn_MPI = n/nprocs;
+  int n1_MPI = dn_MPI * iproc;
+  int n2_MPI = (iproc < nprocs-1) ? n1_MPI + dn_MPI : n;
+  dn_MPI = n2_MPI - n1_MPI;
+
+  set_terms(imax);
 
   if (iproc == 0)
-    std::cout << "\n\nversion mpi - openmp coarse : \n"
-	      << "\t " << nprocs << " process MPI, " << nthreads << " threads\n"
+    std::cout << "\n\nversion mpi - openmp (coarse grain) : \n"
+              << "\t" << nprocs << " processus MPI - " << nthreads << " threads/processus\n"
               << "\ttaille vecteur = " << n << "\n"
               << "\ttermes (formule Taylor) : " << imax << "\n";
   MPI_Barrier(MPI_COMM_WORLD);
@@ -120,15 +127,15 @@ int main(int argc, char **argv)
   std::vector<int> n_start(nthreads), n_end(nthreads);  
   int dn_openmp;
   
-  dn_openmp = dn_mpi/nthreads;
+  dn_openmp = dn_MPI/nthreads;
   for (int i=0; i<nthreads-1; i++) {
     n_start[i] = i * dn_openmp;
     n_end[i] = (i+1) * dn_openmp;
   }
   n_start[nthreads-1] = (nthreads-1)*dn_openmp;
-  n_end[nthreads-1] = dn_mpi;
+  n_end[nthreads-1] = dn_MPI;
      
-  std::vector<double> pos(dn_mpi), v1(dn_mpi), v2(dn_mpi);
+  std::vector<double> pos(dn_MPI), v1(pos.size()), v2(pos.size());
   double m, e, m_local, e_local;
 
   m = 0;
@@ -185,7 +192,8 @@ int main(int argc, char **argv)
 	      << std::setw(12) << elapsed_stat[i] << " s" << std::endl;
   }
   T_total.stop();
-  std::cout << "time (rank " << iproc << ") : "
+  if (iproc == 0)
+    std::cout << "time : "
             << std::setw(12) << T_total.elapsed() << " s" << std::endl;  
   return 0;
 }
