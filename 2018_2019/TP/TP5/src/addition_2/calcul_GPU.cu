@@ -36,7 +36,7 @@ Calcul_GPU::Calcul_GPU(std::size_t n) : m_n(n)
   std::cerr << "\t\ttemps init 1 : " << T1.elapsed() << std::endl;
   Timer T2; T2.start();
   
-  blockSize = 4096; 
+  blockSize = 1024; 
   gridSize = (int)ceil((float)n/blockSize);
   
   vecInit<<<gridSize, blockSize>>>(d_u, d_v, n);
