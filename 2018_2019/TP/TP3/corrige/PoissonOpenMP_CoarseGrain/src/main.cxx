@@ -55,9 +55,11 @@ int main(int argc, char *argv[])
 
     int i;
     for (i=0; i<nsteps; i++) {
-	    C.solve(ksteps);
-	    if (output) C.getOutput().plot(i);
-    }
+      C.solve(ksteps);
+#pragma omp single
+      {
+	if (output) C.getOutput().plot(i);
+      }
   }
 
   if (Prm.convection())

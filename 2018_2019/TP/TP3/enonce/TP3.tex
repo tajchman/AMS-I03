@@ -92,12 +92,12 @@ L'algorithme d'équilibrage de charge utilisé ici n'est pas optimal. Vous êtes en
 \vfill\eject
 \section{Parallélisation du (mini-)code avec le modèle OpenMP ``grain grossier''}
 
-Le répertoire {code/PoissonOpenMP\_CoarseGrain} contient la version du code parallélisé par de l'OpenMP ``grain fin''.
+Le répertoire {\tt code/PoissonOpenMP\_FineGrain} contient la version du code parallélisé par de l'OpenMP ``grain fin'' (tel qu'obtenu à la fin du TP précédent).
 
 \begin{question}
-Remplacer la parallélisation ``grain fin'' par le modèle ``gros grain'' (sans perte de charge).
+Dans le répertoire {\tt PoissonOpenMP\_CoarseGrain}, modifier les fichiers source pour obtenir une version avec de l'OpenMP ``gros grain'' (sans équilibrage de charge).
 
-\textbf{Les fichiers source, que vous avez modifiés, seront à fournir avant la fin de la semaine suivante et vous seront renvoyés commentés et notés. La note obtenue pourra améliorer la note finale suivant les modalités précisées au premier cours.}
+\textbf{Les fichiers source, que vous avez modifiés, seront à fournir avant le début de la séance suivante et vous seront renvoyés commentés et notés. La note obtenue pourra améliorer la note finale suivant les modalités précisées au premier cours.}
 \end{question}
 
 \section{Parallélisation en utilisant le concept de tâches OpenMP}

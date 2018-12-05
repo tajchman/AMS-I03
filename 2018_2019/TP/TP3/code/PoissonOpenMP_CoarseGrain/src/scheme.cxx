@@ -6,10 +6,10 @@
 
 
 Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_OpenMP_CoarseGrain"), m_u(P), m_v(P), m_timers(3)  {
-   m_timers[0].name("init");
-   m_timers[1].name("solve");
-   m_timers[2].name("other");
+   codeName("Poisson_OpenMP"), m_u(P), m_v(P), m_timers(3)  {
+   m_timers[0].name() = "init";
+   m_timers[1].name() = "solve";
+   m_timers[2].name() = "other";
    m_duv = 0.0;
    m_P = P;
    m_t = 0.0;
@@ -67,26 +67,25 @@ size_t Scheme::getDomainSize(int dim) const
   return d;
 }
 
-bool Scheme::iteration()
+double Scheme::iteration()
 {
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
   double du, du_sum;
+  int ith = omp_get_thread_num();
+  int imin = m_P->thread_imin(0, ith) ;
+  int jmin = m_P->thread_imin(1, ith) ;
+  int kmin = m_P->thread_imin(2, ith) ;
 
-  int imin = m_P->imin(0) ;
-  int jmin = m_P->imin(1) ;
-  int kmin = m_P->imin(2) ;
-
-  int imax = m_P->imax(0) ;
-  int jmax = m_P->imax(1) ;
-  int kmax = m_P->imax(2) ;
+  int imax = m_P->thread_imax(0, ith) ;
+  int jmax = m_P->thread_imax(1, ith) ;
+  int kmax = m_P->thread_imax(2, ith) ;
 
   du_sum = 0.0;
-    
-#pragma omp parallel for default(shared), private(i,j,k,du), reduction(+:du_sum) 
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
+   
         du = 6 * m_u(i, j, k)
           - m_u(i + di, j, k) - m_u(i - di, j, k)
           - m_u(i, j + dj, k) - m_u(i, j - dj, k)
@@ -96,8 +95,7 @@ bool Scheme::iteration()
           du_sum += du > 0 ? du : -du;
       }
 
-    m_duv = du_sum;
-    return true;
+  return du_sum;
 }
 
 bool Scheme::solve(unsigned int nSteps)
@@ -107,27 +105,40 @@ bool Scheme::solve(unsigned int nSteps)
 
   for (iStep=0; iStep < nSteps; iStep++) {
 
-    m_timers[1].start();
+#pragma omp master
+    {
+      m_timers[1].start();
+    }
+
+#pragma omp single
+    {
+      m_duv = 0.0;
+    }
+
+    double du_partiel = iteration();
+
+#pragma omp atomic
+    m_duv += du_partiel;
     
-    iteration();
+#pragma omp barrier 
+#pragma omp master
+    {
+      m_t += m_dt;
+      m_u.swap(m_v);
+      m_timers[1].stop();
+      m_timers[2].start();
+      std::cerr << " iteration " << std::setw(4) << kStep
+                << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
+      size_t i, n = m_timers.size();
+      std::cerr << " (times :";
+      for (i=0; i<n; i++)
+        std::cerr << " " << std::setw(5) << m_timers[i].name()
+	          << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
+      std::cerr	  << ")   \n";
+      m_timers[2].stop();
 
-    m_t += m_dt;
-
-    m_u.swap(m_v);
-
-    m_timers[1].stop();
-    m_timers[2].start();
-    std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
-    size_t i, n = m_timers.size();
-    std::cerr << " (times :";
-    for (i=0; i<n; i++)
-      std::cerr << " " << std::setw(5) << m_timers[i].name()
-	        << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
-    std::cerr	  << ")   \n";
-    m_timers[2].stop();
-
-    kStep++;
+      kStep++;
+    }
   }
   return true;
 }

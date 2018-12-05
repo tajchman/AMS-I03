@@ -67,8 +67,8 @@ void stat(const std::vector<double> & v1,
     s2 += err*err;
   }
 
-  sum1 += s1;
-  sum2 += s2;
+  sum1 = s1;
+  sum2 = s2;
 }
 
 int main(int argc, char **argv)
@@ -93,6 +93,7 @@ int main(int argc, char **argv)
 
   if (iproc == 0)
     std::cout << "\n\nversion mpi : \n"
+              << "\t" << nprocs << " processus MPI\n"
               << "\ttaille vecteur = " << n << "\n"
               << "\ttermes (formule Taylor) : " << imax << "\n";
   MPI_Barrier(MPI_COMM_WORLD);
@@ -133,15 +134,16 @@ int main(int argc, char **argv)
               << std::endl << std::endl;
   }
   
-  MPI_Finalize();
-    
   std::cout << "time init (rank " << iproc << ") : "
             << std::setw(12) << t_init.elapsed() << " s" << std::endl; 
   std::cout << "time stat (rank " << iproc << ") : "
             << std::setw(12) << t_stat.elapsed() << " s" << std::endl;
 
+  MPI_Finalize();
+
   T_total.stop();
-  std::cout << "time (rank " << iproc << ") : "
-            << std::setw(12) << T_total.elapsed() << " s" << std::endl;  
+  if (iproc == 0)
+    std::cout << "time : "
+              << std::setw(12) << T_total.elapsed() << " s" << std::endl;  
   return 0;
 }

@@ -19,16 +19,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if (CMAKE_VERSION VERSION_LESS "3.1")
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-  else ()
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif ()
-else ()
-  set (CMAKE_CXX_STANDARD 11)
-endif ()
-
 include(FindOpenMP)
 if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -37,10 +27,8 @@ endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_subdirectory(timer)
-
 include_directories(
-  timer
+  util
   )
 
 add_executable(
@@ -56,7 +44,7 @@ add_executable(
 
 target_link_libraries(
    ${VERSION}
-   timer
+   util
 )
 
-
+install(TARGETS ${VERSION} DESTINATION .)

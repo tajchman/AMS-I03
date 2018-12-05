@@ -29,7 +29,7 @@ public:
   
 private:
   
-  Values(const Values &) = delete;
+  Values(const Values &);
   int n1, n2;
   std::vector<double> m_u;
   int m_n[3];

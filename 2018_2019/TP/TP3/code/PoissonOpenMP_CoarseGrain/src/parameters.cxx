@@ -39,7 +39,7 @@ void stime(char * buffer, int size)
 
 Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
-  m_out = nullptr;
+  m_out = NULL;
   m_help = options_contain("h") or long_options_contain("help");
 
   m_command = (*argv)[0];
@@ -82,6 +82,30 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
         m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+      }
+      
+      m_thread_imin[i] = new int[m_nthreads];
+      m_thread_imax[i] = new int[m_nthreads];
+      
+      
+      if (i == 0) {
+        int d =  (m_imax[0] - m_imin[0] + m_nthreads)/m_nthreads, dd;
+        if (d == 0) d = 1;
+        m_thread_imin[0][0] = m_imin[0];
+        m_thread_imax[0][0] = m_imin[0] + d;
+        for (j=1; j<m_nthreads; j++) {
+          m_thread_imin[0][j] = m_thread_imax[0][j-1];
+          m_thread_imax[0][j] = m_thread_imin[0][j] + d;
+          if (m_thread_imax[0][j] > m_imax[0])
+            m_thread_imax[0][j] = m_imax[0];
+        }
+        m_thread_imax[0][m_nthreads-1] = m_imax[0];
+      }
+      else {
+        for (j=0; j<m_nthreads; j++) {
+          m_thread_imin[i][j] = m_imin[i];
+          m_thread_imax[i][j] = m_imax[i];
+        }
       }
     }
   }

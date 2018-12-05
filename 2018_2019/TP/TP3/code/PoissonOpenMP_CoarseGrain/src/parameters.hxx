@@ -21,6 +21,8 @@ public:
 
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
+  int thread_imin(int i, int ith) const { return m_thread_imin[i][ith]; }
+  int thread_imax(int i, int ith) const { return m_thread_imax[i][ith]; }
   int di(int i) const { return m_di[i]; }
   
   int itmax() const { return m_itmax; }
@@ -47,6 +49,7 @@ private:
   int m_n[3];
   double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];
+  int *m_thread_imin[3], *m_thread_imax[3];
   
   int m_itmax;
   double m_dt;
