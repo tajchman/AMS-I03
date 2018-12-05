@@ -47,8 +47,40 @@ void save(const char *filename,
   int i, n = pos.size();
   for (i=0; i<n; i++)
     f << pos[i] << " " << v1[i] << " " << v2[i] << std::endl;
+  
+  std::ofstream t("sinus.gnp");
+  t << "set output 'sinus.pdf'\n"
+    << "set term pdf\n"
+    << "plot 'sinus.dat' using 1:2 notitle w l lw 3, 'sinus.dat' using ($1):($3+0.03) notitle w l lw 3";
+  
+  t << std::endl;
 }
 
+void save(const char *filename,
+	  std::vector<double> & pos,
+	  std::vector<double> & v1,
+	  std::vector<double> & v2,
+          int iproc, int nprocs)
+{
+  std::ofstream f(filename);
+
+  f  << "# x sin(systeme) approximation" << std::endl;
+  int i, n = pos.size();
+  for (i=0; i<n; i++)
+    f << pos[i] << " " << v1[i] << " " << v2[i] << std::endl;
+
+  if (iproc == 0) {
+    std::ofstream t("sinus_mpi.gnp");
+    t << "set output 'sinus_mpi.pdf'\n"
+      << "set term pdf\n"
+      << "plot ";
+    for (int i=0; i<nprocs; i++) {
+      if (i > 0) t << ", ";
+      t << "'sinus_" << i << ".dat' using 1:2 notitle w l lw 3";
+    }
+    t << std::endl;
+  }
+}
 void stat(const std::vector<double> & v1,
           const std::vector<double> & v2,
           double & moyenne, double & ecart_type)
@@ -69,6 +101,9 @@ void stat(const std::vector<double> & v1,
 
 int main(int argc, char **argv)
 {
+  double t0, t0_total;
+  t0_total = omp_get_wtime();
+
   int nthreads;
   #pragma omp parallel
   {
@@ -80,7 +115,7 @@ int main(int argc, char **argv)
   int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
 
-  double elapsed_init, elapsed_stat;
+  double elapsed_init, elapsed_stat, elapsed_total;
 
   std::cout << "\n\nversion OpenMP fin : \n\t" << nthreads << " thread(s)\n"
             << "\ttaille vecteur = " << n << "\n"
@@ -90,7 +125,7 @@ int main(int argc, char **argv)
   std::vector<double> pos(n), v1, v2;
   double m, e;
   
-  double t0 = omp_get_wtime();
+  t0 = omp_get_wtime();
   init(pos, v1, v2);
   elapsed_init = omp_get_wtime() - t0;
 
@@ -109,5 +144,8 @@ int main(int argc, char **argv)
   std::cout << "time stat : "
             << std::setw(12) << elapsed_stat << " s" << std::endl;
   
+  elapsed_total = omp_get_wtime() - t0_total;
+  std::cout << "time      : "
+            << std::setw(12) << elapsed_total << " s" << std::endl;  
   return 0;
 }

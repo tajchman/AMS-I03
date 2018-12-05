@@ -1,5 +1,4 @@
 #include "timer.hxx"
-#include "keyPress.hxx"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -14,16 +13,17 @@ void init(std::vector<double> & pos,
           std::vector<double> & v1,
           std::vector<double> & v2)
 {
-  double pi = 3.14159265;
+  double x, pi = 3.14159265;
   int i, n = pos.size();
 
   v1.resize(n);
   v2.resize(n);
 
   for (i=0; i<n; i++) {
-    pos[i] = i*2*pi/n;
-    v1[i] = sinus_machine(pos[i]);
-    v2[i] = sinus_taylor(pos[i]);
+    x = i*2*pi/n;
+    pos[i] = x;
+    v1[i] = sinus_machine(x);
+    v2[i] = sinus_taylor(x);
   }
 }
 
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
   Timer T_total;
   T_total.start();
 
-  size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 20000000;
+  size_t n = argc > 1 ? strtol(argv[1], nullptr, 10) : 2000;
   int imax = argc > 2 ? strtol(argv[2], nullptr, 10) : IMAX;
   set_terms(imax);
 

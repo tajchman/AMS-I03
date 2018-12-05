@@ -9,7 +9,8 @@ then
    NPROCS=10
 fi
 
-  mkdir -p $DIR/build
-  cd $DIR/build
-  cmake -G "Eclipse CDT4 - Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
-  make -j
+mkdir -p $DIR/build
+cd $DIR/build
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src || exit -1
+make -j $NPROCS || exit -1
+make install  
