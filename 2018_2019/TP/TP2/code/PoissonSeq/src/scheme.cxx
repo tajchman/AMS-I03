@@ -1,12 +1,13 @@
 #include "scheme.hxx"
 #include "parameters.hxx"
+#include "version.hxx"
 
 #include <sstream>
 #include <iomanip>
 
 
 Scheme::Scheme(const Parameters *P) :
-   codeName("Poisson_Seq"), m_u(P), m_v(P), m_timers(3)  {
+   codeName(version), m_u(P), m_v(P), m_timers(3)  {
    m_timers[0].name() = "init";
    m_timers[1].name() = "solve";
    m_timers[2].name() = "other";

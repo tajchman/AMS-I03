@@ -29,6 +29,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(
   util
+  ${CMAKE_BUILD_DIR}
   )
 
 add_executable(
@@ -48,3 +49,6 @@ target_link_libraries(
 )
 
 install(TARGETS ${VERSION} DESTINATION .)
+
+configure_file(version.hxx.in version.hxx @ONLY)
+
