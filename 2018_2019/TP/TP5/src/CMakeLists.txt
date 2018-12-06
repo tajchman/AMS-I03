@@ -14,7 +14,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/util)
 
 add_subdirectory(util)
 
-foreach(d 1 2)
+foreach(d 1 2 3)
    add_subdirectory(addition_${d})
 endforeach()
 
