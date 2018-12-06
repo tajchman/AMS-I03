@@ -1,6 +1,7 @@
 #include <iostream>
 #include "calcul.hxx"
 #include "timer.hxx"
+#include "reduction.h"
 
 __global__ void vecInit(double *a, double *b, int n)
 {
@@ -68,15 +69,7 @@ double Calcul_GPU::verification()
 {
   Timer T; T.start();
   
-  std::size_t bytes = m_n*sizeof(double);
-  std::vector<double> w(m_n);
-  cudaMemcpy(w.data(), d_w, bytes, cudaMemcpyDeviceToHost);
-
-  double s = 0;
-  std::size_t i;
-  for (i=0; i<m_n; i++)
-    s = s + w[i];
-  
+  s = reduce(m_n, blockSize, gridSize, d_w, d_tmp);  
   s = s/m_n - 1.0;
   
   T.stop();
