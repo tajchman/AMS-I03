@@ -33,6 +33,7 @@ Calcul_GPU::Calcul_GPU(std::size_t n) : m_n(n)
   CUDA_CHECK_OP(cudaMalloc(&d_u, bytes));
   CUDA_CHECK_OP(cudaMalloc(&d_v, bytes));
   CUDA_CHECK_OP(cudaMalloc(&d_w, bytes));
+  CUDA_CHECK_OP(cudaMalloc(&d_tmp, bytes));
     
   T1.stop();
   std::cerr << "\t\ttemps init 1 : " << T1.elapsed() << std::endl;
@@ -53,6 +54,7 @@ Calcul_GPU::~Calcul_GPU()
   cudaFree(d_u);
   cudaFree(d_v);
   cudaFree(d_w);
+  cudaFree(d_tmp);
 }
 
 void Calcul_GPU::addition()
@@ -71,7 +73,7 @@ double Calcul_GPU::verification()
   Timer T; T.start();
   
   double s;
-  s = reduce(m_n, blockSize, gridSize, d_w, d_tmp);  
+  s = reduce(m_n, d_w, d_tmp, blockSize, gridSize);  
   s = s/m_n - 1.0;
   
   T.stop();

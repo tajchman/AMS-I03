@@ -12,10 +12,10 @@
 #ifndef __REDUCTION_H__
 #define __REDUCTION_H__
 
-double reduce(int size,
-            int threads,
-            int blocks,
-            double *d_idata,
-            double *d_odata);
+double reduce(size_t n,
+	      double *d_idata,
+	      double *d_odata,
+	      int threads,
+	      int blocks);
 
 #endif

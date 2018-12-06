@@ -4,10 +4,7 @@
 #include "timer.hxx"
 
 int main(int argc, char **argv)
-{
-  Timer T_total;
-  T_total.start();
-  
+{  
   size_t i, n = argc > 1 ? strtol(argv[1], NULL, 10) : 20000000;
   
   Timer T_CPU, T_GPU;
@@ -30,16 +27,10 @@ int main(int argc, char **argv)
   T_GPU.stop();
   std::cout << "temps calcul GPU : " << T_GPU.elapsed() << std::endl;
   
-  std::cerr << "\nresultat : \n"
+  std::cerr << "\nerreurs : \n"
 	    << "\t CPU " << v1 << "\n"
 	    << "\t GPU " << v2 << "\n"
-    //	    << "\n\terreurs (u) : " << diff_u
-    //	    << "\n\terreurs (v) : " << diff_v
-    //	    << "\n\terreurs (w) : " << diff_w
 	    << std::endl;
   
-  T_total.stop();
-  std::cout << "\ntemps total : " << T_total.elapsed() << std::endl;
-
   return 0;
 }
