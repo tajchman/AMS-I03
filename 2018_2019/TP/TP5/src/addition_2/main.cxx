@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   T_GPU.stop();
   std::cout << "temps calcul GPU : " << T_GPU.elapsed() << std::endl;
   
-  std::cerr << "\nresultat : \n"
+  std::cerr << "\nerreurs : \n"
 	    << "\t CPU " << v1 << "\n"
 	    << "\t GPU " << v2 << "\n"
     //	    << "\n\terreurs (u) : " << diff_u

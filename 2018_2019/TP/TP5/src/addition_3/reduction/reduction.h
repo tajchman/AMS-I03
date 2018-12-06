@@ -12,7 +12,7 @@
 #ifndef __REDUCTION_H__
 #define __REDUCTION_H__
 
-void reduce(int size,
+double reduce(int size,
             int threads,
             int blocks,
             double *d_idata,

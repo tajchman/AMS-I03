@@ -9,7 +9,7 @@ then
    NPROCS=10
 fi
 
-MODE=Release
+MODE=Debug
 mkdir -p $DIR/build
 cd $DIR/build
 

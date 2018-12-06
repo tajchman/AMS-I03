@@ -45,6 +45,16 @@ double Calcul_CPU::verification()
   Timer T; T.start();
   
   std::size_t i, n = h_u.size();
+  for (i=0; i<n; i++)
+    std::cerr << "u[" << i << "] = " << h_u[i] << std::endl;
+  std::cerr << std::endl;
+  for (i=0; i<n; i++)
+    std::cerr << "v[" << i << "] = " << h_v[i] << std::endl;
+  std::cerr << std::endl;
+  for (i=0; i<n; i++)
+    std::cerr << "w[" << i << "] = " << h_w[i] << std::endl;
+  std::cerr << std::endl;
+
   double s = 0;
   for (i=0; i<n; i++)
     s += h_w[i];

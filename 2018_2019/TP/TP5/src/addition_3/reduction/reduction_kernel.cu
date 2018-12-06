@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <cooperative_groups.h>
+#include "cuda_check.cuh"
 
 namespace cg = cooperative_groups;
 
@@ -44,104 +45,105 @@ __global__ void reduce(double *g_idata, double *g_odata, unsigned int n)
   unsigned int i = blockIdx.x*blockSize*2 + threadIdx.x;
   unsigned int gridSize = blockSize*2*gridDim.x;
 
+  unsigned int i0 = i;
   double mySum = 0;
-
-  while (i < n)
-    {
-      mySum += g_idata[i];
-      
-      if (i + blockSize < n)
-        mySum += g_idata[i+blockSize];
-      
-      i += gridSize;
+  while (i < n) {
+    if (i0 < 10) printf ("i_data %d = %g\n", i, g_idata[i]);
+    mySum += g_idata[i];
+    
+    if (i + blockSize < n)
+      mySum += g_idata[i+blockSize];
+    
+    i += gridSize;
     }
-
-  // each thread puts its local sum into shared memory
-  sdata[tid] = mySum;
-  cg::sync(cta);
-
-
-  // do reduction in shared mem
-  if ((blockSize >= 512) && (tid < 256))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid + 256];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >= 256) &&(tid < 128))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid + 128];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >= 128) && (tid <  64))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid +  64];
-    }
-
-  cg::sync(cta);
-
-#if (__CUDA_ARCH__ >= 300 )
-  if ( tid < 32 )
-    {
-      cg::coalesced_group active = cg::coalesced_threads();
-
-      // Fetch final intermediate sum from 2nd warp
-      if (blockSize >=  64) mySum += sdata[tid + 32];
-      // Reduce final warp using shuffle
-      for (int offset = warpSize/2; offset > 0; offset /= 2) 
-        {
-          mySum += active.shfl_down(mySum, offset);
-        }
-    }
-#else
-  // fully unroll reduction within a single warp
-  if ((blockSize >=  64) && (tid < 32))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid + 32];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >=  32) && (tid < 16))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid + 16];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >=  16) && (tid <  8))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid +  8];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >=   8) && (tid <  4))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid +  4];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >=   4) && (tid <  2))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid +  2];
-    }
-
-  cg::sync(cta);
-
-  if ((blockSize >=   2) && ( tid <  1))
-    {
-      sdata[tid] = mySum = mySum + sdata[tid +  1];
-    }
-
-  cg::sync(cta);
-#endif
-
-  if (tid == 0) g_odata[blockIdx.x] = mySum;
+  f (i0 < 10) printf("%d : mySum : %f\n", i0, mySum);
+//
+//  // each thread puts its local sum into shared memory
+//  sdata[tid] = mySum;
+//  cg::sync(cta);
+//
+//
+//  // do reduction in shared mem
+//  if ((blockSize >= 512) && (tid < 256))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid + 256];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >= 256) &&(tid < 128))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid + 128];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >= 128) && (tid <  64))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid +  64];
+//    }
+//
+//  cg::sync(cta);
+//
+//#if (__CUDA_ARCH__ >= 300 )
+//  if ( tid < 32 )
+//    {
+//      cg::coalesced_group active = cg::coalesced_threads();
+//
+//      // Fetch final intermediate sum from 2nd warp
+//      if (blockSize >=  64) mySum += sdata[tid + 32];
+//      // Reduce final warp using shuffle
+//      for (int offset = warpSize/2; offset > 0; offset /= 2) 
+//        {
+//          mySum += active.shfl_down(mySum, offset);
+//        }
+//    }
+//#else
+//  // fully unroll reduction within a single warp
+//  if ((blockSize >=  64) && (tid < 32))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid + 32];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >=  32) && (tid < 16))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid + 16];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >=  16) && (tid <  8))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid +  8];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >=   8) && (tid <  4))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid +  4];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >=   4) && (tid <  2))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid +  2];
+//    }
+//
+//  cg::sync(cta);
+//
+//  if ((blockSize >=   2) && ( tid <  1))
+//    {
+//      sdata[tid] = mySum = mySum + sdata[tid +  1];
+//    }
+//
+//  cg::sync(cta);
+//#endif
+//
+//  if (tid == 0) g_odata[blockIdx.x] = mySum;
 }
 
 
@@ -201,7 +203,7 @@ double reduce(int size,
       reduce<   1><<< dimGrid, dimBlock, smemSize >>>(d_idata, d_odata, size);
       break;
     }
-
-  cudaMemcpy(&s, d_odata, sizeof(double), cudaMemcpyDeviceToHost);
+  CUDA_CHECK_KERNEL();
+  //CUDA_CHECK_OP(cudaMemcpy(&s, d_odata, sizeof(double), cudaMemcpyDeviceToHost));
   return s;
 }

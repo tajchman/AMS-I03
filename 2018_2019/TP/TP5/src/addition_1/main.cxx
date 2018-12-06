@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   
   size_t i, n = argc > 1 ? strtol(argv[1], NULL, 10) : 20000000;
   size_t bytes = n*sizeof(double);
-  double somme;
+  double somme1, somme2;
   
   std::vector<double> u1(n), v1(n), w1(n);
   std::vector<double> u2(n), v2(n), w2(n);
@@ -50,16 +50,18 @@ int main(int argc, char **argv)
   addition_GPU(w2, u2, v2);
   T_GPU.stop();
   
-  somme = 0;
+  somme1 = 0;
+  somme2 = 0;
   // double diff_u = 0, diff_v = 0, diff_w = 0;
   for(i=0; i<n; i++) {
-    somme += w1[i];
+    somme1 += w1[i];
+    somme2 += w2[i];
     
     // diff_u = std::max(std::abs(u1[i] - u2[i]), diff_u);
     // diff_v = std::max(std::abs(v1[i] - v2[i]), diff_v);
     // diff_w = std::max(std::abs(w1[i] - w2[i]), diff_w);
   }
-  std::cout << "resultat : " << somme/n
+  std::cout << "erreur : CPU " << somme1/n - 1.0 << " GPU " << somme2/n - 1.0
     //	    << "\n\terreurs (u) : " << diff_u
     //	    << "\n\terreurs (v) : " << diff_v
     //	    << "\n\terreurs (w) : " << diff_w

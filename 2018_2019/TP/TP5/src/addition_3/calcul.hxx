@@ -24,8 +24,8 @@ public:
 
 private:
   std::size_t m_n;
-  double *d_u, *d_v, *d_w;
-  int blockSize, gridSize;
+  double *d_u, *d_v, *d_w, *d_tmp;
+  int gridSize, blockSize;
 };
 
 #endif
