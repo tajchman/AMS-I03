@@ -21,15 +21,12 @@
         cd TP3
     \end{script}
 
-    et préparer les compilations dans les points suivants avec les commandes ci-dessous:
+    et préparer les compilations dans les points suivants en tapant :
     \begin{script}
-        mkdir -p build
-        cd build
-        cmake ../src
-        make install
-        cd ..
+        ./build.sh
     \end{script}
-	
+
+    Chaque fois que vous modifiez un fichier source, tapez cette commande pour mettre à jour les exécutables.
 
 \section{Exemple OpenMP ``grain fin''}
 
@@ -40,8 +37,8 @@ On s'en servira de base pour les versions dites ``grain grossier''.
 \begin{question}
 	Comparer les temps d'exécution de la version séquentielle et de cette version en tapant les commandes
     \begin{script}
-		./build/sinus\_seq/sinus\_seq 40000
-		OMP\_NUM\_THREADS=3 ./build/sinus\_fine/sinus\_fine 40000
+		time -p ./install/sinus\_seq 40000
+		time -p OMP\_NUM\_THREADS=3 ./build/sinus\_fine/sinus\_fine 40000
 	\end{script}
 \end{question}
 

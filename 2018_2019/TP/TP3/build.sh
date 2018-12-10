@@ -9,8 +9,8 @@ then
    NPROCS=10
 fi
 
-  mkdir -p $DIR/build
-  cd $DIR/build
-  cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
-  make -j
-  make -j install
+mkdir -p $DIR/build
+cd $DIR/build
+cmake -DCMAKE_RULE_MESSAGES:BOOL=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
+make --no-print-directory > /dev/null 
+make install

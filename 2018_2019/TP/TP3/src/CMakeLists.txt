@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(TP3 CXX)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../install
     CACHE PATH "chemin d'installation par defaut" FORCE)
