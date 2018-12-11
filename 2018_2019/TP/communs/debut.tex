@@ -23,6 +23,12 @@
 	\begin{quote}\obeylines\ignorespaces}%
 	{\par\noindent\ignorespacesafterend\end{quote}}
 
+\newcounter{demo}
+\newenvironment{demo}[1][]%
+{\vspace{5pt}\refstepcounter{demo}\vspace{2pt}\textbf{Demonstration \thedemo. #1}%
+	\begin{quote}\obeylines\ignorespaces}%
+	{\par\noindent\ignorespacesafterend\end{quote}}
+
 \newenvironment{remarque}%
 {\vspace{2pt}\textit{Remarque}\begin{quote}\obeylines\ignorespaces}%
 	{\par\noindent\ignorespacesafterend\end{quote}}
