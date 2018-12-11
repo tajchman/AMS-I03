@@ -32,23 +32,32 @@
 
 Le fichier {\tt src/sinus\_fine/sinus.cxx} contient la version OpenMP ``grain fin'' obtenue à la fin du TP précédent.
 
-On s'en servira de base pour les versions dites ``grain grossier''.
-
 \begin{question}
 	Comparer les temps d'exécution de la version séquentielle et de cette version en tapant les commandes
     \begin{script}
 		time -p ./install/sinus\_seq 40000
-		time -p OMP\_NUM\_THREADS=3 ./build/sinus\_fine/sinus\_fine 40000
-	\end{script}
+		time -p OMP\_NUM\_THREADS=3 ./install/sinus\_fine 40000
+     \end{script}
+
+     Expliquer pourquoi on n'atteint pas le facteur de diminution du temps calcul espéré.
+\end{question}
+
+\section{Exemple OpenMP ``grain fin (peut-être) amélioré''}
+
+\begin{question}
+    Ajouter aux pragmas OpenMP ``for'' de la version ``grain fin'', l'option {\tt schedule(static, n/12)}.
+    Comparer les temps d'exécution avec les versions précédentes en tapant la commandes
+
+    Faire varier le paramètre {\tt n/12}.
+
+    Remplacer dans l'option schedule, le paramètre {\tt  static} par {\tt dynamic}. Refaire les comparaisons en temps d'exécution.
 \end{question}
 
 \section{Exemple OpenMP ``grain grossier''}
 
-Le fichier {\tt src/sinus\_coarse\_1/sinus.cxx} contient une version OpenMP ``grain grossier''.
 
 \begin{question}
-	Examiner ce fichier et comparez-le à la version ``grain fin''.
-	
+        Introduire dans le fichier {\tt src/sinus\_coarse\_1/sinus.cxx} des directives (pragma) OpenMP ``grain grossier''.
 	Comparer les temps d'exécution de la version ``grain fin'' et de cette version en tapant les commandes
 	\begin{script}
 		OMP\_NUM\_THREADS=3 \textbackslash
