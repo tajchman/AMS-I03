@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
-project(TP3 CXX)
+project(TP3 CXX C)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../install
     CACHE PATH "chemin d'installation par defaut" FORCE)
 endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_INSTALL_MESSAGE LAZY)
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -15,7 +16,6 @@ if (CMAKE_VERSION VERSION_LESS "3.1")
   endif ()
 else ()
   set (CMAKE_CXX_STANDARD 11)
-  set (CMAKE_INSTALL_MESSAGE LAZY)
 endif ()
 
 find_package(OpenMP)
@@ -28,5 +28,7 @@ add_subdirectory(util)
 foreach(d seq openmp_coarse mpi mpi_openmp_fine mpi_openmp_coarse)
    add_subdirectory(sinus_${d})
 endforeach()
+add_subdirectory(PoissonMPI)
+
 
 

@@ -9,8 +9,7 @@ then
    NPROCS=10
 fi
 
-MODE=Release
 mkdir -p $DIR/build
 cd $DIR/build
-cmake -DCMAKE_BUILD_TYPE=${MODE} -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
-make -j install
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
+make install
