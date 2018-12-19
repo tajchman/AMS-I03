@@ -11,5 +11,6 @@ fi
 
 mkdir -p $DIR/build
 cd $DIR/build
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
-make install
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src || exit -1
+make -j $NPROCS || exit -1
+make install  
