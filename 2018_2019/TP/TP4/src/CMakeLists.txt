@@ -30,5 +30,10 @@ foreach(d seq openmp_coarse mpi mpi_openmp_fine mpi_openmp_coarse)
 endforeach()
 add_subdirectory(PoissonMPI)
 
+configure_file(run.sh.in run.sh @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/run.sh DESTINATION . 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+install(FILES job.in DESTINATION .)
+
 
 
