@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdio>
 #include <sstream>
 #include <iomanip>
 
@@ -55,20 +56,12 @@ int main(int argc, char *argv[])
       if (output) C.getOutput().plot(i);
     }
 
-    memory_used();
+    memory_used(u_0.size_kb() + C.size_kb());
 
-    if (Prm.rank() == 0) {
-      if (Prm.convection())
-	std::cout << "convection ";
-      else
-	std::cout << "           ";
-      if (Prm.diffusion())
-	std::cout << "diffusion  ";
-      else
-	std::cout << "           ";
-    }
   }
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+  if (Prm.rank() == 0)
+    std::cout << "cpu time " << std::setprecision(5)
+	      << T_global.elapsed() << " s\n";
   return 0;
 }

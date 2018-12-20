@@ -148,10 +148,10 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << 0 << "," << p.nmax(0) - 1  << "] x "
     << "[" << 0 << "," << p.nmax(1) - 1  << "] x "
     << "[" << 0 << "," << p.nmax(2) - 1  << "]"
-    << "\n\n";
+    << "\n";
 
-  f << "It. max : " << p.itmax() << "\n"
-    << "Dt :      " << p.dt() << "\n";
+  f << "It. : " << p.itmax() 
+    << "  Dt : " << p.dt() << "\n";
 
   return f;
 }

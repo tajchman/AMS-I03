@@ -26,6 +26,8 @@ public:
   void plot(int order) const;
   void swap(Values & other);
   int size(int i) const { return m_n[i]; }
+  size_t size_kb() const { return (m_u.size()*sizeof(double)
+				+ sizeof(*this))/1024; }
   void synchronize();
 
 private:

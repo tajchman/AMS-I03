@@ -5,7 +5,7 @@
 #include <string.h>
 #include <mpi.h>
 
-void memory_used()
+void memory_used(unsigned long user)
 {
   int rank, size;
   
@@ -42,6 +42,12 @@ void memory_used()
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  unsigned long user_per_process[size];
+  
+  MPI_Gather(&user, 1, MPI_UNSIGNED_LONG, 
+	     user_per_process, 1, MPI_UNSIGNED_LONG, 
+	     0, MPI_COMM_WORLD);
+  
   if (found_vmrss == 1) {
     
     long vmrss_per_process[size];
@@ -51,16 +57,20 @@ void memory_used()
 	       0, MPI_COMM_WORLD);
   
     if (rank == 0) {
-       long global_vmrss = 0;
+      long global_vmrss = 0, global_user = 0;
        printf("\n");
        for (int i = 0; i < size; i++)
 	 {
-	   printf("Process %03d: %6ld KB\n", 
-                i, vmrss_per_process[i]);
+	   printf(
+	    "Process %03d: %6ld Kb (total) %6ld Kb (user) %6ld Kb (diff)\n", 
+		  i, vmrss_per_process[i], user_per_process[i],
+		  vmrss_per_process[i] - user_per_process[i]);
 	   global_vmrss += vmrss_per_process[i];
+	   global_user += user_per_process[i];
 	 }
-       printf("\nGlobal memory usage: %6ld KB\n\n", 
-	      global_vmrss);
+       printf(
+	  "\nGlobal     : %6ld Kb (total) %6ld Kb (user) %6ld Kb (diff)\n", 
+	      global_vmrss, global_user, global_vmrss - global_user);
      }
 
   }
