@@ -57,9 +57,10 @@ void memory_used(unsigned long user)
 	       0, MPI_COMM_WORLD);
   
     if (rank == 0) {
-      long global_vmrss = 0, global_user = 0;
+       long global_vmrss = 0, global_user = 0;
+       int i;
        printf("\n");
-       for (int i = 0; i < size; i++)
+       for (i = 0; i < size; i++)
 	 {
 	   printf(
 	    "Process %03d: %6ld Kb (total) %6ld Kb (user) %6ld Kb (diff)\n", 

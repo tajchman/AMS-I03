@@ -14,6 +14,7 @@ add_executable(${CODE}
 target_link_libraries(${CODE}
   util
   ${MPI_CXX_LIBRARIES}
+  ${OpenMP_CXX_FLAGS} 
   ${OpenMP_CXX_LIBRARIES}
 )
 
