@@ -105,14 +105,7 @@ bool Scheme::solve(unsigned int nSteps)
     m_timers[1].stop();
     m_timers[3].start();
     if (m_P->rank() == 0) {
-      std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << du_max;
-      size_t i, n = m_timers.size();
-      std::cerr << " (times :";
-      for (i=0; i<n; i++)
-	std::cerr << " " << std::setw(5) << m_timers[i].name()
-	          << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
-      std::cerr	  << ")   \n";
+      std::cerr << '.';
     }
     m_timers[3].stop();
 

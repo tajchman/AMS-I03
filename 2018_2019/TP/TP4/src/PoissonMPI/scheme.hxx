@@ -36,6 +36,10 @@ public:
   Timer & timer(int k) { return m_timers[k]; }
   std::string codeName;
 
+  size_t size_kb() {
+    return m_u.size_kb() + m_v.size_kb() + sizeof(*this)/1024L;
+  }
+  
 protected:
   double m_t;
   size_t m_n[3];

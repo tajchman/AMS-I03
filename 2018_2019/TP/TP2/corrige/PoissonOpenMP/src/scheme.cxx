@@ -1,12 +1,13 @@
 #include "scheme.hxx"
 #include "parameters.hxx"
+#include "version.hxx"
 
 #include <sstream>
 #include <iomanip>
 
 
 Scheme::Scheme(const Parameters *P) :
-  codeName("Poisson_OpenMP"), m_u(P), m_v(P), m_timers(3)  {
+   codeName(version), m_u(P), m_v(P), m_timers(3)  {
    m_timers[0].name() = "init";
    m_timers[1].name() = "solve";
    m_timers[2].name() = "other";
@@ -67,7 +68,7 @@ size_t Scheme::getDomainSize(int dim) const
   return d;
 }
 
-bool Scheme::iteration()
+double Scheme::iteration()
 {
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
@@ -97,8 +98,7 @@ bool Scheme::iteration()
           du_sum += du > 0 ? du : -du;
       }
 
-    m_duv = du_sum;
-    return true;
+  return du_sum;
 }
 
 bool Scheme::solve(unsigned int nSteps)
@@ -110,7 +110,7 @@ bool Scheme::solve(unsigned int nSteps)
 
     m_timers[1].start();
     
-    iteration();
+    m_duv = iteration();
 
     m_t += m_dt;
 
@@ -149,8 +149,10 @@ const Values & Scheme::getOutput()
 
 void Scheme::setInput(const Values & u)
 {
+  m_timers[2].start();
   m_u = u;
   m_v = u;
+  m_timers[2].stop();
 }
 
 void Scheme::save(const char * /*fName*/)
