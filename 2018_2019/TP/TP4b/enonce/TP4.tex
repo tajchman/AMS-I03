@@ -1,0 +1,37 @@
+\include{debut}
+
+\begin{document}
+%    \layout
+    
+    \begin{center}
+    	\LARGE TP 4b. Programmation hybride MPI - OpenMP (2)
+    \end{center}
+
+	\section{Parallélisation des échanges de messages}
+    
+    Il est possible avec OpenMP d'exécuter plusieurs instructions par des threads différents
+    
+    \begin{script}
+\#pragma omp parallel sections
+\{
+\quad	\#pragma omp section
+\quad	\{
+\quad\quad		/* Execute par le thread 1 */
+\quad	\} 
+\quad	\#pragma omp section
+\quad	\{
+\quad\quad		/* Execute par le thread 2 */
+\quad	\} 
+\quad	\#pragma omp section
+\quad	\{
+\quad\quad		/* Execute par le thread 3 */
+\quad	\} 
+\quad	/* ... */
+\}
+    \end{script}
+     
+\begin{question}
+Modifier le fichier {\tt value.cxx}, lignes 130 à 227
+\end{question}
+
+\end{document}
