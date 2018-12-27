@@ -10,6 +10,10 @@
 #include <mpi.h>
 #endif
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "parameters.hxx"
 #include <iostream>
 #include <sstream>
@@ -60,7 +64,13 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_diffusion = (*this)("diffusion", 1) == 1;
   
   if (!m_help) {
- 
+
+#pragma	omp parallel
+    {
+#pragma omp master
+      std::cerr << omp_get_num_threads() << " thread(s)" << std::endl;
+    } 
+
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
 		<< ") is greater then the recommended maximum (" <<  dt_max

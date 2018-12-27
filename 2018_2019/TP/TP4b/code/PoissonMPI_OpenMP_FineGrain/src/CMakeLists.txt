@@ -53,4 +53,8 @@ target_link_libraries(
    ${MPI_CXX_LIBRARIES}
 )
 
+configure_file(run.sh.in run.sh @ONLY)
 install(TARGETS ${VERSION} DESTINATION .)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/run.sh DESTINATION .)
+install(FILES job.in DESTINATION .)
+

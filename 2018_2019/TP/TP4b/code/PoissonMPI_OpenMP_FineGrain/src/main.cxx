@@ -66,6 +66,8 @@ if (Prm.rank() == 0) {
  }
 }
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+  if (Prm.rank() == 0)
+    std::cout << "cpu time " << std::setprecision(5) 
+                             << T_global.elapsed() << " s\n";
   return 0;
 }
