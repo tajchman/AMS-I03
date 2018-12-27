@@ -1,0 +1,44 @@
+#! /bin/bash
+
+HELP=""
+NP="1"
+NT="1"
+OPTIONS=""
+
+for OPT in $*
+do
+  case "$OPT" in
+    np=*)
+       NP=${OPT:3}
+       ;;
+    th=*)
+       NT=${OPT:3}
+       ;;
+    -h|--help)
+       HELP="1"
+       ;;
+    *)
+       OPTIONS="${OPTIONS} ${OPT}"
+       ;;
+  esac
+done
+
+if [ "x${HELP}" == "x1" ]
+then
+   echo "usage $0 [-h|--help] np=<np> th=<th> [option]"
+   echo "   -h|--help : this message"
+   echo "   <np> : number of processes"
+   echo "   <th> : number of threads/process"
+   echo "   <code> : executable file containing the code"
+   echo "   other option are redirected to the code" 
+   exit -1
+fi
+
+sed -e "s/NN/${NP}/" \
+    -e "s/NT/${NT}/" \
+    -e "s?BCODE?PoissonHybrid?" \
+    -e "s?CODE?@CMAKE_INSTALL_PREFIX@/@VERSION@?" \
+    -e "s/OPTIONS/${OPTIONS}/" \
+        < @CMAKE_INSTALL_PREFIX@/job_hybrid.in > job_hybrid.sh
+
+qsub job_hybrid.sh
