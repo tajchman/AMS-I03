@@ -32,19 +32,39 @@
      
 \begin{question}
 	
-On fournit une version du code {\tt PoissonMPI1} (parallélisé par MPI).
+On fournit une version du code {\tt src/PoissonMPI\_OpenMP\_FineGrain} (parallélisé par MPI et par OpenMP - grain fin).
 
-Utiliser 2 sections OpenMP dans le fichier {\tt value.cxx}, lignes 130 à 227, pour paralléliser les échanges MPI.
+Utiliser des sections OpenMP dans le fichier {\tt value.cxx}, lignes 130 à 227, pour exécuter les échanges MPI dans plusieurs threads différents.
 
 Ne pas oublier de spécifier un niveau suffisant de compatibilité OpenMP-MPI.
 \end{question}
+
+\vfill\eject
 
 \section{Recouvrement communications/calculs}
 
 Il est possible de faire du recouvrement communications/calculs en MPI seul, on propose de le faire ici avec une programmation hybride MPI-OpenMP.
 
 \begin{question}
-	Dans Utiliser 2 sections OpenMP dans le fichier {\tt value.cxx}, lignes 130 à 227, pour paralléliser les échanges MPI.
+	On fournit une version {\tt src/PoissonMPI} parallélisée par MPI mais prête à accueillir des pragma OpenMP.
+	
+	Pour chaque itération en temps, séparer le calcul des inconnues en deux parties:
+	\begin{enumerate}
+		\item une première partie qui ne dépend pas des valeurs transmises par des échanges  MPI (au cours de la même itération)
+		\item une seconde partie qui en dépend
+	\end{enumerate}
+	
+\end{question}
+
+Le but est de calculer les inconnues qui ne dépendent pas des échanges MPI en même temps que ces échanges.
+
+\begin{question}
+	Faire exécuter dans deux threads différents :
+	
+	\begin{itemize}
+		\item les communications MPI et les calculs qui en dépendent,
+		\item les autres calculs.
+	\end{itemize}
 	
 	Ne pas oublier de spécifier un niveau suffisant de compatibilité OpenMP-MPI.
 \end{question}
