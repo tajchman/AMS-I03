@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(TP4b)
+project(TP5)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to 'Debug' as none was specified.")
@@ -17,6 +17,12 @@ endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 find_package(MPI)
 include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
