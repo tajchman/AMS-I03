@@ -17,7 +17,8 @@ Calcul_CPU::Calcul_CPU(std::size_t n)
 
   std::size_t i;
   double x;
-  
+
+#pragma omp parallel for private(x)
   for( i = 0; i < n; i++ ) {
     x = double(i);
     h_u[i] = sin(x)*sin(x);
@@ -33,6 +34,7 @@ void Calcul_CPU::addition()
   Timer T; T.start();
   
   std::size_t i, n = h_u.size();
+#pragma omp parallel for
   for (i=0; i<n; i++)
     h_w[i] = h_u[i] + h_v[i];
   
@@ -45,7 +47,9 @@ double Calcul_CPU::verification()
   Timer T; T.start();
   
   std::size_t i, n = h_u.size();
+
   double s = 0;
+#pragma omp parallel for reduction(+:s)
   for (i=0; i<n; i++)
     s += h_w[i];
   s = s/n - 1.0;

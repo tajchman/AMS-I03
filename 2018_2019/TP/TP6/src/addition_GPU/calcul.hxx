@@ -3,17 +3,6 @@
 
 #include <vector>
 
-class Calcul_CPU {
-public:
-  Calcul_CPU(std::size_t n);
-  
-  void addition();
-  double verification();
-
-private:
-  std::vector<double> h_u, h_v, h_w;
-};
-
 class Calcul_GPU {
 public:
   Calcul_GPU(std::size_t n);

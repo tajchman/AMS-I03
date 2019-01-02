@@ -1,14 +1,8 @@
 get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-include_directories(
-  reduction
-  )
-
 add_executable(${CODE}
   main.cxx
-  calcul_CPU.cxx
-  calcul_GPU.cu
-  reduction/reduction_kernel.cu)
+  calcul_GPU.cu)
 
 target_link_libraries(${CODE}
   util
