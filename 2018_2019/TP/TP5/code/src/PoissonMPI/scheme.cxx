@@ -57,7 +57,7 @@ bool Scheme::solve(unsigned int nSteps)
 {
   m_timers[1].start();
 
-  double du_max, du;
+  double du_sum, du;
   double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
   double dt = 0.5*(dx2 + 1e-12);
   double lambda = 0.25*dt/(dx2 + 1e-12);
@@ -73,9 +73,8 @@ bool Scheme::solve(unsigned int nSteps)
 
     m_timers[1].start();
 
-    du_max = 0.0;
+    du_sum = 0.0;
 
-#pragma omp parallel for private(i,j,k,du) reduction(+:du_max)
     for (i = imin; i < imax; i++)
       for (j = jmin; j < jmax; j++)
         for (k = kmin; k < kmax; k++) {
@@ -85,15 +84,15 @@ bool Scheme::solve(unsigned int nSteps)
               - m_u(i, j, k + dk) - m_u(i, j, k - dk);
           du *= lambda;
           m_v(i, j, k) = m_u(i, j, k) - du;
-          du_max += du > 0 ? du : -du;
+          du_sum += du > 0 ? du : -du;
         }
 
     m_timers[1].stop();
     m_timers[2].start();
 
-    double du_max_global;
-    MPI_Allreduce(&du_max, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
-    du_max = du_max_global;
+    double du_sum_global;
+    MPI_Allreduce(&du_sum, &du_max_global, 1, MPI_DOUBLE, MPI_SUM, m_P->comm());
+    du_sum = du_max_global;
 
     m_v.synchronize();
 
@@ -107,7 +106,7 @@ bool Scheme::solve(unsigned int nSteps)
     m_timers[3].start();
     if (m_P->rank() == 0) {
       std::cerr << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << du_max;
+              << " variation " << std::setw(12) << std::setprecision(6) << du_sum;
       size_t i, n = m_timers.size();
       std::cerr << " (times :";
       for (i=0; i<n; i++)
@@ -120,7 +119,7 @@ bool Scheme::solve(unsigned int nSteps)
     kStep++;
   }
 
-  m_duv = du_max;
+  m_duv = du_sum;
 
   return true;
 }
