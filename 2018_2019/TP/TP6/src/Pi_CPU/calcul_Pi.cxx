@@ -15,11 +15,11 @@ void set_seed(long int s)
 
 double my_rand()
 {
-  double long a = 16807;
-  double long m = 2147483647;
-  long int hi = seed / q;
-  long int lo = seed % q;
-  long int test = a * lo - r * hi;
+  long a = 16807;
+  long m = 2147483647;
+  long hi = seed / q;
+  long lo = seed % q;
+  long test = a * lo - r * hi;
   if(test > 0)
     seed = test;
   else	seed = test + m;
