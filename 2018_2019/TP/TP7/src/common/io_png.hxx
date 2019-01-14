@@ -1,3 +1,6 @@
+#ifndef __IO_PNG_HXX
+#define __IO_PNG_HXX
+
 #define PNG_DEBUG 3
 #include <png.h>
 #include <cstdlib>
@@ -15,6 +18,8 @@ class cImage {
   void clean() { free(c); height = 0; width = 0; }
  };
 
-cImage read_png_file (char *filename);
-void write_png_file(char *filename, cImage & I);
+cImage read_png_file (const char *filename);
+void write_png_file(const char *filename, cImage & I);
+
+#endif
 

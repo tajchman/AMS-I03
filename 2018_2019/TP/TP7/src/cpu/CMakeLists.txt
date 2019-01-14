@@ -9,6 +9,7 @@ add_executable(image_cpu
 
 target_link_libraries(image_cpu
   common
-  png)
+  ${PNG_LIBRARIES}
+  )
 
 install(TARGETS image_cpu DESTINATION .)

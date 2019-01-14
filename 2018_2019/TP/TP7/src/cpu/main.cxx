@@ -2,19 +2,15 @@
 #include "operation.h"
 #include <stddef.h>
 
-int main(char **argv, int argc)
+int main(int argc, char **argv)
 {
-  char *fileIn, *fileOut;
-  cImage imageIn, imageOut;
-
-  imageIn = read_png_file (char *filename);
-  
+  const char *fileIn, *fileOut;
   fileIn = argc > 1 ? argv[1] : "install/ecureuil.png";
   fileOut = argc > 2 ? argv[2] : "new_ecureuil.png";
 
-  imageIn = read_png_file (fileIn);
+  cImage imageIn = read_png_file (fileIn);
 
-  imageOut = rgb_to_grey(imageIn);
+  cImage imageOut = rgb_to_grey(imageIn);
   
   write_png_file(fileOut, imageOut);
 

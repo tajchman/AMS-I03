@@ -1,1 +1,3 @@
-float * rgb_to_grey(float *image, int h, int w);
+#include "io_png.hxx"
+
+cImage rgb_to_grey(cImage & image);

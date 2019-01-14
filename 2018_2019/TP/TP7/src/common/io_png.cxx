@@ -24,7 +24,7 @@ void abort_(const char * s, ...)
   abort();
 }
 
-cImage read_png_file (char *file_name)
+cImage read_png_file (const char *file_name)
 {
   int nb, x, y;
   
@@ -32,17 +32,11 @@ cImage read_png_file (char *file_name)
   png_infop info_ptr;
   int number_of_passes;
   png_bytep * row_pointers;
-  png_const_byte header[8];    // 8 is the maximum size that can be checked
 
   /* open file and test for it being a png */
   FILE *fp = fopen(file_name, "rb");
   if (!fp)
     abort_("[read_png_file] File %s could not be opened for reading", file_name);
-  fread(header, 1, 8, fp);
-  if (png_sig_cmp(header, 0, 8))
-    abort_("[read_png_file] File %s is not recognized as a PNG file", file_name);
-
-
   /* initialize stuff */
   png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
@@ -98,12 +92,11 @@ cImage read_png_file (char *file_name)
 }
 
 
-void write_png_file(char* file_name, cImage &I)
+void write_png_file(const char* file_name, cImage &I)
 {
   int nb, x, y;
   png_structp png_ptr;
   png_infop info_ptr;
-  int number_of_passes;
   png_bytep * row_pointers;
 
   /* create file */
