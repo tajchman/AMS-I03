@@ -8,14 +8,20 @@
 
 class cImage {
  public:
-  cImage(int h, int w) : height(h), width(w),
-			 c((float *) malloc(sizeof(float)*h*w*4)) {}
+  cImage(int w, int h) : height(h), width(w),
+			 coef((float *) malloc(sizeof(float)*h*w*3)) {
+  }
+
+  float & operator()(int i, int j, int c) {
+    return coef[3*(j*width+i) + c];
+  }
+  
   int height, width;
-  float *c;
+  float *coef;
   png_byte color_type;
   png_byte bit_depth;
 
-  void clean() { free(c); height = 0; width = 0; }
+  void clean() { free(coef); height = 0; width = 0; }
  };
 
 cImage read_png_file (const char *filename);

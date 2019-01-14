@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include "timer.hxx"
 
 void abort_(const char * s, ...)
 {
@@ -26,7 +27,7 @@ void abort_(const char * s, ...)
 
 cImage read_png_file (const char *file_name)
 {
-  int nb, x, y;
+  int nb, x, y, xx, c;
   
   png_structp png_ptr;
   png_infop info_ptr;
@@ -51,7 +52,7 @@ cImage read_png_file (const char *file_name)
     abort_("[read_png_file] Error during init_io");
 
   png_init_io(png_ptr, fp);
-  png_set_sig_bytes(png_ptr, 8);
+  png_set_sig_bytes(png_ptr, 0);
 
   png_read_info(png_ptr, info_ptr);
 
@@ -79,8 +80,9 @@ cImage read_png_file (const char *file_name)
 	  I.width, I.height, nb);
   
   for (y=0; y<I.height; y++)
-    for (x=0; x<nb; x++)
-      I.c[y*nb + x] = row_pointers[y][x];
+    for (x=0, xx=0; x<I.width; x++)
+      for (c=0; c<3; c++, xx++)
+        I(x,y,c) = row_pointers[y][xx];
   
   fclose(fp);
 
@@ -94,7 +96,7 @@ cImage read_png_file (const char *file_name)
 
 void write_png_file(const char* file_name, cImage &I)
 {
-  int nb, x, y;
+  int nb, x, y, c, xx;
   png_structp png_ptr;
   png_infop info_ptr;
   png_bytep * row_pointers;
@@ -119,7 +121,7 @@ void write_png_file(const char* file_name, cImage &I)
     abort_("[write_png_file] Error during init_io");
 
   png_init_io(png_ptr, fp);
-
+  png_set_compression_level(png_ptr, 1);
 
   /* write header */
   if (setjmp(png_jmpbuf(png_ptr)))
@@ -140,12 +142,18 @@ void write_png_file(const char* file_name, cImage &I)
   row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * I.height);
   for (y=0; y<I.height; y++) {
     row_pointers[y] = (png_byte*) malloc(nb);
-    for (x = 0; x<nb; x++)
-      row_pointers[y][x] = I.c[y*nb + x];
+    for (x = 0,xx=0; x<I.width; x++)
+      for (c = 0; c<3; c++, xx++)
+        row_pointers[y][xx] = I(x,y,c);
   }
+  Timer T;
+  T.start();
+  
   png_write_image(png_ptr, row_pointers);
 
-
+  T.stop();
+  printf("time png_write_image %g\n", T.elapsed());
+  
   /* end write */
   if (setjmp(png_jmpbuf(png_ptr)))
     abort_("[write_png_file] Error during end of write");
