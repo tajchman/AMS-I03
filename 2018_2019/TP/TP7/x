@@ -1,0 +1,428 @@
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/build
+[ 16%] Built target common
+[ 41%] Built target image_cpu
+[ 66%] Built target image_cpu_openmp
+[ 75%] Building CXX object gpu/gpu_opencl/CMakeFiles/image_opencl.dir/OpenCL.cxx.o
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:28,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:12,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:573:83: error: expected initializer before 'API_DEPRECATED'
+                  cl_uint *        /* num_platforms */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:580:91: error: expected initializer before 'API_DEPRECATED'
+                   size_t *         /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:588:79: error: expected initializer before 'API_DEPRECATED'
+                cl_uint *        /* num_devices */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                               ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:595:88: error: expected initializer before 'API_DEPRECATED'
+                 size_t *        /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:602:107: error: expected initializer before 'API_DEPRECATED'
+                    cl_uint *                            /* num_devices_ret */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:605:70: error: expected initializer before 'API_DEPRECATED'
+ clRetainDevice(cl_device_id /* device */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:608:71: error: expected initializer before 'API_DEPRECATED'
+ clReleaseDevice(cl_device_id /* device */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:617:87: error: expected initializer before 'API_DEPRECATED'
+                 cl_int *                /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:624:95: error: expected initializer before 'API_DEPRECATED'
+                         cl_int *                /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                               ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:627:70: error: expected initializer before 'API_DEPRECATED'
+ clRetainContext(cl_context /* context */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:630:71: error: expected initializer before 'API_DEPRECATED'
+ clReleaseContext(cl_context /* context */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:637:92: error: expected initializer before 'API_DEPRECATED'
+                  size_t *           /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                            ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:644:99: error: expected initializer before 'API_DEPRECATED'
+                      cl_int *                       /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:647:87: error: expected initializer before 'API_DEPRECATED'
+ clRetainCommandQueue(cl_command_queue /* command_queue */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:650:88: error: expected initializer before 'API_DEPRECATED'
+ clReleaseCommandQueue(cl_command_queue /* command_queue */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:657:100: error: expected initializer before 'API_DEPRECATED'
+                       size_t *              /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:665:75: error: expected initializer before 'API_DEPRECATED'
+                cl_int *     /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:672:90: error: expected initializer before 'API_DEPRECATED'
+                   cl_int *                 /* errcode_ret */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                                          ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:680:85: error: expected initializer before 'API_DEPRECATED'
+               cl_int *                /* errcode_ret */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:683:67: error: expected initializer before 'API_DEPRECATED'
+ clRetainMemObject(cl_mem /* memobj */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:686:68: error: expected initializer before 'API_DEPRECATED'
+ clReleaseMemObject(cl_mem /* memobj */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:694:101: error: expected initializer before 'API_DEPRECATED'
+                            cl_uint *            /* num_image_formats */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:701:92: error: expected initializer before 'API_DEPRECATED'
+                    size_t *         /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                            ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:708:88: error: expected initializer before 'API_DEPRECATED'
+                size_t *         /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:713:100: error: expected initializer before 'API_DEPRECATED'
+                                     void * /*user_data */ )             CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:721:83: error: expected initializer before 'API_DEPRECATED'
+                 cl_int *            /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:723:70: error: expected initializer before 'API_DEPRECATED'
+ clRetainSampler(cl_sampler /* sampler */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:726:71: error: expected initializer before 'API_DEPRECATED'
+ clReleaseSampler(cl_sampler /* sampler */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:733:92: error: expected initializer before 'API_DEPRECATED'
+                  size_t *           /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                            ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:741:91: error: expected initializer before 'API_DEPRECATED'
+                           cl_int *          /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:750:104: error: expected initializer before 'API_DEPRECATED'
+                           cl_int *                       /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:757:103: error: expected initializer before 'API_DEPRECATED'
+                                   cl_int *              /* errcode_ret */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:760:70: error: expected initializer before 'API_DEPRECATED'
+ clRetainProgram(cl_program /* program */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:763:71: error: expected initializer before 'API_DEPRECATED'
+ clReleaseProgram(cl_program /* program */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:771:81: error: expected initializer before 'API_DEPRECATED'
+                void *               /* user_data */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:782:83: error: expected initializer before 'API_DEPRECATED'
+                  void *               /* user_data */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:793:83: error: expected initializer before 'API_DEPRECATED'
+               cl_int *             /* errcode_ret */ ) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:797:84: error: expected initializer before 'API_DEPRECATED'
+ clUnloadPlatformCompiler(cl_platform_id /* platform */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:804:92: error: expected initializer before 'API_DEPRECATED'
+                  size_t *           /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                            ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:812:100: error: expected initializer before 'API_DEPRECATED'
+                       size_t *              /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:818:78: error: expected initializer before 'API_DEPRECATED'
+                cl_int *        /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                              ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:824:91: error: expected initializer before 'API_DEPRECATED'
+                          cl_uint *      /* num_kernels_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:827:70: error: expected initializer before 'API_DEPRECATED'
+ clRetainKernel(cl_kernel    /* kernel */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:830:70: error: expected initializer before 'API_DEPRECATED'
+ clReleaseKernel(cl_kernel   /* kernel */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:836:73: error: expected initializer before 'API_DEPRECATED'
+                const void * /* arg_value */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                         ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:843:88: error: expected initializer before 'API_DEPRECATED'
+                 size_t *        /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:851:91: error: expected initializer before 'API_DEPRECATED'
+                    size_t *        /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:859:108: error: expected initializer before 'API_DEPRECATED'
+                          size_t *                   /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                            ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:864:82: error: expected initializer before 'API_DEPRECATED'
+                 const cl_event *    /* event_list */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                  ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:871:88: error: expected initializer before 'API_DEPRECATED'
+                size_t *         /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:875:79: error: expected initializer before 'API_DEPRECATED'
+                   cl_int *      /* errcode_ret */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                               ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:878:64: error: expected initializer before 'API_DEPRECATED'
+ clRetainEvent(cl_event /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:881:65: error: expected initializer before 'API_DEPRECATED'
+ clReleaseEvent(cl_event /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:885:84: error: expected initializer before 'API_DEPRECATED'
+                      cl_int     /* execution_status */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:891:77: error: expected initializer before 'API_DEPRECATED'
+                     void *      /* user_data */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                             ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:899:100: error: expected initializer before 'API_DEPRECATED'
+                         size_t *            /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                    ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:903:74: error: expected initializer before 'API_DEPRECATED'
+ clFlush(cl_command_queue /* command_queue */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                          ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:906:75: error: expected initializer before 'API_DEPRECATED'
+ clFinish(cl_command_queue /* command_queue */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:918:81: error: expected initializer before 'API_DEPRECATED'
+                     cl_event *          /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:934:85: error: expected initializer before 'API_DEPRECATED'
+                         cl_event *          /* event */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:945:81: error: expected initializer before 'API_DEPRECATED'
+                      cl_event *         /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:961:86: error: expected initializer before 'API_DEPRECATED'
+                          cl_event *          /* event */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                                      ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:972:80: error: expected initializer before 'API_DEPRECATED'
+                     cl_event *         /* event */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:983:81: error: expected initializer before 'API_DEPRECATED'
+                     cl_event *          /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:998:85: error: expected initializer before 'API_DEPRECATED'
+                         cl_event *          /* event */) CL_API_SUFFIX__VERSION_1_1 CL_DEPRECATED(10.7, 10.14);
+                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1011:81: error: expected initializer before 'API_DEPRECATED'
+                    cl_event *           /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1024:81: error: expected initializer before 'API_DEPRECATED'
+                     cl_event *          /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1034:79: error: expected initializer before 'API_DEPRECATED'
+                    cl_event *         /* event */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                               ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1045:81: error: expected initializer before 'API_DEPRECATED'
+                    cl_event *           /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1056:85: error: expected initializer before 'API_DEPRECATED'
+                            cl_event *       /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1067:85: error: expected initializer before 'API_DEPRECATED'
+                            cl_event *       /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1079:83: error: expected initializer before 'API_DEPRECATED'
+                    cl_int *         /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1093:83: error: expected initializer before 'API_DEPRECATED'
+                   cl_int *          /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1101:83: error: expected initializer before 'API_DEPRECATED'
+                         cl_event *        /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1110:91: error: expected initializer before 'API_DEPRECATED'
+                            cl_event *             /* event */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                           ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1121:81: error: expected initializer before 'API_DEPRECATED'
+                        cl_event *       /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1128:73: error: expected initializer before 'API_DEPRECATED'
+               cl_event *        /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                         ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1140:81: error: expected initializer before 'API_DEPRECATED'
+                       cl_event *        /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                 ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1146:87: error: expected initializer before 'API_DEPRECATED'
+                             cl_event *        /* event */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1152:88: error: expected initializer before 'API_DEPRECATED'
+                              cl_event *        /* event */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                        ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl.h:1165:101: error: expected initializer before 'API_DEPRECATED'
+                                          const char *   /* func_name */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:62:83: error: expected initializer before 'API_DEPRECATED'
+                      int *          /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                   ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:70:85: error: expected initializer before 'API_DEPRECATED'
+                       cl_int *        /* errcode_ret */) CL_API_SUFFIX__VERSION_1_2 CL_DEPRECATED(10.8, 10.14);
+                                                                                     ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:76:87: error: expected initializer before 'API_DEPRECATED'
+                            cl_int *     /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                       ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:81:90: error: expected initializer before 'API_DEPRECATED'
+                   cl_GLuint *           /* gl_object_name */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                          ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:88:96: error: expected initializer before 'API_DEPRECATED'
+                    size_t *             /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                                ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:96:89: error: expected initializer before 'API_DEPRECATED'
+                           cl_event *            /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                         ^~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl.h:104:89: error: expected initializer before 'API_DEPRECATED'
+                           cl_event *            /* event */) CL_API_SUFFIX__VERSION_1_0 CL_DEPRECATED(10.6, 10.14);
+                                                                                         ^~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:48:55: error: expected initializer before 'API_DEPRECATED'
+ typedef struct _CGLPBufferObject       *CGLPBufferObj OPENGL_DEPRECATED(10.3, 10.7);
+                                                       ^~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:55:22: error: expected '}' before 'API_AVAILABLE'
+  kCGLPFATripleBuffer OPENGL_ENUM_AVAILABLE(10_7)                       =   3, /* choose a triple buffered pixel format        */
+                      ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:53:39: note: to match this '{'
+ typedef enum _CGLPixelFormatAttribute {
+                                       ^
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:55:22: error: typedef 'API_AVAILABLE' is initialized (use decltype instead)
+  kCGLPFATripleBuffer OPENGL_ENUM_AVAILABLE(10_7)                       =   3, /* choose a triple buffered pixel format        */
+                      ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:55:22: error: unable to find numeric literal operator 'operator""_7'
+  kCGLPFATripleBuffer OPENGL_ENUM_AVAILABLE(10_7)                       =   3, /* choose a triple buffered pixel format        */
+                      ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:55:22: error: 'macos' was not declared in this scope
+  kCGLPFATripleBuffer OPENGL_ENUM_AVAILABLE(10_7)                       =   3, /* choose a triple buffered pixel format        */
+                      ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:99:3: error: 'CGLPixelFormatAttribute' does not name a type; did you mean 'CGLPixelFormatObj'?
+ } CGLPixelFormatAttribute;
+   ^~~~~~~~~~~~~~~~~~~~~~~
+   CGLPixelFormatObj
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:118:25: error: expected '}' before 'API_AVAILABLE'
+  kCGLRPMaxSampleBuffers OPENGL_ENUM_AVAILABLE(10_2)       = 108, /* maximum number of sample buffers                 */
+                         ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:104:35: note: to match this '{'
+ typedef enum _CGLRendererProperty {
+                                   ^
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:118:25: error: typedef 'API_AVAILABLE' is initialized (use decltype instead)
+  kCGLRPMaxSampleBuffers OPENGL_ENUM_AVAILABLE(10_2)       = 108, /* maximum number of sample buffers                 */
+                         ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:118:25: error: unable to find numeric literal operator 'operator""_2'
+  kCGLRPMaxSampleBuffers OPENGL_ENUM_AVAILABLE(10_2)       = 108, /* maximum number of sample buffers                 */
+                         ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:118:25: error: 'macos' was not declared in this scope
+  kCGLRPMaxSampleBuffers OPENGL_ENUM_AVAILABLE(10_2)       = 108, /* maximum number of sample buffers                 */
+                         ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:141:3: error: 'CGLRendererProperty' does not name a type; did you mean 'CGLRendererInfoObj'?
+ } CGLRendererProperty;
+   ^~~~~~~~~~~~~~~~~~~
+   CGLRendererInfoObj
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:148:18: error: expected '}' before 'API_AVAILABLE'
+  kCGLCESwapLimit OPENGL_ENUM_AVAILABLE(10_2)               = 203, /* Enable or disable the swap async limit            */
+                  ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:146:32: note: to match this '{'
+ typedef enum _CGLContextEnable {
+                                ^
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:148:18: error: typedef 'API_AVAILABLE' is initialized (use decltype instead)
+  kCGLCESwapLimit OPENGL_ENUM_AVAILABLE(10_2)               = 203, /* Enable or disable the swap async limit            */
+                  ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:148:18: error: unable to find numeric literal operator 'operator""_2'
+  kCGLCESwapLimit OPENGL_ENUM_AVAILABLE(10_2)               = 203, /* Enable or disable the swap async limit            */
+                  ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:148:18: error: 'macos' was not declared in this scope
+  kCGLCESwapLimit OPENGL_ENUM_AVAILABLE(10_2)               = 203, /* Enable or disable the swap async limit            */
+                  ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:155:3: error: 'CGLContextEnable' does not name a type; did you mean 'CGLContextObj'?
+ } CGLContextEnable;
+   ^~~~~~~~~~~~~~~~
+   CGLContextObj
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:172:26: error: expected '}' before 'API_AVAILABLE'
+  kCGLCPDispatchTableSize OPENGL_ENUM_AVAILABLE(10_3)      = 224, /* 1 param.   Get the dispatch table size                       */
+                          ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:169:35: note: to match this '{'
+ typedef enum _CGLContextParameter {
+                                   ^
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:8,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:172:26: error: typedef 'API_AVAILABLE' is initialized (use decltype instead)
+  kCGLCPDispatchTableSize OPENGL_ENUM_AVAILABLE(10_3)      = 224, /* 1 param.   Get the dispatch table size                       */
+                          ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:172:26: error: unable to find numeric literal operator 'operator""_3'
+  kCGLCPDispatchTableSize OPENGL_ENUM_AVAILABLE(10_3)      = 224, /* 1 param.   Get the dispatch table size                       */
+                          ^~~~~~~~~~~~~~~~~~~~~
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:172:26: error: 'macos' was not declared in this scope
+  kCGLCPDispatchTableSize OPENGL_ENUM_AVAILABLE(10_3)      = 224, /* 1 param.   Get the dispatch table size                       */
+                          ^~~~~~~~~~~~~~~~~~~~~
+In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/cl_gl_ext.h:33,
+                 from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenCL.framework/Headers/opencl.h:14,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.hxx:5,
+                 from /Users/marc/Workspace/AMS_I03/2018_2019/TP/TP7/src/gpu/gpu_opencl/OpenCL.cxx:1:
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/OpenGL.framework/Headers/CGLTypes.h:201:1: error: expected declaration before '}' token
+ } CGLContextParameter;
+ ^
+make[2]: *** [gpu/gpu_opencl/CMakeFiles/image_opencl.dir/OpenCL.cxx.o] Error 1
+make[1]: *** [gpu/gpu_opencl/CMakeFiles/image_opencl.dir/all] Error 2
+make: *** [all] Error 2

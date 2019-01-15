@@ -1,6 +1,6 @@
 #include "OpenCL.hxx"
 #include <fstream>
-#include <stringstream>
+#include <sstream>
 
 OpenCL::OpenCL()
 {

@@ -9,6 +9,7 @@ if (OpenCL_FOUND)
   add_executable(image_opencl 
     ../../common/main.cxx
     process.cxx
+    OpenCL.cxx
   )
 
   install(TARGETS image_opencl DESTINATION .)

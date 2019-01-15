@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include "timer.hxx"
+#include "OpenCL.hxx"
 
 #define nGauss 3
 #define nGauss2 (2*nGauss+1)
@@ -124,14 +125,7 @@ void process(cImage &imageOut, const cImage &imageIn)
   cImage imageTemp1, imageTemp2;
 
   OpenCL CL;
-  grayKernel = CL.new_kernel("gray", "gray.cl");
-  smoothKernel = CL.add_kernel("smooth", "smooth.cl");
-  sobelKernel = CL.add_kernel("sobel", "sobel.cl");
-
-  
-    
-  std::cerr << std::endl;  
-  setGrey(imageTemp1, imageIn);  
-  smooth (imageTemp2, imageTemp1);
-  sobel  (imageOut,   imageTemp2);
+  cl_kernel grayKernel = CL.new_kernel("gray", "gray.cl");
+  cl_kernel smoothKernel = CL.new_kernel("smooth", "smooth.cl");
+  cl_kernel sobelKernel = CL.new_kernel("sobel", "sobel.cl");
 }
