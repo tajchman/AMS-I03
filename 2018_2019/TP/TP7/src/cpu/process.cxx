@@ -1,6 +1,7 @@
 #include "io_png.hxx"
 #include <iostream>
 #include <cmath>
+#include "timer.hxx"
 
 #define nGauss 3
 #define nGauss2 (2*nGauss+1)
@@ -10,7 +11,6 @@ void filterCreation(float GKernel[][nGauss2])
     double sigma = 1.0; 
     double g, r, s = 2.0 * sigma * sigma; 
   
-    // sum is for normalization 
     double sum = 0.0; 
   
     // generating nGauss2xnGauss2 kernel 
@@ -23,7 +23,6 @@ void filterCreation(float GKernel[][nGauss2])
         } 
     } 
   
-    // normalising the Kernel 
     for (int i = 0; i < nGauss2; ++i) 
         for (int j = 0; j < nGauss2; ++j) 
             GKernel[i][j] /= sum; 
@@ -31,6 +30,9 @@ void filterCreation(float GKernel[][nGauss2])
 
 void smooth(cImage &imageOut, const cImage &imageIn)
 {
+  Timer T;
+  T.start();
+
   float GKernel[nGauss2][nGauss2];
   filterCreation(GKernel);
     
@@ -39,40 +41,50 @@ void smooth(cImage &imageOut, const cImage &imageIn)
   imageOut = imageIn;
   for (i=nGauss; i<imageIn.width-nGauss; i++) {
     for (j=nGauss; j<imageIn.height-nGauss; j++) {
-      for (c=0; c<imageIn.ncolors; c++) {
         float sum = 0;
         for (int x = -nGauss; x <= nGauss; x++) { 
           for (int y = -nGauss; y <= nGauss; y++) { 
-            sum += GKernel[x+nGauss][y+nGauss]*imageIn(i+x, j+y, c);
+            sum += GKernel[x+nGauss][y+nGauss]*imageIn(i+x, j+y, 0);
           }
         }
-        imageOut(i,j,c) = sum;
+        imageOut(i,j,0) = sum;
       }
     }
-  }
-  
+
+  T.stop();
+  std::cerr << "\t\tTime Gauss smoothing       " << T.elapsed() << " s" << std::endl;  
  }
 
 void setGrey(cImage &imageOut, const cImage &imageIn)
 {
+  Timer T;
+  T.start();
+
   int i,j;
 
   if (imageIn.ncolors == 3) {
     imageOut.resize(imageIn.width, imageIn.height, 1);
     
-    for (i=0; i<i<imageIn.width; i++)
-      for (j=0; j<imageIn.height; j++)
+    for (i=0; i<imageIn.width; i++)
+      for (j=0; j<imageIn.height; j++) {
         imageOut(i,j,0)
           = 0.21*imageIn(i,j,0)
           + 0.72*imageIn(i,j,1)
           + 0.07*imageIn(i,j,2);
+        }
   }
   else
     imageOut = imageIn;
+
+  T.stop();
+  std::cerr << "\t\tTime Gray image generation " << T.elapsed() << " s" << std::endl;  
 }
 
 void sobel(cImage &imageOut, const cImage &imageIn)
 {
+  Timer T;
+  T.start();
+
   int i,j,m,n;
   float s;
   int dx[3][3] = {{ 1, 0,-1},{ 2, 0,-2},{ 1, 0,-1}};
@@ -95,13 +107,17 @@ void sobel(cImage &imageOut, const cImage &imageIn)
        	imageOut(i,j,0) = (sum>255) ? 255 : sum;
     }
   }
+
+  T.stop();
+  std::cerr << "\t\tTime Sobel filter          " << T.elapsed() << " s" << std::endl;  
 }
 
 void process(cImage &imageOut, const cImage &imageIn)
 { 
   cImage imageTemp1, imageTemp2;
 
-  smooth (imageTemp1, imageIn);
-  setGrey(imageTemp2, imageTemp1);  
+  std::cerr << std::endl;  
+  setGrey(imageTemp1, imageIn);  
+  smooth (imageTemp2, imageTemp1);
   sobel  (imageOut,   imageTemp2);
 }

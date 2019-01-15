@@ -1,3 +1,5 @@
+#define MAX_SOURCE_SIZE (0x100000)
+
 #include "io_png.hxx"
 #include <iostream>
 #include <cmath>
@@ -121,6 +123,13 @@ void process(cImage &imageOut, const cImage &imageIn)
 { 
   cImage imageTemp1, imageTemp2;
 
+  OpenCL CL;
+  grayKernel = CL.new_kernel("gray", "gray.cl");
+  smoothKernel = CL.add_kernel("smooth", "smooth.cl");
+  sobelKernel = CL.add_kernel("sobel", "sobel.cl");
+
+  
+    
   std::cerr << std::endl;  
   setGrey(imageTemp1, imageIn);  
   smooth (imageTemp2, imageTemp1);

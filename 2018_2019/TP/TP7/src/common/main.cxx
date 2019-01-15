@@ -24,14 +24,14 @@ int main(int argc, char **argv)
   imageIn.write_png("test.png");
   
   T1.stop();
-  std::cerr << "\n\tTime read file  " << T1.elapsed() << std::endl;
+  std::cerr << "\n\tTime read file  " << T1.elapsed() << " s" << std::endl;
   
   T2.start();
   
   process(imageOut, imageIn);
   
   T2.stop();
-  std::cerr << "\n\tTime processing " << T2.elapsed() << std::endl;
+  std::cerr << "\n\tTime processing " << T2.elapsed() << " s" << std::endl;
   
   T3.start();
 
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   imageOut.write_png(fileOut.c_str());
   
   T3.stop();
-  std::cerr << "\n\tTime write file " << T3.elapsed() << std::endl;
+  std::cerr << "\n\tTime write file " << T3.elapsed() << " s" << std::endl;
 
   return 0;
 }
