@@ -1,3 +1,3 @@
 #include "io_png.hxx"
 
-cImage process(cImage & image);
+void process(cImage &imageOut, const cImage & image);

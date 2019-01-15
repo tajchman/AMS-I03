@@ -3,29 +3,40 @@
 
 #define PNG_DEBUG 3
 #include <png.h>
-#include <cstdlib>
+#include <vector>
 
 
 class cImage {
  public:
-  cImage(int w, int h) : height(h), width(w),
-			 coef((float *) malloc(sizeof(float)*h*w*3)) {
+  cImage() : height(0), width(0), ncolors(0), color_type(0), bit_depth(0) {}
+  void resize(int w, int h, int nc) {
+    height = h;
+    width  = w;
+    ncolors = nc;
+    coef.resize(h*w*nc);
+    if (nc == 1)
+      color_type = PNG_COLOR_TYPE_GRAY;
+    else if (nc == 3)
+      color_type = PNG_COLOR_TYPE_RGB;
+      
   }
 
   float & operator()(int i, int j, int c) {
-    return coef[3*(j*width+i) + c];
+    return coef[ncolors*(j*width+i) + c];
   }
   
-  int height, width;
-  float *coef;
+  float operator()(int i, int j, int c) const {
+    return coef[ncolors*(j*width+i) + c];
+  }
+  
+  int height, width, ncolors;
+  std::vector<float> coef;
   png_byte color_type;
   png_byte bit_depth;
 
-  void clean() { free(coef); height = 0; width = 0; }
+  void read_png(const char *filename);
+  void write_png(const char *filename);
  };
-
-cImage read_png_file (const char *filename);
-void write_png_file(const char *filename, cImage & I);
 
 #endif
 

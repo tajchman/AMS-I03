@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "timer.hxx"
 
 void abort_(const char * s, ...)
 {
@@ -25,7 +24,7 @@ void abort_(const char * s, ...)
   abort();
 }
 
-cImage read_png_file (const char *file_name)
+void cImage::read_png (const char *file_name)
 {
   int nb, x, y, xx, c;
   
@@ -56,11 +55,6 @@ cImage read_png_file (const char *file_name)
 
   png_read_info(png_ptr, info_ptr);
 
-  cImage I(png_get_image_width(png_ptr, info_ptr),
-	   png_get_image_height(png_ptr, info_ptr));
-  I.color_type = png_get_color_type(png_ptr, info_ptr);
-  I.bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-
   number_of_passes = png_set_interlace_handling(png_ptr);
   png_read_update_info(png_ptr, info_ptr);
 
@@ -70,31 +64,37 @@ cImage read_png_file (const char *file_name)
     abort_("[read_png_file] Error during read_image");
 
   nb = png_get_rowbytes(png_ptr,info_ptr);
-  row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * I.height);
-  for (y=0; y<I.height; y++)
+
+  int w = png_get_image_width(png_ptr, info_ptr);
+  int h = png_get_image_height(png_ptr, info_ptr);
+  
+  resize(w, h, nb/w);
+  color_type = png_get_color_type(png_ptr, info_ptr);
+  bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+
+  row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+  for (y=0; y<height; y++)
     row_pointers[y] = (png_byte*) malloc(nb);
 
   png_read_image(png_ptr, row_pointers);
 
-  fprintf(stderr, "read png : width = %d height = %d nb = %d\n",
-	  I.width, I.height, nb);
+  fprintf(stderr, "read png : width = %d height = %d (%d color(s)/pixel)\n",
+	  width, height, ncolors);
   
-  for (y=0; y<I.height; y++)
-    for (x=0, xx=0; x<I.width; x++)
-      for (c=0; c<3; c++, xx++)
-        I(x,y,c) = row_pointers[y][xx];
+  for (y=0; y<height; y++)
+    for (x=0, xx=0; x<width; x++)
+      for (c=0; c<ncolors; c++, xx++)
+        (*this)(x,y,c) = row_pointers[y][xx];
   
   fclose(fp);
 
-  for (y=0; y<I.height; y++)
+  for (y=0; y<height; y++)
     free(row_pointers[y]);
   free(row_pointers);
-  
-  return I;
 }
 
 
-void write_png_file(const char* file_name, cImage &I)
+void cImage::write_png(const char* file_name)
 {
   int nb, x, y, c, xx;
   png_structp png_ptr;
@@ -127,9 +127,15 @@ void write_png_file(const char* file_name, cImage &I)
   if (setjmp(png_jmpbuf(png_ptr)))
     abort_("[write_png_file] Error during writing header");
 
-  png_set_IHDR(png_ptr, info_ptr, I.width, I.height,
-	       I.bit_depth, I.color_type, PNG_INTERLACE_NONE,
-	       PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+  png_set_IHDR(png_ptr,
+               info_ptr,
+               width,
+               height,
+	       bit_depth,
+               color_type,
+               PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_DEFAULT,
+               PNG_FILTER_TYPE_DEFAULT);
 
   png_write_info(png_ptr, info_ptr);
 
@@ -139,21 +145,16 @@ void write_png_file(const char* file_name, cImage &I)
     abort_("[write_png_file] Error during writing bytes");
 
   nb = png_get_rowbytes(png_ptr,info_ptr);
-  row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * I.height);
-  for (y=0; y<I.height; y++) {
+  row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+  for (y=0; y<height; y++) {
     row_pointers[y] = (png_byte*) malloc(nb);
-    for (x = 0,xx=0; x<I.width; x++)
-      for (c = 0; c<3; c++, xx++)
-        row_pointers[y][xx] = I(x,y,c);
+    for (x = 0,xx=0; x<width; x++)
+      for (c = 0; c<ncolors; c++, xx++)
+        row_pointers[y][xx] = (png_byte) (*this)(x,y,c);
   }
-  Timer T;
-  T.start();
   
   png_write_image(png_ptr, row_pointers);
 
-  T.stop();
-  printf("time png_write_image %g\n", T.elapsed());
-  
   /* end write */
   if (setjmp(png_jmpbuf(png_ptr)))
     abort_("[write_png_file] Error during end of write");
@@ -161,7 +162,7 @@ void write_png_file(const char* file_name, cImage &I)
   png_write_end(png_ptr, NULL);
 
   /* cleanup heap allocation */
-  for (y=0; y<I.height; y++)
+  for (y=0; y<height; y++)
     free(row_pointers[y]);
   free(row_pointers);
 

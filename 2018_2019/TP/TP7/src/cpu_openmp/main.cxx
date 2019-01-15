@@ -3,34 +3,43 @@
 #include "operation.h"
 #include <stddef.h>
 #include <iostream>
+#include <string>
 
 int main(int argc, char **argv)
 {
-  const char *fileIn, *fileOut;
+  std::string fileIn, fileOut;
+  cImage imageIn, imageOut;
+  
   fileIn = argc > 1 ? argv[1] : "install/ecureuil.png";
-  fileOut = argc > 2 ? argv[2] : "new_ecureuil.png";
+  fileOut = argc > 2 ? argv[2] : fileIn;
+  std::size_t found = fileOut.rfind("/");
+  if (found != std::string::npos && found < fileOut.size()-1)
+    fileOut = fileOut.insert(found+1, "res_"); 
 
   Timer T1, T2, T3;
   T1.start();
   
-  cImage imageIn = read_png_file (fileIn);
+  std::cerr << "\nIn : " << fileIn << std::endl;
+  imageIn.read_png(fileIn.c_str());
+  imageIn.write_png("test.png");
   
   T1.stop();
-  std::cerr << "Time read     " << T1.elapsed() << std::endl;
+  std::cerr << "\n\tTime read file  " << T1.elapsed() << std::endl;
   
   T2.start();
   
-  cImage imageOut = process(imageIn);
+  process(imageOut, imageIn);
   
   T2.stop();
-  std::cerr << "Time process " << T2.elapsed() << std::endl;
+  std::cerr << "\n\tTime processing " << T2.elapsed() << std::endl;
   
   T3.start();
-  
-  write_png_file(fileOut, imageOut);
+
+  std::cerr << "\nOut : " << fileOut << std::endl;
+  imageOut.write_png(fileOut.c_str());
   
   T3.stop();
-  std::cerr << "Time write " << T3.elapsed() << std::endl;
+  std::cerr << "\n\tTime write file " << T3.elapsed() << std::endl;
 
   return 0;
 }

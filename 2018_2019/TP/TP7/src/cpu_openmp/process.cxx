@@ -1,10 +1,11 @@
 #include "io_png.hxx"
+#include <iostream>
 
-cImage process(cImage &imageIn)
+void process(cImage &imageOut, const cImage &imageIn)
 {
   int i, j, k, c;
   
-  cImage imageOut(imageIn.width, imageIn.height);
+  imageOut.resize(imageIn.width, imageIn.height, imageIn.ncolors);
   imageOut.color_type = imageIn.color_type;
   imageOut.bit_depth = imageIn.bit_depth;
 
@@ -19,6 +20,4 @@ cImage process(cImage &imageIn)
 				 + imageIn(i+1,j-1,c));
     }
   }
-  
-  return imageOut;
 }
