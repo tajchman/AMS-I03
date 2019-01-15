@@ -4,7 +4,7 @@ include_directories(
 
 add_executable(image_cpu
   main.cxx
-  rgb_to_grey.cxx
+  process.cxx
   )
 
 target_link_libraries(image_cpu
