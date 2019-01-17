@@ -5,18 +5,18 @@ double Calcul_Pi(std::size_t n);
 
 int main(int argc, char **argv)
 {
-  Timer T_CPU;
+  Timer T;
 
-  T_CPU.start();
+  T.start();
   
-  std::size_t n = argc > 1 ? strtol(argv[1], NULL, 10) : 100000000;
+  std::size_t n = argc > 1 ? strtol(argv[1], NULL, 10) : 10000000L;
   
   double pi = Calcul_Pi(n);
 
   std::cerr << "Pi (approx) : " << pi << std::endl;
   
-  T_CPU.stop();
-  std::cout << "temps calcul CPU : " << T_CPU.elapsed() << " s"
+  T.stop();
+  std::cout << "temps calcul GPU : " << T.elapsed() << " s"
 	    << std::endl;
 
   return 0;

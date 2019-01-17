@@ -2,46 +2,35 @@
 #include <iostream>
 #include "timer.hxx"
 #include <time.h>
+#include <ctime>
 
-#define q (m / a)
-#define r (m % a)
+const long ITERATIONS = 10000L;
 
-static long int seed = 1;
 
-void set_seed(long int s)
+double urand()
 {
-  seed = s;
-}
-
-double my_rand()
-{
-  long a = 16807;
-  long m = 2147483647;
-  long hi = seed / q;
-  long lo = seed % q;
-  long test = a * lo - r * hi;
-  if(test > 0)
-    seed = test;
-  else	seed = test + m;
-  return (double) seed/m;
+  int r = std::rand();
+  return double(r)/(RAND_MAX);
 }
 
 
 double Calcul_Pi(std::size_t n)
 {
-  unsigned long seed = (unsigned long)time(NULL);
-  set_seed(seed);
+  std::srand(std::time(NULL)); 
 
   unsigned long p = 0;
   double u, v;
-  std::size_t i;
+  std::size_t i, it;
   
   for (i=0; i<n; i++) {
-    u = my_rand();
-    v = my_rand();
-    p += (u*u+v*v < 1.0) ? 1 : 0;
+    for (it = 0; it<ITERATIONS; it++) {
+      u = urand();
+      v = urand();
+      p += (u*u+v*v < 1.0) ? 1 : 0;
+    }
   }
   
-  return (4.0*p)/n;
+  
+  return ((4.0*p)/ITERATIONS)/n;
 }
 

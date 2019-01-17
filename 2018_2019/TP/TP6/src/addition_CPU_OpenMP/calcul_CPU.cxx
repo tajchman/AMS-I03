@@ -34,6 +34,7 @@ void Calcul_CPU::addition()
   Timer T; T.start();
   
   std::size_t i, n = h_u.size();
+  
 #pragma omp parallel for
   for (i=0; i<n; i++)
     h_w[i] = h_u[i] + h_v[i];

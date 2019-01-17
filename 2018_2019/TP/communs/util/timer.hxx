@@ -33,6 +33,13 @@ public:
       m_running = true;
     }
   }
+
+  void restart() {
+    if (not m_running) {
+      reinit();
+      start();
+    }
+  }
   
   void stop() {
     if (m_running) {
