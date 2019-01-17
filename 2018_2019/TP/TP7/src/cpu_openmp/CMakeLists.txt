@@ -10,6 +10,7 @@ endif()
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/common
+  ${CMAKE_SOURCE_DIR}/util
   )
 
 add_executable(${CODE}
