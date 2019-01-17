@@ -1,15 +1,17 @@
+set(CODE image_cpu)
+
 include_directories(
   ${CMAKE_SOURCE_DIR}/common
   )
 
-add_executable(image_cpu
-  main.cxx
+add_executable(${CODE}
+  ../common/main.cxx
   process.cxx
   )
 
-target_link_libraries(image_cpu
+target_link_libraries(${CODE}
   common
   ${PNG_LIBRARIES}
   )
 
-install(TARGETS image_cpu DESTINATION .)
+install(TARGETS ${CODE} DESTINATION .)

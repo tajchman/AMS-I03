@@ -1,3 +1,5 @@
+set(CODE image_cpu_openmp)
+
 find_package(OpenMP)
 
 if(OPENMP_FOUND)
@@ -10,14 +12,14 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/common
   )
 
-add_executable(image_cpu_openmp
-  main.cxx
+add_executable(${CODE}
+  ../common/main.cxx
   process.cxx
   )
 
-target_link_libraries(image_cpu_openmp
+target_link_libraries(${CODE}
   common
   ${PNG_LIBRARIES}
   )
 
-install(TARGETS image_cpu_openmp DESTINATION .)
+install(TARGETS ${CODE} DESTINATION .)
