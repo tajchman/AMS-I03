@@ -8,7 +8,18 @@
 
 class cImage {
  public:
-  cImage() : height(0), width(0), ncolors(0), color_type(0), bit_depth(8) {}
+  cImage(int w=0, int h=0, int nc=1)
+    : height(h), width(w), ncolors(nc), bit_depth(8) {
+    if (h*w*nc > 0)
+      coef.resize(h*w*nc);
+    if (nc == 1) {
+      color_type = PNG_COLOR_TYPE_GRAY;
+    }
+    else if (nc == 3)
+      color_type = PNG_COLOR_TYPE_RGB;
+  }
+  
+  
   void resize(int w, int h, int nc) {
     height = h;
     width  = w;

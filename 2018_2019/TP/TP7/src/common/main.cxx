@@ -7,6 +7,9 @@
 
 int main(int argc, char **argv)
 {
+  Timer T_global;
+  T_global.start();
+  
   std::string fileIn, fileOut;
   cImage imageIn, imageOut;
   
@@ -41,5 +44,7 @@ int main(int argc, char **argv)
   T3.stop();
   std::cerr << "\n\tTime write file " << T3.elapsed() << " s" << std::endl;
 
+  T_global.stop();
+  std::cerr << "\n\tTime (total)    " << T_global.elapsed() << " s" << std::endl;
   return 0;
 }
