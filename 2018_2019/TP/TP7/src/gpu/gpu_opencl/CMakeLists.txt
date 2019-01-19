@@ -3,7 +3,8 @@ find_package(OpenCL)
 if (OpenCL_FOUND)
   include_directories(
     ${OpenCL_INCLUDE_DIRS}
-    ../../common
+    ${CMAKE_SOURCE_DIR}/common
+    ${CMAKE_SOURCE_DIR}/util
   )
 
   add_executable(image_opencl 
