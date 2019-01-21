@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 
   T.start();
   
-  std::size_t n = argc > 1 ? strtol(argv[1], NULL, 10) : 100000000L;
+  std::size_t n = argc > 1 ? strtol(argv[1], NULL, 10) : 10000L;
   
   double pi = Calcul_Pi(n);
 

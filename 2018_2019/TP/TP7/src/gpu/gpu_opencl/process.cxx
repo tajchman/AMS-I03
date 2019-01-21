@@ -5,7 +5,33 @@
 #include <cmath>
 #include "timer.hxx"
 #include "OpenCL.hxx"
+#include "cImageGPU.h"
 
+void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn,
+	     cl_kernel kern, OpenCL & CL)
+{
+  Timer T;
+  T.start();
+
+  clSetKernelArg(kern, 0, sizeof(cl_mem), &imageOut.d_coef[0]);
+  clSetKernelArg(kern, 1, sizeof(cl_mem), &imageIn.d_coef[0]);
+  clSetKernelArg(kern, 2, sizeof(cl_mem), &imageIn.d_coef[1]);
+  clSetKernelArg(kern, 3, sizeof(cl_mem), &imageIn.d_coef[2]);
+
+  size_t global_size[2] = { imageIn.width, imageIn.height };
+  size_t local_size[2] = {16, 16}; 
+  
+  clEnqueueNDRangeKernel(CL.command_queue,
+                         kern, 2, NULL,
+			 global_size,
+			 local_size,
+			 0, NULL, NULL);
+  T.stop();
+  std::cerr << "\t\tTime Gray image generation "
+	    << T.elapsed() << " s" << std::endl;  
+}
+
+/*
 #define nGauss 3
 #define nGauss2 (2*nGauss+1)
 
@@ -119,13 +145,33 @@ void sobel(cImage &imageOut, const cImage &imageIn)
   T.stop();
   std::cerr << "\t\tTime Sobel filter          " << T.elapsed() << " s" << std::endl;  
 }
+*/
 
 void process(cImage &imageOut, const cImage &imageIn)
 { 
-  cImage imageTemp1, imageTemp2;
-
+  Timer T;
+  T.start();
+  
+  int w = imageIn.width,
+    h = imageIn.height;
+  
   OpenCL CL;
+  CL.info();
+  
+  cImageGPU
+    imageTemp0(imageIn, CL),
+    imageTemp1(w, h, 1, CL),
+    imageTemp2(w, h, 1, CL),
+    imageTemp3(w, h, 1, CL);
+
   cl_kernel grayKernel = CL.new_kernel("gray", "gray.cl");
-  cl_kernel smoothKernel = CL.new_kernel("smooth", "smooth.cl");
-  cl_kernel sobelKernel = CL.new_kernel("sobel", "sobel.cl");
+  setGrey(imageTemp0, imageTemp3, grayKernel, CL);
+
+  imageOut = cImage(imageTemp3);
+  
+  CL.free_kernel(grayKernel);
+
+  
+  // cl_kernel smoothKernel = CL.new_kernel("smooth", "smooth.cl");
+  // cl_kernel sobelKernel = CL.new_kernel("sobel", "sobel.cl");
 }

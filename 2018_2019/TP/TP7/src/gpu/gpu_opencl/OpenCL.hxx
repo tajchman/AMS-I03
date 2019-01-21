@@ -4,25 +4,27 @@
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #else
-#include <CL/cl.h>
+#include <CL/cl.hpp>
 #endif
 
 class OpenCL
 {
 public:
   OpenCL();
-
-  cl_kernel new_kernel(const char * kernelName,
-                       const char * fileName);
+  ~OpenCL();
+  
+  cl_kernel new_kernel (const char * kernelName,
+			const char * fileName);
+  void free_kernel(cl_kernel &k);
+  
   cl_mem    new_memobj(size_t s);
 
   void      free_memobj(cl_mem);
 
-private:
+  void info();
+  
   cl_platform_id platform_id;
   cl_device_id device_id;   
-  cl_uint ret_num_devices;
-  cl_uint ret_num_platforms;
   cl_context context;
   cl_command_queue command_queue;
 
