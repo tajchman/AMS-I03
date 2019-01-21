@@ -12,6 +12,7 @@ inline cl_mem * reserveCoefs(int w, int h, int nc, cl_context context)
   for (int c=0; c<nc; c++) {
     d[c] = clCreateBuffer (context, CL_MEM_READ_WRITE,
 			   bytes, NULL, &errcode);
+    CheckOpenCL("clCreateBuffer");
   }
 
   return d;
@@ -25,34 +26,36 @@ class cImageGPU {
     width(w),
     ncolors(nc),
     imageSize(h*w),
-    d_CL(CL),
-    d_coef(reserveCoefs(w, h, nc, d_CL.context)) {
-    bytes = imageSize*sizeof(float);
-  }
+    d_CL(CL) {
+      bytes = imageSize*sizeof(float);
+      d_coef = reserveCoefs(width, height, ncolors, d_CL.context);
+    }
   
  cImageGPU(const cImage &I, OpenCL & CL) :
   height(I.height),
     width(I.width),
     ncolors(I.ncolors),
     imageSize(height*width),
-    d_CL(CL),
-    d_coef(reserveCoefs(width, height, ncolors, d_CL.context)) {
-	
-	int i,j,k,c;
-	bytes = imageSize*sizeof(float);
-	float * p = (float *) malloc(bytes);
-	
-	for (c=0; c<I.ncolors; c++) {
-	  for (j=0, k=0; j<height; j++)
-	    for (i=0; i<width; i++, k++)
-	      p[k] = I(i,j,c);
+    d_CL(CL) {
 
-	  clEnqueueWriteBuffer(d_CL.command_queue, d_coef[k], CL_TRUE,
-			       0, bytes, p,
-			       0, NULL, NULL);
-	}
-	free(p);
+      d_coef = reserveCoefs(width, height, ncolors, d_CL.context);
+      int i,j,k,c;
+      bytes = imageSize*sizeof(float);
+      float * p = (float *) malloc(bytes);
+      
+      cl_int errcode;
+      for (c=0; c<I.ncolors; c++) {
+	for (j=0, k=0; j<height; j++)
+	  for (i=0; i<width; i++, k++)
+	    p[k] = I(i,j,c);
+	
+	errcode = clEnqueueWriteBuffer(d_CL.command_queue, d_coef[c], CL_TRUE,
+				       0, bytes, p,
+				       0, NULL, NULL);
+	CheckOpenCL("clEnqueueWriteBuffer");
       }
+      free(p);
+    }
   
   operator cImage() const {
     cImage I(width, height, ncolors);

@@ -156,16 +156,15 @@ void process(cImage &imageOut, const cImage &imageIn)
     h = imageIn.height;
   
   OpenCL CL;
-  CL.info();
-  
-  cImageGPU
-    imageTemp0(imageIn, CL),
-    imageTemp1(w, h, 1, CL),
-    imageTemp2(w, h, 1, CL),
-    imageTemp3(w, h, 1, CL);
+   CL.info();
+   
+  cImageGPU imageTemp0(imageIn, CL);
+  cImageGPU imageTemp1(w, h, 1, CL);
+  cImageGPU imageTemp2(w, h, 1, CL);
+  cImageGPU imageTemp3(w, h, 1, CL);
 
-  cl_kernel grayKernel = CL.new_kernel("gray", "gray.cl");
-  setGrey(imageTemp0, imageTemp3, grayKernel, CL);
+  cl_kernel grayKernel = CL.new_kernel("setGreyGPU", "gray.cl");
+  setGrey(imageTemp3, imageTemp0, grayKernel, CL);
 
   imageOut = cImage(imageTemp3);
   

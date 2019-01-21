@@ -1,3 +1,5 @@
+set(CODE image_gpu_cuda)
+
 find_package(OpenCL)
 
 if (OpenCL_FOUND)
@@ -12,6 +14,7 @@ if (OpenCL_FOUND)
 
   message(STATUS ${OpenCL_VERSION})
   add_definitions(-DCL_TARGET_OPENCL_VERSION=${OpenCL_VERSION})
+  add_definitions(-DINSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
 
   add_executable(image_gpu_opencl 
     ../../common/main.cxx
@@ -19,13 +22,14 @@ if (OpenCL_FOUND)
     OpenCL.cxx
     )
   
-  install(TARGETS image_gpu_opencl DESTINATION .)
-  
   target_link_libraries(image_gpu_opencl
     common
     ${PNG_LIBRARIES}
     ${OpenCL_LIBRARIES}
     )
+
+  install(TARGETS image_gpu_opencl DESTINATION .)
+  install(FILES gray.cl DESTINATION .)
   
 else()
   message(STATUS "OpenCL not found : cannot compile OpenCL version")

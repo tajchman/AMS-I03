@@ -3,7 +3,7 @@ __kernel void setGreyGPU(__global float *g_odata,
 	 		 __global float *g_ired,
 			 __global float *g_igreen,
 			 __global float *g_iblue,
-			   size_t n)
+			   int n)
 {
   const int id = get_global_id (0);
   

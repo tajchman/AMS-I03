@@ -24,7 +24,6 @@ int main(int argc, char **argv)
   
   std::cerr << "\nIn : " << fileIn << std::endl;
   imageIn.read_png(fileIn.c_str());
-  imageIn.write_png("test.png");
   
   T1.stop();
   std::cerr << "\n\tTime read file  " << T1.elapsed() << " s" << std::endl;
