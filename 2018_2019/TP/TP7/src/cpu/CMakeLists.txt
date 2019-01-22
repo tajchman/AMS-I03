@@ -1,18 +1,13 @@
-set(CODE image_cpu)
 
-include_directories(
-  ${CMAKE_SOURCE_DIR}/common
-  ${CMAKE_SOURCE_DIR}/util
-  )
 
-add_executable(${CODE}
-  ../common/main.cxx
-  process.cxx
-  )
+add_subdirectory(sequential)
 
-target_link_libraries(${CODE}
-  common
-  ${PNG_LIBRARIES}
-  )
+find_package(OpenMP)
+if(OPENMP_FOUND)
+  add_subdirectory(openmp)
+else()
+  message(STATUS "Open not available : OpenMP versionwill not be compiled")
+endif()
 
-install(TARGETS ${CODE} DESTINATION .)
+
+

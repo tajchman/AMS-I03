@@ -8,7 +8,6 @@ include_directories(
 
 add_subdirectory(common)
 add_subdirectory(cpu)
-add_subdirectory(cpu_openmp)
 add_subdirectory(gpu)
 add_subdirectory(exemples)
 
