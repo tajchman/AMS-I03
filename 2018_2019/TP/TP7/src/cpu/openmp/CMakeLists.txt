@@ -24,8 +24,3 @@ target_link_libraries(${CODE}
 
 install(TARGETS ${CODE} DESTINATION .)
 
-else()
-
-  message(STATUS "Open not available : OpenMP versionwill not be compiled")
-
-endif()
