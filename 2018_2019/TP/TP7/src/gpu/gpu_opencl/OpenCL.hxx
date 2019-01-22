@@ -9,8 +9,10 @@
 
 #define CheckOpenCL(function)                   \
   if (errcode != CL_SUCCESS) {			\
-      std::cerr << function << " : error code " \
-                << errcode << std::endl;        \
+    std::cerr << __FILE__                       \
+              << " (" << __LINE__ << ") : "	\
+              << function << " : error code "	\
+              << errcode << std::endl;          \
       std::exit(errcode);			\
   }
 

@@ -12,20 +12,30 @@ void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn,
 {
   Timer T;
   T.start();
-
-  clSetKernelArg(kern, 0, sizeof(cl_mem), &imageOut.d_coef[0]);
-  clSetKernelArg(kern, 1, sizeof(cl_mem), &imageIn.d_coef[0]);
-  clSetKernelArg(kern, 2, sizeof(cl_mem), &imageIn.d_coef[1]);
-  clSetKernelArg(kern, 3, sizeof(cl_mem), &imageIn.d_coef[2]);
-
+  
+  int n = imageIn.width * imageIn.height;
+  int errcode;
+  
+  errcode = clSetKernelArg(kern, 0, sizeof(cl_mem), &imageOut.d_coef[0]);
+  CheckOpenCL("clSetKernelArg");
+  errcode = clSetKernelArg(kern, 1, sizeof(cl_mem), &imageIn.d_coef[0]);
+  CheckOpenCL("clSetKernelArg");
+  errcode = clSetKernelArg(kern, 2, sizeof(cl_mem), &imageIn.d_coef[1]);
+  CheckOpenCL("clSetKernelArg");
+  errcode = clSetKernelArg(kern, 3, sizeof(cl_mem), &imageIn.d_coef[2]);
+  CheckOpenCL("clSetKernelArg");
+  errcode = clSetKernelArg(kern, 4, sizeof(int), &n);
+  CheckOpenCL("clSetKernelArg");
+  
   size_t global_size[2] = { imageIn.width, imageIn.height };
   size_t local_size[2] = {16, 16}; 
   
-  clEnqueueNDRangeKernel(CL.command_queue,
+  errcode = clEnqueueNDRangeKernel(CL.command_queue,
                          kern, 2, NULL,
 			 global_size,
 			 local_size,
 			 0, NULL, NULL);
+  CheckOpenCL("clEnqueueNDRangeKernel");
   T.stop();
   std::cerr << "\t\tTime Gray image generation "
 	    << T.elapsed() << " s" << std::endl;  
@@ -162,11 +172,27 @@ void process(cImage &imageOut, const cImage &imageIn)
   cImageGPU imageTemp1(w, h, 1, CL);
   cImageGPU imageTemp2(w, h, 1, CL);
   cImageGPU imageTemp3(w, h, 1, CL);
+  
+  T.stop();
+  std::cerr << "\n\tTime send to GPU           "
+	    << T.elapsed() << " s" << std::endl;
 
+  Timer T_compute;
+  T_compute.start();
+  
   cl_kernel grayKernel = CL.new_kernel("setGreyGPU", "gray.cl");
   setGrey(imageTemp3, imageTemp0, grayKernel, CL);
+  
+  T_compute.stop();
+  std::cerr << "\n\tTime compute on GPU        "
+	    << T_compute.elapsed() << " s" << std::endl;
 
+  T.restart();
   imageOut = cImage(imageTemp3);
+  
+  T.stop();
+  std::cerr << "\tTime get from GPU          "
+	    << T.elapsed() << " s" << std::endl;
   
   CL.free_kernel(grayKernel);
 

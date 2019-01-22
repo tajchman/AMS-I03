@@ -54,8 +54,6 @@ cl_kernel OpenCL::new_kernel(const char *kernelName, const char *fileName)
   buffer << t.rdbuf();
 
   std::string kernel_source = buffer.str();
-  std::cerr << "kernel " << fullName << " :" << std::endl
-	    << kernel_source << std::endl;
   t.close();
 
   const char * kernel_src = kernel_source.c_str();
