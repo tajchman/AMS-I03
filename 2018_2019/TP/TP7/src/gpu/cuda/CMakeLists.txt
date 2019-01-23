@@ -20,5 +20,3 @@ target_link_libraries(${CODE}
 
 install(TARGETS ${CODE} DESTINATION .)
 
-  message(STATUS "CUDA not found : cannot compile CUDA version")
-endif()
