@@ -6,7 +6,6 @@ __kernel void setGreyGPU(__global float *g_odata,
 			   int n)
 {
   const int id = get_global_id (0);
-  
   if (id < n)
     g_odata[id]
       = 0.21*g_ired[id]

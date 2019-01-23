@@ -22,5 +22,6 @@ esac
 
 mkdir -p $DIR/build
 cd $DIR/build
+ln -sf $DIR/src 
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src
 make install

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "operation.h"
 
 #include "io_png.hxx"
@@ -7,7 +8,7 @@
 #include "cuda_check.cuh"
 #include "cImageGPU.h"
 
-const int  blockSize = 512;
+int  blockSize = 512;
 
 
 __global__ void setGreyGPU(float *g_odata,
@@ -18,11 +19,9 @@ __global__ void setGreyGPU(float *g_odata,
 {
   int id = blockIdx.x*blockDim.x+threadIdx.x;
   
-  if (id < n)
-    g_odata[id]
-      = 0.21*g_ired[id]
-      + 0.72*g_igreen[id]
-      + 0.07*g_iblue[id];
+  if (id < n) {
+    g_odata[id] = 0.21*g_ired[id] + 0.72*g_igreen[id] + 0.07*g_iblue[id];
+  }
 }
 
 
@@ -42,7 +41,8 @@ void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn)
 
   T.stop();
   std::cerr << "\t\tTime Gray image generation "
-	    << T.elapsed() << " s" << std::endl;  
+	    << T.elapsed() << " s" << std::endl;
+
 }
 
 #define nGauss 3
@@ -132,6 +132,7 @@ __global__ void smoothGPU(float *g_odata,
 	}
       }
       g_odata[idx + idy*width] = sum;
+//      printf("%d %d: %f\n", idx, idy, sum);
     }
     else
       g_odata[idx + idy*width] = g_idata[idx + idy*width];
@@ -149,9 +150,9 @@ void smooth(cImageGPU &imageOut, const cImageGPU &imageIn)
   //  printKernel<<<1,1>>>();
 
   dim3 blockSize (8, 8);
-  dim3 gridSize  ((imageIn.width + blockSize.x)/blockSize.x,
-		 (imageIn.height + blockSize.y)/blockSize.y);
-  
+  dim3 gridSize  (
+		  (imageIn.width + blockSize.x)/blockSize.x,
+		  (imageIn.height + blockSize.y)/blockSize.y);
   
   smoothGPU<<<gridSize, blockSize>>>(imageOut.d_coef[0],
 					imageIn.d_coef[0],
@@ -166,7 +167,7 @@ void smooth(cImageGPU &imageOut, const cImageGPU &imageIn)
 __constant__ int d_dx[3][3] = {{ 1, 0,-1},{ 2, 0,-2},{ 1, 0,-1}};
 __constant__ int d_dy[3][3] = {{ 1, 2, 1},{ 0, 0, 0},{-1,-2,-1}};
 
-__global__ void sobelGPU(float * gIn, float * gOut,
+__global__ void sobelGPU(float * gOut, float * gIn,
 			 int width, int height)
 {
   int idx = blockIdx.x*blockDim.x+threadIdx.x;
@@ -178,16 +179,18 @@ __global__ void sobelGPU(float * gIn, float * gOut,
 	(idy > 0) && (idy < height-1)) {
       int x,y;
       float s;
-      int sum, sumx = 0, sumy = 0;
-      
+      float sum, sumx = 0, sumy = 0;
+//      printf("%d %d : %f\n", idx, idy, gIn[idx + idy*width] );
+
       for(x=-1; x<=1; x++)
 	for(y=-1; y<=1; y++) {
-	  s = (int) gIn[(idx+x)+(idy+y)*width];
+	  s = gIn[(idx+x)+(idy+y)*width];
 	  sumx+=s*d_dx[x+1][y+1];
 	  sumy+=s*d_dy[x+1][y+1];
 	}
-      sum=abs(sumx)+abs(sumy);
-      gOut[idx + idy*width] = (sum>255) ? 255 : sum;
+      sum=fabs(sumx)+fabs(sumy);
+      gOut[idx + idy*width] = (sum>255.0) ? 255.0 : sum;
+//      printf("%d %d : %f\n", idx, idy, sum);
     }
     else
       gOut[idx + idy*width] = gIn[idx + idy*width];
@@ -201,8 +204,7 @@ void sobel(cImageGPU &imageOut, const cImageGPU &imageIn)
 
   dim3 blockSize (8, 8);
   dim3 gridSize  ((imageIn.width + blockSize.x)/blockSize.x,
-		 (imageIn.height + blockSize.y)/blockSize.y);
-  
+		          (imageIn.height + blockSize.y)/blockSize.y);
   
   sobelGPU<<<gridSize, blockSize>>>(imageOut.d_coef[0],
 				    imageIn.d_coef[0],

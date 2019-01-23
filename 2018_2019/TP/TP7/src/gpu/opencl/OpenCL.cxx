@@ -85,6 +85,8 @@ void OpenCL::info()
   char param_value[1024];
   size_t param_value_size_ret;
   cl_platform_info param_name;
+  cl_ulong uvalue;
+  size_t size[3];
   
   param_name = CL_PLATFORM_VERSION;
   ret = clGetPlatformInfo(platform_id,
@@ -111,12 +113,53 @@ void OpenCL::info()
 			&num_devices);
 
   for (i=0; i<num_devices; i++) {
+    std::cerr << "\tDevice " << i << std::endl;
+
     param_name = CL_DEVICE_NAME;
     clGetDeviceInfo(devices[i],
 		    param_name,
                     param_value_size,
                     param_value,
                     &param_value_size_ret);
-    std::cerr << "\t\tDevice " << i << ":  " << param_value << std::endl;
+    std::cerr << "\t\tName               : "
+	      << param_value << std::endl;
+    
+    param_name =  CL_DEVICE_GLOBAL_MEM_SIZE;
+    clGetDeviceInfo(devices[i],
+		    param_name,
+                    sizeof(uvalue),
+                    &uvalue,
+                    &param_value_size_ret);
+    std::cerr << "\t\tGlobal memory size = "
+	      << uvalue << std::endl;
+    
+    param_name =  CL_DEVICE_MAX_WORK_GROUP_SIZE;
+    clGetDeviceInfo(devices[i],
+		    param_name,
+                    sizeof(size_t),
+                    size,
+                    &param_value_size_ret);
+    std::cerr << "\t\tMax. work group size = "
+	      << size[0] << std::endl;
+    
+    param_name = CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS;
+    clGetDeviceInfo(devices[i],
+		    param_name,
+                    sizeof(uvalue),
+                    &uvalue,
+                    &param_value_size_ret);
+    
+    param_name = CL_DEVICE_MAX_WORK_ITEM_SIZES;
+    clGetDeviceInfo(devices[i],
+		    param_name,
+                    sizeof(size_t) * uvalue,
+                    size,
+                    &param_value_size_ret);
+    std::cerr << "\t\tMax. work item sizes = (";
+    for (cl_ulong l=0; l<uvalue; l++)  {
+      std::cerr << size[l];
+      if (l<uvalue-1) std::cerr << ", ";
+    }
+    std::cerr << ")" << std::endl;
   }
 }
