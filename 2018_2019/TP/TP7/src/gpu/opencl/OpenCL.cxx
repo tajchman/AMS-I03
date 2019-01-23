@@ -1,3 +1,5 @@
+#define CL_SILENCE_DEPRECATION
+
 #include "OpenCL.hxx"
 #include <fstream>
 #include <sstream>
@@ -28,8 +30,14 @@ OpenCL::OpenCL()
     (NULL, 1, &device_id, NULL, NULL, &errcode);
   CheckOpenCL("clCreateContext");
 
+#ifdef __APPLE__
+  command_queue = clCreateCommandQueueWithPropertiesAPPLE
+    (context, device_id, 0, &errcode);
+#else
   command_queue = clCreateCommandQueueWithProperties
     (context, device_id, 0, &errcode);
+#endif
+
   CheckOpenCL("clCreateCommandQueueWithProperties");
 }
 
