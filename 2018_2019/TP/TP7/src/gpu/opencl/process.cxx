@@ -3,14 +3,14 @@
 #include "io_png.hxx"
 #include <iostream>
 #include <cmath>
-#include "timer.hxx"
+#include "timerCL.hxx"
 #include "OpenCL.hxx"
 #include "cImageGPU.h"
 
 void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn,
 	     cl_kernel kern, OpenCL & CL)
 {
-  Timer T;
+  TimerCL T(CL.command_queue);
   T.start();
   
   int n = imageIn.width * imageIn.height;
