@@ -33,8 +33,11 @@ OpenCL::OpenCL()
 #ifdef __APPLE__
   command_queue = clCreateCommandQueueWithPropertiesAPPLE
     (context, device_id, 0, &errcode);
-#else
+#elif __OPENCL_VERSION__ > 120
   command_queue = clCreateCommandQueueWithProperties
+    (context, device_id, 0, &errcode);
+#else
+  command_queue = clCreateCommandQueue
     (context, device_id, 0, &errcode);
 #endif
 
@@ -120,6 +123,7 @@ void OpenCL::info()
 			devices,
 			&num_devices);
 
+  std::cerr << "\n" << num_devices << " device(s)" << std::endl;
   for (i=0; i<num_devices; i++) {
     std::cerr << "\tDevice " << i << std::endl;
 
