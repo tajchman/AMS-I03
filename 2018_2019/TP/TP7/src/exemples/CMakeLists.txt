@@ -1,1 +1,1 @@
-install(FILES ecureuil.png DESTINATION .)
+install(FILES shapessm.png ecureuil.png DESTINATION .)
