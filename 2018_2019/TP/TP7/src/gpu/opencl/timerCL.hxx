@@ -1,11 +1,12 @@
 #ifndef __TIMERCL__
 
 #include "timer.hxx"
+#include <CL/cl.h>
 
-class TimerCL public Timer {
+class TimerCL : public Timer {
 public:
 
-  TimerCL(cl_queue & q) : Timer(), m_q(q) {
+  TimerCL(cl_command_queue & q) : Timer(), m_q(q) {
   }
 
   ~TimerCL() {
@@ -16,7 +17,7 @@ public:
     Timer::stop();
   }
   
-  cl_queue & m_q;
+  cl_command_queue & m_q;
 };
 
 #endif
