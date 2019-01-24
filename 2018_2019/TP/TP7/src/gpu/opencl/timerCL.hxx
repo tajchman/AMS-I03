@@ -1,7 +1,11 @@
 #ifndef __TIMERCL__
 
 #include "timer.hxx"
-#include <CL/cl.h>
+#ifdef __APPLE__
+#include <OpenCL/opencl.h>
+#else
+#include <CL/cl.hpp>
+#endif
 
 class TimerCL : public Timer {
 public:
