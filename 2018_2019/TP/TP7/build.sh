@@ -10,16 +10,24 @@ then
 fi
 
 case "x$OSTYPE" in
- xdarwin*)
-   export CC=clang
-   export CXX=clang++
-   ;;
- *)
-   export CC=gcc
-   export CXX=g++
-   ;; 
+    xdarwin*)
+        export CC=clang
+        export CXX=clang++
+        ;;
+    xlinux-gnu*)
+        if [ "x$CUDA_GCC" == "x" ]
+        then
+            export CC=gcc
+            export CXX=g++       
+        else
+            export CC=$CUDA_GCC
+            export CXX=${CUDA_GCC/%gcc/g++}
+        fi
+        ;; 
 esac
 
+echo $CC
+echo $CXX
 mkdir -p $DIR/build
 cd $DIR/build
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src

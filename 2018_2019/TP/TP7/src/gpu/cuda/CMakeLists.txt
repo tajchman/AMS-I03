@@ -1,7 +1,8 @@
 set(CODE image_gpu_cuda)
 
-message(STATUS "Found CUDA ${CUDA_VERSION_STRING} at ${CUDA_TOOLKIT_ROOT_DIR}")
 enable_language(CUDA)
+set(CUDA_NVCC_FLAGS
+  "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-ccbin=${CMAKE_C_COMPILER}")
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/common
