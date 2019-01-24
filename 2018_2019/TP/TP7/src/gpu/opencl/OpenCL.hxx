@@ -1,6 +1,8 @@
 #ifndef __OPENCL_HXX__
 #define __OPENCL_HXX__
 
+#include <cstdlib>
+
 #ifdef __APPLE__
 #include <OpenCL/opencl.h>
 #else

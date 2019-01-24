@@ -108,7 +108,7 @@ void sobel(cImage &imageOut, const cImage &imageIn)
             sumx+=s*dx[m+1][n+1];
             sumy+=s*dy[m+1][n+1];
           }
-        sum=abs(sumx)+abs(sumy);
+        sum=std::abs(sumx)+std::abs(sumy);
        	imageOut(i,j,0) = (sum>255) ? 255 : sum;
     }
   }
