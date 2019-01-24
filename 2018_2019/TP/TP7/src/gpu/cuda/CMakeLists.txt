@@ -2,7 +2,10 @@ set(CODE image_gpu_cuda)
 
 set(CUDA_NVCC_FLAGS
   "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-ccbin=${CMAKE_C_COMPILER}")
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -ptxas-options=-v")
 enable_language(CUDA)
+
+add_subdirectory(deviceQuery)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/common
@@ -20,4 +23,5 @@ target_link_libraries(${CODE}
   )
 
 install(TARGETS ${CODE} DESTINATION .)
+
 

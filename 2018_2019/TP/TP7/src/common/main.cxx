@@ -1,5 +1,5 @@
 #include "timer.hxx"
-#include "io_png.hxx"
+#include "cImage.h"
 #include "operation.h"
 #include <stddef.h>
 #include <iostream>

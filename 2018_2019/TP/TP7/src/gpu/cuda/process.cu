@@ -1,42 +1,27 @@
 #include <stdio.h>
 #include "operation.h"
 
-#include "io_png.hxx"
+#include "cImage.h"
 #include <iostream>
 #include <cmath>
 #include "timer.hxx"
 #include "cuda_check.cuh"
 #include "cImageGPU.h"
 
-int  blockSize = 512;
-
-
-__global__ void setGreyGPU(float *g_odata,
-			   float *g_ired,
-			   float *g_igreen,
-			   float *g_iblue,
-			   size_t n)
-{
-  int id = blockIdx.x*blockDim.x+threadIdx.x;
-  
-  if (id < n) {
-    g_odata[id] = 0.21*g_ired[id] + 0.72*g_igreen[id] + 0.07*g_iblue[id];
-  }
-}
-
+// Ajouter ici le noyau setGreyGPU
 
 void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn)
 {
   Timer T;
   T.start();
 
-  int n = imageIn.width * imageOut.height;
-  int gridSize = (int)ceil((double)n/blockSize);
-  setGreyGPU<<<gridSize, blockSize>>>(imageOut.d_coef[0],
-				      imageIn.d_coef[0],
-				      imageIn.d_coef[1],
-				      imageIn.d_coef[2],
-				      imageIn.imageSize);
+//  int blockSize = ;
+//  int gridSize =;
+//  setGreyGPU<<<gridSize, blockSize>>>(imageOut.d_coef[0],
+//				      imageIn.d_coef[0],
+//				      imageIn.d_coef[1],
+//				      imageIn.d_coef[2],
+//				      imageIn.imageSize);
   CUDA_CHECK_KERNEL();
 
   T.stop();
@@ -99,7 +84,7 @@ void copyImage(cImageGPU &imageOut, const cImageGPU &imageIn)
   Timer T;
   T.start();
 
-  dim3 blockSize (8, 8);
+  dim3 blockSize (16, 16);
   dim3 gridSize  ((imageIn.width + blockSize.x)/blockSize.x,
 		 (imageIn.height + blockSize.y)/blockSize.y);
   
@@ -167,48 +152,19 @@ void smooth(cImageGPU &imageOut, const cImageGPU &imageIn)
 __constant__ int d_dx[3][3] = {{ 1, 0,-1},{ 2, 0,-2},{ 1, 0,-1}};
 __constant__ int d_dy[3][3] = {{ 1, 2, 1},{ 0, 0, 0},{-1,-2,-1}};
 
-__global__ void sobelGPU(float * gOut, float * gIn,
-			 int width, int height)
-{
-  int idx = blockIdx.x*blockDim.x+threadIdx.x;
-  int idy = blockIdx.y*blockDim.y+threadIdx.y;
- 
-  if ((idx < width) && (idy < height)) {
-
-    if ((idx > 0) && (idx < width-1) &&
-	(idy > 0) && (idy < height-1)) {
-      int x,y;
-      float s;
-      float sum, sumx = 0, sumy = 0;
-//      printf("%d %d : %f\n", idx, idy, gIn[idx + idy*width] );
-
-      for(x=-1; x<=1; x++)
-	for(y=-1; y<=1; y++) {
-	  s = gIn[(idx+x)+(idy+y)*width];
-	  sumx+=s*d_dx[x+1][y+1];
-	  sumy+=s*d_dy[x+1][y+1];
-	}
-      sum=fabs(sumx)+fabs(sumy);
-      gOut[idx + idy*width] = (sum>255.0) ? 255.0 : sum;
-//      printf("%d %d : %f\n", idx, idy, sum);
-    }
-    else
-      gOut[idx + idy*width] = gIn[idx + idy*width];
-  }
-}
+// Ajouter ici le noyau sobelGPU
 
 void sobel(cImageGPU &imageOut, const cImageGPU &imageIn)
 {
   Timer T;
   T.start();
 
-  dim3 blockSize (8, 8);
-  dim3 gridSize  ((imageIn.width + blockSize.x)/blockSize.x,
-		          (imageIn.height + blockSize.y)/blockSize.y);
+ // dim3 blockSize ?
+ // dim3 gridSize  ?
   
-  sobelGPU<<<gridSize, blockSize>>>(imageOut.d_coef[0],
-				    imageIn.d_coef[0],
-				    imageIn.width, imageIn.height);
+ // sobelGPU<<<gridSize, blockSize>>>(imageOut.d_coef[0],
+ //				    imageIn.d_coef[0],
+ // 				    imageIn.width, imageIn.height);
   CUDA_CHECK_KERNEL();
  
   T.stop();

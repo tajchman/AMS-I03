@@ -6,7 +6,7 @@
  *
  */
 
-#include "io_png.hxx"
+#include "cImage.h"
 
 #include <unistd.h>
 #include <stdlib.h>

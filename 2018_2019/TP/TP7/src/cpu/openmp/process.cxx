@@ -1,4 +1,4 @@
-#include "io_png.hxx"
+#include "cImage.h"
 #include <iostream>
 #include <cmath>
 #include "timer.hxx"

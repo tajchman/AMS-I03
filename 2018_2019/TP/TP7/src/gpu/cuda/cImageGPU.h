@@ -1,4 +1,4 @@
-#include "io_png.hxx"
+#include "cImage.h"
 #include <iostream>
 #include <cmath>
 
@@ -32,18 +32,18 @@ class cImageGPU {
     imageSize(height*width),
     d_coef(reserveCoefs(width, height, ncolors)) {
 	
-	int i,j,k,c;
-	bytes = imageSize*sizeof(float);
-	float * p = (float *) malloc(bytes);
+    int i,j,k,c;
+    bytes = imageSize*sizeof(float);
+    float * p = (float *) malloc(bytes);
 	
-	for (c=0; c<I.ncolors; c++) {
-	  for (j=0, k=0; j<height; j++)
-	    for (i=0; i<width; i++, k++)
-	      p[k] = I(i,j,c);
-	  cudaMemcpy(d_coef[c], p, bytes, cudaMemcpyHostToDevice);
-	}
-	free(p);
-      }
+    for (c=0; c<I.ncolors; c++) {
+      for (j=0, k=0; j<height; j++)
+	for (i=0; i<width; i++, k++)
+	  p[k] = I(i,j,c);
+      cudaMemcpy(d_coef[c], p, bytes, cudaMemcpyHostToDevice);
+    }
+    free(p);
+  }
   
   operator cImage() const {
     cImage I(width, height, ncolors);
