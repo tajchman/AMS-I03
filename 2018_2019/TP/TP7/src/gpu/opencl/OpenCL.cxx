@@ -73,9 +73,8 @@ cl_kernel OpenCL::new_kernel(const char *kernelName,
 
   kernel_source += buffer.str();
   t.close();
-  std::cerr << "######" << std::endl << kernel_source << std::endl << "######" << std::endl;;
+//  std::cerr << "######" << std::endl << kernel_source << std::endl << "######" << std::endl;;
 
-  
   const char * kernel_src = kernel_source.c_str();
   size_t kernel_len = kernel_source.size();
 

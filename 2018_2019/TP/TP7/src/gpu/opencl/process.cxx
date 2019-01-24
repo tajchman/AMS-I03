@@ -161,7 +161,7 @@ void process(cImage &imageOut, const cImage &imageIn)
     h = imageIn.height;
   
   OpenCL CL;
-   CL.info();
+//   CL.info();
    
   cImageGPU imageTemp0(imageIn, CL);
   cImageGPU imageTemp1(w, h, 1, CL);
