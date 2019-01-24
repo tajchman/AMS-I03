@@ -27,13 +27,13 @@ void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn,
   errcode = clSetKernelArg(kern, 4, sizeof(int), &n);
   CheckOpenCL("clSetKernelArg");
   
-  size_t global_size[2] = { imageIn.width, imageIn.height };
-  size_t local_size[2] = {16, 16}; 
+  size_t local_size = 256; 
+  size_t global_size = ((n + local_size)/local_size)*local_size;
   
   errcode = clEnqueueNDRangeKernel(CL.command_queue,
-                         kern, 2, NULL,
-			 global_size,
-			 local_size,
+                         kern, 1, NULL,
+			 &global_size,
+			 &local_size,
 			 0, NULL, NULL);
   CheckOpenCL("clEnqueueNDRangeKernel");
   T.stop();

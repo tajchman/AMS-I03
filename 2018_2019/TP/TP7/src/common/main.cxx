@@ -12,8 +12,11 @@ int main(int argc, char **argv)
   
   std::string fileIn, fileOut;
   cImage imageIn, imageOut;
-  
-  fileIn = argc > 1 ? argv[1] : "install/ecureuil.png";
+ 
+  std::string defaultIn = INSTALL_PREFIX;
+  defaultIn += "/ecureuil.png";
+
+  fileIn = argc > 1 ? argv[1] : defaultIn;
   fileOut = argc > 2 ? argv[2] : fileIn;
   std::size_t found = fileOut.rfind("/");
   if (found != std::string::npos && found < fileOut.size()-1)
