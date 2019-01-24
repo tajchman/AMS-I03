@@ -32,13 +32,13 @@ OpenCL::OpenCL()
 
 #ifdef __APPLE__
   command_queue = clCreateCommandQueueWithPropertiesAPPLE
-    (context, device_id, 0, &errcode);
+    (context, device_id, CL_QUEUE_PROFILING_ENABLE, &errcode);
 #elif __OPENCL_VERSION__ > 120
   command_queue = clCreateCommandQueueWithProperties
-    (context, device_id, 0, &errcode);
+    (context, device_id, CL_QUEUE_PROFILING_ENABLE, &errcode);
 #else
   command_queue = clCreateCommandQueue
-    (context, device_id, 0, &errcode);
+    (context, device_id, CL_QUEUE_PROFILING_ENABLE, &errcode);
 #endif
 
   CheckOpenCL("clCreateCommandQueueWithProperties");
