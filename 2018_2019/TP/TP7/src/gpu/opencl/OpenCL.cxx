@@ -53,9 +53,16 @@ OpenCL::~OpenCL()
 }
 
 
-cl_kernel OpenCL::new_kernel(const char *kernelName, const char *fileName)
+cl_kernel OpenCL::new_kernel(const char *kernelName,
+                             const char *fileName,
+                             const char * header)
 {
   cl_int errcode;
+
+  std::string kernel_source = "";
+
+  if (header)
+    kernel_source = header;
 
   std::string fullName = INSTALL_PREFIX;
   fullName += "/";
@@ -64,9 +71,11 @@ cl_kernel OpenCL::new_kernel(const char *kernelName, const char *fileName)
   std::stringstream buffer;
   buffer << t.rdbuf();
 
-  std::string kernel_source = buffer.str();
+  kernel_source += buffer.str();
   t.close();
+  std::cerr << "######" << std::endl << kernel_source << std::endl << "######" << std::endl;;
 
+  
   const char * kernel_src = kernel_source.c_str();
   size_t kernel_len = kernel_source.size();
 
@@ -75,6 +84,17 @@ cl_kernel OpenCL::new_kernel(const char *kernelName, const char *fileName)
   CheckOpenCL("clCreateProgramWithSource");
   
   errcode = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
+  if (errcode < 0) {
+    size_t len_log = 4999, ret_log;
+    char log[len_log+1];
+    clGetProgramBuildInfo (program,
+                           device_id,
+                           CL_PROGRAM_BUILD_LOG,
+                           len_log,
+                           log,
+                           &ret_log);
+    std::cerr << log << std::endl;
+  }
   CheckOpenCL("clBuildProgram");
   
   // Create the OpenCL kernel

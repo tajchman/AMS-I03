@@ -25,4 +25,4 @@ target_link_libraries(image_gpu_opencl
   )
 
 install(TARGETS image_gpu_opencl DESTINATION .)
-install(FILES gray.cl DESTINATION .)
+install(FILES gray.cl smooth.cl sobel.cl DESTINATION .)

@@ -25,7 +25,8 @@ public:
   ~OpenCL();
   
   cl_kernel new_kernel (const char * kernelName,
-			const char * fileName);
+			const char * fileName,
+                        const char * header = NULL);
   void free_kernel(cl_kernel &k);
   
   cl_mem    new_memobj(size_t s);
