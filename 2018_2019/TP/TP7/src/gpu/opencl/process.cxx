@@ -177,13 +177,21 @@ void process(cImage &imageOut, const cImage &imageIn)
   std::cerr << "\n\tTime send to GPU           "
 	    << T.elapsed() << " s" << std::endl;
 
-  Timer T_compute;
-  T_compute.start();
+  T.reinit();
+  T.start();
   
   cl_kernel grayKernel = CL.new_kernel("setGreyGPU", "gray.cl");
+  
+  T.stop();
+  std::cerr << "\n\tTime compile gray.cl for GPU        "
+	    << T.elapsed() << " s" << std::endl;
+
+  TimerCL T_compute(CL.command_queue);
+  T_compute.start();
+
   setGrey(imageTemp3, imageTemp0, grayKernel, CL);
   
-  T_compute.stop();
+  T.stop();
   std::cerr << "\n\tTime compute on GPU        "
 	    << T_compute.elapsed() << " s" << std::endl;
 
