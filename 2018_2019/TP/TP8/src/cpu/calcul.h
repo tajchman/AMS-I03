@@ -3,6 +3,7 @@ double * alloue(int n);
 void libere(double **v);
 
 double * init     (int n);
+double * zero     (int n);
  
 void laplacien    (double * u_diffuse,
                    const double * u_current,
@@ -21,8 +22,9 @@ void variation    (double * u_next,
 
 double difference (const double * u,
                    const double * v,
+		   double * work,
                    int n);
 
-void save(const char *name,
+void save(int k,
           const double *u,
           int n);

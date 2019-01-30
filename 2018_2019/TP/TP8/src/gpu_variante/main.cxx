@@ -20,7 +20,8 @@ int main(int argc, char **argv)
   double * diffusion = alloue(n);
   double * forces = alloue(n);
   
-  double * w;
+  double * work = alloue_work(n);
+  
   double delta;
   const double tol = 1e-4;
 
@@ -33,13 +34,13 @@ int main(int argc, char **argv)
     
     calcul_forces(forces, u_current, n);
     
-    addition(u_next, u_current, diffusion, forces, dt, n);
+    variation(u_next, u_current, diffusion, forces, dt, n);
 
-    w = u_current;
+    double *w = u_current;
     u_current = u_next;
     u_next = w;
 
-    delta = difference(u_current, v_next, n);
+    delta = difference(u_current, u_next, work, n);
     printf("delta = %12.5g    \n", delta);
     if (delta < tol) break;
   }

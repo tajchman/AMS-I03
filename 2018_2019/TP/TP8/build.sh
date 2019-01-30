@@ -10,9 +10,8 @@ then
 fi
 
 
-CMAKE_FLAGS=" -DCMAKE_BUILD_TYPE=Debug"
 CMAKE_FLAGS=" -DCMAKE_BUILD_TYPE=Release"
-CMAKE_FLAGS=" -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+CMAKE_FLAGS=" -DCMAKE_BUILD_TYPE=Debug"
 
 case "x$OSTYPE" in
     xdarwin*)

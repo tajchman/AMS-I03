@@ -45,13 +45,6 @@ diff_reduce(const double *g_idata1, const double *g_idata2,
   if (tid == 0) g_odata[blockIdx.x] = sdata[0];
 }
 
-double * work_reduce(int n)
-{
-  double * w;
-  cudaMalloc(&w, sizeof(double) * n);
-  return w;
-}
-
 double diff_reduce(size_t n,
 		   const double *d_idata1,
 		   const double *d_idata2,

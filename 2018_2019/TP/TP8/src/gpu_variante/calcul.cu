@@ -30,7 +30,7 @@ double * init(int n)
 double * init_work(int n)
 {
   int nThreads = 512;
-  int nBlocks = (n*n+512)/512;
+  int nBlocks = (n*n+nThreads)/nThreads;
   
   double * w;
   cudaMalloc(&w, sizeof(double) * nBlocks);
@@ -89,7 +89,8 @@ __global__  void iterationCuda(double * v, const double * u, double dt, int n)
 void iteration(double * v, const double * u, double dt, int n)
 {
   dim3 blockSize(16,16);
-  dim3 gridSize((n+16)/16, (n+16)/16);
+  dim3 gridSize((n+blockSize.x)/blockSize.x,
+		(n+blockSize.y)/blockSize.y);
 
   iterationCuda<<<gridSize, blockSize>>>(v, u, dt, n);
 }
@@ -99,7 +100,7 @@ double difference(const double * u, const double * v, double * work, int n)
 {
   double *w, d;
   int nThreads = 512;
-  int nBlocks = (n*n+512)/512;
+  int nBlocks = (n*n+nThreads)/nThreads;
   
   w = work_reduce(nBlocks);
   d = diff_reduce(n*n, u, v, w, nThreads, nBlocks);
