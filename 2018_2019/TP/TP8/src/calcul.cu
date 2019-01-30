@@ -27,6 +27,16 @@ double * init(int n)
   return d;
 }
 
+double * init_work(int n)
+{
+  int nThreads = 512;
+  int nBlocks = (n*n+512)/512;
+  
+  double * w;
+  cudaMalloc(&w, sizeof(double) * nBlocks);
+  return w;
+}
+
 double * alloue(int n)
 {
   double *d;
@@ -71,7 +81,6 @@ __global__  void iterationCuda(double * v, const double * u, double dt, int n)
     
     laplacienCuda(v, u, i, j, n, lambda);
     forceCuda(&f, u[i*n+j], i, j, n);
-    printf("i = %03d j = %03d f = %16.10g\n", i, j, f);
     v[i*n + j] += f*dt;
   }
 }
@@ -86,7 +95,7 @@ void iteration(double * v, const double * u, double dt, int n)
 }
 
 
-double difference(const double * u, const double * v, int n)
+double difference(const double * u, const double * v, double * work, int n)
 {
   double *w, d;
   int nThreads = 512;

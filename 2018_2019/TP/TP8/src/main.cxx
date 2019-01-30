@@ -14,21 +14,32 @@ int main(int argc, char **argv)
 
   printf("n_it = %d\n", n_it);
   
-  double * u = init(n);
-  double * v = alloue(n);
+  double * u_current = init(n);
+  double * u_next = alloue(n);
+  
+  double * diffusion = alloue(n);
+  double * forces = alloue(n);
+  
   double * w;
   double delta;
   const double tol = 1e-4;
+
+  double dx = 1.0/(n-1);
+  double dt = 0.5*dx*dx;
   
-  double dt = 0.5/(n*n);
   for (it = 0; it < n_it; it++) {
-    iteration(v, u, dt, n);
+    
+    laplacien(diffusion, u_current, dx, n);
+    
+    calcul_forces(forces, u_current, n);
+    
+    addition(u_next, u_current, diffusion, forces, dt, n);
 
-    w = u;
-    u = v;
-    v = w;
+    w = u_current;
+    u_current = u_next;
+    u_next = w;
 
-    delta = difference(u, v, n);
+    delta = difference(u_current, v_next, n);
     printf("delta = %12.5g    \n", delta);
     if (delta < tol) break;
   }
@@ -39,8 +50,8 @@ int main(int argc, char **argv)
   std::cout << "temps calcul : " << T.elapsed() << " s"
 	    << std::endl;
 
-  save("out.txt", u, n);
-  libere(&u);
-  libere(&v);
+  save("out.txt", u_current, n);
+  libere(&u_current);
+  libere(&u_next);
   return 0;
 }
