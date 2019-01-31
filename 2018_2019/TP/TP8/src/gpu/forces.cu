@@ -31,7 +31,7 @@ __global__  void forceCuda(double * f, const double * u, int n)
 void calcul_forces(double * f, const double * u, int n)
 {
   dim3 blockSize(16,16);
-  dim3 gridSize((n+16)/16, (n+16)/16);
+  dim3 gridSize((n+blockSize.x)/blockSize.x, (n+blockSize.y)/blockSize.y);
 
   forceCuda<<<gridSize, blockSize>>>(f, u, n);
 }

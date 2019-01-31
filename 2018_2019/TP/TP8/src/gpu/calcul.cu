@@ -37,7 +37,7 @@ double difference(const double * u, const double * v,
 {
   double d;
   int nThreads = 512;
-  int nBlocks = (n*n+512)/512;
+  int nBlocks = (n*n+nThreads)/nThreads;
   
   d = diff_reduce(n*n, u, v, work, nThreads, nBlocks);
  
