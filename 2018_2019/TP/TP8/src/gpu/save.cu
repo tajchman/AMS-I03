@@ -4,17 +4,18 @@
 #include <string>
 #include "calcul.h"
 #include "cuda.h"
+#include <cstdio>
 
 void save(int ksave, const double *u, int n)
 {
   int i,j;
+  char s[1024];
+  sprintf(s, "gpu_out_%d.vtr", ksave);
 
   std::vector<double> h_u(n*n);
   cudaMemcpy(h_u.data(), u, sizeof(double)*n*n, cudaMemcpyDeviceToHost);
   
-  std::string name = "cpu_out_";
-  name += std::to_string(ksave) + ".vtr";
-  std::ofstream f(name.c_str());
+  std::ofstream f(s);
 
   f << "<?xml version=\"1.0\"?>\n"
     << "<VTKFile type=\"RectilinearGrid\">\n"

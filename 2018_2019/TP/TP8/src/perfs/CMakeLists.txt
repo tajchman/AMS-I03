@@ -12,6 +12,7 @@ if (CUDA_FOUND)
     )
 
   install(TARGETS stride DESTINATION .)
+  install(PROGRAMS plot_stride.py DESTINATION .)
 
 endif()
 

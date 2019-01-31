@@ -15,4 +15,3 @@ install
 *.vrb
 .DS_Store
 .settings
-perf*

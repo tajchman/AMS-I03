@@ -2,13 +2,14 @@
 #include <fstream>
 #include <string>
 #include "calcul.h"
+#include <cstdio>
 
 void save(int ksave, const double *u, int n)
 {
   int i,j;
-  std::string name = "cpu_out_";
-  name += std::to_string(ksave) + ".vtr";
-  std::ofstream f(name.c_str());
+  char s[1024];
+  sprintf(s, "cpu_out_%d.vtr", ksave);
+  std::ofstream f(s);
 
   f << "<?xml version=\"1.0\"?>\n"
     << "<VTKFile type=\"RectilinearGrid\">\n"

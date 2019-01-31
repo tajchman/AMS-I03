@@ -55,12 +55,11 @@ int main(int argc, char **argv)
 	      << std::setw(13)
 	      << std::setprecision(7)
 	      << delta << "     \r";
-    fflush(stdout);
     
     if (delta < tol) break;
   }
 
-  printf("\n\n");
+  std::cerr << "\n\n";
 
   T.stop();
   std::cout << "temps calcul : " << T.elapsed() << " s"
