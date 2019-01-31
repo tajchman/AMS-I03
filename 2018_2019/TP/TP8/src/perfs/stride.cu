@@ -26,20 +26,12 @@
  */
 #include <stdio.h>
 #include <assert.h>
+#include "timerGPU.cuh"
 
 // Convenience function for checking CUDA runtime API results
 // can be wrapped around any runtime API call. No-op in release builds.
-inline
-cudaError_t checkCuda(cudaError_t result)
-{
-#if defined(DEBUG) || defined(_DEBUG)
-  if (result != cudaSuccess) {
-    fprintf(stderr, "CUDA Runtime Error: %s\n", cudaGetErrorString(result));
-    assert(result == cudaSuccess);
-  }
-#endif
-  return result;
-}
+
+#include "cuda_check.cuh"
 
 FILE * out_offset, * out_stride;
 
@@ -61,52 +53,42 @@ template <typename T>
 void runTest(int deviceId, int nMB)
 {
   int blockSize = 256;
-  float ms;
 
-  T *d_a;
-  cudaEvent_t startEvent, stopEvent;
-    
+  T *d_a;    
   int n = nMB*1024*1024/sizeof(T);
 
-  // NB:  d_a(33*nMB) for stride case
   checkCuda( cudaMalloc(&d_a, n * 33 * sizeof(T)) );
 
-  checkCuda( cudaEventCreate(&startEvent) );
-  checkCuda( cudaEventCreate(&stopEvent) );
-
-  fprintf(out_offset, "# Offset, Bandwidth (GB/s):\n");
-  
   offset<<<n/blockSize, blockSize>>>(d_a, 0); // warm up
 
   for (int i = 0; i <= 32; i++) {
     checkCuda( cudaMemset(d_a, 0, n * sizeof(T)) );
 
-    checkCuda( cudaEventRecord(startEvent,0) );
+    TimerGPU Tmp;
+    Tmp.start();
+    
     offset<<<n/blockSize, blockSize>>>(d_a, i);
-    checkCuda( cudaEventRecord(stopEvent,0) );
-    checkCuda( cudaEventSynchronize(stopEvent) );
 
-    checkCuda( cudaEventElapsedTime(&ms, startEvent, stopEvent) );
-    fprintf(out_offset, "%d %f\n", i, 2*nMB/ms);
+    Tmp.stop();
+    
+    fprintf(out_offset, "%d %e\n", i, Tmp.elapsed());
   }
 
-  fprintf(out_stride, "# Stride, Bandwidth (GB/s):\n");
-
+  printf("\n\n");
   stride<<<n/blockSize, blockSize>>>(d_a, 1); // warm up
   for (int i = 1; i <= 32; i++) {
     checkCuda( cudaMemset(d_a, 0, n * sizeof(T)) );
 
-    checkCuda( cudaEventRecord(startEvent,0) );
+    TimerGPU Tmp;
+    Tmp.start();
+    
     stride<<<n/blockSize, blockSize>>>(d_a, i);
-    checkCuda( cudaEventRecord(stopEvent,0) );
-    checkCuda( cudaEventSynchronize(stopEvent) );
 
-    checkCuda( cudaEventElapsedTime(&ms, startEvent, stopEvent) );
-    fprintf(out_stride, "%d %f\n", i, 2*nMB/ms);
+    Tmp.stop();
+
+    fprintf(out_stride, "%d %g\n", i, Tmp.elapsed());
   }
 
-  checkCuda( cudaEventDestroy(startEvent) );
-  checkCuda( cudaEventDestroy(stopEvent) );
   cudaFree(d_a);
 }
 
@@ -125,8 +107,7 @@ int main(int argc, char **argv)
   
   cudaDeviceProp prop;
   
-  checkCuda( cudaSetDevice(deviceId) )
-  ;
+  checkCuda( cudaSetDevice(deviceId));
   checkCuda( cudaGetDeviceProperties(&prop, deviceId) );
   printf("Device: %s\n", prop.name);
   printf("Transfer size (MB): %d\n", nMB);
