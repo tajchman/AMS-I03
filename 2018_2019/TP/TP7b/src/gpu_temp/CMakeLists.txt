@@ -11,7 +11,7 @@ if (CUDA_FOUND)
     reduction
     )
 
-  add_executable(eqn_gpu
+  add_executable(eqn_gpu_variante
     main.cxx
     calcul.cu
     laplacien.cu
@@ -22,7 +22,7 @@ if (CUDA_FOUND)
     reduction/reduction_kernel.cu
     )
 
-  install(TARGETS eqn_gpu DESTINATION .)
+  install(TARGETS eqn_gpu_variante DESTINATION .)
 
 endif()
 

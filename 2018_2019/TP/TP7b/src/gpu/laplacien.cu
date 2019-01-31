@@ -16,7 +16,7 @@ __global__  void laplacienCuda(double * v, const double * u,
   if (i>0 && i < n-1 && j> 0 && j < n-1) {
     double L = 0.5/(dx*dx);
     
-    v[i*n + j] =   L * (4*u[i*n + j]
+    v[i*n + j] =   -L * (4*u[i*n + j]
 			- u[(i+1)*n + j] - u[(i-1)*n + j]
 			- u[i*n + (j+1)] - u[i*n + (j-1)]);
   }
@@ -25,8 +25,8 @@ __global__  void laplacienCuda(double * v, const double * u,
 void laplacien(double * v, const double * u,
 	       double dt, int n)
 {
-  dim3 blockSize(16,16);
-  dim3 gridSize((n+16)/16, (n+16)/16);
+  dim3 blockSize(32,32);
+  dim3 gridSize((n+blockSize.x)/blockSize.x, (n+blockSize.y)/blockSize.y);
 
   laplacienCuda<<<gridSize, blockSize>>>(v, u, dt, n);
 }

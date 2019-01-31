@@ -21,7 +21,7 @@ void calcul_forces(double * f,
       uu = u[i*n+j];
       
       if (i>i0 && i<i1 && j>j0 && j<j1)
-	ff = (20 - 20*uu*uu);
+	ff = sqrt(fabs(20 - 20*uu*uu));
       else
 	ff = 0.0;
 

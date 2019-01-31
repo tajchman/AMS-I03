@@ -1,7 +1,7 @@
 #ifndef _TIMERGPU_HXX
 #define _TIMERGPU_HXX
 
-#include "cuda.h"
+#include <cuda.h>
 #include <iostream>
 #include <string>
 

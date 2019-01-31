@@ -5,19 +5,26 @@ if (CUDA_FOUND)
   
   set(CUDA_NVCC_FLAGS
     "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-ccbin=${CMAKE_C_COMPILER}")
-  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -ptxas-options=-v")
 
   include_directories(
     reduction
     )
 
-  add_executable(eqn_gpu_variante
+  add_executable(eqn_gpu
     main.cxx
+    timerGPU.cu
     calcul.cu
+    laplacien.cu
+    init.cu
+    forces.cu
+    variation.cu
+    save.cu
     reduction/reduction_kernel.cu
     )
+  target_compile_options(eqn_gpu PUBLIC
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
 
-  install(TARGETS eqn_gpu_variante DESTINATION .)
+  install(TARGETS eqn_gpu DESTINATION .)
 
 endif()
 
