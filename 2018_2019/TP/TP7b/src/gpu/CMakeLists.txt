@@ -21,8 +21,8 @@ if (CUDA_FOUND)
     save.cu
     reduction/reduction_kernel.cu
     )
-  target_compile_options(eqn_gpu PUBLIC
-    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
+#  target_compile_options(eqn_gpu PUBLIC
+#    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
 
   install(TARGETS eqn_gpu DESTINATION .)
 
