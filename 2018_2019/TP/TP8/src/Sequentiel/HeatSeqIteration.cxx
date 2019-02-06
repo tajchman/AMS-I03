@@ -1,15 +1,18 @@
 #include "Heat.hxx"
 
-double Solver::Difference() {
+void Solver::Iteration() {
   
-  double diff = 0.0;
-
   int i, j, n = m_u.n(), m = m_u.m();
+  m_u.save(998);
   
-  for (i=0; i<n; i++)
-    for (j=0; j<m; j++) {
-      diff += std::abs(m_v(i,j) - m_u(i,j));
+  for (i=1; i<n-1; i++)
+    for (j=1; j<n-1; j++) {
+      m_v(i,j) = m_u(i,j)
+	- m_lambda * (4*m_u(i,j)
+                      - m_u(i+1,j) - m_u(i-1,j)
+                      - m_u(i,j+1) - m_u(i,j-1))
+        + m_f(i,j) * m_dt;
     }
-
-  return diff;
+  m_v.save(999);
 }
+

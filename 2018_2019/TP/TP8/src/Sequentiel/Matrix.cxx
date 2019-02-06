@@ -49,13 +49,13 @@ void Matrix::save(int ksave) const
     << "RangeMin=\"0\" RangeMax=\"" << m_n-1 << "\">";
   
   for (i=0; i<m_n; i++)
-    f << " " << i*1.0/m_n ;
+    f << " " << i*1.0/(m_n-1) ;
   f << "</DataArray>\n";
   f << "<DataArray type=\"Float32\" format=\"ascii\" "
     << "RangeMin=\"0\" RangeMax=\"" << m_m-1 << "\">";
   
   for (j=0; j<m_m; j++)
-    f << " " << j*1.0/m_m ;
+    f << " " << j*1.0/(m_m-1) ;
   f << "</DataArray>\n";
   
   f << "<DataArray type=\"Float32\" format=\"ascii\">\n0.0\n</DataArray>\n";

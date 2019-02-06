@@ -35,7 +35,7 @@ int main(int argc, char **argv)
   T_init.start();
     
   Matrix u(n, n, u0), f(n, n, h), v(u);
-
+  
   double diff, dt;
   Solver S(P);
   
