@@ -9,7 +9,7 @@
 #include "Matrix.hxx"
 #include "Heat.hxx"
 
-double u0(double x, double y)
+double g(double x, double y)
 {
   double r = 0.001 + 200*((x-0.5)*(x-0.5) + 2*(y - 0.3)*(y-0.3));
   return 1.0 - exp(-1.0/r);
@@ -29,32 +29,37 @@ int main(int argc, char **argv)
   
   sParams P(argc, argv);
   int n = P.n;
+  double diff, dt;
   
   Timer T_init, T_calcul, T_result;
   
   T_init.start();
     
-  Matrix u(n, n, u0), f(n, n, h), v(u);
+  Matrix u0(n, n, g, "u0"), f(n, n, h, "f");
   
-  double diff, dt;
   Solver S(P);
-  
  
   T_init.stop();
 
   T_calcul.start();
 
+  S.setInput(u0);
+  S.setForce(f);
+
   dt = 1e20;
   S.setTimeStep(dt);
-
+ 
   for (it = 0; it<P.n_it; it++) {
 
     S.Iteration();
-
+    
     diff = S.Difference();
         
-    std::cout << "\rit " << std::setw(7) << it << " variation = "
-              << std::setw(12) << diff << "             ";
+    std::cerr << "\rit " << std::setw(7) << it
+	      << " t = " << S.getTime()
+	      << " variation = " << std::setw(14)
+	      << std::setprecision(4) << diff
+	      << "             ";
     if (P.it_output > 0 && it % P.it_output == 0)
       S.getOutput().save(iSave++);
     

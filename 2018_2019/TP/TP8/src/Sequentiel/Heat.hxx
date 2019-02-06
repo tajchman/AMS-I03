@@ -15,6 +15,7 @@ public:
   const Matrix & getOutput() const;
 
   void setTimeStep(double & dT);
+  double getTime() const { return m_t; }
   
   void Iteration();
   double Difference();
@@ -24,6 +25,7 @@ public:
 protected:
   Matrix m_u, m_v, m_f;
   double m_dt_max, m_dt, m_dx, m_lambda;
+  double m_t;
 };
 
 #endif

@@ -8,7 +8,7 @@ include_directories(
   ${TBB_INCLUDE_DIRS}
   )
 
-foreach(d 0 1)
+foreach(d 0 1 3)
   add_executable(HeatTBB_${d}
     main.cxx
     Heat.cxx
@@ -16,7 +16,16 @@ foreach(d 0 1)
     HeatTBBDifference_${d}.cxx
     Matrix.cxx
 )
+endforeach()
 
+  add_executable(HeatTBB_2
+    main.cxx
+    Heat.cxx
+    HeatTBBIteration_1.cxx
+    HeatTBBDifference_1.cxx
+    MatrixTBB.cxx
+)
+foreach(d 0 1 2 3)
   target_link_libraries(HeatTBB_${d} ${TBB_LIBRARIES})
 
   install(TARGETS HeatTBB_${d} DESTINATION .)

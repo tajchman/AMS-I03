@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Heat.hxx"
 
 #include "tbb/tbb.h"

@@ -5,17 +5,39 @@
 #include <string>
 #include "Matrix.hxx"
 
+#include "tbb/tbb.h"
+
+class cMatrixCtor {
+public:
+
+  cMatrixCtor(Matrix & u, Matrix::fct f) : v(u), g(f)
+  {
+  }
+    
+  void operator() ( const tbb::blocked_range2d<int, int>& r ) const {
+    
+    int i,j;
+    double x, y;
+    for (i=r.rows().begin(); i<r.rows().end(); i++)
+      for (j=r.cols().begin(); j<r.cols().end(); j++) {
+	x = i*1.0/(v.n()-1);
+	y = j*1.0/(v.m()-1);
+	v(i,j) = g(x, y);
+      }
+  }
+  
+private:
+  Matrix & v;
+  Matrix::fct g;
+};
+
 Matrix::Matrix(int n, int m, Matrix::fct f_init, const char *name)
   : m_n(n), m_m(m), m_coefs(n*m), m_name(name)
 {  
-  int i,j;
-  double x, y;
-  for (i=0; i<n; i++)
-    for (j=0; j<n; j++) {
-      x = i*1.0/(n-1);
-      y = j*1.0/(n-1);
-      (*this)(i,j) = f_init(x, y);
-    }
+  cMatrixCtor MC(*this, f_init);
+  tbb::blocked_range2d<int, int> 
+    Indices(0, n, 10, 0, n, 10);
+  tbb:parallel_for(Indices, MC);
 }
 
 void Matrix::save(int ksave) const

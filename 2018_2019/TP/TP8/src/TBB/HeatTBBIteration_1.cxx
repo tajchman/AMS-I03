@@ -38,5 +38,6 @@ void Solver::Iteration() {
        Indices(1, m_u.n()-1, 40, 1, m_u.m()-1, 40);
   
   tbb:parallel_for(Indices, It);
+  m_t += m_dt;
 }
 

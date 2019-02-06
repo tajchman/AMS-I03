@@ -5,12 +5,12 @@
 
 struct sParams {
   sParams()
-    : n(2000), n_it(1000), it_output(0), n_th(1)
+    : n(1000), n_it(100), it_output(0), n_th(1)
   {
   }
 
   sParams(int argc, char **argv)
-    : n(2000), n_it(1000), it_output(0), n_th(1)
+    : n(1000), n_it(100), it_output(0), n_th(1)
   {
     for (int iarg = 1; iarg < argc; iarg++) {
       const char * s = argv[iarg];

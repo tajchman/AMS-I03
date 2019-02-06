@@ -11,8 +11,8 @@ fi
 
 
 CMAKE_FLAGS=" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-#CMAKE_FLAGS+=" -DCMAKE_BUILD_TYPE=Debug"
-CMAKE_FLAGS+=" -DCMAKE_BUILD_TYPE=Release"
+CMAKE_FLAGS+=" -DCMAKE_BUILD_TYPE=Debug"
+#CMAKE_FLAGS+=" -DCMAKE_BUILD_TYPE=Release"
 
 case "x$OSTYPE" in
     xdarwin*)
@@ -32,7 +32,7 @@ case "x$OSTYPE" in
         ;; 
 esac
 
-for d in Sequentiel TBB PyCuda Kokkos
+for d in C++11 Sequentiel TBB PyCuda Kokkos
 do
     echo
     mkdir -p $DIR/build/$d

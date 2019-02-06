@@ -36,5 +36,7 @@ void Solver::Iteration() {
        Indices(1, m_u.n()-1, 40, 1, m_u.m()-1, 40);
   
   It(Indices);
+  m_t += m_dt;
+
 }
 

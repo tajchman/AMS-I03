@@ -6,11 +6,14 @@
 #include "Params.hxx"
 
 Solver::Solver(const sParams & p)
-  : m_u(p.n, p.n), m_v(p.n, p.n), m_f(p.n, p.n)
+  : m_u(p.n, p.n, "u_solver"), 
+    m_v(p.n, p.n, "v_solver"), 
+    m_f(p.n, p.n, "f_solver")
 {
   m_dx = 1.0/(p.n-1);
   m_dt_max = m_dt = 0.5*m_dx*m_dx;
-  m_lambda = m_dt/(m_dx*m_dx);
+  m_lambda = 0.25*m_dt/(m_dx*m_dx);
+  m_t = 0.0;
 }
 
 void Solver::setForce(const Matrix &f)
@@ -20,7 +23,7 @@ void Solver::setForce(const Matrix &f)
 
 void Solver::setInput(const Matrix &u)
 {
-  m_u = u;
+  m_u = u; m_v = m_u;
 }
 
 const Matrix & Solver::getOutput() const
@@ -34,7 +37,7 @@ void Solver::setTimeStep(double & dT)
     dT = m_dt_max;
 
   m_dt = dT;
-  m_lambda = m_dt/(m_dx*m_dx);
+  m_lambda = 0.25*m_dt/(m_dx*m_dx);
 }
 
 void Solver::Shift()

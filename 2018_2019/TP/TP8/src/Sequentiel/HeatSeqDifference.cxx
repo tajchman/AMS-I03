@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Heat.hxx"
 
 double Solver::Difference() {
