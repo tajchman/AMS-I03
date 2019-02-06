@@ -40,43 +40,48 @@ class cDifference {
 public:
 
   cDifference(const Matrix & uu,
-	      const Matrix & vv,
-	      double & dd)
-    : u(uu), v(vv), diff(dd) {}
+	      const Matrix & vv)
+    : u(uu), v(vv), diff(0.0) {}
   
-  void operator() ( const tbb::blocked_range2d<int, int>& r ) const {
+  cDifference(cDifference& x, tbb::split )
+    : u(x.u), v(x.v), diff(0.0) {}
+  
+  void operator() ( const tbb::blocked_range2d<int, int>& r ) {
     
     int i,j;
-    diff = 0.0;
+    double local_diff = 0.0;
     for (i=r.rows().begin(); i<r.rows().end(); i++)
       for (j=r.cols().begin(); j<r.cols().end(); j++)
-	diff += std::abs(v(i,j) - u(i,j));
-  }
+	local_diff += std::abs(v(i,j) - u(i,j));
 
+    diff = local_diff;
+  } 
+
+  void join(const cDifference & y ) {diff += y.diff; }
+
+  double result() const { return diff; }
+  
 private:
   const Matrix & v;
   const Matrix & u;
-  double & diff; 
+  double diff; 
 };
 
 void Iteration(Matrix &v, const Matrix &u, const Matrix &f,
 	       double lambda, double dt)
 {
   cIteration It(v, u, f, lambda, dt);
-  tbb::blocked_range2d<int, int> Indices(1, u.n()-1, 4, 1, u.m()-1, 8);
+  tbb::blocked_range2d<int, int> Indices(1, u.n()-1, 40, 1, u.m()-1, 40);
   
   tbb:parallel_for(Indices, It);
 }
 
 double Difference(const Matrix &v, const Matrix &u)
-{
-  double diff;
+{  
+  cDifference Dif(v, u);
+  tbb::blocked_range2d<int, int> Indices(1, u.n()-1, 40, 1, u.m()-1, 40);
   
-  tbb::blocked_range2d<int, int> Indices(1, u.n()-1, 4, 1, u.m()-1, 8);
-  cDifference Dif(v, u, diff);
-  
-  Dif(Indices);
-  tbb:parallel_for(Indices, Dif);
+  tbb:parallel_reduce(Indices, Dif);
 
-  return diff;
+  return Dif.result();
 }

@@ -8,6 +8,13 @@
 #include "heat.hxx"
 
 #include "tbb/tbb.h"
+#include "tbb/task_scheduler_init.h"
+
+tbb::task_scheduler_init *init;
+
+void InitCalcul()
+{
+}
 
 class cIteration {
 public:

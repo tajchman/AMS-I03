@@ -1,11 +1,13 @@
 #include <cstdlib>
+#include <cstring>
 #include <cmath>
 #include <iostream>
 #include <fstream>
 
-#include "timer.hxx"
+#include "Timer.hxx"
+#include "Params.hxx"
 #include "Matrix.hxx"
-#include "heat.hxx"
+#include "Heat.hxx"
 
 double u0(double x, double y)
 {
@@ -18,61 +20,53 @@ double h(double x, double y)
   return x > 0.5 ? 1.0 : 0.0;
 }
 
+
 int main(int argc, char **argv)
 {
 
-  int i,j,n = argc > 1 ? strtol(argv[1], NULL, 10) : 2000;
-  int it, n_it = argc > 2 ? strtol(argv[2], NULL, 10) :  1000;
-  int it_output = argc > 3 ? strtol(argv[3], NULL, 10) :  0;
-
+  int i,j,it;
+  int iSave = 0;
+  
+  sParams P(argc, argv);
+  int n = P.n;
+  
   Timer T_init, T_calcul, T_result;
   
   T_init.start();
     
-  Matrix u(n,n), v(n,n), f(n,n);
+  Matrix u(n, n, u0), f(n, n, h), v(u);
 
-  double diff, lambda, dt;
+  double diff, dt;
+  Solver S(P);
   
-  double x, y;
-  for (i=0; i<n; i++)
-    for (j=0; j<n; j++) {
-      x = i*1.0/(n-1);
-      y = j*1.0/(n-1);
-      u(i,j) = u0(x, y);
-      f(i,j) = h(x, y);
-    }
-
-  v = u;
-  
+ 
   T_init.stop();
 
   T_calcul.start();
-  lambda = 0.125;
-  dt = 0.5/(n*n);
 
-  for (it = 0; it<n_it; it++) {
+  dt = 1e20;
+  S.setTimeStep(dt);
 
-    Iteration(v, u, f, lambda, dt);
+  for (it = 0; it<P.n_it; it++) {
 
-    diff = Difference(u, v);
+    S.Iteration();
+
+    diff = S.Difference();
         
     std::cout << "\rit " << std::setw(7) << it << " variation = "
               << std::setw(12) << diff << "             ";
-    if (it_output > 0 && it % it_output == 0)
-      save(it/it_output, v);
+    if (P.it_output > 0 && it % P.it_output == 0)
+      S.getOutput().save(iSave++);
     
-    Matrix::swap(u,v);
+    S.Shift();
   }
   T_calcul.stop();
 
-  T_result.start();
-  std::ofstream fOut("resultat.dat");
-  fOut << u << std::endl;
-  T_result.stop();
-  
+  if (P.it_output > 0)
+    S.getOutput().save(iSave);
+
   std::cerr << "\n\tT init   : " << T_init.elapsed() << "s " 
 	    << "\n\tT calcul : " << T_calcul.elapsed() << "s"
-	    << "\n\tT sortie : " << T_result.elapsed() << "s"
 	    << std::endl;
   return 0;
 }

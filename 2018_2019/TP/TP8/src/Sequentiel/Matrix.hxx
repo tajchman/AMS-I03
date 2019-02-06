@@ -1,4 +1,5 @@
 #ifndef __MATRIX_HXX__
+#define __MATRIX_HXX__
 
 #include <vector>
 #include <iomanip>
@@ -7,8 +8,13 @@ class Matrix {
 
 public:
 
-  Matrix(int n, int m) : m_n(n), m_m(m), m_coefs(n*m) {}
+  typedef double (*fct) (double, double);
+  
+  Matrix(int n, int m)
+    : m_n(n), m_m(m), m_coefs(n*m) {}
 
+  Matrix(int n, int m, Matrix::fct f);
+  
   double operator()(int i, int j) const  { return m_coefs[i*m_m + j]; }
   double & operator()(int i, int j)      { return m_coefs[i*m_m + j]; }
 
@@ -17,13 +23,15 @@ public:
 
   int n() const { return m_n; }
   int m() const { return m_m; }
+
+  void save(int kSave) const;
   
   static void swap(Matrix &u, Matrix &v) {
     std::swap(u.m_coefs, v.m_coefs);
     std::swap(u.m_m, v.m_m);
     std::swap(u.m_n, v.m_n);
   }
-  
+
 private:
   std::vector<double> m_coefs;
   int m_m, m_n;
