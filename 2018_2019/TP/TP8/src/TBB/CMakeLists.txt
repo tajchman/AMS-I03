@@ -8,6 +8,10 @@ include_directories(
   ${TBB_INCLUDE_DIRS}
   )
 
-add_executable(heatTBB main.cxx heatTBB.cxx save.cxx)
+foreach(d 0 1)
+  add_executable(heatTBB_${d} main.cxx heatTBB_${d}.cxx save.cxx)
+  target_link_libraries(heatTBB_${d} ${TBB_LIBRARIES})
+  install(TARGETS heatTBB_${d} DESTINATION .)
+endforeach()
 
-install(TARGETS heatTBB DESTINATION .)
+

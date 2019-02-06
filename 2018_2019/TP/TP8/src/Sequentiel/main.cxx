@@ -23,6 +23,7 @@ int main(int argc, char **argv)
 
   int i,j,n = argc > 1 ? strtol(argv[1], NULL, 10) : 2000;
   int it, n_it = argc > 2 ? strtol(argv[2], NULL, 10) :  1000;
+  int it_output = argc > 3 ? strtol(argv[3], NULL, 10) :  0;
 
   Timer T_init, T_calcul, T_result;
   
@@ -49,19 +50,16 @@ int main(int argc, char **argv)
   lambda = 0.125;
   dt = 0.5/(n*n);
 
-  int it_output = n_it > 10000 ? n_it/1000 : 1;
-
   for (it = 0; it<n_it; it++) {
 
     Iteration(v, u, f, lambda, dt);
 
     diff = Difference(u, v);
         
-    if (it % it_output == 0) {
-      std::cout << "\rit " << std::setw(7) << it << " variation = "
-		<< std::setw(12) << diff << "             ";
-      save(it, v);
-    }
+    std::cout << "\rit " << std::setw(7) << it << " variation = "
+              << std::setw(12) << diff << "             ";
+    if (it_output > 0 && it % it_output == 0)
+      save(it/it_output, v);
     
     Matrix::swap(u,v);
   }
