@@ -16,9 +16,6 @@ int main()
   Trinome T1(a,b,c);
   auto T2 = [a,b,c](double x)->double { return a*x*x + b*x + c; };
 
-  // char z1 = T1;
-  // char z2 = T2;
-  
   for (double x = 0.0; x < 11.0; x += 1.0)
     std::cerr << x << " " << T1(x) << " " << T2(x) << std::endl;
   

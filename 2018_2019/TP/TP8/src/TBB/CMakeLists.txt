@@ -18,12 +18,18 @@ foreach(d 0 1 3)
 )
 endforeach()
 
-  add_executable(HeatTBB_2
-    main.cxx
-    Heat.cxx
-    HeatTBBIteration_1.cxx
-    HeatTBBDifference_1.cxx
-    MatrixTBB.cxx
+add_executable(HeatTBB_2
+  main.cxx
+  Heat.cxx
+  HeatTBBIteration_1.cxx
+  HeatTBBDifference_1.cxx
+  MatrixTBB.cxx
+)
+
+set_target_properties(HeatTBB_3  PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
 )
 foreach(d 0 1 2 3)
   target_link_libraries(HeatTBB_${d} ${TBB_LIBRARIES})
