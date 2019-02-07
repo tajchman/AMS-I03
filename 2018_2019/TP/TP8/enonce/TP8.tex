@@ -1,0 +1,57 @@
+\include{debut}
+
+\begin{document}
+%    \layout
+    
+    \begin{center}
+    	\LARGE TP 8. Outils de plus haut niveau pour la programmation parallèle
+    \end{center}
+
+	\section*{Préparation}
+    Se connecter sur la machine \texttt{rhum} à l'ENSTA.
+    \medskip
+    
+    Récupérer l'archive compressée {\tt TP8.tar.gz} et extraire les fichiers qui sont contenus dans cette archive.
+    
+  	Se placer dans le répertoire {\tt TP8}:
+    \begin{script}
+        cd TP8
+    \end{script}
+
+    et préparer les compilations dans les points suivants avec la commande ci-dessous:
+    \begin{script}
+        ./build.sh
+    \end{script}
+	
+\section{Outils logiciels}
+
+Dans cette séance, on testera plusieurs outils qui permettent de faire de la programmation parallèle à un niveau plus élevé.
+Ces outils proposent des fonctions 
+\begin{itemize}
+	\item qui simplifient la configuration et le lancement des calculs parallèles,
+	\item qui améliorent le placement des données,
+	\item qui codent des algorithmes parallèles standards.
+\end{itemize}
+
+En général, les performances obtenues ne sont pas les meilleures possibles (qu'on peut obtenir avec une programmation "manuelle" très soignée). Mais, ils représentent un bon compromis entre facilité de développement et niveau de performance.
+
+Il est donc conseillé de tester ces outils avant de se lancer dans une progammation bas niveau.
+
+\section{Elements de C++, niveau 11}
+
+Plusieurs de ces outils utilisent des fonctionnalités C++11 (foncteurs, lambda-fonctions, typage automatique).
+
+\begin{question}
+Dans le répertoire {\tt src/C++11}., examiner les fichiers sources {\tt main1.cxx}, {\tt main2.cxx}, {\tt main3.cxx}, {\tt main4.cxx}, {\tt main5.cxx} et {\tt main6.cxx}
+qui utilisent ces fonctionnalités.
+
+Exécuter les programmes compilés à partir de ces fichiers. Interpréter les résultats.
+\end{question}
+
+\section{Librairie TBB}
+
+
+   
+
+
+\end{document}
