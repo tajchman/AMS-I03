@@ -14,25 +14,7 @@ CMAKE_FLAGS=" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 CMAKE_FLAGS+=" -DCMAKE_BUILD_TYPE=Debug"
 #CMAKE_FLAGS+=" -DCMAKE_BUILD_TYPE=Release"
 
-case "x$OSTYPE" in
-    xdarwin*)
-        export CC=clang
-        export CXX=clang++
-        ;;
-    xlinux-gnu*)
-        if [ "x$CUDA_GCC" == "x" ]
-        then
-            export CC=gcc
-            export CXX=g++       
-        else
-            export CC=$CUDA_GCC
-            export CXX=${CUDA_GCC/%gcc/g++}
-            CMAKE_FLAGS+=" -DCMAKE_CUDA_HOST_COMPILER=${CXX}"
-        fi
-        ;; 
-esac
-
-for d in C++11 Sequentiel TBB PyCuda Kokkos
+for d in C++11 Sequentiel TBB PyCuda
 do
     printf "\n\t%30s\n\n" $d
 
@@ -41,12 +23,38 @@ do
 
     echo "cmake ${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src/$d"
 
-    if [ "x${d}" = "xKokkos" ]
-    then
-      CXX=${KOKKOS_ROOT}/bin/nvcc_wrapper
-    fi
-
-    cmake ${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src/$d || exit -1
-    make install || exit -1
+    cmake ${CMAKE_FLAGS} \
+       -DCMAKE_INSTALL_PREFIX=$DIR/install \
+        $DIR/src/$d || exit -1
+    make || exit -2
+    make install || exit -3
     
 done
+
+for k in OPENMP CUDA
+do
+    d=kokkos_$k
+    printf "\n\t%30s\n\n" $d
+
+    mkdir -p $DIR/build/$d
+    cd $DIR/build/$d
+
+    echo "cmake ${CMAKE_FLAGS} -DKOKKOS_ENABLE_$k=ON -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src/Kokkos"
+
+    echo k=$k
+    export KOKKOS_ROOT=${KOKKOS_BASE}/$d
+    if [ "$k" == "CUDA" ]
+    then
+       export CXX=$KOKKOS_ROOT/bin/nvcc_wrapper
+    fi
+    echo $CXX
+
+    cmake ${CMAKE_FLAGS} \
+       -DKOKKOS_ENABLE_$k=ON \
+       -DCMAKE_INSTALL_PREFIX=$DIR/install \
+        $DIR/src/Kokkos || exit -1
+    make || exit -2
+    make install || exit -3
+    
+done
+
