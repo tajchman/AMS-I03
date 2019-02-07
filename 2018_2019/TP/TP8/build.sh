@@ -34,10 +34,18 @@ esac
 
 for d in C++11 Sequentiel TBB PyCuda Kokkos
 do
-    echo
+    printf "\n\t%30s\n\n" $d
+
     mkdir -p $DIR/build/$d
     cd $DIR/build/$d
+
     echo "cmake ${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src/$d"
+
+    if [ "x${d}" = "xKokkos" ]
+    then
+      CXX=${KOKKOS_ROOT}/bin/nvcc_wrapper
+    fi
+
     cmake ${CMAKE_FLAGS} -DCMAKE_INSTALL_PREFIX=$DIR/install $DIR/src/$d || exit -1
     make install || exit -1
     
