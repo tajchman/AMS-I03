@@ -37,28 +37,35 @@
 	\bigskip
 	
 	\question{}2
-	On suppose utiliser la machine qui contient 1 processeur avec 2 c{\oe}urs et chaque c{\oe}ur possède une mémoire cache séparée:
+	\medskip
+	
+	D\'efinir les localit\'es spatiale et temporelle.
+	
+	Des deux versions suivantes du code qui calcule le produit matrice-vecteur, laquelle sera probablement plus rapide pour [\tt n] grand ? M\^eme question pour [\tt n] petit ?
+	
+	\lstinputlisting[language=C++]{Q2/maxlocal.hxx}
 	
 	
 	\question{}5
 	\medskip
-	On veut paralléliser avec OpenMP, la fonction C++ :
+	
+	   On veut parall\'eliser avec OpenMP, la fonction C++ :
 	\lstinputlisting[language=C++]{Q2/maxlocal.hxx}
 	
 	\begin{quotation}\noindent%
 		Le but de cette fonction est de calculer, sur les composantes d'un vecteur {\tt v}, les indices des {\tt maxima locaux} ($i$ tels que $v_i > v_{i-1}$ et $v_i > v_{i+1}$).
 		
 		\noindent%
-		On suppose que le nombre de maxima locaux est inférieur à la taille du vecteur d'indices {\tt imax}.
+		On suppose que le nombre de maxima locaux est inf\'erieur \`a la taille du vecteur d'entiers {\tt imax} (dans lequel seront rang\'es les indices de maxima locaux).
 	\end{quotation}
 	 
- La parallélisation de cette fonction en ajoutant une pragma simple suivant le modèle ``OpenMP grain fin'' est impossible (le compilateur refuse de compiler quand on ajoute la pragma), ou en tout cas compliquée.
+ La parall\'elisation de cette fonction en ajoutant une pragma simple suivant le mod\`ele ``OpenMP grain fin'' est impossible (le compilateur refuse de compiler quand on ajoute la pragma), ou en tout cas compliqu\'ee.
  
 	 \begin{itemize}
 	 	\item Expliquer pourquoi.
-	 	\item Modifier la fonction en la parallélisant suivant le modèle ``OpenMP grain grossier''.
-	 	\item La version parallèle fournit un résultat correct mais peut-être différent de celui de la version séquentielle. Quelle est cette différence ?
-	 	\item Question optionnelle : Indiquer une méthode pour obtenir si possible un résultat identique.
+	 	\item Modifier la fonction en la parall\'elisant suivant le mod\`ele ``OpenMP grain grossier''.
+	 	\item La version parall\`ele fournit un r\'esultat correct mais peut-\^etre diff\'erent de celui de la version s\'equentielle. Quelle est cette diff\'erence ?
+	 	\item Question optionnelle : Indiquer une m\'ethode pour obtenir si possible un r\'esultat identique.
 	 \end{itemize}
 	 
          
