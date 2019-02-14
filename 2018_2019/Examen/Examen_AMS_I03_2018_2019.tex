@@ -3,6 +3,7 @@
 \setlength{\textheight}{600pt}
 \setlength{\oddsidemargin}{0pt}
 \usepackage[T1]{fontenc}
+\usepackage{color}
 \usepackage{listings}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -13,11 +14,27 @@
    numbers=left
 }
 
+\lstnewenvironment{algorithm}[1][] %defines the algorithm listing environment
+{   
+	\lstset{ %this is the stype
+		mathescape=true,
+		numbers=left, 
+		numberstyle=\tiny,
+		basicstyle=\normalsize, 
+		keywordstyle=\color{black}\bfseries\em,
+		keywords={,input, output, return, datatype, function, in, if, else, for, to, while, begin, end, } %add the keywords you want, or load a language as Rubens explains in his comment above.
+		numbers=left,
+		xleftmargin=.04\textwidth,
+		#1 % this is to add specific settings to an usage of this environment (for instnce, the caption and referable label)
+	}
+}
+{}
+
 \def\Frac#1#2{\frac{\displaystyle #1}{\displaystyle #2}}
 \newcounter{cptPoints}
 
 \newcounter{cptQuestions}
-\newcommand\question[2]{\bigskip\par\addtocounter{cptQuestions}{1}\addtocounter{cptPoints}{#2}{\bf Question #1 n\textsuperscript{o} \thecptQuestions} (#2 points)\par}
+\newcommand\question[2]{\bigskip\par\addtocounter{cptQuestions}{1}\addtocounter{cptPoints}{#2}{\bf Question #1 n\textsuperscript{o} \thecptQuestions} (#2 \ifnum #2>1 points\else point\fi)\par}
 
 \newcounter{cptProblems}
 \newcommand\problem[1]{\bigskip\rule{3cm}{.1pt}\par\addtocounter{cptProblems}{1}{\bf Probl\` eme n\textsuperscript{o} \thecptProblems \ (#1)}\medskip\par}
@@ -32,25 +49,77 @@
 			Supports de cours autoris\'es.
 		\end{center}
 	\bigskip
-	Dans les questions o\`u on demande d'\'ecrire des lignes de code, les erreurs de syntaxe ne seront pas prises en compte (ponctuation, nom exact des fonctions, ordre des arguments, etc.). Du moment que vous indiquez clairement ce que fait chaque ligne de code ajout\'ee pour r\'epondre aux questions.
-		
-	\bigskip
+	
+	{\bf Dans la première partie (questions 1 \`a 3), le langage de programmation que vous utilisez pour r\'epondre aux questions (pseudo-code, C, C++, fortran, OpenMP, MPI) importe peu et la syntaxe ne sera pas \'evalu\'ee.
+	
+	Du moment que vous indiquiez clairement (par des commentaires) ce que font les ligne de codes que vous ajoutez pour r\'epondre aux questions.
+	
+	Dans la deuxi\`eme partie (questions 4 \`a 8), la syntaxe des instructions Cuda devra \^etre correcte.}
 	
 	\question{}2
-	\medskip
 	
-	D\'efinir les localit\'es spatiale et temporelle.
+	\begin{itemize}
+		\item D\'efinir les notions de localit\'e spatiale et localité temporelle.
+	\end{itemize}
 	
-	Des deux versions suivantes du code qui calcule le produit matrice-vecteur, laquelle sera probablement plus rapide pour [\tt n] grand ? M\^eme question pour [\tt n] petit ?
+	On suppose que les coefficents des matrices sont rang\'es lignes par lignes (comme en C/C++).
+	Ci-dessous, deux versions d'un pseudo-code qui calcule le produit matrice-vecteur :
+
+\vspace{-10pt}
+\begin{minipage}[t]{0.5\textwidth}
+\begin{algorithm}
+input: matrix A, vector V
+output: vector W
+
+N $\gets$ A.nrows()
+M $\gets$ A.ncolumns()
+
+for i = 0 to N-1
+   W(i)$\gets$0.0
+   for j = 0 to M-1
+      W(i)$\gets$W(i)+A(i,j)*V(j)
+   end
+end       
+\end{algorithm}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+\begin{algorithm}
+input: matrix A, vector V
+output: vector W
+
+N $\gets$ A.nrows()
+M $\gets$ A.ncolumns()
+
+for i = 0 to N-1
+   W(i)$\gets$0.0
+end
+
+for j = 0 to M-1
+   for i = 0 to N-1
+       W(i)$\gets$W(i)+A(i,j)*V(j)
+   end
+end       
+\end{algorithm}
+\end{minipage}
+
 	
-	\lstinputlisting[language=C++]{Q2/maxlocal.hxx}
-	
-	
+	\begin{itemize}
+		\item Laquelle sera probablement plus rapide pour {\tt n} et {\tt m} grands ?
+		\item M\^eme question pour {\tt n} et {\tt m} petits ?
+		\item Justifiez vos réponses.
+	\end{itemize}
+
+\vfill\eject
+
 	\question{}5
 	\medskip
 	
-	   On veut parall\'eliser avec OpenMP, la fonction C++ :
+	On veut parall\'eliser avec OpenMP, la fonction C++ :
+\begin{center}
+	\begin{minipage}{10cm}
 	\lstinputlisting[language=C++]{Q2/maxlocal.hxx}
+\end{minipage}
+\end{center}
 	
 	\begin{quotation}\noindent%
 		Le but de cette fonction est de calculer, sur les composantes d'un vecteur {\tt v}, les indices des {\tt maxima locaux} ($i$ tels que $v_i > v_{i-1}$ et $v_i > v_{i+1}$).
@@ -67,8 +136,104 @@
 	 	\item La version parall\`ele fournit un r\'esultat correct mais peut-\^etre diff\'erent de celui de la version s\'equentielle. Quelle est cette diff\'erence ?
 	 	\item Question optionnelle : Indiquer une m\'ethode pour obtenir si possible un r\'esultat identique.
 	 \end{itemize}
+\vfill\eject
 	 
+\question{}4
          
+{\bf Programmation hybride MPI - OpenMP}
+\medskip
+
+On suppose avoir acc\`es \'a une machine parall\`ele \`a $N$ n\oe uds de calcul o\`u chaque n\oe ud est constitu\'e d'un processeur multi-c\oe urs avec $M$ c\oe urs.
+\medskip
+
+On considère une matrice $L$ triangulaire inf\'erieure:
+
+$$
+\begin{array}{ll}
+L(i,j) = 0 & \hbox{pour } i < j \\
+L(i,j) \hbox{ est non nul } & \hbox{pour } i = j \\
+L(i,j) \hbox{ est quelconque } & \hbox{pour } i > j \\
+\end{array}
+$$
+
+Un peudo-code séquentiel pour le produit matrice-vecteur utilisant ce type de matrice, s'écrit:
+\begin{center}
+\begin{minipage}{10cm}
+\begin{algorithm}
+input: matrix L, vector V
+output: vector W
+		
+N $\gets$ V.n()
+				
+for i = 0 to N-1
+   for j = 0 to i
+      W(i) $\gets$ W(i) + L(i,j)*V(j)
+   end
+end       
+\end{algorithm}
+\end{minipage}
+\end{center}
+
+\'Ecrire un pseudo-code qui utilise une programmation hybride MPI-OpenMP pour effectuer ce calcul sur la machine parall\`ele. 
+
+On indiquera notamment dans le pseudo-code :
+\begin{itemize}
+	\item Comment la matrice et les vecteurs sont distribu\'es sur les diff\'erents n\oe uds.
+	\item Comment est r\'eparti le travail entre les diff\'erents c\oe urs d'un m\^eme n\oe ud.
+	\item Quand sont effectu\'es les \'echanges de messages.
+\end{itemize}
+
+Il faudra r\'epartir le mieux possible la charge de travail entre les n\oe uds et les c\oe urs.
+
+\medskip
+{\bf Pour rappel, l'exactitude des syntaxes MPI et OpenMP se sera pas prise prise en compte dans l'\'evaluation de votre r\'eponse.}
+ 
+\vfill\eject
+
+\question{}1
+
+\begin{itemize}
+	\item Donner 2 diff\'erences d'architecture mat\'erielle (li\'ees au parall\'elisme) entre un CPU et un GPU.
+\end{itemize}
+
+\question{}2
+
+\begin{itemize}
+	\item Qu’est ce qu’un kernel CUDA ? 
+	\item Quel est le mot clé permettant de déclarer un kernel CUDA et quelle est la syntaxe spécifique pour lancer l’exécution d’un kernel CUDA ?
+	\item Quelles sont les instructions pour d\'efinir le parall\'elisme utilis\'e par l'ex\'ecution d'un noyau CUDA ?
+\end{itemize}
+
+\question{}1
+
+\begin{itemize}
+	\item Quelles sont les diff\'erences principales dans la d\'efinition et l'ex\'ecution des noyaux Cuda et OpenCL ?
+\end{itemize}
+
+\question{}1
+\begin{itemize}
+	\item Expliquer ce qu'est la divergence de branches sur GPU. 
+	
+	Quel est son inconv\'enient ?
+\end{itemize}
+
+\question{}4
+
+\medskip 
+
+Soit $A$ une matrice ``proche'' de la matrice identit\'e $Id$ ($Id_{i,j} = 1$ si $i = j$ et $0$ sinon). L'algorithme suivant calcule une approximation de la matrice inverse de $A$ :
+
+$$
+A^{-1} \approx Id + \lim_{k=1}^{K} \ (Id - A)^k
+$$
+
+On suppose que cette approximation converge quand $K$ tend vers $\infty$.
+
+\begin{itemize}
+	\item \'Ecrire un programme principal en C ou C++, qui impl\'emente cet algorithme. Ce programme ex\'ecutera une s\'erie de noyaux Cuda en s'arr\^etant d\`es que le dernier terme ajout\'e \`a la somme ci-dessus est inf\'erieur \`a une quantit\'e donn\'ee.
+	\item On fera attention \`a limiter le nombre de transferts entre la m\'emoire du CPU et celle du GPU.
+\end{itemize}
+
 \bigskip \rule{3cm}{.1pt}
 
 Total : \thecptPoints \ points
