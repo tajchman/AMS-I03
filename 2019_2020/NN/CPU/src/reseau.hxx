@@ -10,10 +10,14 @@
 
 #include "vector.hxx"
 #include "matrix.hxx"
+#include <math.h>
 
 class reseau {
 public:
 	reseau(const std::vector<size_t> & layers);
+	int forward(const std::vector<unsigned char> &v);
+
+	double sigmoid(double x) { return 1.0/(1.0 + exp(x));}
 
 private:
 	size_t m_nlayers;
