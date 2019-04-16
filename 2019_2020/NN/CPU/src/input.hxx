@@ -15,17 +15,19 @@ class imageStream;
 
 class input {
 public:
-	input(const char * labelName, const char * imagesName);
-	~input();
-	bool next(vector &p, double &v);
-	size_t n() { return m_n; }
+  input(const char * labelName, const char * imagesName);
+  ~input();
+  bool next(vector &p, double &v);
+  size_t n() { return m_n; }
 
 private	:
-	labelStream *labelFile;
-	imageStream *imageFile;
-	std::vector<unsigned char> buffer;
-	unsigned char vbuffer;
-	size_t m_n;
+  labelStream *labelFile;
+  imageStream *imageFile;
+  std::vector<unsigned char> buffer;
+  unsigned char vbuffer;
+  size_t m_n;
+
+  size_t k;
 };
 
 #endif /* INPUT_HXX_ */
