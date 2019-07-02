@@ -17,7 +17,7 @@
 \newcounter{cptPoints}
 
 \newcounter{cptQuestions}
-\newcommand\question[2]{\bigskip\par\addtocounter{cptQuestions}{1}\addtocounter{cptPoints}{#2}{\bf Question #1 n\textsuperscript{o} \thecptQuestions} (#2 points)\par}
+\newcommand\question[2]{\bigskip\par\addtocounter{cptQuestions}{1}\addtocounter{cptPoints}{#2}{\bf Question #1 n\textsuperscript{o} \thecptQuestions} (#2 \ifnum#2>1 points\else point\fi)\par}
 
 \newcounter{cptProblems}
 \newcommand\problem[1]{\bigskip\rule{3cm}{.1pt}\par\addtocounter{cptProblems}{1}{\bf Probl\` eme n\textsuperscript{o} \thecptProblems \ (#1)}\medskip\par}
@@ -37,14 +37,17 @@
 	\bigskip
 	
 	\question{}2
-	\medskip
 	
-	D\'efinir les localit\'es spatiale et temporelle.
-	
-	Des deux versions suivantes du code qui calcule le produit matrice-vecteur, laquelle sera probablement plus rapide pour [\tt n] grand ? M\^eme question pour [\tt n] petit ?
-	
-	\lstinputlisting[language=C++]{Q2/maxlocal.hxx}
-	
+	\begin{itemize}
+		\item D\'efinir les localit\'es spatiale et temporelle.
+		
+		\item Des deux versions ci-dessous du code qui calculent le produit matrice-vecteur, laquelle sera probablement plus rapide pour {\tt n} et {\tt m} grands ? M\^eme question pour {\tt n} et {\tt m} petits ?  Motivez vos r\'eponses.
+		
+		\lstinputlisting[language=C++]{Q1/matmult1.hxx}
+		\lstinputlisting[language=C++]{Q1/matmult2.hxx}
+		
+	\end{itemize}
+
 	
 	\question{}5
 	\medskip
@@ -65,9 +68,30 @@
 	 	\item Expliquer pourquoi.
 	 	\item Modifier la fonction en la parall\'elisant suivant le mod\`ele ``OpenMP grain grossier''.
 	 	\item La version parall\`ele fournit un r\'esultat correct mais peut-\^etre diff\'erent de celui de la version s\'equentielle. Quelle est cette diff\'erence ?
-	 	\item Question optionnelle : Indiquer une m\'ethode pour obtenir si possible un r\'esultat identique.
+	 	\item Question optionnelle : indiquer une m\'ethode pour obtenir si possible un r\'esultat identique.
 	 \end{itemize}
 	 
+	 
+	 \question{}2
+	 
+	 Question cours Hybride OpenMP-MPI
+	 
+	 \question{}3
+
+     Hybride OpenMP-MPI
+
+	 \question{}2
+	 
+	 Question cours Cuda
+	 
+	 \question{}1
+
+     \medskip
+     D\'ecrivez les principales diff\'erences entre Cuda et OpenCL (mode de d\'efinition d'un noyau de calcul et ex\'ecution de ce noyau sur un GPU).
+
+	 \question{}5
+     
+     Programmation Cuda
          
 \bigskip \rule{3cm}{.1pt}
 
