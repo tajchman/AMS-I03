@@ -49,7 +49,8 @@
 			Supports de cours autoris\'es.
 		\end{center}
 	\bigskip
-	
+	Dans les questions o\`u on demande d'\'ecrire des lignes de code, les erreurs de syntaxe ne seront pas prises en compte (ponctuation, nom exact des fonctions, ordre des arguments, etc.). Du moment que vous indiquez clairement ce que fait chaque ligne de code ajout\'ee pour r\'epondre aux questions.
+		
 	{\bf Dans la première partie (questions 1 \`a 3), le langage de programmation que vous utilisez pour r\'epondre aux questions (pseudo-code, C, C++, fortran, OpenMP, MPI) importe peu et la syntaxe ne sera pas \'evalu\'ee.
 	
 	Du moment que vous indiquiez clairement (par des commentaires) ce que font les ligne de codes que vous ajoutez pour r\'epondre aux questions.
@@ -57,6 +58,7 @@
 	Dans la deuxi\`eme partie (questions 4 \`a 8), la syntaxe des instructions Cuda devra \^etre correcte.}
 	
 	\question{}2
+	\medskip
 	
 	\begin{itemize}
 		\item D\'efinir les notions de localit\'e spatiale et localité temporelle.
@@ -64,13 +66,13 @@
 	
 	On suppose que les coefficents des matrices sont rang\'es lignes par lignes (comme en C/C++).
 	Ci-dessous, deux versions d'un pseudo-code qui calcule le produit matrice-vecteur :
-
+	
 \vspace{-10pt}
 \begin{minipage}[t]{0.5\textwidth}
 \begin{algorithm}
 input: matrix A, vector V
 output: vector W
-
+	
 N $\gets$ A.nrows()
 M $\gets$ A.ncolumns()
 
@@ -110,11 +112,11 @@ end
 	\end{itemize}
 
 \vfill\eject
-
+	
 	\question{}5
 	\medskip
 	
-	On veut parall\'eliser avec OpenMP, la fonction C++ :
+	   On veut parall\'eliser avec OpenMP, la fonction C++ :
 \begin{center}
 	\begin{minipage}{10cm}
 	\lstinputlisting[language=C++]{Q2/maxlocal.hxx}
@@ -220,6 +222,7 @@ Il faudra r\'epartir le mieux possible la charge de travail entre les n\oe uds e
 \question{}4
 
 \medskip 
+     D\'ecrivez les principales diff\'erences entre Cuda et OpenCL (mode de d\'efinition d'un noyau de calcul et ex\'ecution de ce noyau sur un GPU).
 
 Soit $A$ une matrice ``proche'' de la matrice identit\'e $Id$ ($Id_{i,j} = 1$ si $i = j$ et $0$ sinon). L'algorithme suivant calcule une approximation de la matrice inverse de $A$ :
 
@@ -233,7 +236,7 @@ On suppose que cette approximation converge quand $K$ tend vers $\infty$.
 	\item \'Ecrire un programme principal en C ou C++, qui impl\'emente cet algorithme. Ce programme ex\'ecutera une s\'erie de noyaux Cuda en s'arr\^etant d\`es que le dernier terme ajout\'e \`a la somme ci-dessus est inf\'erieur \`a une quantit\'e donn\'ee.
 	\item On fera attention \`a limiter le nombre de transferts entre la m\'emoire du CPU et celle du GPU.
 \end{itemize}
-
+         
 \bigskip \rule{3cm}{.1pt}
 
 Total : \thecptPoints \ points
