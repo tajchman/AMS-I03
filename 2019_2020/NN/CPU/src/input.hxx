@@ -10,8 +10,8 @@
 
 #include "vector.hxx"
 
-class labelStream;
-class imageStream;
+struct labelStream;
+struct imageStream;
 
 class input {
 public:

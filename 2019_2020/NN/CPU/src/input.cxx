@@ -8,6 +8,7 @@
 #include "input.hxx"
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <cstdint>
 #include <cstddef>
@@ -25,7 +26,7 @@ struct stream {
   stream(const char *fileName, uint32_t magicNumber)
     : file(fileName, std::ios::binary) {
     uint32_t m = readInt32();
-    if (not m == magicNumber)
+    if (! m == magicNumber)
       throw std::invalid_argument("not a labels file");
     std::cout << "\nmagic number     : " <<  m << std::endl;
     n = readInt32();
@@ -82,7 +83,7 @@ struct imageStream {
   }
   
   bool next(std::vector<unsigned char> & coefs) {
-    if (not (coefs.size() == nrows*ncols))
+    if (! (coefs.size() == nrows*ncols))
       coefs.resize(nrows*ncols);
     f.readBytes(coefs);
     return true;
@@ -97,8 +98,8 @@ input::input(const char *labelName, const char *imageName)
   vbuffer = 0;
   labelFile = labelName ? new labelStream(labelName) : NULL;
   imageFile = imageName ? new imageStream(imageName) : NULL;
-  if (imageFile and labelFile)
-    if (not (labelFile->n() == imageFile->n()))
+  if (imageFile && labelFile)
+    if (! (labelFile->n() == imageFile->n()))
       throw  std::invalid_argument("not the same sizes of label file and image file");
   m_n = imageFile ? imageFile->ncols * imageFile->nrows : 0;
   k = 0;
@@ -124,20 +125,19 @@ bool input::next(vector &p, double &v)
   if (ok)
     v = vbuffer;
 
-  ok = ok and imageFile->next(buffer);
+  ok = ok && imageFile->next(buffer);
   if (ok)
     for (size_t i=0; i<n; i++) p[i] = buffer[i];
 
   k=k+1;
   if (k < 100) {
-    cImage I( imageFile->ncols,  imageFile->nrows);
+    cImage I( int(imageFile->ncols),  int(imageFile->nrows));
     I.coef = buffer;
     
-    std::string s("train_");
-    s += std::to_string(k);
-    s += ".png";
+    std::ostringstream s;
+	s << "train_" << k << ".png";
     
-    I.write_png(s.c_str());
+    I.write_png(s.str().c_str());
   }
   
   return ok;

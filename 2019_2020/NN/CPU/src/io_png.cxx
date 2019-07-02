@@ -8,7 +8,7 @@
 
 #include "io_png.hxx"
 
-#include <unistd.h>
+//#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -26,7 +26,8 @@ void abort_(const char * s, ...)
 
 void cImage::read_png (const char *file_name)
 {
-  int nb, x, y, xx, c;
+  int x, y, xx, c;
+  size_t nb;
   
   png_structp png_ptr;
   png_infop info_ptr;
@@ -68,7 +69,7 @@ void cImage::read_png (const char *file_name)
   int w = png_get_image_width(png_ptr, info_ptr);
   int h = png_get_image_height(png_ptr, info_ptr);
   
-  resize(w, h, nb/w);
+  resize(w, h, int(nb/w));
   color_type = png_get_color_type(png_ptr, info_ptr);
   bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 
@@ -96,7 +97,8 @@ void cImage::read_png (const char *file_name)
 
 void cImage::write_png(const char* file_name)
 {
-  int nb, x, y, c, xx;
+  size_t nb;
+  int x, y, c, xx;
   png_structp png_ptr;
   png_infop info_ptr;
   png_bytep * row_pointers;
