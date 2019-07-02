@@ -54,7 +54,7 @@ reseau::reseau(const std::vector<size_t> & layers)
 
 }
 
-int reseau::forward(const vector & image)
+size_t reseau::forward(const vector & image)
 {
   size_t i,j,k,imax,kmax;
   double s;
@@ -78,7 +78,7 @@ int reseau::forward(const vector & image)
       std::cerr << std::endl;
   }
 
-  int idx = 0;
+  size_t idx = 0;
   double smax = m_neuron_layer[m_nlayers-1][0];
   for (i=1; i<m_neuron_layer[m_nlayers-1].size(); i++) {
       if (fabs(m_neuron_layer[m_nlayers-1][i]) > fabs(smax)) {

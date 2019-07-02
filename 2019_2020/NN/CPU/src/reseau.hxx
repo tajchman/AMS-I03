@@ -15,7 +15,7 @@
 class reseau {
 public:
   reseau(const std::vector<size_t> & layers);
-  int forward(const vector &v);
+  size_t forward(const vector &v);
 
   double sigmoid(double x) { return 1.0/(1.0 + exp(-x));}
 
