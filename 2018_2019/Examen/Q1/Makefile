@@ -4,4 +4,4 @@ all: Q1_1 Q1_2
 	g++ $^ -o $@
 
 clean:
-	rm -f Q1_[12]
+	rm -f Q1_1 Q1_2
