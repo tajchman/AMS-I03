@@ -18,11 +18,11 @@
 # For conditions of distribution and use, see the disclaimer
 # and license in png.h
 
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(VERSION 3.1)
+# cmake_minimum_required(VERSION 3.1)
+# cmake_policy(VERSION 3.1)
 
-project(libpng C ASM)
-enable_testing()
+# project(libpng C ASM)
+# enable_testing()
 
 set(PNGLIB_MAJOR 1)
 set(PNGLIB_MINOR 6)
@@ -36,7 +36,7 @@ include(GNUInstallDirs)
 
 # Allow users to specify location of Zlib.
 # Useful if zlib is being built alongside this as a sub-project.
-option(PNG_BUILD_ZLIB "Custom zlib Location, else find_package is used" OFF)
+#option(PNG_BUILD_ZLIB "Custom zlib Location, else find_package is used" OFF)
 
 if(NOT PNG_BUILD_ZLIB)
   find_package(ZLIB REQUIRED)
@@ -63,6 +63,7 @@ option(PNG_HARDWARE_OPTIMIZATIONS "Enable hardware optimizations" ON)
 set(PNG_PREFIX "" CACHE STRING "Prefix to add to the API function names")
 set(DFA_XTRA "" CACHE FILEPATH "File containing extra configuration settings")
 
+message(STATUS ${ZLIB_LIBRARY})
 if(PNG_HARDWARE_OPTIMIZATIONS)
 
 # set definitions and sources for arm
