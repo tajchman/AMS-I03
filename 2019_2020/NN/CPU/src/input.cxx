@@ -140,5 +140,5 @@ bool input::next(vector &p, double &v)
     I.write_png(s.str().c_str());
   }
   
-  return ok;
+  return (ok);
 }

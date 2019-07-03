@@ -26,5 +26,5 @@ int main(int argc, char ** argv)
       w = NN.forward(p);
       std::cerr << "v = " << v << " w = " << w << std::endl;
   }
-  return 0;
+  return (0);
 }

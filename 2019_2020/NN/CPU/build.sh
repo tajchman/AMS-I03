@@ -23,8 +23,5 @@ mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
 cmake -G"Eclipse CDT4 - Unix Makefiles" -DCMAKE_BUILD_TYPE=${MODE} \
-	-USYSTEM_PNG \
-        -DPNG_PNG_INCLUDE_DIR=${BASE_DIR}/../Libs/install/include \
-        -DPNG_LIBRARIES=${BASE_DIR}/../Libs/install/lib:${BASE_DIR}/../Libs/install/lib64 \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR $SRC_DIR
 make install
