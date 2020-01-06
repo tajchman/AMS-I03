@@ -62,6 +62,8 @@ constexpr char sep = '\\';
 constexpr char sep = '/';   
 #endif
 
+constexpr int zoom = 2;
+
 struct ImageViewer {
 
   int nx, ny;
@@ -97,28 +99,36 @@ struct ImageViewer {
     current = -1;
     
     buf2 = new unsigned char[nx * ny];
-    buffer = new char[nx*ny];
-
+    buffer = new char[sizeof(unsigned long)*nx*ny*zoom*zoom];
+    
     int s = DefaultScreen(_d);
-    _win = XCreateSimpleWindow(_d, RootWindow(_d, s), 0, 0, nx, ny, 1,
-                              BlackPixel(_d, s), WhitePixel(_d, s));
+    _win = XCreateSimpleWindow(_d, RootWindow(_d, s),
+                               0, 0, nx*zoom, ny*zoom, 0,
+                               BlackPixel(_d, s), WhitePixel(_d, s));
     _gc = XCreateGC(_d, _win, 0, NULL);
     XSelectInput(_d, _win, ExposureMask | KeyPressMask);
     XMapWindow(_d, _win);
 
     Visual *v = DefaultVisual(d, 0);
     int depth = DefaultDepth(d, s);
-    _image = XCreateImage(d, v, depth, ZPixmap, 0, (char *) buffer,
-                         nx, ny, 8, 0);
+    std::cerr << depth << std::endl;
+    _image = XCreateImage(d, v, depth, ZPixmap, 0, buffer,
+                         nx*zoom, ny*zoom, 8, 0);
   }
 
   void Draw(int i) {
+    int x, y;
     if (i != current) {
       current = i;
       fData.read((char *) buf2, nx * ny);
-      for (int p=0; p<nx*ny; p++)
-        buffer[p] = (char) buf2[p];
-
+      for (int q=0; q<ny; q++)
+        for (int p=0; p<nx; p++) {
+          unsigned long pix = (1+256*(1+256)) * buf2[p + q*nx];
+          for (y=0; y<zoom; y++)
+            for (x=0; x<zoom; x++)
+              XPutPixel(_image, p*zoom+x, q*zoom+y, pix);
+        }
+      
       unsigned char *s;
       int j,k;
       for (k=0, s = buf2; k<ny; k++) {
@@ -128,8 +138,8 @@ struct ImageViewer {
       }
     }
     
-    std::cout << "Draw" << std::endl;
-    XPutImage(_d, _win, _gc, _image, 0, 0, 0, 0, f*nx, f*ny);
+    XPutImage(_d, _win, _gc, _image, 0, 0, 0, 0, nx*zoom, ny*zoom);
+    std::cerr << "<n> for the next image, <escape> to stop" << std::endl;
   }
 
   void reDraw()
@@ -138,20 +148,7 @@ struct ImageViewer {
 };
 
 
-std::string getPathName(const std::string& s) {
-
-  size_t i = s.rfind(sep, s.length());
-  if (i != std::string::npos) {
-    return(s.substr(0, i+1));
-  }
-
-  return("./");
-}
-
 int main(int argc, char **argv) {
-
-  // std::string FileData = getPathName(argv[0]) + sep + argv[1];
-  // std::string FileLabel = getPathName(argv[0]) + sep + argv[2];
 
   int item = 0;   
   Display *d;
@@ -170,16 +167,22 @@ int main(int argc, char **argv) {
                     "train-images.idx3-ubyte",
                     "train-labels.idx1-ubyte");
   i = 0;
-  std::string msg = std::to_string(i) + ": ";
+
   while (1) {
     XNextEvent(d, &e);
     if (e.type == Expose) {
       Image.Draw(i);
-    //   XFillRectangle(d, w, DefaultGC(d, s), 20, 20, 10, 10);
-    //  XDrawString(d, w, DefaultGC(d, s), 10, 50, msg, strlen(msg));
     }
-    if (e.type == KeyPress)
-      break;
+    if (e.type == KeyPress) {
+      const char *c = XKeysymToString(XLookupKeysym(&e.xkey, 0));
+      if (strcmp(c, "KP_Add") == 0 || strcmp(c, "n") == 0)  {
+        std::cerr << "next" << std::endl;
+        i = i+1;
+        Image.Draw(i);
+      }
+      else if ( e.xkey.keycode == 0x09 )
+        break;
+    }
   }
  
   XCloseDisplay(d);
