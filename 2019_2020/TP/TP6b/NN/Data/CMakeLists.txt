@@ -1,7 +1,0 @@
-cmake_minimum_required(3.2)
-project(View)
-find_package(X11)
-message(${X11_LIBRARIES})
-include_directories(${X11_INCLUDE_DIR})
-add_executable(ViewMNIST ViewMNIST.cxx)
-target_link_libraries(ViewMNIST ${X11_LIBRARIES})
