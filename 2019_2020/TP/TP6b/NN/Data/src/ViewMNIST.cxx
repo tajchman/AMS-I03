@@ -1,5 +1,3 @@
-
-
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -62,7 +60,7 @@ constexpr char sep = '\\';
 constexpr char sep = '/';   
 #endif
 
-constexpr int zoom = 2;
+constexpr int zoom = 4;
 
 struct ImageViewer {
 
@@ -79,14 +77,12 @@ struct ImageViewer {
   GC _gc;
   Visual *_v;
   Window _win;
-  int f;
   
   ImageViewer(Display *d, const char * dataName, const char * labelName) :
     _d(d),
     fData(dataName, std::wifstream::in | std::wifstream::binary),
     fLabel(labelName, std::wifstream::in | std::wifstream::binary)
   {
-    f = 1;
     int MagicNumber(0);
     fData.read((char *)&MagicNumber, 4);
     MagicNumber = bswap_32(MagicNumber);
@@ -119,8 +115,14 @@ struct ImageViewer {
   void Draw(int i) {
     int x, y;
     if (i != current) {
+      if (current > 0 && i == current - 1) {
+	std::streamoff offset = -2*nx*ny;
+	fData.seekg(offset, std::ios_base::cur);
+      }
       current = i;
+
       fData.read((char *) buf2, nx * ny);
+      
       for (int q=0; q<ny; q++)
         for (int p=0; p<nx; p++) {
           unsigned long pix = (1+256*(1+256)) * buf2[p + q*nx];
@@ -176,9 +178,18 @@ int main(int argc, char **argv) {
     if (e.type == KeyPress) {
       const char *c = XKeysymToString(XLookupKeysym(&e.xkey, 0));
       if (strcmp(c, "KP_Add") == 0 || strcmp(c, "n") == 0)  {
-        std::cerr << "next" << std::endl;
-        i = i+1;
-        Image.Draw(i);
+	if (i < Image.nItems) {
+	  std::cerr << "next" << std::endl;
+	  i = i+1;
+	  Image.Draw(i);
+	}
+      }
+      else if (strcmp(c, "KP_Substract") == 0 || strcmp(c, "p") == 0)  {
+        if (i>0) {
+	  std::cerr << "previous" << std::endl;
+	  i = i-1;
+	  Image.Draw(i);
+	}
       }
       else if ( e.xkey.keycode == 0x09 )
         break;
