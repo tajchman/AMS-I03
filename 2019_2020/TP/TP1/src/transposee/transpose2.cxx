@@ -1,5 +1,5 @@
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <cmath>
 #include "Matrice.hxx"
 #include "timer.hxx"
@@ -24,31 +24,31 @@ int main(int argc, char **argv)
 
   Timer t;
   {
-  t.start();
+    t.start();
 
     Matrice A(n,m), B(m,n);
-
+  
     init(A);
 
-  t.stop();
-  std::cerr << "init    time : " << t.elapsed()  << " s" << std::endl;
+    t.stop();
+    std::cerr << "init    time : " << t.elapsed() << " s" << std::endl;
 
-  t.reinit();
-  t.start();
+    t.reinit();
+    t.start();
 
-  int i, j;
-  for (j=0; j<m; j++)
-    for (i=0; i<n; i++)
-      B(j,i) = A(i,j);
+    int i, j;
+    for (j=0; j<m; j++)
+      for (i=0; i<n; i++)
+        B(j,i) = A(i,j);
 
-  t.stop();
+    t.stop();
 
-  if (n<10 && m<10) {
+    if (n<10 && m<10) {
       std::cout << "A" << std::endl << A << std::endl;
       std::cout << "B" << std::endl << B << std::endl;
-  }
+    }
 
-  std::cerr << "compute time : " << t.elapsed() << " s"  << std::endl;
+    std::cerr << "compute time : " << t.elapsed() << " s"  << std::endl;
   }
 
   t_total.stop();
