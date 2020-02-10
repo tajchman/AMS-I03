@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+#$ -N BCODE_NN
+#$ -pe orte NN
+#$ -cwd
+#$ -j y
+#
+export LD_LIBRARY_PATH=/share/apps/gcc/current/lib64:$LD_LIBRARY_PATH
+
+mpirun --map-by core -display-map CODE OPTIONS
+
