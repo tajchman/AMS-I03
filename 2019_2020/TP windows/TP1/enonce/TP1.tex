@@ -1,0 +1,276 @@
+\include{debut}
+
+\begin{document}
+%    \layout
+    
+    \begin{center}
+    	\LARGE TP 1. Optimisation séquentielle
+    \end{center}
+
+     \section*{Conseil}
+    
+    Dans les séances du cours I03 du master AMS, on fournira des fichiers à utiliser comme support de cours ou de TP.
+    
+    On vous conseille de créer un répertoire vide dans votre espace de travail où vous copierez ces fichiers et où vous travaillerez dans le cadre de ce cours.
+    
+    Ceci afin d'éviter de mélanger les fichiers de ce cours avec ceux utilisés lors d'autres enseignements.
+
+	\section*{Préparation}
+    
+    Récupérer l'archive compressée {\tt TP1.tar.gz} et extraire les fichiers qui sont contenus dans cette archive:
+    \begin{script}
+        cd <repertoire dans votre espace de travail>
+        cp \textasciitilde tajchman/AMSI03/2018-11-30/TP1.tar.gz .
+        tar xvfz TP1.tar.gz
+    \end{script}
+
+    Se placer dans le répertoire {\tt TP1}:
+    \begin{script}
+        cd TP1
+    \end{script}
+    et compiler avec la commande ci-dessous:
+    \begin{script}
+        ./build.sh
+    \end{script}
+	
+    \begin{remarque}
+{\tt build.sh} est un fichier de commandes unix (dans le répertoire {\tt TP1}) qui contient les commandes pour compiler les codes dans plusieurs configurations. Les différentes configurations sont : 
+\begin{itemize}
+	\item une version ``release'', optimisée par le compilateur (répertoire \newline{\tt install/Release}),
+	\item une version ``debug'' permettant le suivi de l'exécution par un ``debugger'' et qui donne plus d'informations avec les outils présentés plus loin (répertoire {\tt install/Debug}),
+	\item une version ``profile''  : ``debug'' + comptage des appels de fonctions + échantillonage en cours d'exécution (répertoire {\tt install/Profile}).
+\end{itemize}
+
+Règle suggérée :
+\begin{itemize}
+	\item Pendant la mise au point du code: utiliser la version debug.
+	\item Pour (essayer d') améliorer le temps d'exécution : utiliser la version profile ou la version debug + outil de mesure du temps
+	\item Quand on est satisfait de l'état du code : utiliser la version optimisée.
+\end{itemize}
+\end{remarque}
+
+	\section{Outils de mesure du temps calcul}
+    Il existe de nombreux moyens de mesurer le temps d'exécution de code ou de parties de code:
+    \begin{itemize}[label=\textbullet, parsep=1pt]
+        \item Commande unix {\tt time} : mesure globale (temps ressenti par l'utilisateur) 
+        
+        \item Fonctions définies par le langage et utilisables depuis l'intérieur du code : 
+        
+    	\begin{itemize}[label=$\ast$, parsep=1pt]
+    		\item {\tt second(...)} (fortran),
+    		\item {\tt gettimeofday(...)} (C/C++),
+    		\item {\tt std::clock} (C++),
+    		\item {\tt tic/toc} (matlab),
+    		\item ...
+        \end{itemize}
+        
+        Permet de mesurer le temps d'exécution d'un groupe d'instructions.
+        
+        Penser à vérifier dans la documentation quelle est la précision des mesures.
+        
+        \item[\textbullet] Librairies, par exemple PAPI
+        
+         (\url{https://icl.cs.utk.edu/projects/papi/wiki/Main_Page})
+        
+        Permet de consulter des compteurs système très bas niveau (par exemple : nombre d'opérations flottantes, utilisation des caches, utilisation des registres, etc.)
+        
+        \item Outils externes de ``profilage'', ajoutent automatiquement des points de mesure dans le code (gprof), s'interposent entre le code et le système pour récuperer des informations (valgrind, perf)
+        
+        \begin{quote}
+            exemples: {\tt gprof}, {\tt perf}, {\tt callgrind (valgrind)} (outils sous unix/linux), {\tt vtune} (intel), etc.
+        \end{quote}
+        
+        Permet de connaître des informations intermédiaires : nombre d'appels et temps moyen d'exécution de fonctions par exemple.
+        
+    \end{itemize}
+
+    \medskip
+    Les outils de mesure perturbent les temps de calcul et, en général, il faut les utiliser avec une version debug. Ils donnent seulement une indication sur les endroits du code les plus intéressants à optimiser. De toute façon, à la fin, il faut mesurer les temps calculs sur la version ``release'' (on a parfois des surprises) .
+    
+    \subsection{Appels explicites de fonctions système depuis le code source}
+    
+    Le fichier d'inclusion {\tt src/util/timer.hxx} contient une classe C++ qui utilise la fonction standard C++11 
+    \begin{quote}
+    	\tt std::chrono::high\_resolution\_clock::now
+    \end{quote}
+     pour mesurer le temps entre 2 positions dans un code. 
+    
+    Cette classe est utilisée dans le fichier source {\tt src/valeur\_propre/power1.cxx} qui initialise une matrice $100\times100$ et calcule sa plus grande valeur propre (en valeur absolue), par la méthode de la puissance : 
+    $$\lim_{k \rightarrow \infty} \vert\vert A^k v\vert\vert / \vert\vert A^{k-1} v\vert\vert.$$
+    
+    \begin{question}    	
+    	Examiner le fichier {\tt src/valeur\_propre/power1.cxx} et la classe {\tt Timer} (fichier {\tt src/util/timer.hxx}).
+    	
+    	Exécutez le code {\tt install/Release/power1} (compilé au début du TP). Le code affiche, entre autres, le temps d'initialisation de la matrice, le temps de calcul de la valeur propre et le temps total de calcul.
+    	
+    	Ré-exécutez le code plusieurs fois.
+    	
+    	Les temps mesurés varient légèrement. Expliquer cette variation.
+    \end{question}
+
+\subsection{Mesure globale du temps calcul}
+
+
+\begin{question}
+	Utiliser la commande {\tt time} pour afficher le temps de calcul total ressenti par l'utilisateur (temps entre le moment où l'utilisateur appuie sur la touche ``Entrée'' du clavier et le moment où l'exécution se termine):
+        
+    \begin{script}
+    time install/Release/power1
+    \end{script}
+	
+	Le temps affiché par {\tt time} est normalement (un peu) supérieur au temps total affiché par le code (voir Question 1.). Expliquez la différence.
+	
+\end{question}
+    
+\textbf{Conclusions : quand on mesure des temps calcul, la machine doit exécuter le moins possible de tâches non liées au code, et il faut faire une étude statistique sur plusieurs exécutions.}
+\bigskip
+
+\subsection{Utilisation d'un outil de ``profilage''}
+
+Ce type d'outil insère automatiquement pendant la compilation des instructions à chaque entrées et sorties dans des fonctions du code source. On dit aussi qu'on instrumente le code source.
+
+On utilisera ici un outil standard {\tt gprof}, disponible avec la suite de compilateurs \newline {\tt gcc/g++/gfortran}. 
+
+\vfill\eject
+\begin{question}
+	Au début du TP, la commande build.sh a généré une version ``profile'' (répertoire {\tt install/Profile}), utilisable avec {\tt gprof}.
+	
+	Pour information, cela consiste à utiliser les options du compilateur ``-g'' (compilation en mode debug) et ``-pg'' (compilation en mode ``profile'').
+	
+	Exécuter le code en version ``profile'':
+    \begin{quote}
+	\tt install/Profile/power1
+    \end{quote}
+	
+	L'exécution produit un fichier nommé {\tt gmon.out}. Les informations contenues dans ce fichier doivent être retraitées par la commande
+	
+    \begin{quote}
+	\tt gprof install/Profile/power1 >\& res.gprof
+    \end{quote}
+
+	Examiner le contenu du fichier {\tt res.gprof}
+\end{question}
+
+\subsection{Utilisation de l'outil {\tt valgrind}.}
+
+{\tt valgrind} exécute les codes dans un environnement contrôlé (machine, processeur, mémoire virtuelles) où tous les appels système, les accès à la mémoire, etc., sont examinés.
+
+Dans ce mode de fonctionnement, les temps de calcul sont beaucoup plus grands, mais néanmoins significatifs quand on compare les temps de calcul de différentes parties et/ou versions du code.
+    
+\begin{remarque}
+On utilise souvent {\tt valgrind} pour vérifier l'utilisation correcte de la mémoire.
+\end{remarque}
+
+\begin{question}	
+	Exécuter le code en version ``debug'' sous contrôle de {\tt valgrind}:
+	
+    \begin{quote}
+	\tt valgrind {-}-tool=callgrind install/Debug/power1
+    \end{quote}
+	
+	L'outil produit des informations dans un fichier {\tt callgrind.out.XXX} (chaque exécution de {\tt valgrind} génère un fichier de nom différent).
+	
+	Il est possible d'examiner le contenu de ce fichier, mais {\tt valgrind} fournit un utilitaire pratique :
+	
+    \begin{quote}
+	     \tt kcachegrind callgrind.out.XXX
+    \end{quote}
+	où il faut remplacer {\tt callgrind.out.XXX} par le nom exact du fichier produit.
+	
+	Utilisez cet outil pour explorer les mesures de l'exécution du code.
+\end{question}
+
+\subsection{Utilisation de l'outil perf}
+
+{\tt perf}, un outil disponible sous linux peut être très intéressant, en particulier pour des études de très bas niveau (mesure précise des accès mémoire, profilage du langage machine, compteurs bas niveau, etc.). L'outil utilise les fonctionnalités du noyau Linux pour mesurer les événements (compteurs internes du systèmes). Son utilisation efficace requiert une certaine expertise.
+
+Il n'est pas disponible sur les machines utilisées pendant les TP, mais vous êtes encouragés à le tester s'il est installé sur d'autres machines.
+
+Il s'utilise sur des codes compilés en mode debug en 2 étapes :
+
+Exécution du code sous contrôle de perf
+\begin{quote}
+	\tt perf record -e instructions <code>
+\end{quote}
+(il existe d'autres options que celle utilisée ici)
+
+Examen du rapport de perf
+\begin{quote}
+	\tt perf report
+\end{quote}
+(permet de naviguer en mode texte dans les résultats, des options de perf report produisent des documents texte, html, pdf ou autres).
+
+\vfill\eject
+
+\section{Techniques d'optimisation séquentielle}
+
+On utilise ici un code qui calcule (une approximation de) la plus grande valeur propre d'une matrice, dans le fichier source {\tt src/valeur\_propre/power1.cxx} (voir le 1.1 page 2).
+L'essentiel du temps calcul est passé dans la fonction {\tt produit\_matrice\_vecteur}.
+
+\subsection{Tentative d'optimisation 1}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power1} et {\tt install/Release/power2}, comparer les temps de calcul.
+	
+	Expliquer les différences de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power1.cxx} (utilisé dans le code power1) \\ et {\tt src/valeur\_propre/power2.cxx} (utilisé dans le code power2).
+\end{question}
+
+\begin{question}
+	Faire la même comparaison avec les codes {\tt install/Release/power1f} et \linebreak {\tt install/Release/power2f}, qui utilisent respectivement des sources fortran {\tt src/valeur\_propre/power1.f90} et {\tt src/valeur\_propre/power2.f90}.
+
+        Expliquer les différences de résultats entre la version C++ ({\tt power1.cxx} et {\tt power2.cxx}) et fortran 90 ({\tt power1.f90} et {\tt power2.f90}).
+\end{question}
+	
+\subsection{Tentative d'optimisation 2}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power2} et {\tt install/Release/power3}, comparer les temps de calcul.
+
+Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power2.cxx} (utilisé dans le code power2) \\ et {\tt src/valeur\_propre/power3.cxx} (utilisé dans le code power3).
+\end{question}
+
+\subsection{Tentative d'optimisation 3}
+
+\begin{question}
+	Exécuter les codes {\tt install/Release/power3} et {\tt install/Release/power4}, comparer les temps de calcul.
+	
+	Expliquer les différences éventuelles de temps calcul en examinant les fichiers sources C++ {\tt src/valeur\_propre/power3.cxx} (utilisé dans le code power3) \\ et {\tt src/valeur\_propre/power4.cxx} (utilisé dans le code power4).
+\end{question}
+
+\vfill\eject
+\section{Transposition de matrice}
+
+\subsection{Parcours par lignes ou par colonnes}
+
+On s'intéresse ici à l'opération de transposition des matrices:
+
+$$
+A^T = (a^T_{i,j})_{i=1, \ldots, n, j=1,\ldots, n} = (a_{j,i})_{i=1, \ldots, n, j=1,\ldots, n}
+$$
+où $a_{i,j}$ est le coefficient de la matrice d'origine à la ligne $i$ et la colonne $j$.
+
+\begin{question}
+	Exécuter les codes \\ {\tt install/Release/transpose1} et {\tt install/Release/transpose2}.
+	
+	Comparer les temps de calcul et expliquer les différences en examinant les fichiers source \\ {\tt src/transposee/transpose1.cxx} et {\tt src/transposee/transpose2.cxx}.
+\end{question}
+\subsection{Algorithme par bloc - version 1}
+
+On garde la structure des matrices comme dans {\tt transpose1.cxx} et {\tt transpose2.cxx}.
+Par contre le parcours de indices de matrice est différent.
+
+\begin{question}
+	Exécuter le code {\tt install/Release/transpose3}.
+	
+	Comparer les temps de calcul avec les 2 versions précédentes et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose3.cxx}.
+\end{question}
+\subsection{Algorithme par bloc - version 2}
+
+Dans cette version, on utilise une structure des matrices par bloc. Chaque bloc est lui-même une matrice à coefficients scalaires. L'algorithme s'écrit formellement de la même façon.
+
+\begin{question}
+	Exécuter le code {\tt install/Release/transpose4}.
+	
+	Comparer les temps de calcul avec la version précédente et expliquer les différences en examinant le fichier source {\tt src/transposee/transpose4.cxx}.
+	\end{question}
+\end{document}
