@@ -3,6 +3,9 @@
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
 
 Values::Values(const Parameters * prm)
 {
@@ -20,13 +23,15 @@ Values::Values(const Parameters * prm)
 void Values::init(double (*f)(double, double, double))
 {
   int i, j, k;
-  int imin = m_p->imin(0);
-  int jmin = m_p->imin(1);
-  int kmin = m_p->imin(2);
+  int ith = omp_get_thread_num();
 
-  int imax = m_p->imax(0);
-  int jmax = m_p->imax(1);
-  int kmax = m_p->imax(2);
+  int imin = m_p->thread_imin(0, ith) ;
+  int jmin = m_p->thread_imin(1, ith) ;
+  int kmin = m_p->thread_imin(2, ith) ;
+
+  int imax = m_p->thread_imax(0, ith) ;
+  int jmax = m_p->thread_imax(1, ith) ;
+  int kmax = m_p->thread_imax(2, ith) ;
 
   if (f) {
     double dx = m_p->dx(0), dy = m_p->dx(1), dz = m_p->dx(2);
@@ -34,14 +39,12 @@ void Values::init(double (*f)(double, double, double))
     double ymin =  m_p->xmin(1);
     double zmin =  m_p->xmin(2);
 
-#pragma omp parallel for default(shared) private(i,j,k)
     for (i=imin; i<imax; i++)
       for (j=jmin; j<jmax; j++)
         for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
   }
   else {
-#pragma omp parallel for default(shared) private(i,j,k)
     for (i=imin; i<imax; i++)
       for (j=jmin; j<jmax; j++)
         for (k=kmin; k<kmax; k++)

@@ -34,14 +34,12 @@ void Values::init(double (*f)(double, double, double))
     double ymin =  m_p->xmin(1);
     double zmin =  m_p->xmin(2);
 
-#pragma omp parallel for default(shared) private(i,j,k)
     for (i=imin; i<imax; i++)
       for (j=jmin; j<jmax; j++)
         for (k=kmin; k<kmax; k++)
           operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
   }
   else {
-#pragma omp parallel for default(shared) private(i,j,k)
     for (i=imin; i<imax; i++)
       for (j=jmin; j<jmax; j++)
         for (k=kmin; k<kmax; k++)
@@ -101,14 +99,14 @@ void Values::plot(int order) const {
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax-1  << " " 
+    << jmin << " " << jmax-1  << " " 
+    << kmin << " " << kmax-1 
     << "\">\n"
     << "<Piece Extent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax-1  << " " 
+    << jmin << " " << jmax-1  << " " 
+    << kmin << " " << kmax-1 
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";
