@@ -1,6 +1,5 @@
 
 #if defined(_WIN32)
-#define _CRT_SECURE_NO_WARNINGS
 #include <direct.h>
 #elif defined(__unix)
 #include <unistd.h>
@@ -36,7 +35,7 @@ void stime(char * buffer, int size)
 Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
   m_out = NULL;
-  m_help = options_contain("h") or long_options_contain("help");
+  m_help = options_contain("h") || long_options_contain("help");
 
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
@@ -78,7 +77,7 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 bool Parameters::help()
 {
   if (m_help) {
-    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
+    std::cerr << "Usage : " << m_command << " <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
               << "convection=0/1: convection term (default: 1)\n"
@@ -96,9 +95,8 @@ bool Parameters::help()
 
 Parameters::~Parameters()
 {
-  if (m_out) {
+  if (m_out)
     delete m_out;
-  }
 }
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
@@ -117,7 +115,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 
 std::ostream & Parameters::out()
 {
-  if (not m_out) {
+  if (! m_out) {
 
     char buffer[256];
     stime(buffer, 256);

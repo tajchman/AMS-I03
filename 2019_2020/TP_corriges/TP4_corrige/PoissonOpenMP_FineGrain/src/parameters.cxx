@@ -1,6 +1,5 @@
 
 #if defined(_WIN32)
-#define _CRT_SECURE_NO_WARNINGS
 #include <direct.h>
 #elif defined(__unix)
 #include <unistd.h>
@@ -40,7 +39,7 @@ void stime(char * buffer, int size)
 Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
   m_out = NULL;
-  m_help = options_contain("h") or long_options_contain("help");
+  m_help = options_contain("h") || long_options_contain("help");
 
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
@@ -132,7 +131,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 
 std::ostream & Parameters::out()
 {
-  if (not m_out) {
+  if (! m_out) {
 
     char buffer[256];
     stime(buffer, 256);
