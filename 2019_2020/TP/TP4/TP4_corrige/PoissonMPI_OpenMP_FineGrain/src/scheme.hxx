@@ -16,14 +16,17 @@
 class Scheme {
 
 public:
-  Scheme(const Parameters *P);
+  Scheme() : codeName("PoissonMPI"), m_timers(4)  {
+   m_timers[0].name() = "init";
+   m_timers[1].name() = "solve";
+   m_timers[2].name() = "comm";
+   m_timers[3].name() = "other";
+  }
   ~Scheme();
   size_t getDomainSize(int dim) const;
 
-  void initialize();
+  void initialize(const Parameters *P);
   double present();
-
-  double iteration();
   bool solve(unsigned int nSteps);
   double variation();
   void terminate();
@@ -34,7 +37,7 @@ public:
   std::string codeName;
 
 protected:
-  double m_t, m_dt, m_lambda;
+  double m_t;
   size_t m_n[3];
   size_t m_dx[3];
   size_t m_di[3];

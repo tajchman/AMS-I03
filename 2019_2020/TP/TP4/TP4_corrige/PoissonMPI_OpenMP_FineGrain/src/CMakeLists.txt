@@ -31,12 +31,12 @@ endif ()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include(FindOpenMP)
+
+find_pacage(OpenMP)
 if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
-
 find_package(MPI)
 include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
 
@@ -63,7 +63,4 @@ target_link_libraries(
    ${MPI_CXX_LIBRARIES}
 )
 
-install(TARGETS ${VERSION} DESTINATION .)
-
-configure_file(version.hxx.in version.hxx @ONLY)
 

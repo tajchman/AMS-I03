@@ -50,11 +50,15 @@ public:
   void convection(bool b) { m_convection = b; }
   void diffusion(bool b) { m_diffusion = b; }
   
+  int nthreads() const { return m_nthreads; }
+  void nthreads(int n) { m_nthreads = n; }
+  
 private:
   std::ostream * m_out;
 
   std::string m_command;
   int m_rank, m_size, m_p[3];
+  int m_nthreads;
 
   MPI_Comm m_comm;
 

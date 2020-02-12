@@ -11,7 +11,7 @@
 #endif
 
 #ifdef USE_MPI
-   #include <mpi.h>
+  #include <mpi.h>
 #endif
 
 #include "parameters.hxx"
@@ -48,6 +48,15 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
 
+  m_nthreads = (*this)("threads", 1);
+
+#if defined(_OPENMP)
+  const char * omp_var = std::getenv("OMP_NUM_THREADS");
+  if (omp_var) m_nthreads = strtol(omp_var, NULL, 10);
+  omp_set_num_threads(m_nthreads);
+#else
+  m_nthreads = 1;
+#endif
   m_nmax[0] = (*this)("n", 400);
   m_nmax[1] = (*this)("m", 400);
   m_nmax[2] = (*this)("p", 400);
@@ -62,23 +71,13 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_diffusion = (*this)("diffusion", 0) == 1;
   
   if (!m_help) {
-
-#pragma	omp parallel
-    {
-#pragma omp master
-      std::cerr << omp_get_num_threads() << " thread(s)" << std::endl;
-    } 
-
+ 
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
-                << ") is greater then the recommended maximum (" <<  dt_max
-                << ")" << std::endl;
+		<< ") is greater then the recommended maximum (" <<  dt_max
+		<< ")" << std::endl;
 
-    int required = MPI_THREAD_FUNNELED, provided;
-    MPI_Init_thread(&argc, &argv, required, &provided);
-    if (!(provided == required))
-       throw "insufficient MPI thread support";
- 
+    MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &m_size);
 
     int i;
@@ -129,6 +128,7 @@ bool Parameters::help()
 
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+              << "threads=<int> : nombre de threads OpenMP"
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n=<int>       : number of internal points in the X direction (default: 400)\n"
@@ -162,7 +162,8 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << 0 << "," << p.nmax(2) - 1  << "]"
     << "\n\n";
 
-  f << "It. max : " << p.itmax() << "\n"
+  f << p.nthreads() << " thread(s)\n"
+    << "It. max : " << p.itmax() << "\n"
     << "Dt :      " << p.dt() << "\n";
 
   return f;

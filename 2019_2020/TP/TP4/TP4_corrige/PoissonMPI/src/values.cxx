@@ -22,8 +22,8 @@ void Values::init(const Parameters * prm,
     int j, k;
 
     for (i=0; i<3; i++) {
-	m_dx[i] = m_p->dx(i);
-	m_xmin[i] = m_p->xmin(i);
+      	m_dx[i] = m_p->dx(i);
+     	m_xmin[i] = m_p->xmin(i);
     }
 
     double xmin = m_xmin[0],

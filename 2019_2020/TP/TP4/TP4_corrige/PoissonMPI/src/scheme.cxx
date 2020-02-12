@@ -1,5 +1,6 @@
 #include "scheme.hxx"
 #include "parameters.hxx"
+#include "version.hxx"
 
 #include <mpi.h>
 #include <sstream>

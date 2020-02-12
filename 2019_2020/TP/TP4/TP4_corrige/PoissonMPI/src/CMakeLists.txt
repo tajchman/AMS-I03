@@ -34,7 +34,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(MPI)
 include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
-include_directories(util)
+
+include_directories(
+  util
+  ${CMAKE_BUILD_DIR}
+  )
 
 add_definitions("-DUSE_MPI")
 add_executable(
