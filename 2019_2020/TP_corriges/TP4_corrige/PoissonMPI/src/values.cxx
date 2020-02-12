@@ -4,8 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
-void Values::init(const Parameters * prm,
-               double (*f)(double, double, double))
+Values::Values(const Parameters * prm)
 {
   m_p = prm;
   int i, nn = 1;

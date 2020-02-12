@@ -1,6 +1,5 @@
 
 #if defined(_WIN32)
-#define _CRT_SECURE_NO_WARNINGS
 #include <direct.h>
 #elif defined(__unix)
 #include <unistd.h>
@@ -40,7 +39,7 @@ void stime(char * buffer, int size)
 Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
   m_out = NULL;
-  m_help = options_contain("h") or long_options_contain("help");
+  m_help = options_contain("h") || long_options_contain("help");
 
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
@@ -55,9 +54,9 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   m_nthreads = 1;
 #endif
 
-  m_n[0] = (*this)("n", 200);
-  m_n[1] = (*this)("m", 200);
-  m_n[2] = (*this)("p", 200);
+  m_n[0] = (*this)("n", 400);
+  m_n[1] = (*this)("m", 400);
+  m_n[2] = (*this)("p", 400);
   m_itmax = (*this)("it", 10);
   double dt_max = 1.5/(m_n[0]*m_n[0]
                        + m_n[1]*m_n[1]
@@ -76,8 +75,8 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
                 << ")" << std::endl;
     
     for (int i=0; i<3; i++) {
-      m_xmin[i] = 0.0;
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
+      m_xmin[i] = 0.0;
       m_di[i] = 1;
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
@@ -110,12 +109,13 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       }
     }
   }
+  m_out = nullptr;
 }
 
 bool Parameters::help()
 {
   if (m_help) {
-    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
+    std::cerr << "Usage : " << m_command << " <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
               << "threads=<int> : nombre de threads OpenMP"
@@ -134,9 +134,8 @@ bool Parameters::help()
 
 Parameters::~Parameters()
 {
-  if (m_out) {
+  if (m_out)
     delete m_out;
-  }
 }
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
@@ -156,7 +155,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 
 std::ostream & Parameters::out()
 {
-  if (not m_out) {
+  if (! m_out) {
 
     char buffer[256];
     stime(buffer, 256);

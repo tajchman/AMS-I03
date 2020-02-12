@@ -1,0 +1,53 @@
+﻿{
+  // Consultez https://go.microsoft.com//fwlink//?linkid=834763 pour plus d'informations sur ce fichier.
+  "configurations": [
+    {
+      "name": "IntelDebug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\..\\build\\${name}",
+      "installRoot": "${projectDir}\\..\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "icl.exe",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "icl.exe",
+          "type": "FILEPATH"
+        }
+
+      ]
+    },
+    {
+      "name": "IntelRelease",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\..\\build\\${name}",
+      "installRoot": "${projectDir}\\..\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "icl.exe",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "icl.exe",
+          "type": "FILEPATH"
+        }
+
+      ]
+    }
+  ]
+}

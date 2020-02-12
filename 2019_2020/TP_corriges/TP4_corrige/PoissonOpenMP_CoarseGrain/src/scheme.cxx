@@ -7,27 +7,27 @@
 
 
 Scheme::Scheme(const Parameters *P) :
-   codeName(version), m_u(P), m_v(P), m_timers(3)  {
-   m_timers[0].name() = "init";
-   m_timers[1].name() = "solve";
-   m_timers[2].name() = "other";
-   m_duv = 0.0;
-   m_P = P;
-   m_t = 0.0;
-   kStep = 0;
-   m_dt = 0.0;
-   m_lambda = 0.0;
+  codeName(version), m_u(P), m_v(P), m_timers(3)  {
+  m_timers[0].name() = "init";
+  m_timers[1].name() = "solve";
+  m_timers[2].name() = "other";
+  m_duv = 0.0;
+  m_P = P;
+  m_t = 0.0;
+  kStep = 0;
+  m_dt = 0.0;
+  m_lambda = 0.0;
 
-   int i;
-   for (i=0; i<3; i++) {
-     m_n[i] = m_P->n(i);
-     m_dx[i] = m_P->dx(i);
-     m_di[i] = (m_n[i] < 2) ? 0 : 1;
-   }
+  int i;
+  for (i=0; i<3; i++) {
+    m_n[i] = m_P->n(i);
+    m_dx[i] = m_P->dx(i);
+    m_di[i] = (m_n[i] < 2) ? 0 : 1;
+  }
 
-   double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
-   m_dt = 0.5*(dx2 + 1e-12);
-   m_lambda = 0.25*m_dt/(dx2 + 1e-12);
+  double dx2 = m_dx[0]*m_dx[0] + m_dx[1]*m_dx[1] + m_dx[2]*m_dx[2];
+  m_dt = 0.5*(dx2 + 1e-12);
+  m_lambda = 0.25*m_dt/(dx2 + 1e-12);
 }
 
 void Scheme::initialize()
@@ -85,6 +85,7 @@ double Scheme::iteration()
   int kmax = m_P->thread_imax(2, ith) ;
 
   du_sum = 0.0;
+
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
@@ -95,7 +96,7 @@ double Scheme::iteration()
           - m_u(i, j, k + dk) - m_u(i, j, k - dk);
         du *= m_lambda;
         m_v(i, j, k) = m_u(i, j, k) - du;
-          du_sum += du > 0 ? du : -du;
+        du_sum += du > 0 ? du : -du;
       }
 
   return du_sum;
@@ -130,7 +131,9 @@ bool Scheme::solve(unsigned int nSteps)
 #pragma omp master
     {
       m_t += m_dt;
+
       m_u.swap(m_v);
+
       m_timers[1].stop();
       m_timers[2].start();
       std::cerr << " iteration " << std::setw(4) << kStep

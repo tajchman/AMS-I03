@@ -33,6 +33,8 @@ private:
   int n1, n2;
   std::vector<double> m_u;
   int m_n[3];
+  double m_dx[3];
+  double m_xmin[3];
   const Parameters * m_p;
 };
 				   

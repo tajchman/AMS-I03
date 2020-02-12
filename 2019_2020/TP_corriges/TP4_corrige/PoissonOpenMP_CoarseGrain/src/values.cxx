@@ -104,14 +104,14 @@ void Values::plot(int order) const {
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax-1  << " " 
+    << jmin << " " << jmax-1  << " " 
+    << kmin << " " << kmax-1 
     << "\">\n"
     << "<Piece Extent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax-1  << " " 
+    << jmin << " " << jmax-1  << " " 
+    << kmin << " " << kmax-1 
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";

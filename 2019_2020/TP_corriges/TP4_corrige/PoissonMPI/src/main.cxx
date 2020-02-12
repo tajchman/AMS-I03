@@ -20,6 +20,7 @@ double f(double x, double y, double z)
 
 int main(int argc, char *argv[])
 {
+    std::cerr << "debut" << std::endl;
   Timer T_global;
   T_global.start();
 
@@ -37,34 +38,33 @@ int main(int argc, char *argv[])
   int nsteps = freq > 0 ? itMax/freq : 1;
   int ksteps = freq > 0 ? freq : itMax;
 
-  {
-    Values u_0;
-    Scheme C;
-    C.timer(0).start();
-    C.initialize(&Prm);
-    u_0.init(&Prm, f);
-    C.setInput(u_0);
-    C.timer(0).stop();
+  Values u_0(&Prm);
+  Scheme C(&Prm);
+  C.timer(0).start();
+  C.initialize();
+  u_0.init(f);
 
-    if (output) C.getOutput().plot(0);
+  C.setInput(u_0);
+  C.timer(0).stop();
 
-    int i;
-    for (i=0; i<nsteps; i++) {
-      C.solve(ksteps);
-      if (output) C.getOutput().plot(i);
+  if (output) C.getOutput().plot(0);
+
+  int i;
+  for (i=0; i<nsteps; i++) {
+    C.solve(ksteps);
+    if (output) C.getOutput().plot(i);
     }
 
-    if (Prm.rank() == 0) {
-      if (Prm.convection())
-	std::cout << "convection ";
-      else
-	std::cout << "           ";
-      if (Prm.diffusion())
-	std::cout << "diffusion  ";
-      else
-	std::cout << "           ";
+  if (Prm.rank() == 0) {
+    if (Prm.convection())
+	  std::cout << "convection ";
+    else
+	  std::cout << "           ";
+    if (Prm.diffusion())
+	  std::cout << "diffusion  ";
+    else
+	  std::cout << "           ";
     }
-  }
 
   T_global.stop();
   if (Prm.rank() == 0)

@@ -70,8 +70,6 @@ size_t Scheme::getDomainSize(int dim) const
 
 double Scheme::iteration()
 {
-  m_timers[1].start();
-
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   int i, j, k;
   double du, du_sum;
@@ -118,6 +116,7 @@ bool Scheme::solve(unsigned int nSteps)
     m_u.swap(m_v);
 
     m_timers[1].stop();
+
     m_timers[2].start();
     std::cerr << " iteration " << std::setw(4) << kStep
               << " variation " << std::setw(12) << std::setprecision(6) << m_duv;

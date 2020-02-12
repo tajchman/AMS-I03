@@ -39,5 +39,4 @@ target_link_libraries(
 install(TARGETS ${VERSION} DESTINATION .)
 
 configure_file(version.hxx.in version.hxx @ONLY)
-message(STATUS ${CMAKE_INSTALL_PREFIX})
 
