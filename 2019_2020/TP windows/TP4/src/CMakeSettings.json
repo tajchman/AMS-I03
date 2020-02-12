@@ -1,0 +1,32 @@
+﻿{
+  // Consultez https://go.microsoft.com//fwlink//?linkid=834763 pour plus d'informations sur ce fichier.
+  "configurations": [
+    {
+      "configurationType": "Debug",
+      "name": "Intel_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${workspaceRoot}\\build\\sequential\\${configurationType}",
+      "installRoot": "${workspaceRoot}\\install\\sequential\\${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "ENABLE_OPENMP",
+          "value": "OFF",
+          "type": "BOOL"
+        },
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/Program Files (x86)/IntelSWTools/system_studio_2020/compilers_and_libraries/windows/bin/intel64/icl.exe",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/Program Files (x86)/IntelSWTools/system_studio_2020/compilers_and_libraries/windows/bin/intel64/icl.exe",
+          "type": "FILEPATH"
+        }
+      ]
+    }
+  ]
+}

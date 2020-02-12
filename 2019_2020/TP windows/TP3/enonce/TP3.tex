@@ -1,0 +1,189 @@
+\include{debut}
+
+\begin{document}
+%    \layout
+    
+    \begin{center}
+    	\LARGE TP 3. Programmation multi-threads (2)
+    \end{center}
+
+	\section*{Préparation}
+    
+    Récupérer l'archive compressée {\tt TP3.tar.gz} sur le site web 
+    
+   \begin{center}
+    \url{https://perso.ensta-paris.fr/\~tajchman/TP3}
+   \end{center} 
+    
+    et extraire les fichiers qui sont contenus dans cette archive:
+    \begin{script}
+        cd <repertoire dans votre espace de travail>
+        tar xvfz TP3.tar.gz
+    \end{script}
+
+    Se placer dans le répertoire {\tt TP3}:
+    \begin{script}
+        cd TP3
+    \end{script}
+
+    et préparer les compilations dans les points suivants en tapant :
+    \begin{script}
+        ./build.sh
+    \end{script}
+
+    Chaque fois que vous modifiez un fichier source, tapez cette commande pour mettre à jour les exécutables.
+
+\section{Exemple OpenMP ``grain fin''}
+
+Le fichier {\tt src/sinus\_fine/sinus.cxx} contient la version OpenMP ``grain fin'' obtenue à la fin du TP précédent.
+
+\begin{demo}
+	Comparer les temps d'exécution de la version séquentielle et de cette version en tapant les commandes
+    \begin{script}
+		time -p ./install/sinus\_seq 40000
+		time -p OMP\_NUM\_THREADS=3 ./install/sinus\_fine 40000
+     \end{script}
+
+     Expliquer pourquoi on n'atteint pas le facteur de diminution du temps calcul espéré.
+\end{demo}
+
+\section{Exemple OpenMP ``grain fin (peut-être) amélioré''}
+
+\begin{question}
+    Ajouter aux pragmas OpenMP ``for'' de la version ``grain fin'', l'option 
+    
+	\begin{script}
+    schedule(static, n/12).
+     \end{script}
+    
+    Compiler, exécuter et comparer les temps d'exécution avec les versions précédentes.
+
+    Faire varier le paramètre {\tt n/12}.
+
+    Remplacer dans l'option schedule, le paramètre {\tt  static} par {\tt dynamic}. 
+    
+    Refaire les comparaisons en temps d'exécution.
+\end{question}
+
+\section{Exemple OpenMP ``grain grossier''}
+
+On parle d'OpenMP grain grossier, quand on crée les threads (par un pragma omp parallel) et c'est le programmeur qui répartit le travail entre les threads:
+
+	\begin{script}
+		\#pragma omp parallel
+		\{
+		\quad	int ith = omp\_get\_thread\_num();
+		\quad	int nth = omp\_get\_num\_threads();
+		
+		\quad	int nDebut = ...
+		\quad	int nFin   = ...
+		\quad	int i;
+			
+		\quad	for (i=nDebut; i<nFin; i++) \{
+		\quad\quad	...	
+		\quad	\}
+		\} 
+	\end{script}
+
+    Chaque thread calcule ses valeurs de {\tt nDebut} et {\tt nFin}. Faire attention que la réunion des intervalles {\tt \verb![!nDebut, nFin\verb![!} doit être égale à l'ensemble de indices de la boucle du programme séquentiel.
+
+\begin{question}
+    Introduire dans le fichier {\tt src/sinus\_coarse\_1/sinus.cxx} des directives (pragma) OpenMP ``grain grossier''.
+    
+	Comparer les temps d'exécution de la version ``grain fin'' et de cette version en tapant les commandes
+	\begin{script}
+		OMP\_NUM\_THREADS=3 time -p ./install/sinus\_fine 40000
+		OMP\_NUM\_THREADS=3 time -p ./install/sinus\_coarse\_1 40000
+	\end{script}	
+\end{question}
+
+\vfill\eject
+
+On a déjà présenté la classe Timer pour mesurer le temps passé dans un groupe d'instructions:
+\begin{script}
+	\#include "timer.hxx"
+	
+	...
+	
+		\#pragma omp parallel
+\{
+\quad	int ith = omp\_get\_thread\_num();
+\quad	int nth = omp\_get\_num\_threads();
+\quad	Timer T;	
+\quad	T.start();
+	
+\quad\quad			// groupe d'instructions à mesurer
+	
+\quad	T.stop();
+	
+\quad	std::cerr $<$$<$ "thread " $<$$<$ ith 
+\quad	\quad	\quad	$<$$<$ " temps " $<$$<$ T.elapsed() $<$$<$ std::endl;
+\}
+\end{script}
+
+\begin{question}
+	Mesurer dans le code OpenMP gros grain, le temps d'exécution de chaque thread en utilisant la classe Timer
+	
+	Comparer les temps d'exécution de la version ``grain fin'' et de cette version en tapant les commandes
+	\begin{script}
+		OMP\_NUM\_THREADS=3 time -p ./install/sinus\_fine 40000
+		OMP\_NUM\_THREADS=3 time -p ./install/sinus\_coarse\_1 40000
+	\end{script}	
+\end{question}
+
+\section{Exemple OpenMP ``grain grossier'' avec équilibrage de charge}
+
+Le calcul du sinus en utilisant un développement de Taylor a été volontairement ralenti pour accentuer la différence de temps calcul de $x \mapsto \sin x$ pour différentes valeurs de $x$.
+
+Il s'en suit que les threads ne prennent pas le même temps de calcul suivant la plage des valeurs de $x$ qui leur sont attribuée (et qui est la même que dans le cas ``grain fin"), voir le fichier {\tt src/sin.cxx}.
+
+Dans cette version, on utilise un algorithme d'équilibrage de charge entre les différents threads.
+
+\vfill\eject
+
+\begin{demo}
+	Examiner le fichier {\tt src/sinus\_coarse\_2/charge.cxx} qui contient cet algorithme et le fichier {\tt src/sinus\_coarse\_2/sinus.cxx} qui l'utilise.
+	
+	Exécuter plusieurs fois la commande
+	\begin{script}
+		OMP\_NUM\_THREADS=3 time -p ./install/sinus\_coarse\_2 40000
+	\end{script}
+	
+	Chaque exécution tente d'améliorer les temps calcul en adaptant la répartition de charge de mieux en mieux (si possible).
+\end{demo}
+
+\begin{remarque}
+{\it (Optionel) } L'algorithme d'équilibrage de charge utilisé ici n'est pas optimal. Vous êtes encouragés à l'étudier et à l'améliorer.
+\end{remarque}
+
+\section{Parallélisation du (mini-)code avec le modèle OpenMP ``grain grossier''}
+
+Le répertoire {\tt code/PoissonOpenMP\_FineGrain} contient la version du code parallélisé par de l'OpenMP ``grain fin'' (tel qu'obtenu à la fin du TP précédent).
+
+\begin{question}
+Dans le répertoire {\tt PoissonOpenMP\_CoarseGrain}, modifier les fichiers source pour obtenir une version avec de l'OpenMP ``gros grain'' (sans équilibrage de charge).
+
+\textbf{Les fichiers source, que vous avez modifiés, seront à fournir avant le début de la séance suivante et vous seront renvoyés commentés et notés. La note obtenue pourra améliorer la note finale suivant les modalités précisées au premier cours.}
+\end{question}
+
+\section{Parallélisation en utilisant le concept de tâches OpenMP}
+
+\begin{demo}
+Examiner le fichier {\tt src/exemple\_tasks/main\_seq.cxx}.
+
+Cet exemple est difficile à paralléliser avec OpenMP. Expliquer pourquoi.
+\end{demo}
+
+Le modèle de programmation par tâches OpenMP a été conçu pour répondre à ce type de situation.
+
+\begin{demo}
+Examiner le fichier {\tt src/exemple\_tasks/main\_tasks.cxx}.
+
+Compiler et exécuter. Comparer les temps calcul avec la version séquentielle.
+
+Pensez à vérifier que les résultats sont bien les mêmes dans les deux cas.
+\end{demo}
+
+
+
+\end{document}
