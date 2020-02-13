@@ -1,0 +1,49 @@
+﻿{
+  // Consultez https://go.microsoft.com//fwlink//?linkid=834763 pour plus d'informations sur ce fichier.
+  "configurations": [
+    {
+      "configurationType": "Debug",
+      "name": "Seq_Intel_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${workspaceRoot}\\build\\${configurationType}",
+      "installRoot": "${workspaceRoot}\\install\\${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+       {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/Program Files (x86)/IntelSWTools/system_studio_2020/compilers_and_libraries/windows/bin/intel64/icl.exe",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/Program Files (x86)/IntelSWTools/system_studio_2020/compilers_and_libraries/windows/bin/intel64/icl.exe",
+          "type": "FILEPATH"
+        }
+      ]
+    },
+    {
+      "configurationType": "Release",
+      "name": "Seq_Intel_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${workspaceRoot}\\build\\${configurationType}",
+      "installRoot": "${workspaceRoot}\\install\\${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "variables": [
+       {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "C:/Program Files (x86)/IntelSWTools/system_studio_2020/compilers_and_libraries/windows/bin/intel64/icl.exe",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "C:/Program Files (x86)/IntelSWTools/system_studio_2020/compilers_and_libraries/windows/bin/intel64/icl.exe",
+          "type": "FILEPATH"
+        }
+      ]
+    }
+  ]
+}
