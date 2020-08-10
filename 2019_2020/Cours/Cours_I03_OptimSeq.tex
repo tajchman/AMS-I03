@@ -2,19 +2,30 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{listings}
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+	language=C++,
+	emptylines=1,
+	breaklines=true,
+	basicstyle=\ttfamily\color{black},
+	moredelim=**[is][\bf\color{red}]{@}{@},
+}
+
 \usetheme[]{boxes}
 \usecolortheme{seagull}
 %\usepackage{french}
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
 \author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
-\date{28 novembre 2019}
+\date{10/08/2020}
 \begin{document}
 
 \begin{frame}
 \titlepage
 \end{frame}
 
-\Large
+\large
 \begin{frame}
   	\tableofcontents
 \end{frame}
@@ -25,11 +36,11 @@
 \textcolor{blue}{On peut voir la structure d'une machine de calcul \`a diff\'erentes \'echelles}:
 \vfill
 
-Vue globale: un ensemble de n\oe uds de calcul chacun contenant un ou plusieurs processeurs et de la m\'emoire, les n\oe uds sont connect\'es par un r\'eseau:
+\textcolor{red}{Vue globale}: un ensemble de n\oe uds de calcul chacun contenant un ou plusieurs processeurs et de la m\'emoire, les n\oe uds sont connect\'es par un r\'eseau:
 
 \vfill
 \begin{center}
-\includegraphics[scale=0.4]{../Images/img100}
+\includegraphics[scale=0.14]{../Images/ParallelMachine.png}
 \end{center}
 
 (les machines les plus puissantes actuellement contiennent plusieurs centaines de milliers de n\oe uds)
@@ -39,18 +50,23 @@ Vue globale: un ensemble de n\oe uds de calcul chacun contenant un ou plusieurs 
 Vue interne d'un n\oe ud (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 
 \begin{center}
-\includegraphics[scale=0.3]{../Images/architecture2}
+\includegraphics[scale=0.25]{../Images/architecture2}
 \end{center}
 
+Memory : m\'emoire de travail pour vos donn\'ees.
+
+L1-L2-L3 : mémoires à accès plus rapide mais plus petites 
+
+La gestion des m\'emoires (copie, contr\^ole de coh\'erence, etc.) est faite par un contr\^oleur m\'emoire
 \end{frame}
 
 \begin{frame}
 Vue interne d'un c\oe ur (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 
 \begin{center}
-	\includegraphics[scale=0.18]{../Images/1106px-zen_block_diagram}
+	\includegraphics[scale=0.25]{../Images/800px-Zen2_Microarchitektur.svg.png}
 	
-	AMD - Zen $\mu$arch
+	AMD - Zen2 $\mu$arch (simplifi\'e)
 \end{center}
 
 \end{frame}
@@ -67,9 +83,9 @@ Situation actuelle (et encore pour plusieurs ann\'ees):
 		\item[$\approx$] vitesse de la m\'emoire interne (registres) du processeur
 			\medskip
 	        
-		\item[$>$] vitesse des diff\'erentes m\'emoires cache, interm\'ediaires entre le processeur et la m\'emoire centrale du n\oe ud (
+		\item[$>$] vitesse des diff\'erentes m\'emoires cache, interm\'ediaires entre le processeur et la m\'emoire centrale du n\oe ud
 		
-		\hfill vitesse L1 $>$ L2 $>$ L3, 
+		\hfill (vitesse L1 $>$ L2 $>$ L3, 
 		
 		\hfill taille L1 $<$ L2 $<$ L3)
 			\medskip
@@ -123,6 +139,28 @@ Fonctionnement :
 	\vfill
 
 
+\end{frame}
+
+\begin{frame}[fragile]
+	Exemple:
+
+\begin{tabular}{lr}
+\begin{lstlisting}[style=base]
+void f() {
+  @double a, b;@
+	   
+  a = sin(3.1416);
+  b = 2.4 * a;
+  
+  // bcp d'instructions
+  
+  b = b * 2;
+}
+\end{lstlisting} & 
+\frame{\includegraphics[scale=0.5]{../Images/ex1a.pdf}}
+\end{tabular}
+	
+	
 \end{frame}
 
 \begin{frame}
