@@ -49,4 +49,48 @@
 	On remarque que le calcul de v[2] est indépendant de celui de v[3] et donc ces 2 calculs peuvent se faire en même temps par 2 ex\'ecutions différentes qui utilisent les mêmes vecteurs u et v.
 		
 \end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{1. Avant d'exécuter les 2 instructions:}
+   \begin{center}
+   \includegraphics[scale=0.6]{../Images/multithread0}
+   \end{center}
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{2. Les composantes de $u$ sont recopiées dans les mémoires cache:}
+   \begin{center}
+	\includegraphics[scale=0.6]{../Images/multithread1}
+   \end{center}
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{3. Les composantes de $u$ sont recopiées dans les mémoires internes des processeurs:}
+   \begin{center}
+	\includegraphics[scale=0.6]{../Images/multithread2}
+   \end{center}
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{4. Le calcul est effectués dans les c\oe urs:
+	}
+   \begin{center}
+	\includegraphics[scale=0.6]{../Images/multithread3}
+   \end{center}
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{5. Le résultat est recopié dans la mémoire cache:}
+	\begin{center}
+		\includegraphics[scale=0.6]{../Images/multithread4}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{6. Le résultat est recopié dans la mémoire principale:}
+	\begin{center}
+		\includegraphics[scale=0.6]{../Images/multithread5}
+	\end{center}
+\end{frame}
+
 \end{document}

@@ -176,6 +176,18 @@ class Rectangle(grObject):
         self.center = self.getCenter(p);
         pass
     pass
+    
+class Arc(grObject):
+    def __init__(self, c, r, a0, a1, **args):
+        grObject.__init__(self)
+        self.name = "\\psarc"
+        self.setPrefix(args)
+        self.body = self.listOfPoints([c]) \
+            + "{" + str(r) + "}{" + str(a0) + "}{" + str(a1) + "}";
+        self.center = c;
+        pass
+    pass
+  
 
 class Curve(grObject):
     def __init__(self, p1, p2, p3, p4, **args):
