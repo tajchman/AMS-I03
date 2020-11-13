@@ -31,46 +31,46 @@
 \begin{frame}
 	\section{Parallélisme multi-threads en mémoire partagée}
 	\frametitle{Parallélisme multi-threads en mémoire partagée}
-	
+
 	\vfill
 	Le but du parallélisme multithreads est de découper l'ensemble des instructions en plusieurs parties et d'exécuter (le plus possible) simultanément ces différentes parties par des threads (exécutions) sur des c\oe urs différents.
-	
-	
+
+
 	\vfill
 	On appellera la version du code non parallélisé : ``séquentiel''.
-	
+
 	\vfill
     Dans le cas le plus simple, le nombre de threads est égal au nombre de c\oe urs.
 
 	\vfill
 	En mémoire partagée signifie que différents groupes d'instructions travaillent sur des données contenues dans la même mémoire. Il faut donc faire attention que les modifications faites par certaines instructions ne perturbent pas les données utilisées par d'autres instructions.
 	\vfill
-	
+
 \end{frame}
 
 \large
 \begin{frame}[fragile]
 	Exemple 1: si \verb|u| et \verb|v| sont des vecteurs de taille \verb|n > 4|, on veut calculer la boucle {\tt for}:
-	
+
 	\begin{equation}
 	\begin{array}{l}
 for (i=1; i<n-1; i++) \\
 \quad  v_i = (u_{i-1} + 2*u_{i} + u_{i+1})/4;
 \end{array}
 	\end{equation}
-	
+
 	\vfill
 	Ces instructions (pour différentes valeurs de $i$) utilisent des composantes de \verb|u| différentes, mais (presque) toutes les composantes de $u$ sont utilisées par plusieurs instructions de la boucle {\tt for}.
-	
+
 	\vfill
 	\textcolor{blue}{Les composantes de u ne sont pas modifiées par les instructions.}
-	
+
 	\vfill
 	\textcolor{blue}{Les composantes de v sont modifiées (mais chaque instruction calcule une composante différente).}
-	
+
 	\vfill
 	On remarque que le calcul de $v_i$ ne dépend pas de celui de $v_j$ ($j \neq i$) et donc ces 2 calculs peuvent se faire en même temps par 2 ex\'ecutions différentes qui utilisent les mêmes vecteurs u et v.
-		
+
 \end{frame}
 
 \begin{frame}
@@ -104,7 +104,7 @@ for (i=1; i<n-1; i++) \\
 
 \begin{frame}
 	\parbox[t][1cm]{10cm}{5. Le résultat est recopié dans la mémoire cache :}
-	\begin{center} 
+	\begin{center}
 		\includegraphics[scale=0.6]{../../Images/multithread4}
 	\end{center}
 \end{frame}
@@ -118,15 +118,15 @@ for (i=1; i<n-1; i++) \\
 
 \begin{frame}[fragile]
 	Le plus simple est de découper la boucle séquentielle :
-	
+
 	\begin{lstlisting}
 for (i=1; i<n-1; i++)
    v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
 	\end{lstlisting}
-	
+
 \vfill
 	en $K$ sous-boucles :
-	
+
 \begin{lstlisting}
 for (i=p[k]; i<p[k+1]; i++)    // k = 0...K-1
    v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
@@ -143,7 +143,7 @@ Toutes les sous-boucles doivent si possible être exécutées en même temps.
 \begin{frame}[fragile]
 	\vfill
 	Le principal (mais pas le seul) outil pour coder du parallélisme multithreads est OpenMP.
-	
+
 	\vfill
 	On ajoute une ligne avant la boucle (pragma)
 
@@ -201,7 +201,7 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 	\begin{lstlisting}
 	OMP_NUM_THREADS=5 ./code.exe
 	\end{lstlisting}
-	\item appeler dans le code source la fonction 
+	\item appeler dans le code source la fonction
 	\begin{lstlisting}
 	omp_set_num_threads(5);
 	\end{lstlisting}
@@ -227,10 +227,20 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 
 \begin{frame}[fragile]
 	Source C++ séquentiel:
+	\vfill
 {
 	\normalsize
-	\lstinputlisting{Exemples/Exemple1/main.cxx}	
-}	
+	\lstinputlisting{Exemples/Exemple1/calcul.cxx}	
+}
+\end{frame}
+
+\begin{frame}[fragile]
+	Source C++ séquentiel:
+	\vfill
+	{
+		\normalsize
+		\lstinputlisting{Exemples/Exemple2/calcul.cxx}	
+	}
 \end{frame}
 
 

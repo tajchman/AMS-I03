@@ -1,0 +1,89 @@
+\include{debut}
+
+\begin{document}
+%    \layout
+    
+    \begin{center}
+    	\LARGE TP 5. Programmation hybride MPI - OpenMP (2)
+    \end{center}
+
+	\section*{Préparation}
+
+Récupérer l'archive compressée {\tt TP5.tar.gz} et extraire les fichiers qui sont contenus dans cette archive:
+\begin{script}
+	cd <repertoire dans votre espace de travail>
+	tar xvfz TP5.tar.gz
+\end{script}
+
+Se placer dans le répertoire {\tt TP5}:
+\begin{script}
+	cd TP5
+\end{script}
+
+et préparer les compilations dans les points suivants avec la commande ci-dessous:
+\begin{script}
+	./build.sh
+\end{script}
+
+	\section{Parallélisation des échanges de messages}
+    
+    Il est possible avec les sections OpenMP, d'exécuter plusieurs instructions par des threads différents, par exemple :
+    
+    \begin{script}
+\#pragma omp parallel sections
+\{
+\quad	\#pragma omp section
+\quad	\{
+\quad\quad		/* Execute par le thread 1 */
+\quad	\} 
+\quad	\#pragma omp section
+\quad	\{
+\quad\quad		/* Execute par le thread 2 */
+\quad	\} 
+\quad	\#pragma omp section
+\quad	\{
+\quad\quad		/* Execute par le thread 3 */
+\quad	\} 
+\quad	/* ... */
+\}
+    \end{script}
+     
+\begin{question}
+	
+On fournit une version du code {\tt src/PoissonMPI\_OpenMP\_FineGrain} (parallélisé par MPI et par OpenMP - grain fin).
+
+Utiliser des sections OpenMP dans le fichier {\tt value.cxx}, lignes 130 à 227, pour exécuter les échanges MPI dans plusieurs threads différents.
+
+Ne pas oublier de spécifier un niveau suffisant de compatibilité OpenMP-MPI.
+\end{question}
+
+\section{Recouvrement communications/calculs}
+
+Il est possible de faire du recouvrement communications/calculs en MPI seul, on propose de le faire ici avec une programmation hybride MPI-OpenMP.
+
+\begin{question}
+	On fournit une version {\tt src/PoissonMPI} parallélisée par MPI mais prête à accueillir des pragma OpenMP.
+	
+	Pour chaque itération en temps, séparer le calcul des inconnues en deux parties:
+	\begin{enumerate}
+		\item une première partie qui ne dépend pas des valeurs transmises par des échanges  MPI (au cours de la même itération)
+		\item une seconde partie qui en dépend
+	\end{enumerate}
+	
+\end{question}
+
+Le but est de calculer les inconnues qui ne dépendent pas des échanges MPI en même temps que ces échanges.
+
+\begin{question}
+	Faire exécuter dans deux threads différents :
+	
+	\begin{itemize}
+		\item les communications MPI et les calculs qui en dépendent,
+		\item les autres calculs.
+	\end{itemize}
+	
+	Ne pas oublier de spécifier un niveau suffisant de compatibilité OpenMP-MPI.
+\end{question}
+
+ 
+\end{document}

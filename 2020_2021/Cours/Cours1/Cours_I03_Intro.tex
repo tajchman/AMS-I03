@@ -56,7 +56,7 @@ La plupart des ordinateurs actuels ont des fonctionnalités parallèles  (exécu
 
 \vfill
 \begin{center}
-\includegraphics[scale=0.14]{../Images/ParallelMachine.png}
+\includegraphics[scale=0.14]{../../Images/ParallelMachine.png}
 \end{center}
 
 (les machines les plus puissantes actuellement contiennent plusieurs centaines de milliers de n\oe uds)
@@ -66,7 +66,7 @@ La plupart des ordinateurs actuels ont des fonctionnalités parallèles  (exécu
 Schéma interne d'un n\oe ud (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 
 \begin{center}
-\includegraphics[scale=0.32]{../Images/NoeudCalcul}
+\includegraphics[scale=0.32]{../../Images/NoeudCalcul}
 \end{center}
 
 \end{frame}
@@ -75,27 +75,36 @@ Schéma interne d'un n\oe ud (variable suivant le mod\`ele de processeur et la g
 
 Exemple : processeur AMD Ryzen 4900
 \begin{center}
-	\includegraphics[scale=0.32]{../Images/lstopo_ryzen_4900}
+	\includegraphics[scale=0.32]{../../Images/lstopo_ryzen_4900}
 \end{center}
 
 Exemples : processeurs Intel i5 8400H - i9 9900K
 \begin{center}
-	\includegraphics[scale=0.23]{../Images/topo_i5}
-	\includegraphics[scale=0.23]{../Images/topo_i9}
+	\includegraphics[scale=0.23]{../../Images/topo_i5}
+	\includegraphics[scale=0.23]{../../Images/topo_i9}
 \end{center}
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
 Jusque 6 types de mémoires différentes:
 \begin{itemize}
 \item registres : mémoire très rapide dans chaque cœur
-\item mémoires caches L1, L2, L3 : mémoires +/- rapides, partagées partagées entre une partie des cœurs
+\item mémoires caches L1, L2, L3 : mémoires rapides, partagées partagées entre une partie des cœurs
 \item mémoire centrale : mémoire moins rapide mais de plus grande taille
 \item disques : mémoire lente.
 \end{itemize}
 
 A noter que la différence entre mémoire centrale et disque tend à diminuer avec la généralisation des SSD.
+
+\bigskip
+\begin{center}
+	\framebox{%
+	\begin{minipage}{9cm}
+	\textcolor{red}{Les échanges entre la mémoire centrale et les mémoires cache se font par blocs de données (appelées ``lignes de cache'') et pas ``à l'unité'' pour des raisons de performances.}
+    \end{minipage}
+    }
+\end{center}
 
 \end{frame}
 
@@ -103,7 +112,7 @@ A noter que la différence entre mémoire centrale et disque tend à diminuer av
 Schéma interne d'un c\oe ur (variable suivant le mod\`ele de processeur et la g\'en\'eration utilis\'ee):
 
 \begin{center}
-	\includegraphics[scale=0.25]{../Images/800px-Zen2_Microarchitektur.svg.png}
+	\includegraphics[scale=0.25]{../../Images/800px-Zen2_Microarchitektur.svg.png}
 	
 	AMD - Zen2 $\mu$arch (simplifi\'e)
 \end{center}

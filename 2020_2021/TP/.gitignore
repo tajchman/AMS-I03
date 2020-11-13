@@ -1,0 +1,12 @@
+r_*
+*.gnp
+temp*
+callgrind*
+perf*
+*.aux
+*.log
+*.out
+*.dat
+load*
+*.o[0-9]*
+*.po[0-9]*
