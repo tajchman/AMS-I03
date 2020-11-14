@@ -96,7 +96,8 @@
 	\medskip
 	Ajoutent automatiquement des points de mesure dans le
 	code (gprof), s’interposent entre le code et le système pour récupérer des informations
-	(valgrind, perf,vtune (intel), etc.)
+	(valgrind, perf,
+vtune (intel), etc.)
 		
 	\medskip
 	Permet de connaître des informations intermédiaires : nombre d’appels et temps
@@ -208,28 +209,58 @@ for (i=1; i<n-1; i++) \\
 
 \begin{frame}
 	En résumé :
-	\bigskip
 	\begin{itemize}
 		\item La première instruction $v_1 = (u_0 + 2*u_1 + u_2)/4$ utilise
 		\begin{itemize}
 			\item 4 transferts (lents) mémoire principale - mémoire cache
 			\item 4 transferts (rapides)  mémoire cache - c\oe ur
 		\end{itemize} 
-	\bigskip
+	\smallskip
 		\item La deuxième instruction $v_2 = (u_1 + 2*u_2 + u_3)/4$ utilise
 		\begin{itemize}
 			\item 2 transferts (lents) mémoire principale - mémoire cache
 			\item 4 transferts (rapides) mémoire cache - c\oe ur
 		\end{itemize}
 	\end{itemize}
+\vfill
+    Examiner et tester l'exemple {\it Exemple1} 
+    
+\vfill
+    Sans mémoire cache, toutes les itérations prendraient (à peu près) le même temps.
+    
+    La mémoire cache améliore beaucoup le temps de calcul de presque toutes les itérations 
+    
+    \begin{quote}
+    	\textcolor{blue}{Attention, la configuration matérielle sera différente du cas idéalisé ci-dessus, mais on devrait voir la différence entre la première itération et les suivantes.}
+    \end{quote}
+
+\end{frame}
+
+\begin{frame}
+	\begin{center}
+	\includegraphics[scale=0.8]{Exemples/Exemple1/cycles.pdf}
+	\end{center}
+
+Un cycle est l'unité de temps pour le processeur. Le processeur qui a été utilisé ici, a une fréquence de 3 GHz.
+Un cycle prend à peu près $0.3\ 10^{-9}$ secondes. 
+\vfill
+
+Sur le graphique, une itération (sauf la première) prend $0.6\ 10^{-7}$ secondes.
+\end{frame}
+
+\begin{frame}
+\vfill
+On voit donc qu'il est important de bien utiliser la mémoire cache.
 
 \vfill
-   Pour utiliser au mieux la mémoire cache, deux règles sont déduites de ce comportement : optimiser les localités spatiale et temporelle
+   \textcolor{blue}{Deux règles sont déduites de ce comportement : optimiser les localités spatiale et temporelle.}
+\vfill 
 \end{frame}
 
 \begin{frame}
 \frametitle{Localit\'e spatiale}
 Règle:  \textcolor{red}{autant que possible, utiliser des zones m\'emoires proches les unes des autres dans une s\'equence d'instructions}
+	\vfill
 \begin{quote}
 	Le transfert entre m\'emoire centrale et m\'emoire cache se fait par bloc de donn\'ees.
 	
@@ -237,20 +268,23 @@ Règle:  \textcolor{red}{autant que possible, utiliser des zones m\'emoires proc
 \end{quote}
 
 \vfill
-Exemple: voir TP 1
+Voir l'\textcolor{blue}{Exemple2}
 \end{frame}
 
 \begin{frame}
 \frametitle{Localit\'e temporelle}
 Règle: 
 	\textcolor{red}{autant que possible, pour une zone m\'emoire, les instructions qui l'utilisent doivent s'ex\'ecuter de façon rapproch\'ee dans le temps}
+	\vfill
 	
 	\begin{quote}
 		La m\'emoire cache \'etant de petite taille, le gestionnaire m\'emoire, s'il a besoin de place, effacera dans la m\'emoire cache les donn\'ees les plus anciennes.
 		
 		Si une donn\'ee est utilis\'ee par plusieurs instructions proches dans le temps, elle sera maintenue plus longtemps en m\'e\-moi\-re cache (et donc n\'ecessitera moins de transferts)
 	\end{quote}
-Exemple: voir TP 1
+
+\vfill
+Voir l'\textcolor{blue}{Exemple3}
 \end{frame}
 
 \begin{frame}[fragile]
