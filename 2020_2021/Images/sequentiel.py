@@ -104,25 +104,29 @@ class Scene2(Scene0):
         q4 = self.p1 + (-0.9, -0.3)
         q2 = (q1*2 + q4)/3. + (-0.7,0)
         q3 = (q1 + q4*2)/3. + (-0.7,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (+1.4, -0.4), q1 + (+0.1,0.4), linecolor='red', linewidth=0.08))
+        p.add(Bezier(q1 + (0.1, 0), q2, q3, q4 , \
                     linecolor='red', arrow='->', linewidth=0.08, arrowsize=0.4))
         q1 = Point(9.5, 7.0)
         q4 = self.p1 + (0.9, -0.3)
         q2 = (q1*2 + q4)/3. + (0.7,0)
         q3 = (q1 + q4*2)/3. + (0.7,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (-1.4, -0.4), q1 + (-0.1,0.4), linecolor='red', linewidth=0.08))
+        p.add(Bezier(q1 + (-0.1, 0) , q2, q3, q4 , \
                     linecolor='red', arrow='->', linewidth=0.08, arrowsize=0.4))
         q1 = Point(6.5, 6.0)
         q4 = self.p1 + (-0.9, 0.3)
         q2 = (q1*2 + q4)/3. + (-2,0)
         q3 = (q1 + q4*2)/3. + (-2,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (+1.4, -0.4), q1 + (+0.1,0.4), linecolor='red', linewidth=0.08))
+        p.add(Bezier(q1 + (0.1, 0), q2, q3, q4 , \
                     linecolor='red', arrow='->', linewidth=0.08, arrowsize=0.4))
         q1 = Point(9.5, 5.0)
         q4 = self.p1 + (0.9, 0.3)
         q2 = (q1*2 + q4)/3. + (2,0)
         q3 = (q1 + q4*2)/3. + (2,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (-1.4, -0.4), q1 + (-0.1,0.4), linecolor='blue', linewidth=0.08))
+        p.add(Bezier(q1 + (-0.1, 0) , q2, q3, q4 , \
                     linecolor='blue', arrow='<-', linewidth=0.08, arrowsize=0.4))
         super().plot(p)
 
@@ -218,25 +222,29 @@ class Scene6(Scene0):
         q4 = self.p1 + (0.9, -0.3)
         q2 = (q1*2 + q4)/3. + (0.7,0)
         q3 = (q1 + q4*2)/3. + (0.7,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (-1.4, -0.4), q1 + (-0.1,0.4), linecolor='red', linewidth=0.08))
+        p.add(Bezier(q1 + (-0.1, 0) , q2, q3, q4 , \
                     linecolor='red', arrow='->', linewidth=0.08, arrowsize=0.4))
         q1 = Point(6.5, 6.0)
         q4 = self.p1 + (-0.9, -0.3)
         q2 = (q1*2 + q4)/3. + (-1,0)
         q3 = (q1 + q4*2)/3. + (-1,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (+1.4, -0.4), q1 + (+0.1,0.4), linecolor='red', linewidth=0.08))
+        p.add(Bezier(q1 + (0.1, 0), q2, q3, q4 , \
                     linecolor='red', arrow='->', linewidth=0.08, arrowsize=0.4))
         q1 = Point(9.5, 6.0)
         q4 = self.p1 + (0.9, 0.3)
         q2 = (q1*2 + q4)/3. + (1,0)
         q3 = (q1 + q4*2)/3. + (2,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (-1.4, -0.4), q1 + (-0.1,0.4), linecolor='red', linewidth=0.08))
+        p.add(Bezier(q1 + (-0.1, 0) , q2, q3, q4 , \
                     linecolor='red', arrow='->', linewidth=0.08, arrowsize=0.4))
         q1 = Point(6.5, 5.0)
         q4 = self.p1 + (-0.9, 0.3)
         q2 = (q1*2 + q4)/3. + (-2,0)
         q3 = (q1 + q4*2)/3. + (-2,0)
-        p.add(Bezier(q1 , q2, q3, q4 , \
+        p.add(Rectangle(q1 + (+1.4, -0.4), q1 + (+0.1,0.4), linecolor='blue', linewidth=0.08))
+        p.add(Bezier(q1 + (0.1, 0), q2, q3, q4 , \
                     linecolor='blue', arrow='<-', linewidth=0.08, arrowsize=0.4))
         super().plot(p)
 
