@@ -1,9 +1,26 @@
-all: multithread0.pdf multithread1.pdf multithread2.pdf multithread3.pdf multithread4.pdf multithread5.pdf
+all: multithread0.pdf \
+     multithread1.pdf \
+	 multithread2.pdf \
+	 multithread3.pdf \
+	 multithread4.pdf \
+	 multithread5.pdf \
+	 sequentiel.pdf \
+	 sequentiel0.pdf \
+	 sequentiel1.pdf \
+	 sequentiel2.pdf \
+	 sequentiel3.pdf \
+	 sequentiel4.pdf \
+	 sequentiel5.pdf \
+	 sequentiel6.pdf \
+	 sequentiel7.pdf
 
 %.dvi: %.tex
 	latex $<
 
 multithread%.tex: multithread.py
+	python $<
+
+sequentiel%.tex: sequentiel.py
 	python $<
 
 %.ps: %.dvi

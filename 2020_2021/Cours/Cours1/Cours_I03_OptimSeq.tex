@@ -130,10 +130,101 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
 	Une bonne utilisation de la mémoire est très importante pour l'optimisation de code.
-	
-	Supposons un système idéalisé par: un processeur, une mémoire cache de taille 8 (4 lignes cache de taille 2) et de la mémoire centrale
+	\bigskip
+
+	Exemple : si \verb|u| et \verb|v| sont des vecteurs de taille \verb|n > 4|, on veut calculer la boucle :
+
+\begin{equation}
+\begin{array}{l}
+for (i=1; i<n-1; i++) \\
+\quad  v_i = (u_{i-1} + 2*u_{i} + u_{i+1})/4;
+\end{array}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}
+	Supposons un système idéalisé par: 
+	\begin{itemize}
+		\item un processeur, 
+		\item une mémoire cache de taille 8 (4 lignes cache de taille 2),
+		\item la mémoire centrale
+	\end{itemize}
+	\begin{center}
+	\includegraphics[scale=0.5]{../../Images/sequentiel}
+   \end{center}
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{1. Avant d'exécuter $v_1 = (u_0 + 2*u_1 + u_2)/4$ :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel0}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{2. Les blocs contenant $u_0$, $u_1$, $u_2$ et $v_1$ (3 blocs) sont copiés dans la mémoire cache :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel1}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{3. Le c\oe ur utilise les copies de $u_0$, $u_1$, $u_2$ de la mémoire cache, calcule l'expression et place le résultat dans la mémoire cache :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel2}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{4. Le bloc contenant le résultat est recopié dans la mémoire principale :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel3}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{5. Le calcul de l'instruction suivante $v_2 = (u_1 + 2*u_2 + u_3)/4$ peut commencer:}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel4}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{6. Les composantes de $u$ nécessaires \textcolor{red}{sont déjà dans la mémoire cache}, seul le bloc contenant la composante $v_2$ doit être copié dans la mémoire cache :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel5}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{6. Le c\oe ur utilise les copies de $u_1$, $u_2$, $u_3$ de la mémoire cache, calcule l'expression et place le résultat dans la mémoire cache :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel6}
+	\end{center}
+\end{frame}
+\begin{frame}
+	\parbox[t][1cm]{10cm}{6. Le bloc contenant le résultat est recopié dans la mémoire principale :}
+	\begin{center}
+		\includegraphics[scale=0.6]{../../Images/sequentiel7}
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	En résumé :
+	\bigskip
+	\begin{itemize}
+		\item La première instruction $v_1 = (u_0 + 2*u_1 + u_2)/4$ utilise
+		\begin{itemize}
+			\item 4 transferts (lents) mémoire principale - mémoire cache
+			\item 4 transferts (rapides)  mémoire cache - c\oe ur
+		\end{itemize} 
+	\bigskip
+		\item La deuxième instruction $v_2 = (u_1 + 2*u_2 + u_3)/4$ utilise
+		\begin{itemize}
+			\item 2 transferts (lents) mémoire principale - mémoire cache
+			\item 4 transferts (rapides) mémoire cache - c\oe ur
+		\end{itemize}
+	\end{itemize}
+
+\vfill
+   Pour utiliser au mieux la mémoire cache, deux règles sont déduites de ce comportement : optimiser les localités spatiale et temporelle
 \end{frame}
 
 \begin{frame}
@@ -172,7 +263,7 @@ Règles:
 	\end{quote}
 	\item  essayer d'\'eviter les tests
 	\begin{quote}
-		simplifier le travail du processeur (encha\^i nement des instructions le plus d\'eterministe possible).
+		simplifier le travail du processeur (encha\^{i}nement des instructions le plus d\'eterministe possible).
 	\end{quote}
 \end{itemize}
 

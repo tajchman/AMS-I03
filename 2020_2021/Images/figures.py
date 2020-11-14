@@ -10,7 +10,7 @@ class Point:
     def __sub__(self, p):
         return Point(self[0] - p[0], self[1] - p[1])
     
-    def __div__(self, a):
+    def __truediv__(self, a):
         return Point(self[0]/a, self[1]/a)
     
     def __mul__(self, a):
