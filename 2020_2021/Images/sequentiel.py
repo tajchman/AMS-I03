@@ -1,4 +1,4 @@
-from figures import *
+from figures import Point, Text, Rectangle, Circle, Line, Lines, Bezier, pstricks
 
 L = 16
 H = 10
@@ -9,7 +9,7 @@ class Scene0:
       pass
 
    def plot0(self, p):
-      p.add(Text(self.p1 + (1.2, 0), 'C\oe ur'))
+      p.add(Text(self.p1 + (1.2, 0), r'C\oe ur'))
       p.add(Text(self.p1 + (1.7, -2), 'Mémoire'))
       p.add(Text(self.p1 + (1.7, -2.7), 'cache'))
       p.add(Text((0.3, 2.3), r"M\'emoire"))
@@ -31,8 +31,8 @@ class Scene0:
          p.add(Text((k-1,2.0), '$u_' + str(i-7) + '$'))
          p.add(Line((k,0.5), (k,1.5)))
          p.add(Line((k,1.7), (k,2.7)))
-      p.add(Text((11.6,0.8), '\ldots'))
-      p.add(Text((11.6,2.0), '\ldots'))
+      p.add(Text((11.6,0.8), r'\ldots'))
+      p.add(Text((11.6,2.0), r'\ldots'))
       p.add(Rectangle((6,0.5), (12.6,1.5)))
       p.add(Rectangle((6,1.7), (12.6,2.7)))
 
