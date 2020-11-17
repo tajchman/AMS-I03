@@ -29,11 +29,38 @@
 \large
 \begin{frame}
 	Deux ``règles d'or'' :
+		\bigskip
+
 	\begin{itemize}
 		\item Avant/après optimisation, avant/après parallélisation, il faut s'assurer que le code sur lequel on travaille, donne des résultats corrects.
+		\bigskip
 		
 		\item Avant de paralléliser un code et/ou avant d'optimiser le parallélisme, il faut optimiser la partie séquentielle d'un code.
 	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+On parle en général de version Debug et Release d'un code :
+{\small
+\begin{itemize}
+	\item version Debug : avec les options de compilation (-g -O0 par exemple avec gcc/g++) qui désactivent les optimisations faites par le compilateur, qui ajoutent dans le code des points de repère pour exécuter un code instruction par instruction, afficher la valeur de variables en cours d'exécution, etc.
+	
+	\item version Release : avec les options de compilation (-O2 ou -O3 par exemple avec gcc/g++) qui permettent au compilateur d'optimiser lui-même le code.
+\end{itemize}
+}
+\vfill
+
+\begin{itemize}
+	\item[\textbullet] \textcolor{blue}{
+		Pendant l'écriture, les tests et la correction d'un code, on utilise en général une version Debug. }
+	\item[\textbullet] \textcolor{blue}{
+		A la fin, on fournit aux utilisateurs une version Release.}
+	\item[\textbullet] \textcolor{blue}{
+		Bien vérifier que la version Release donne les mêmes résultats que la version Debug (on a parfois des surprises).}
+\end{itemize}
+
 \end{frame}
 
 \begin{frame}
@@ -99,7 +126,7 @@
 	(valgrind, perf,
 vtune (intel), etc.)
 		
-	\medskip
+\vfill
 	Permet de connaître des informations intermédiaires : nombre d’appels et temps
 	moyen d’exécution de fonctions par exemple (gprof, valgrind).
 	
@@ -107,10 +134,10 @@ vtune (intel), etc.)
 	\end{itemize}
 
 \vfill
-	Les outils de mesure perturbent les temps de calcul et, en général, il faut les utiliser avec
-	une version ``debug''. Ils donnent seulement une indication sur les endroits du code les plus
-	intéressants à optimiser. De toute façon, à la fin, il faut mesurer les temps calculs sur la
-	version ``release'' (on a parfois des surprises) .
+	En général, il faut utiliser les outils de profilage avec
+	une version ``debug'' (même s'ils peuvent fonctionner en version ``release'', ils donneront alors beaucoup moins d'informations). 
+\vfill
+    
 \end{frame}
 
 \begin{frame}
@@ -127,7 +154,7 @@ vtune (intel), etc.)
 	
 	\item organiser la s\'equence d'instructions (am\'eliorer la localit\'e temporelle)
 
-	\item \'ecrire les instructions pour qu'elles soient les plus rapides possibles (éviter de calculer plusieurs fois la même expression, \'eviter si possible les tests, ``faciliter le travail du compilateur'')
+	\item \'ecrire les instructions pour qu'elles soient les plus rapides possibles (éviter de calculer plusieurs fois la même expression, \'eviter si possible les tests (instructions 'if'), ``faciliter le travail du compilateur'')
 \end{itemize}
 \end{frame}
 
@@ -223,16 +250,22 @@ for (i=1; i<n-1; i++) \\
 		\end{itemize}
 	\end{itemize}
 \vfill
-    Examiner et tester l'exemple {\it Exemple1} 
+    \textcolor{red}{Attention : cet exemple est (très) simplifié : en général la mémoire cache est de taille plus grande que dans l'exemple et, de plus, il y a plusieurs types de mémoire cache dans un ordinateur}
+\end{frame}
+
+\begin{frame}
+\vfill
+Examiner et tester l'exemple {\it Exemple1} 
+\vfill
+\begin{itemize}
+	\item Sans mémoire cache, toutes les itérations prendraient (à peu près) le même temps.
+	\item La première instruction prend plus de temps parce qu'elle remplit la mémoire cache.
+	\item Beaucoup d'instructions suivantes n'auront pas besoin de chercher des valeurs dans la mémoire centrale.
+\end{itemize}    
     
 \vfill
-    Sans mémoire cache, toutes les itérations prendraient (à peu près) le même temps.
-    
     La mémoire cache améliore beaucoup le temps de calcul de presque toutes les itérations 
     
-    \begin{quote}
-    	\textcolor{blue}{Attention, la configuration matérielle sera différente du cas idéalisé ci-dessus, mais on devrait voir la différence entre la première itération et les suivantes.}
-    \end{quote}
 
 \end{frame}
 

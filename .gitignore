@@ -15,3 +15,4 @@ install
 *.vrb
 .DS_Store
 .settings
+*.dat
