@@ -31,7 +31,7 @@
 \section{Rappels sur l'architecture mat\'erielle}
 \frametitle{Rappels sur l'architecture mat\'erielle}
 
-La plupart des ordinateurs actuels ont des fonctionnalités parallèles  (exécution simultanée plusieurs traitements) : 
+La plupart des ordinateurs actuels ont des fonctionnalités parallèles  (exécution simultanée de plusieurs traitements) : 
 
 \begin{itemize}
 	\item Les ordinateurs personnels (ordinateurs portables ou de bureau, téléphones portables, tablettes, etc.) ont presque toujours des unités de calcul (ou cœurs) multiples.
@@ -198,7 +198,6 @@ Permet de maintenir de bonnes performances avec de la mémoire de grande taille 
 \begin{frame}
 	Ce qu'il faut retenir:
 
-	\bigskip
 	\begin{itemize}
 		\item \textcolor{blue}{En général, plusieurs niveaux de parallélisme disponibles}
 		\begin{enumerate}
@@ -218,6 +217,10 @@ Permet de maintenir de bonnes performances avec de la mémoire de grande taille 
 			\item au // dans un GPU
 			\item au // mixte (MPI/OpenMP/Cuda)
 		\end{itemize}
+		\medskip
+		\item \textcolor{blue}{Tous les ordinateurs actuels utilisent de la mémoire cache}
+	
+	    La mémoire cache est là pour améliorer la différence entre la vitesse des processeurs et la vitesse d'accès à la mémoire centrale.
 	\end{itemize}
 \end{frame}
 

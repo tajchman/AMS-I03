@@ -9,31 +9,27 @@
 #define SIZE 100000000
 int main(int argc, char **argv) {
 
-#ifdef MESURE
    std::ofstream f("results.dat");
-#endif
- 
+
+   std::cerr << "distance " << std::endl;
+
    std::vector<double> u(SIZE, 0);
    int k;
    for (k=1; k<=4096; k *= 2) {
 
-#ifdef MESURE
+       std::cerr << " " << k;
        Timer T;
        T.start();
-#endif
       
        calcul(u, k);
     
-#ifdef MESURE
        T.stop();
        double Trel = T.elapsed() / SIZE * k;
        f << k << " " << Trel << std::endl;
-       std::cerr << k << " " << Trel << std::endl;
-#endif
+       std::cerr << " " << Trel << std::endl;
    }
-   f.close();
 
-#if MESURE
+   f.close();
    std::ofstream r("results.gnp");
    r << "set term pdf\n"
         "set output 'temps_cache.pdf'\n"
@@ -43,7 +39,6 @@ int main(int argc, char **argv) {
         "plot 'results.dat' w lp lc 6 lw 3 pt 6 ps 0.5 notitle\n";
    r.close();
    (void) system("gnuplot results.gnp");
-#endif
 
    return 0;
  }

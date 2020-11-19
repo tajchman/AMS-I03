@@ -45,9 +45,11 @@
 On parle en général de version Debug et Release d'un code :
 {\small
 \begin{itemize}
-	\item version Debug : avec les options de compilation (-g -O0 par exemple avec gcc/g++) qui désactivent les optimisations faites par le compilateur, qui ajoutent dans le code des points de repère pour exécuter un code instruction par instruction, afficher la valeur de variables en cours d'exécution, etc.
+	\item version Debug : avec les options de compilation (-g -O0 par exemple avec gcc/g++) qui désactivent les optimisations faites par le compilateur, qui ajoutent dans le code des points de repère pour exécuter un code instruction par instruction, testent la validité des indices de vecteurs, affichent la valeur de variables en cours d'exécution, etc.
 	
-	\item version Release : avec les options de compilation (-O2 ou -O3 par exemple avec gcc/g++) qui permettent au compilateur d'optimiser lui-même le code.
+	\item version Release : avec les options de compilation (-O2 ou -O3 par exemple avec gcc/g++) qui permettent au compilateur d'optimiser lui-même le code, et en enlevant tous les contrôles.
+	
+	\item En général, la version Release sera (beaucoup) plus rapide que la version Debug.
 \end{itemize}
 }
 \vfill
@@ -176,7 +178,7 @@ for (i=1; i<n-1; i++) \\
 \begin{frame}
 	Supposons un système idéalisé par: 
 	\begin{itemize}
-		\item un processeur, 
+		\item un processeur (qui contient un seul c\oe ur), 
 		\item une mémoire cache de taille 8 (4 lignes cache de taille 2),
 		\item la mémoire centrale
 	\end{itemize}
@@ -204,7 +206,7 @@ for (i=1; i<n-1; i++) \\
 	\end{center}
 \end{frame}
 \begin{frame}
-	\parbox[t][1cm]{10cm}{4. Le bloc contenant le résultat est recopié dans la mémoire principale :}
+	\parbox[t][1cm]{10cm}{4. Le bloc contenant le résultat est recopié dans la mémoire centrale :}
 	\begin{center}
 		\includegraphics[scale=0.6]{../../Images/sequentiel3}
 	\end{center}
@@ -228,7 +230,7 @@ for (i=1; i<n-1; i++) \\
 	\end{center}
 \end{frame}
 \begin{frame}
-	\parbox[t][1cm]{10cm}{6. Le bloc contenant le résultat est recopié dans la mémoire principale :}
+	\parbox[t][1cm]{10cm}{6. Le bloc contenant le résultat est recopié dans la mémoire centrale :}
 	\begin{center}
 		\includegraphics[scale=0.6]{../../Images/sequentiel7}
 	\end{center}
@@ -239,13 +241,13 @@ for (i=1; i<n-1; i++) \\
 	\begin{itemize}
 		\item La première instruction $v_1 = (u_0 + 2*u_1 + u_2)/4$ utilise
 		\begin{itemize}
-			\item 4 transferts (lents) mémoire principale - mémoire cache
+			\item 4 transferts (lents) mémoire centrale - mémoire cache
 			\item 4 transferts (rapides)  mémoire cache - c\oe ur
 		\end{itemize} 
 	\smallskip
 		\item La deuxième instruction $v_2 = (u_1 + 2*u_2 + u_3)/4$ utilise
 		\begin{itemize}
-			\item 2 transferts (lents) mémoire principale - mémoire cache
+			\item 2 transferts (lents) mémoire centrale - mémoire cache
 			\item 4 transferts (rapides) mémoire cache - c\oe ur
 		\end{itemize}
 	\end{itemize}
@@ -260,7 +262,7 @@ Examiner et tester l'exemple {\it Exemple1}
 \begin{itemize}
 	\item Sans mémoire cache, toutes les itérations prendraient (à peu près) le même temps.
 	\item La première instruction prend plus de temps parce qu'elle remplit la mémoire cache.
-	\item Beaucoup d'instructions suivantes n'auront pas besoin de chercher des valeurs dans la mémoire centrale.
+	\item Beaucoup d'instructions suivantes n'auront pas besoin de chercher toutes les valeurs dans la mémoire centrale.
 \end{itemize}    
     
 \vfill
@@ -278,15 +280,17 @@ Un cycle est l'unité de temps pour le processeur. Le processeur qui a été uti
 Un cycle prend à peu près $0.3\ 10^{-9}$ secondes. 
 \vfill
 
-Sur le graphique, une itération (sauf la première) prend $0.6\ 10^{-7}$ secondes.
+Un calcul de $v_i$ (sauf $v_0$) prend $\sim 10^{-7}$ secondes.
 \end{frame}
 
 \begin{frame}
 \vfill
 On voit donc qu'il est important de bien utiliser la mémoire cache.
-
 \vfill
-   \textcolor{blue}{Deux règles sont déduites de ce comportement : optimiser les localités spatiale et temporelle.}
+
+Pour obtenir le maximum de performances, il faudrait programmer en connaissant exactement l'organisation des mémoires cache. C'est (très) compliqué de faire un code qui est performant sur plusieurs machines différentes. 
+\vfill
+   \textcolor{blue}{C'est pourquoi, on essaie d'appliquer les règles suivantes : optimiser les localités spatiale et temporelle.}
 \vfill 
 \end{frame}
 
