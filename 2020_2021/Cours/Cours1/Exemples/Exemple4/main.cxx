@@ -10,24 +10,24 @@ int main(int argc, char **argv) {
 
   int n = argc > 1 ? strtol(argv[1], NULL, 10) : 10000000;
 
-  std::vector<double> u(n), v(n), w(n), a(n), b(n), c(n), d(n);
-  init(u, 1.0);
-  init(v, 2.0);
-  init(a, 3.0);
-  init(a, 3.0);
-  init(b, 3.0);
+  std::vector<double> y(n), x(n);
+  double a, b;
+  init(x, 1.0);
+  init(y, 0.0);
+  a = 3.0;
+  b = 4.0;
 
   Timer T1;
   T1.start();
       
-  calcul1(u, v, w, a, b, c, d);
+  calcul1(y, a, x, b);
     
   T1.stop();
 
   Timer T2;
   T2.start();
       
-  calcul2(u, v, w, a, b, c, d);
+  calcul2(y, a, x, b);
     
   T2.stop();
 

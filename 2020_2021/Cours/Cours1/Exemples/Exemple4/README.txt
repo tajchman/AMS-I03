@@ -6,7 +6,7 @@ Pour compiler:
   Se mettre dans le répertoire qui contient de ce fichier
   Taper:
 
-    cmake -B build -DCMAKE_BUILD_TYPE=Release .
+    cmake -B build -DCMAKE_BUILD_TYPE=Debug .
     make -C build
 
   Si tout s'est bien passé : un fichier ex3.exe est créé dans le 
