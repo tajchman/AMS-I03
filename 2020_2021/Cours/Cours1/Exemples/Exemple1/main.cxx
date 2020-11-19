@@ -1,6 +1,7 @@
 #include "init.hxx"
 #include "calcul.hxx"
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <cstdlib>
 
@@ -23,7 +24,9 @@ int main(int argc, char **argv) {
         "plot 'results.dat' w lp lc 6 lw 3 pt 6 ps 0.5 notitle\n";
    f.close();
    (void) system("gnuplot results.gnp");
+   std::cout << "Afficher le fichier cycles.pdf qui contient les mesures" << std::endl;
 #endif
 
+   std::cout << "Fin du calcul" << std::endl;
    return 0;
  }
