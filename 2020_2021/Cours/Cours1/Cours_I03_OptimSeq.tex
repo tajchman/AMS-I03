@@ -257,16 +257,19 @@ for (i=1; i<n-1; i++) \\
 
 \begin{frame}
 \vfill
-Examiner et tester l'exemple {\it Exemple1} 
+Examiner et tester l'exemple {\it Exemple1}
+
+Lire le fichier Exemple1/README.txt pour des instructions de compilation et d'exécution.
+ 
 \vfill
 \begin{itemize}
-	\item Sans mémoire cache, toutes les itérations prendraient (à peu près) le même temps.
 	\item La première instruction prend plus de temps parce qu'elle remplit la mémoire cache.
+	\item Sans mémoire cache, toutes les itérations prendraient (à peu près) le même temps que la première.
 	\item Beaucoup d'instructions suivantes n'auront pas besoin de chercher toutes les valeurs dans la mémoire centrale.
 \end{itemize}    
     
 \vfill
-    La mémoire cache améliore beaucoup le temps de calcul de presque toutes les itérations 
+    La mémoire cache améliore beaucoup le temps de calcul de presque toutes les itérations.
     
 
 \end{frame}
@@ -288,7 +291,8 @@ Un calcul de $v_i$ (sauf $v_0$) prend $\sim 10^{-7}$ secondes.
 On voit donc qu'il est important de bien utiliser la mémoire cache.
 \vfill
 
-Pour obtenir le maximum de performances, il faudrait programmer en connaissant exactement l'organisation des mémoires cache. C'est (très) compliqué de faire un code qui est performant sur plusieurs machines différentes. 
+Pour obtenir le maximum de performances, il faudrait programmer en connaissant exactement l'organisation des mémoires cache. Un code qui est performant sur plusieurs machines différentes, est (très) compliqué à écrire.
+
 \vfill
    \textcolor{blue}{C'est pourquoi, on essaie d'appliquer les règles suivantes : optimiser les localités spatiale et temporelle.}
 \vfill 
@@ -306,6 +310,8 @@ Règle:  \textcolor{red}{autant que possible, utiliser des zones m\'emoires proc
 
 \vfill
 Voir l'\textcolor{blue}{Exemple2}
+
+Lire le fichier Exemple2/README.txt pour des instructions de compilation et d'exécution.
 \end{frame}
 
 \begin{frame}

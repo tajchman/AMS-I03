@@ -1,22 +1,42 @@
 Exemple 1 : mesure fine d'une instruction (avec la librairie PAPI)
 
+_____________________________________________________________________
+Attention:
+
+  Pour que l'exemple fonctionne, il faut que la commande suivant :
+     
+     cat /proc/sys/kernel/perf_event_paranoid
+     
+  affiche 0
+  
+  Sinon, si vous avec les droits administrateur (root) sur la machine, tapez
+
+    sudo bash
+    echo 0 > /proc/sys/kernel/perf_event_paranoid
+    exit
+_____________________________________________________________________
 Pour compiler:
 
   Se mettre dans le répertoire qui contient de ce fichier
   Taper:
 
-    mkdir -p build
-    cd build
-    cmake -DMESURE=ON .
-    cd ..
+    cmake -B build -DMESURE=ON -DCMAKE_BUILD_TYPE=Release .
+    make -C build
 
-  Si tout s'est bien passé : un fichier ex1.exe est créé
+  Si tout s'est bien passé : un fichier ex1.exe est créé dans le 
+  répertoire build
 
+_____________________________________________________________________
 Pour exécuter:
 
   Taper :
 
     ./build/ex1.exe
 
-    Le calcul fait une boucle
+    Le calcul fait une boucle sur 8 itérations.
+    La mesure du temps calcul pour chaque itération est dans un graphe dans le
+    fichier cycles.pdf (nobres de cycles processeurs pour chque itération)
+
+    Affichier le fichier cycles.pdf
+    
   
