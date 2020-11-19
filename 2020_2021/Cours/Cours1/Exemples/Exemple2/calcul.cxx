@@ -2,11 +2,20 @@
 #include <cmath>
 #include <fstream>
 
-void calcul(std::vector<double> & u, int step)
+void calcul1(Matrice &C, const Matrice &A, const Matrice &B)
 {
-  size_t i, n = u.size();
+  int i,j,n = C.n(), m = C.m();
 
-  for (i = step; i<n; i += step) {
-    u[i] = u[i-step] + 1;
-  }
+  for (i=0; i<n; i++)
+    for (j=0; j<m; j++)
+       C(i,j) = A(i,j) + B(i,j);
+}
+
+void calcul2(Matrice &C, const Matrice &A, const Matrice &B)
+{
+  int i,j,n = C.n(), m = C.m();
+
+  for (j=0; j<m; j++)
+    for (i=0; i<n; i++)
+       C(i,j) = A(i,j) + B(i,j);
 }

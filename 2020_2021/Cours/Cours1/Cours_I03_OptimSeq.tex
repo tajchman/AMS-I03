@@ -309,9 +309,48 @@ Règle:  \textcolor{red}{autant que possible, utiliser des zones m\'emoires proc
 \end{quote}
 
 \vfill
-Voir l'\textcolor{blue}{Exemple2}
+Voir l'\textcolor{blue}{Exemple2} : addition de 2 matrices.
 
 Lire le fichier Exemple2/README.txt pour des instructions de compilation et d'exécution.
+\end{frame}
+
+\begin{frame}
+	Le code compare 2 algorithmes de parcours des coefficients de matrice : lignes par lignes et colonnes par colonnes.
+	\vfill
+	
+	Dans cet exemple, une matrice $M(m,n)$ est rangée dans la mémoire centrale ligne par ligne:
+	
+	\includegraphics[scale=0.4]{../../Images/ex2_memoire}
+	
+	Parcours ligne par ligne (flèches rouges, vertes puis bleues):
+	\includegraphics[scale=0.4]{../../Images/ex2_memoire_1}
+	
+	Parcours colonne par colonne (flèches rouges, vertes puis bleues):
+	\includegraphics[scale=0.4]{../../Images/ex2_memoire_2}
+\end{frame}
+
+\begin{frame}[fragile]
+	Exécuter l'exemple 2 en tapant:
+	\begin{verbatim}
+	./build/ex2.exe
+	\end{verbatim}
+	qui additionne 2 matrices de taille $1024 \times 1024$
+	et comparer les temps de calcul.
+	\vfill
+	
+	{\bf Question.}
+	\begin{quote}
+		Ré-éxécuter le code en ajoutant un paramètre entier :
+
+			\quad\verb|./build/ex2.exe n|
+
+		avec $n = 8, 16, 32, 64, 128, 256, 512, 1024, 2048$
+		qui additionne des matrices de taille $n\times n$.
+		\bigskip
+		
+		Expliquer les résultats		
+	\end{quote}
+	
 \end{frame}
 
 \begin{frame}
@@ -328,6 +367,8 @@ Règle:
 
 \vfill
 Voir l'\textcolor{blue}{Exemple3}
+
+Lire le fichier Exemple3/README.txt pour des instructions de compilation et d'exécution.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -366,6 +407,10 @@ for (i=0; i<n; i++) {
 }
 \end{lstlisting}
 
+\end{frame}
+
+\begin{frame}
+	Exemple 4 : Déroulement de boucles
 \end{frame}
 
 \end{document}

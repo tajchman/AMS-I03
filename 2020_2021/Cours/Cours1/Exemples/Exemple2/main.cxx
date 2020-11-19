@@ -6,39 +6,33 @@
 #include <cstdlib>
 #include "timer.hxx"
 
-#define SIZE 100000000
 int main(int argc, char **argv) {
 
-   std::ofstream f("results.dat");
+  int n = argc > 1 ? strtol(argv[1], NULL, 10) : 1024;
 
-   std::cerr << "distance " << std::endl;
+  Matrice A(n,n), B(n,n), C(n,n);
 
-   std::vector<double> u(SIZE, 0);
-   int k;
-   for (k=1; k<=4096; k *= 2) {
+  init(A, 1);
+  init(B, 2);
+  init(C, 0);
 
-       std::cerr << " " << k;
-       Timer T;
-       T.start();
+  Timer T1;
+  T1.start();
       
-       calcul(u, k);
+  calcul1(C, A, B);
     
-       T.stop();
-       double Trel = T.elapsed() / SIZE * k;
-       f << k << " " << Trel << std::endl;
-       std::cerr << " " << Trel << std::endl;
-   }
+  T1.stop();
 
-   f.close();
-   std::ofstream r("results.gnp");
-   r << "set term pdf\n"
-        "set output 'temps_cache.pdf'\n"
-        "set xlabel 'Décalage'\n"
-        "set ylabel 'Temps CPU/nombres acces'\n"
-        "set logscale x\n"
-        "plot 'results.dat' w lp lc 6 lw 3 pt 6 ps 0.5 notitle\n";
-   r.close();
-   (void) system("gnuplot results.gnp");
+  Timer T2;
+  T2.start();
+      
+  calcul2(C, A, B);
+    
+  T2.stop();
 
-   return 0;
+  std::cout << "                           temps cpu" << std::endl;
+  std::cout << "Algo suivant les lignes   " << T1.elapsed() << " s" << std::endl;
+  std::cout << "Algo suivant les colonnes " << T2.elapsed() << " s" << std::endl;
+
+  return 0;
  }

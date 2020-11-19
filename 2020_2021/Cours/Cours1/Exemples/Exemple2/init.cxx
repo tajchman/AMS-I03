@@ -2,11 +2,11 @@
 #include <cstdlib>
 #include <ctime>
 
-void init(std::vector<double> & u)
+void init(Matrice &M, double v0)
 {
-   size_t i, n = u.size();
+  int i,j,n = M.n(), m = M.m();
 
-   std::srand(std::time(nullptr));
-   for (i = 0; i<n; i++)
-     u[i] = 2.0 + std::rand();
+  for (i=0; i<n; i++)
+    for (j=0; j<m; j++)
+      M(i,j) = v0;
 }

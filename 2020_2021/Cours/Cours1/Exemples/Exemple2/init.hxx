@@ -1,3 +1,3 @@
-#include <vector>
+#include "Matrice.hxx"
 
-void init(std::vector<double> & u);
+void init(Matrice &C, double v0);
