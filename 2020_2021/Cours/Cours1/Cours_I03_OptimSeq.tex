@@ -385,11 +385,39 @@ Règles:
 	\end{quote}
 \end{itemize}
 
+	Voir \textcolor{blue}{Exemple 4} : Déroulement de boucles
+
+(exemple extrait de la librairie d'analyse numérique LAPACK)
+
+
+Lire le fichier Exemple4/README.txt pour des instructions de compilation et d'exécution.
 
 \end{frame}
 
+\begin{frame}
+	
+	Dans calcul1, une itération de la boucle contient 1 addition et 1 multiplication.
+	
+	Dans calcul2, une itération de la boucle contient 4 additions et 4 multiplications.
+	
+	\vfill
+	Donc l'ordinateur peut calculer simultanément certaines des oprérations en fonction du nombre de circuits d'addition et/ou de multiplication disponibles.
+	
+	\vfill
+	A noter que calcul2 contient plus d'opérations sur les entiers que calcul1.
+	Malgré cela, calcul2 est tout de même plus rapide que calcul1.
+	
+	\vfill
+	{\bf Question.}
+	\begin{quote}
+		La version calcul2 illustre bien le // interne, mais ne donne pas des résultats corrects. Trouvez l'erreur.
+	\end{quote}
+	
+\end{frame}
+
 \begin{frame}[fragile]
-Exemple: remplacer
+Exemple 5: remplacement de tests par des opérations arithmétiques
+
 \begin{lstlisting}
 for (i=0; i<n; i++) {
   u[i] = u0[i];
@@ -398,7 +426,7 @@ for (i=0; i<n; i++) {
 }
 \end{lstlisting}
 
-par:
+vs.
 \begin{lstlisting}
 if (terme1) aa = a; else aa = 0.0;
 if (terme2) bb = b; else bb = 0.0;
@@ -409,8 +437,5 @@ for (i=0; i<n; i++) {
 
 \end{frame}
 
-\begin{frame}
-	Exemple 4 : Déroulement de boucles
-\end{frame}
 
 \end{document}

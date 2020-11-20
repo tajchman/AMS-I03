@@ -17,7 +17,7 @@ Pour exécuter:
 
   Taper :
 
-    ./build/ex3.exe n
+    ./build/ex4.exe n
 
     où n est un entier positif (taille des vecteur)
     si n n'est pas spécifié, le code prend n = 100000

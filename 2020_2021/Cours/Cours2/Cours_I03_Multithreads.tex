@@ -32,25 +32,174 @@
 	\section{Parallélisme multi-threads en mémoire partagée}
 	\frametitle{Parallélisme multi-threads en mémoire partagée}
 
-	\vfill
+\begin{itemize}
+	\item 
 	Le but du parallélisme multithreads est de découper l'ensemble des instructions en plusieurs parties et d'exécuter (le plus possible) simultanément ces différentes parties par des threads (exécutions) sur des c\oe urs différents.
-
-
-	\vfill
+	\item 
 	On appellera la version du code non parallélisé : ``séquentiel''.
-
-	\vfill
-    Dans le cas le plus simple, le nombre de threads est égal au nombre de c\oe urs.
-
-	\vfill
+	\item 
+    Dans le cas le plus simple, le nombre de threads est égal au nombre de c\oe urs. Mais on peut utiliser un nombre de threads différent du nombre de c\oe urs.
+	\item 
 	En mémoire partagée signifie que différents groupes d'instructions travaillent sur des données contenues dans la même mémoire. Il faut donc faire attention que les modifications faites par certaines instructions ne perturbent pas les données utilisées par d'autres instructions.
-	\vfill
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	Formellement :
+	
+	\bigskip
+	\begin{quote}
+On veut exécuter en parallèle, $N$ instructions 
+$$
+I = \{ I_i(u), i=1 .. N\}
+$$ 
+où $u$ est une structure de données commune.
+
+\bigskip
+On regroupe l'ensemble des instructions en $n_G$ groupes 
+$$
+G_k = \{ I_{i_j}(u),\quad i_j \in (1..N),\quad j=1,..,N_k\} \quad k = 1 .. n_G
+$$
+
+de telle sorte que
+$$
+\begin{array}{rcl}
+G_{k'} \bigcap G_{k''} &=& \varnothing\quad \hbox{ si } k' \neq k'' \\[0.3cm]
+\bigcup_{k=1}^{k=n_G} G_k &=& I
+\end{array}
+$$ 
+\end{quote}
+	
+\end{frame}
+
+\begin{frame}
+	
+Autrement dit:
+\begin{quote}
+\textcolor{blue}{Chaque instruction doit être exécutée une et une seule fois} 
+\end{quote}
+
+\vfill
+\begin{itemize}
+	\item Autant que possible, il faut pouvoir exécuter les différents groupes d'instructions de façon indépendante (c'est le système qui décidera de démarrer un groupe, en fonction des c\oe urs disponibles)
+	
+	\item A l'intérieur d'un groupe les instructions sont exécutées séquentiellement
+	
+	\item Il faut déterminer quelles sont les données partagées entre les groupes et celles qui sont privées (utilisées par un seul groupe).  
+\end{itemize}
+
+\vfill
+Ce dernier point est souvent le plus complexe.
+\end{frame}
+
+\begin{frame}[fragile]
+Exemple 1:
+\vfill
+on peut découper une boucle: 
+\begin{lstlisting}
+for (i=0; i<N; i++)
+  v[i] = f(a, u[i]);
+\end{lstlisting}
+
+\vfill
+en 3 parties (par exemple), avec $0 = N0 \leq N1 \leq N2 \leq N3 = N$:
+
+\vfill
+\begin{minipage}{0.52\textwidth}
+	\begin{lstlisting}
+for (i=N0; i<N1; i++)
+  v[i] = f(a, u[i]);
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{0.46\textwidth}
+	$1^{\hbox{er}}$ groupe d'instructions à exécuter par le $1^{\hbox{er}}$ thread
+\end{minipage}
+
+%\hline
+\begin{minipage}{0.52\textwidth}
+\begin{lstlisting}
+for (i=N1; i<N2; i++)
+  v[i] = f(a, u[i]);
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{0.46\textwidth}
+	$2^{\hbox{ème}}$ groupe d'instructions à exécuter par le $2^{\hbox{ème}}$ thread
+\end{minipage}
+
+%\hline
+\begin{minipage}{0.52\textwidth}
+\begin{lstlisting}
+for (i=N2; i<N3; i++)
+  v[i] = f(a, u[i]);
+\end{lstlisting}
+\end{minipage}
+\begin{minipage}{0.46\textwidth}
+	$3^{\hbox{ème}}$ groupe d'instructions à exécuter par le $3^{\hbox{ème}}$ thread
+\end{minipage}
+
+\end{frame}
+	
+\begin{frame}[fragile]
+Il faut examiner l'utilisation de toutes les données sinon on risque de tomber sur des erreurs difficiles à corriger.
+
+\vfill
+\begin{tabular}{|l|l|}
+	 \hline
+	\bf Donnée & \bf Comportement \\
+	 \hline
+	 \begin{minipage}[t]{0.23\textwidth}
+	 	N0, N1, N2, N3, a 
+	\end{minipage}
+ & \begin{minipage}[t]{0.75\textwidth}
+	 	Utilisées par plusieurs threads mais constantes dans l'algorithme, on peut les partager entre les threads
+ 	\end{minipage}
+ 	 \\[25pt]
+	 \hline
+	 u &  \begin{minipage}[t]{0.75\textwidth}
+	 	u est constant et donc peut être partagé\end{minipage}
+	 \\[10pt]
+	 \hline
+	 v &  \begin{minipage}[t]{0.75\textwidth}
+	 	v varie dans l'algorithme, mais comme chaque thread modifie une partie différente du vecteur, v peut être partagé.\end{minipage}
+	 \\[20pt]
+	 \hline
+	 i &  \begin{minipage}[t]{0.75\textwidth}
+	 	i prend des valeurs différentes dans les threads (i = N0 à N1-1 dans le premier thread, i=N1 à N2-1 dans le second thread, etc.), il faut donc utiliser des variables différentes qui représentent i dans les différents threads. i est dit ``variable privée''.\end{minipage}
+	 \\[30pt]
+	 \hline
+\end{tabular}
 
 \end{frame}
 
-\large
 \begin{frame}[fragile]
-	Exemple 1: si \verb|u| et \verb|v| sont des vecteurs de taille \verb|n > 4|, on veut calculer la boucle {\tt for}:
+	L'algorithme doit être modifié comme suit:
+	
+\begin{lstlisting}
+for (i0=N0; i0<N1; i0++)
+	v[i0] = f(a, u[i0]);
+\end{lstlisting}
+
+%\hline
+\begin{lstlisting}
+for (i1=N1; i1<N2; i1++)
+	v[i1] = f(a, u[i1]);
+\end{lstlisting}
+
+%\hline
+\begin{lstlisting}
+for (i2=N2; i2<N3; i2++)
+	v[i2] = f(a, u[i2]);
+\end{lstlisting}
+\vfill
+
+Voir une implémentation en OpenMP dans l'\textcolor{blue}{Exemple 1}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\begin{frame}[fragile]
+	Exemple 2: si \verb|u| et \verb|v| sont des vecteurs de taille \verb|n > 4|, on veut calculer la boucle {\tt for}:
 
 	\begin{equation}
 	\begin{array}{l}
@@ -59,43 +208,43 @@ for (i=1; i<n-1; i++) \\
 \end{array}
 	\end{equation}
 
-	\vfill
-	Ces instructions (pour différentes valeurs de $i$) utilisent des composantes de \verb|u| différentes, mais (presque) toutes les composantes de $u$ sont utilisées par plusieurs instructions de la boucle {\tt for}.
 
-	\vfill
-	\textcolor{blue}{Les composantes de u ne sont pas modifiées par les instructions.}
-
-	\vfill
-	\textcolor{blue}{Les composantes de v sont modifiées (mais chaque instruction calcule une composante différente).}
-
-	\vfill
-	On remarque que le calcul de $v_i$ ne dépend pas de celui de $v_j$ ($j \neq i$) et donc ces 2 calculs peuvent se faire en même temps par 2 ex\'ecutions différentes qui utilisent les mêmes vecteurs u et v.
-
+	On va examiner en détail le calcul simultané sur 2 c\oe urs des 2 expressions
+	
+	$$
+	\begin{array}{lcl}
+	v_2 & = & (u_1 + 2 u_2 + u_3) \\[0.4cm]
+	v_3 & = & (u_2 + 2 u_3 + u_4)
+	\end{array}	
+	$$
+	
+	On supposera que chaque c\oe ur possède sa mémoire cache de taille 8 (4 lignes de cache de taille 2).
 \end{frame}
 
 \begin{frame}
-	\parbox[t][1cm]{10cm}{1. Avant d'exécuter les 2 instructions (i=2 et i=3) :}
+	\parbox[t][1cm]{10cm}{1. Avant d'exécuter les 2 instructions :}
    \begin{center}
    \includegraphics[scale=0.6]{../../Images/multithread0}
    \end{center}
 \end{frame}
 
 \begin{frame}
-	\parbox[t][1cm]{10cm}{2. Les composantes de $u$ sont recopiées dans les mémoires cache :}
+	\parbox[t][1cm]{10cm}{2. Les blocs qui contiennent les composantes utilisées sont recopiés dans les mémoires cache :}
    \begin{center}
 	\includegraphics[scale=0.6]{../../Images/multithread1}
    \end{center}
 \end{frame}
 
 \begin{frame}
-	\parbox[t][1cm]{10cm}{3. Les composantes de $u$ sont recopiées dans les mémoires internes des processeurs:}
+	\parbox[t][1cm]{10cm}{3. Les composantes de $u$ sont recopiées dans les mémoires internes des processeurs et les résultats sont mis à la place de composantes de $v$:} 
+	
    \begin{center}
 	\includegraphics[scale=0.6]{../../Images/multithread2}
    \end{center}
 \end{frame}
 
 \begin{frame}
-	\parbox[t][1cm]{10cm}{4. Le calcul est effectué dans les c\oe urs (2 instructions en //) :
+	\parbox[t][1cm]{10cm}{4. Les blocs qui contiennent les résultats sont copiés dans la mémoire centrale. \includegraphics[scale=0.015]{../../Images/A14} \textcolor{red}{Le résultat est indéterminé.} 
 	}
    \begin{center}
 	\includegraphics[scale=0.6]{../../Images/multithread3}
@@ -103,16 +252,34 @@ for (i=1; i<n-1; i++) \\
 \end{frame}
 
 \begin{frame}
-	\parbox[t][1cm]{10cm}{5. Le résultat est recopié dans la mémoire cache :}
-	\begin{center}
-		\includegraphics[scale=0.6]{../../Images/multithread4}
-	\end{center}
+	\vfill
+	L'erreur vient du fait que 2 caches différents contiennent chacun un bloc (partiellement) différent qui seront recopiés dans la mémoire centrale au même endroit
+	
+	\vfill
+	Tous les ordinateurs dont les processeurs ont plusieurs c\oe urs, appliquent un algorithme pour vérifier et rétablir la \textcolor{red}{cohérence de cache} :
+	
+	\vfill
+\begin{quote}
+	\textcolor{blue}{Si deux lignes de cache dans deux mémoires cache correspondent au même emplacement dans la mémoire centrale, on garde les valeurs les plus récentes.}
+\end{quote}
+\vfill
+
 \end{frame}
 
 \begin{frame}
-	\parbox[t][1cm]{10cm}{6. Le résultat est recopié dans la mémoire principale :}
+Grace à l'étape de cohérence de cache les résultats seront corrects mais le maintien de la cohérence de cache prend du temps et diminue l'efficacité du parallélisme multithreads.
+
+\bigskip
+\begin{quote}
+	\textcolor{blue}{On essaie de faire en sorte que les caches ne contiennent pas des copies des mêmes blocs mémoires (dans ce cas pas besoin de contrôler la cohérence des caches)}
+\end{quote}
+ 
+\end{frame}
+
+\begin{frame}
+	\parbox[t][1cm]{10cm}{3 bis. On rétablit la cohérence de cache : $w_2$ dans le cache 1 est copié à la place de $v_2$ dans le cache 2 et $w_3$ dans le cache 2 est copié à la place de $v_3$ dans le cache 1}
 	\begin{center}
-		\includegraphics[scale=0.6]{../../Images/multithread5}
+		\includegraphics[scale=0.6]{../../Images/multithread4}
 	\end{center}
 \end{frame}
 
