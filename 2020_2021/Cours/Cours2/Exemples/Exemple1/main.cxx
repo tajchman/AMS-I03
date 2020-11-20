@@ -32,23 +32,24 @@ void affiche(const char *message, const std::vector<double> & v)
 int main(int argc, char **argv) {
    size_t  n = argc > 1 ? strtol(argv[1], NULL, 10) : 10000000;
    std::vector<double> u(n), v0(n, 0), v1(n, 0), v2(n, 0), v3(n, 0);
+   double a = M_PI;
 
    init(u);
 
-   calcul_seq (v0, u);
+   calcul_seq (v0, a, f, u);
    std::cout << "verification " << verifie(v0, v0) << std::endl;
    if (n < 10) affiche("v0", v0);
 
-   calcul_par0(v1, u);
+   calcul_par0(v1, a, f, u);
    std::cout << "verification " << verifie(v0, v1) << std::endl;
    if (n < 10) affiche("v1", v1);
    
-   calcul_par1(v2, u);
+   calcul_par1(v2, a, f, u);
    std::cout << "verification " << verifie(v0, v2) << std::endl;
    if (n < 10) affiche("v2", v2);
    
 
-   calcul_par2(v3, u);
+   calcul_par2(v3, a, f, u);
    std::cout << "verification " << verifie(v0, v3) << std::endl;
    if (n < 10) affiche("v3", v3);
    
