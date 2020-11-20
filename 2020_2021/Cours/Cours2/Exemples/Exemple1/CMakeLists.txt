@@ -9,7 +9,7 @@ if (OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-add_executable(ex1.exe 
+add_executable(ex_2_1.exe 
                 main.cxx 
                 init.cxx 
                 calcul_seq.cxx

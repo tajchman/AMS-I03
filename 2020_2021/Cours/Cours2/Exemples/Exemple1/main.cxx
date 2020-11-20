@@ -30,7 +30,7 @@ void affiche(const char *message, const std::vector<double> & v)
 }
 
 int main(int argc, char **argv) {
-   size_t  n = argc > 1 ? strtol(argv[1], NULL, 10) : 10000000;
+   size_t  n = argc > 1 ? strtol(argv[1], NULL, 10) : 1000;
    std::vector<double> u(n), v0(n, 0), v1(n, 0), v2(n, 0), v3(n, 0);
    double a = M_PI;
 

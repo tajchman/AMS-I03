@@ -192,7 +192,9 @@ for (i2=N2; i2<N3; i2++)
 \end{lstlisting}
 \vfill
 
-Voir une implémentation en OpenMP dans l'\textcolor{blue}{Exemple 1}
+Voir l'implémentation en OpenMP dans l'\textcolor{blue}{Exemple 1}
+
+Dans le même exemple, on trouvera la façon habituelle (et beaucoup plus simple) de coder une boucle en OpenMP.
 \end{frame}
 
 \begin{frame}
@@ -283,36 +285,40 @@ Grace à l'étape de cohérence de cache les résultats seront corrects mais le 
 	\end{center}
 \end{frame}
 
+%\begin{frame}[fragile]
+%	Le plus simple est de découper la boucle séquentielle :
+%
+%	\begin{lstlisting}
+%for (i=1; i<n-1; i++)
+%   v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
+%	\end{lstlisting}
+%
+%\vfill
+%	en $K$ sous-boucles :
+%
+%\begin{lstlisting}
+%for (i=p[k]; i<p[k+1]; i++)    // k = 0...K-1
+%   v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
+%\end{lstlisting}
+%
+%avec {\tt p[0] = 1} et {\tt p[K] = n-1}
+%
+%\vfill
+%L'exécution de toutes les sous-boucles est identique à l'exécution de la boucle complète.
+%Toutes les sous-boucles doivent si possible être exécutées en même temps.
+%\end{frame}
+
 \begin{frame}[fragile]
-	Le plus simple est de découper la boucle séquentielle :
-
-	\begin{lstlisting}
-for (i=1; i<n-1; i++)
-   v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
-	\end{lstlisting}
-
-\vfill
-	en $K$ sous-boucles :
-
-\begin{lstlisting}
-for (i=p[k]; i<p[k+1]; i++)    // k = 0...K-1
-   v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
-\end{lstlisting}
-
-avec {\tt p[0] = 1} et {\tt p[K] = n-1}
-
-\vfill
-L'exécution de toutes les sous-boucles est identique à l'exécution de la boucle complète.
-Toutes les sous-boucles doivent si possible être exécutées en même temps.
-\end{frame}
-
-
-\begin{frame}[fragile]
+	\section{Rappels sur OpenMP}
+	\frametitle{Rappels sur OpenMP}
 	\vfill
 	Le principal (mais pas le seul) outil pour coder du parallélisme multithreads est OpenMP.
 
-	\vfill
-	On ajoute une ligne avant la boucle (pragma)
+    \vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	Pour l'exemple vu plus haut, on ajoute avant la boucle, le pragma
 
 \lstset{%
 	language={C++},
@@ -329,12 +335,6 @@ for (i=1; i<n-1; i++)
   v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
 \end{lstlisting}
 \end{center}
-
-\begin{itemize}
-	\item la ligne qui commence par \verb|#pragma| est appelée pragma
-	\item en fonction des options de compilation, cette ligne est ignorée ou pas
-    \item le compilateur va découper lui-même la boucle en sous-boucles en répartissant les sous-boucles entre les threads
-\end{itemize}
 
 \end{frame}
 

@@ -20,11 +20,11 @@ Pour exécuter:
     ./build/ex_2_1.exe n
 
     où n est un entier positif (taille des vecteurs)
-    si n n'est pas spécifié, le code prend n = 10000000
+    si n n'est pas spécifié, le code prend n = 1000
 
     On calcule une boucle simple en versions séquentielle et parallèles 
-    avec OpenMP (2 versions)
+    avec OpenMP (3 versions)
     
-    On compare les temps calcul de 2 versions
+    On compare les temps calcul de 3 versions
     
   
