@@ -1,4 +1,4 @@
-Exemple 2 : Boucle simple : versions séquentielle et parallèle
+Exemple 2.1 : Boucle simple, versions séquentielle et parallèle
 
 _____________________________________________________________________
 Pour compiler:

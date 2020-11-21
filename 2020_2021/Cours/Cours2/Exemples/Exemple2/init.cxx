@@ -2,11 +2,11 @@
 #include <cstdlib>
 #include <ctime>
 
-void init(std::vector<double> & u)
+void init(std::vector<double> & v)
 {
-   size_t i, n = u.size();
+   size_t i, j, n = v.size();
 
    std::srand(std::time(nullptr));
    for (i = 0; i<n; i++)
-     u[i] = 2.0 + std::rand();
+      v[i] = 0.00001 * (2.0 + std::rand());
 }
