@@ -3,16 +3,22 @@ cmake_minimum_required(VERSION 3.08)
 set(CMAKE_RULE_MESSAGES OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-endif()
+add_executable(ex_seq_2_1.exe 
+                main_seq.cxx 
+                init.cxx 
+                calcul_seq.cxx)
 
-add_executable(ex_2_1.exe 
-                main.cxx 
+find_package(OpenMP REQUIRED)
+
+add_executable(ex_par_2_1.exe 
+                main_par.cxx 
                 init.cxx 
                 calcul_seq.cxx
                 calcul_par0.cxx
                 calcul_par1.cxx
-                calcul_par2.cxx)
+                calcul_par2.cxx
+                calcul_par3.cxx)
+
+target_compile_options(ex_par_2_1.exe PUBLIC ${OpenMP_CXX_FLAGS})
+target_link_libraries(ex_par_2_1.exe ${OpenMP_CXX_LIBRARIES})
+                

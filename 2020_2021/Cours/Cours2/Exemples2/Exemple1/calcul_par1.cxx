@@ -1,6 +1,7 @@
 #include <iostream>
 #include "calcul.hxx"
 #include "timer.hxx"
+#include "affiche.hxx"
 
 void calcul_par1(std::vector<double> & v, 
                  double a, double (*f)(double, double),
@@ -31,5 +32,6 @@ void calcul_par1(std::vector<double> & v,
   }
 
   T.stop();
-  std::cout << "Calcul parallele (v2) " << T.elapsed() << " s" << std::endl;
+  std::cout << "Calcul parallele (v1) " << T.elapsed() << " s" << std::endl;
+  if (N < 10) affiche("v1", v);
 }

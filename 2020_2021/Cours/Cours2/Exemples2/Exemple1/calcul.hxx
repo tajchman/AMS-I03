@@ -16,3 +16,6 @@ void calcul_par2(std::vector<double> & v,
                  double a, double (*f)(double, double),
                  const std::vector<double> & u);
 
+void calcul_par3(std::vector<double> & v, 
+                 double a, double (*f)(double, double),
+                 const std::vector<double> & u);
