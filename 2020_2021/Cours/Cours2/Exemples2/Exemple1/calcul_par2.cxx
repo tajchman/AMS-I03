@@ -2,10 +2,13 @@
 #include "calcul.hxx"
 #include "timer.hxx"
 #include "affiche.hxx"
+#include "verifie.hxx"
 
-void calcul_par2(std::vector<double> & v, 
+double calcul_par2(std::vector<double> & v, 
                  double a, double (*f)(double, double),
-                 const std::vector<double> & u)
+                 const std::vector<double> & u,
+                 const std::vector<double> & v_seq
+                )
 {
   size_t i, N = u.size(), N0 = 0, N1=N/3, N2=2*N/3, N3=N;
 
@@ -33,5 +36,7 @@ void calcul_par2(std::vector<double> & v,
 
   T.stop();
   std::cout << "Calcul parallele (v2) " << T.elapsed() << " s" << std::endl;
-  if (N < 10) affiche("v2", v);
+  if (N < 11) affiche("v2", v);
+  verifie(v_seq, v); 
+  return T.elapsed();
 }

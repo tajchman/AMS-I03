@@ -6,18 +6,22 @@ Pour compiler:
   Se mettre dans le répertoire qui contient de ce fichier
   Taper:
 
-    cmake -B build -DCMAKE_BUILD_TYPE=Release .
-    make -C build
+    cmake -DCMAKE_BUILD_TYPE=Release .
+    make
 
-  Si tout s'est bien passé : un fichier ex_2_1.exe est créé dans le 
-  répertoire build
+  Si tout s'est bien passé : deux fichiers ex_seq_2_1.exe et ex_par_2_1.exe 
+  sont créés dans le répertoire
 
 _____________________________________________________________________
-Pour exécuter:
+Première exécution de la version parallèle :
 
   Taper :
 
-    ./build/ex_2_1.exe n
+    ./ex_seq_2_1.exe 9
+
+  Taper :
+
+    ./ex_seq_2_1.exe n
 
     où n est un entier positif (taille des vecteurs)
     si n n'est pas spécifié, le code prend n = 1000

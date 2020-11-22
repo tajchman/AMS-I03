@@ -3,7 +3,7 @@
 #include "timer.hxx"
 #include "affiche.hxx"
 
-void calcul_seq(std::vector<double> & v, 
+double calcul_seq(std::vector<double> & v, 
                 double a, double (*f)(double, double),
                 const std::vector<double> & u)
 {
@@ -17,7 +17,10 @@ void calcul_seq(std::vector<double> & v,
 
   T.stop();
   std::cout << "Calcul sequentiel     " << T.elapsed() << " s" << std::endl;
-  if (N < 10) affiche("v0", v);
+  affiche("v0", v);
+  std::cout << std::endl;
+
+  return T.elapsed();
 }
 
 

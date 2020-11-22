@@ -15,6 +15,12 @@
 
 \usetheme[]{boxes}
 \usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
 
 %\usepackage{french}
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
@@ -192,12 +198,9 @@ for (i2=N2; i2<N3; i2++)
 \end{lstlisting}
 \vfill
 
-Voir l'implémentation en OpenMP dans l'\textcolor{blue}{Exemple 1}
+Voir plusieurs variantes dans l'\textcolor{blue}{Exemple 1}, codé en OpenMP.
 
 Dans le même exemple, on trouvera la façon habituelle (et beaucoup plus simple) de coder une boucle en OpenMP.
-\end{frame}
-
-\begin{frame}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -215,8 +218,8 @@ for (i=1; i<n-1; i++) \\
 	
 	$$
 	\begin{array}{lcl}
-	v_2 & = & (u_1 + 2 u_2 + u_3) \\[0.4cm]
-	v_3 & = & (u_2 + 2 u_3 + u_4)
+	v_2 & = & (u_1 + 2 u_2 + u_3)/4 \\[0.4cm]
+	v_3 & = & (u_2 + 2 u_3 + u_4)/4
 	\end{array}	
 	$$
 	
@@ -255,7 +258,7 @@ for (i=1; i<n-1; i++) \\
 
 \begin{frame}
 	\vfill
-	L'erreur vient du fait que 2 caches différents contiennent chacun un bloc (partiellement) différent qui seront recopiés dans la mémoire centrale au même endroit
+	La collision vient du fait que 2 caches différents contiennent chacun un bloc (partiellement) différent qui sera recopié dans la mémoire centrale au même endroit.
 	
 	\vfill
 	Tous les ordinateurs dont les processeurs ont plusieurs c\oe urs, appliquent un algorithme pour vérifier et rétablir la \textcolor{red}{cohérence de cache} :
@@ -285,14 +288,55 @@ for (i=1; i<n-1; i++) \\
 	
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
 	D'où la règle supplémentaire :
-	
-	Règle: \textcolor{red}{les zones mémoire modifiées par deux threads différents au même instant doivent être distinctes (sinon les résultats peuvent être faux) et assez éloignées (pour diminuer le cout du maintien de la cohérence de cache)}
-	
 	\vfill
-	En théorie, il faut une distance d'au moins la taille d'une ligne de cache dans le cache L1.
-	En pratique, on  
+	
+	Règle: 
+	\begin{quote}
+        \textcolor{red}{Les zones mémoire modifiées par deux threads différents au même instant doivent être distinctes (sinon les résultats peuvent être faux) et assez éloignées (pour diminuer le cout du maintien de la cohérence de cache)}
+	\end{quote}
+		
+	\vfill
+	
+\end{frame}
+\begin{frame}[fragile]
+	Exemple: Parcours d'un vecteur $u$ de taille $N$ (multiple de 2) par 2 threads (on suppose que les threads avancent à la même vitesse).
+	
+\vfill
+	Le parcours suivant :
+	$$
+	\begin{array}{rclrcl}
+	\hbox{Thread} 0 & & &\hbox{Thread} 1 & &\\
+	u_0 & =& \ldots & u_1 & =& \ldots\\
+	u_2 & =& \ldots & u_3 & =& \ldots \\
+	u_4 & =& \ldots & u_5 & =& \ldots \\
+	... & & ... & \\
+	u_{N-2} & = &\ldots & u_{N-1} & = &\ldots \\
+	\end{array}
+	$$
+	est moins bon que le suivant:
+$$
+\begin{array}{rclrcl}
+\hbox{Thread} 0 & & &\hbox{Thread} 1 & &\\
+u_0 & =& \ldots & u_{N/2} & =& \ldots\\
+u_1 & =& \ldots & u_{N/2+1} & =& \ldots \\
+u_2 & =& \ldots & u_{N/2+2} & =& \ldots \\
+... & & &... & &\\
+u_{N/2-1} & =& \ldots & u_{N-1} & =& \ldots \\
+\end{array}
+$$
+	\vfill
+\end{frame}
+\begin{frame}
+	Dans le permier parcours, les 2 threads travaillent sur des composantes proches $u_k, u_{k+1}$
+	\bigskip
+	
+	Dans le second parcours, les 2 threads travaillent sur des composants éloignées (on suppose $N$ grand) : $u_k, u_{k+N/2}$
+	\vfill
+	
+	Donc la cohérence de cache sera plus couteuse pour le premier parcours.
+	\vfill
 \end{frame}
 
 %\begin{frame}[fragile]
@@ -329,7 +373,9 @@ for (i=1; i<n-1; i++) \\
 
 \begin{frame}[fragile]
 	Pour l'exemple vu plus haut, on ajoute avant la boucle, le pragma
+	(ligne qui commence par \verb|#pragma|)
 
+\vfill
 \lstset{%
 	language={C++},
 	breaklines=true,
@@ -345,6 +391,9 @@ for (i=1; i<n-1; i++)
   v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
 \end{lstlisting}
 \end{center}
+
+\vfill
+Si on compile le code sans l'option de compilation OpenMP, le pragma sera ignoré, donc on peut utiliser le même code source pour un exécutable séquentiel et multithreads.   
 
 \end{frame}
 
@@ -390,24 +439,32 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 	Exemple OpenMP 1
 \end{frame}
 
+\begin{frame}[fragile]
+	
 \lstset{%
 	language={C++},
 	breaklines=true,
-	numbers=left,
-	numberstyle=\footnotesize,
 	captionpos=b,
 	basicstyle=\ttfamily,
-	keywordstyle=\bfseries\color{blue},
-	commentstyle=\itshape\color{green},
 	moredelim=[il][\color{red}]{/+},%
 }
+	\begin{lstlisting}{C++}
+/+#pragma omp parallel
+{
+  std::cout << "Bonjour" << std::endl;
+}
+\end{lstlisting}
 
-\begin{frame}[fragile]
+\begin{itemize}
+	\item quand l'exécution arrive sur la ligne \verb|#pragma|, le système crée $N$ threads (égal au nombre de c\oe urs ou à la valeur de \verb|OMP_NUM_THREADS| si cette variable d'environnement existe) et chaque thread exécute le bloc d'instructions contenu entre les accolades.
+	\item quand tous les threads sont arrivés à la fin du bloc, tous les threads s'arrêtent 
+\end{itemize}
+
 	Source C++ séquentiel:
 	\vfill
 {
 	\normalsize
-	\lstinputlisting{Exemples/Exemple1/calcul.cxx}	
+%	\lstinputlisting{Exemples2/Exemple1/calcul_seq.cxx}	
 }
 \end{frame}
 
@@ -416,7 +473,7 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 	\vfill
 	{
 		\normalsize
-		\lstinputlisting{Exemples/Exemple2/calcul.cxx}	
+%		\lstinputlisting{Exemples/Exemple1/calcul_seq.cxx}	
 	}
 \end{frame}
 
