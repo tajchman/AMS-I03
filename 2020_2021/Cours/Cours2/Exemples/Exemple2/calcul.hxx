@@ -1,5 +1,6 @@
-#include <vector>
+#include "struct.hxx"
 
-double somme0(const std::vector<double> & v);
-double somme1(const std::vector<double> & v, int nThreads);
-double somme2(const std::vector<double> & v, int nThreads, int offset);
+double somme0(const Donnees & v);
+double somme1(const Donnees & v, int nThreads);
+double somme2(const Donnees & v, int nThreads, int offset);
+double somme3(const Donnees & v, int nThreads);

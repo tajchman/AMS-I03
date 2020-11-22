@@ -16,3 +16,4 @@ install
 .DS_Store
 .settings
 *.dat
+export

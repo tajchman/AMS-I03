@@ -269,16 +269,6 @@ for (i=1; i<n-1; i++) \\
 \end{frame}
 
 \begin{frame}
-Grace à l'étape de cohérence de cache les résultats seront corrects mais le maintien de la cohérence de cache prend du temps et diminue l'efficacité du parallélisme multithreads.
-
-\bigskip
-\begin{quote}
-	\textcolor{blue}{On essaie de faire en sorte que les caches ne contiennent pas des copies des mêmes blocs mémoires (dans ce cas pas besoin de contrôler la cohérence des caches)}
-\end{quote}
- 
-\end{frame}
-
-\begin{frame}
 	\parbox[t][1cm]{10cm}{3 bis. On rétablit la cohérence de cache : $w_2$ dans le cache 1 est copié à la place de $v_2$ dans le cache 2 et $w_3$ dans le cache 2 est copié à la place de $v_3$ dans le cache 1}
 	\begin{center}
 		\includegraphics[scale=0.6]{../../Images/multithread4}
@@ -286,12 +276,23 @@ Grace à l'étape de cohérence de cache les résultats seront corrects mais le 
 \end{frame}
 
 \begin{frame}
-	Le contrôle et le maintien de la cohérence de cache est une des raisons de la diminution d'efficacité du parallélisme multithreads
+	Grace à l'étape de cohérence de cache les résultats seront corrects mais le maintien de la cohérence de cache prend du temps et diminue l'efficacité du parallélisme multithreads.
+	
+	\bigskip
+	\begin{quote}
+		\textcolor{blue}{On essaie de faire en sorte que les caches ne contiennent pas des copies des mêmes blocs mémoires (dans ce cas pas besoin de contrôler la cohérence des caches)}
+	\end{quote}
+	
+\end{frame}
+
+\begin{frame}
+	D'où la règle supplémentaire :
+	
+	Règle: \textcolor{red}{les zones mémoire modifiées par deux threads différents au même instant doivent être distinctes (sinon les résultats peuvent être faux) et assez éloignées (pour diminuer le cout du maintien de la cohérence de cache)}
 	
 	\vfill
-	Pour diminuer le coût de ce contrôle, il faut si possible 
-	\vfill
-	
+	En théorie, il faut une distance d'au moins la taille d'une ligne de cache dans le cache L1.
+	En pratique, on  
 \end{frame}
 
 %\begin{frame}[fragile]

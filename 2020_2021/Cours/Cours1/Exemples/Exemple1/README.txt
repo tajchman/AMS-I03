@@ -23,7 +23,7 @@ Pour compiler:
     cmake -B build -DMESURE=ON -DCMAKE_BUILD_TYPE=Release .
     make -C build
 
-  Si tout s'est bien passé : un fichier ex1.exe est créé dans le 
+  Si tout s'est bien passé : un fichier ex_1_1.exe est créé dans le 
   répertoire build
 
 _____________________________________________________________________
@@ -31,11 +31,11 @@ Pour exécuter:
 
   Taper :
 
-    ./build/ex1.exe
+    ./build/ex_1_1.exe
 
     Le calcul fait une boucle sur 8 itérations.
     La mesure du temps calcul pour chaque itération est dans un graphe dans le
-    fichier cycles.pdf (nobres de cycles processeurs pour chque itération)
+    fichier cycles.pdf (nombres de cycles processeurs pour chque itération)
 
     Affichier le fichier cycles.pdf
     

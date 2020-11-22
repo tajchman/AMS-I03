@@ -1,3 +1,3 @@
-#include <vector>
+#include "struct.hxx"
 
-void init(std::vector<double> & v);
+void init(Donnees & v);

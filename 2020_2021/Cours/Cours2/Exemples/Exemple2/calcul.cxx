@@ -5,16 +5,27 @@
 #include <cmath>
 
 // somme des composantes d'un vecteur sur un intervalle
-void somme(const std::vector<double> &v, 
+void somme(const Donnees &v, 
            int i0, int i1, double &s)
 {
   int i;
   s = 0;
   for (i=i0; i<i1; i++) 
-    s += v[i];
+    s += sin(v[i].s);
 }
 
-double somme0(const std::vector<double> & v)
+void somme_modifie(const Donnees &v, 
+           int i0, int i1, double &s)
+{
+  int i;
+  double t = 0;
+  for (i=i0; i<i1; i++) 
+    t += sin(v[i].s);
+  
+  s = t;
+}
+
+double somme0(const Donnees & v)
 {
   Timer T;
   T.start();
@@ -28,7 +39,7 @@ double somme0(const std::vector<double> & v)
   return s;
 }
 
-double somme1(const std::vector<double> & v, int nThreads)
+double somme1(const Donnees & v, int nThreads)
 {
   Timer T;
   T.start();
@@ -56,7 +67,7 @@ double somme1(const std::vector<double> & v, int nThreads)
   return s_total;
 }
 
-double somme2(const std::vector<double> & v, int nThreads, int offset)
+double somme2(const Donnees & v, int nThreads, int offset)
 {
   Timer T;
   T.start();
@@ -83,3 +94,33 @@ double somme2(const std::vector<double> & v, int nThreads, int offset)
 
   return s_total;
 }
+
+
+double somme3(const Donnees & v, int nThreads)
+{
+  Timer T;
+  T.start();
+
+  std::vector<std::thread> vth;
+  int iTh;
+  int i0, i1, n = v.size(), di = (n + nThreads)/nThreads;
+  std::vector<double> s(nThreads);
+
+   for (iTh = 0, i0 = 0; iTh<nThreads; iTh++, i0 += di)
+  {
+    i1 = i0 + di; if (i1 > n) i1 = n;
+    vth.push_back(std::thread(somme_modifie, std::cref(v), i0, i1, std::ref(s[iTh])));
+  }
+  
+  double s_total = 0;
+  for (iTh = 0; iTh<nThreads; iTh++) {
+    vth[iTh].join();
+    s_total += s[iTh];
+  }
+  
+  T.stop();
+  std::cout << "Temps CPU : " << T.elapsed() << std::endl;
+  
+  return s_total;
+}
+
