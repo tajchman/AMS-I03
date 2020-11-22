@@ -83,7 +83,7 @@ Autrement dit:
 \begin{itemize}
 	\item Autant que possible, il faut pouvoir exécuter les différents groupes d'instructions de façon indépendante (c'est le système qui décidera de démarrer un groupe, en fonction des c\oe urs disponibles)
 	
-	\item A l'intérieur d'un groupe les instructions sont exécutées séquentiellement
+	\item A l'intérieur d'un groupe, les instructions sont exécutées séquentiellement
 	
 	\item Il faut déterminer quelles sont les données partagées entre les groupes et celles qui sont privées (utilisées par un seul groupe).  
 \end{itemize}
@@ -95,14 +95,14 @@ Ce dernier point est souvent le plus complexe.
 \begin{frame}[fragile]
 Exemple 1:
 \vfill
-on peut découper une boucle: 
+On peut découper une boucle: 
 \begin{lstlisting}
 for (i=0; i<N; i++)
   v[i] = f(a, u[i]);
 \end{lstlisting}
 
 \vfill
-en 3 parties (par exemple), avec $0 = N0 \leq N1 \leq N2 \leq N3 = N$:
+en 3 parties (par exemple), \\ \quad avec $0 = N0 \leq N1 \leq N2 \leq N3 = N$:
 
 \vfill
 \begin{minipage}{0.52\textwidth}
@@ -147,10 +147,10 @@ Il faut examiner l'utilisation de toutes les données sinon on risque de tomber 
 	 \hline
 	\bf Donnée & \bf Comportement \\
 	 \hline
-	 \begin{minipage}[t]{0.23\textwidth}
+	 \begin{minipage}[t]{0.20\textwidth}
 	 	N0, N1, N2, N3, a 
 	\end{minipage}
- & \begin{minipage}[t]{0.75\textwidth}
+ & \begin{minipage}[t]{0.78\textwidth}
 	 	Utilisées par plusieurs threads mais constantes dans l'algorithme, on peut les partager entre les threads
  	\end{minipage}
  	 \\[25pt]
