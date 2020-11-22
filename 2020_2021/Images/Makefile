@@ -14,7 +14,8 @@ all: multithread0.pdf \
 	 sequentiel7.pdf \
 	 ex2_memoire_1.pdf \
 	 ex2_memoire_2.pdf \
-	 ex2_memoire.pdf
+	 ex2_memoire.pdf \
+	 enchainement.pdf
 
 %.dvi: %.tex
 	latex $<
@@ -28,6 +29,9 @@ sequentiel%.tex: sequentiel.py
 ex2_memoire%.tex: ex2_memoire.py
 	python $<
 ex2_memoire.tex: ex2_memoire.py
+	python $<
+
+%.tex: %.py
 	python $<
 
 %.ps: %.dvi

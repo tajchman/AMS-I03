@@ -1,4 +1,4 @@
-Exemple 2.2 : Hello World
+Exemple 2.2b : Hello World 2
 
 _____________________________________________________________________
 Pour compiler:
@@ -6,9 +6,9 @@ Pour compiler:
   Se mettre dans le répertoire qui contient ce fichier
   Taper:
 
-    g++ -fopenmp main.cxx -o ex_2_2.exe
+    g++ -fopenmp main.cxx -o ex_2_2b.exe
 
-  Si tout s'est bien passé : un fichier ex_2_2.exe est créé dans le 
+  Si tout s'est bien passé : un fichier ex_2_2b.exe est créé dans le 
   répertoire
 
 _____________________________________________________________________
@@ -17,7 +17,7 @@ Pour exécuter:
   Taper :
 
     export OMP_NUM_THREADS=3
-    ./ex_2_2.exe
+    ./ex_2_2b.exe
 
     
   

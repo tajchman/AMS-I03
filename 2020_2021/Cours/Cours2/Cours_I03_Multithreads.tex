@@ -50,8 +50,26 @@
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+	En général, il n'est pas possible de rendre ``multithreads'' la totalité d'un code. Il sera en général composé d'une succession de parties (ou régions) qui devront rester séquentielles et de parties (ou régions) multithreadées.
+	\vfill
+	
+	On aura un enchaînement du type:
+	
+\begin{minipage}{0.48\textwidth}
+	\includegraphics[scale=0.35]{../../Images/enchainement}
+\end{minipage}
+\begin{minipage}{0.50\textwidth}
+	\textcolor{red}{thread${}_0$} : fil d'exécution rouge, actif durant toute l'exécution
+	\medskip
+	
+	\textcolor{blue}{thread${}_i$} ($i > 0$) : un des fils d'exécution bleus, actifs seulement dans des parties parallèles
+\end{minipage}
+	 
+\end{frame}
+
 \begin{frame}[fragile]
-	Formellement :
+	Formellement dans une région parallèle :
 	
 	\bigskip
 	\begin{quote}
@@ -204,7 +222,7 @@ Dans le même exemple, on trouvera la façon habituelle (et beaucoup plus simple
 \end{frame}
 
 \begin{frame}[fragile]
-	Exemple 2: si \verb|u| et \verb|v| sont des vecteurs de taille \verb|n > 4|, on veut calculer la boucle {\tt for}:
+	Exemple : si \verb|u| et \verb|v| sont des vecteurs de taille \verb|n > 4|, on veut calculer la boucle {\tt for}:
 
 	\begin{equation}
 	\begin{array}{l}
@@ -455,26 +473,30 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 }
 \end{lstlisting}
 
+\vfill
 \begin{itemize}
-	\item quand l'exécution arrive sur la ligne \verb|#pragma|, le système crée $N$ threads (égal au nombre de c\oe urs ou à la valeur de \verb|OMP_NUM_THREADS| si cette variable d'environnement existe) et chaque thread exécute le bloc d'instructions contenu entre les accolades.
-	\item quand tous les threads sont arrivés à la fin du bloc, tous les threads s'arrêtent 
+	\item avant d'arriver au pragma, on est dans la partie séquentielle (seul le thread 0 est actif); 
+	\item quand l'exécution arrive sur la ligne \verb|#pragma|, le système crée (ou active) $N-1$ threads ($N$ est égal au nombre de c\oe urs ou à la valeur de \verb|OMP_NUM_THREADS| si cette variable d'environnement existe);
+	\item chacun des $N$ threads exécute la partie parallèle (le bloc d'instructions contenu entre les accolades);
+	\item quand tous les threads sont arrivés à la fin du bloc, les threads s'arrêtent (ou se mettent en pause) sauf le thread 0.
 \end{itemize}
 
-	Source C++ séquentiel:
-	\vfill
-{
-	\normalsize
-%	\lstinputlisting{Exemples2/Exemple1/calcul_seq.cxx}	
-}
 \end{frame}
 
 \begin{frame}[fragile]
-	Source C++ séquentiel:
-	\vfill
-	{
-		\normalsize
-%		\lstinputlisting{Exemples/Exemple1/calcul_seq.cxx}	
-	}
+Le code ci-dessus est contenu dans l'\textcolor{blue}{Exemple2}.
+
+Lire le fichier README.txt pour compiler et exécuter le code.
+
+\bigskip
+Relancer plusieurs fois l'exécution, expliquer ce qui est affiché.
+
+\vfill
+Une variante se trouve dans l'\textcolor{blue}{Exemple2b}.
+
+Cette variante affiche aussi le numéro du thread qui écrit le message.
+
+Faire les mêmes tests que dans l'\textcolor{blue}{Exemple2}.
 \end{frame}
 
 
