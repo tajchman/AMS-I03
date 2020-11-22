@@ -20,18 +20,18 @@ Pour compiler:
   Se mettre dans le répertoire qui contient de ce fichier
   Taper:
 
-    cmake -B build -DMESURE=ON -DCMAKE_BUILD_TYPE=Release .
-    make -C build
+    cmake -DMESURE=ON -DCMAKE_BUILD_TYPE=Release .
+    make 
 
   Si tout s'est bien passé : un fichier ex_1_1.exe est créé dans le 
-  répertoire build
+  répertoire
 
 _____________________________________________________________________
 Pour exécuter:
 
   Taper :
 
-    ./build/ex_1_1.exe
+    ./ex_1_1.exe
 
     Le calcul fait une boucle sur 8 itérations.
     La mesure du temps calcul pour chaque itération est dans un graphe dans le

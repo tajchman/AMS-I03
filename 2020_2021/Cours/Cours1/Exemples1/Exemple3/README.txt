@@ -6,18 +6,18 @@ Pour compiler:
   Se mettre dans le répertoire qui contient de ce fichier
   Taper:
 
-    cmake -B build -DCMAKE_BUILD_TYPE=Release .
-    make -C build
+    cmake -DCMAKE_BUILD_TYPE=Release .
+    make
 
-  Si tout s'est bien passé : un fichier ex3.exe est créé dans le 
-  répertoire build
+  Si tout s'est bien passé : un fichier ex_1_3.exe est créé dans le 
+  répertoire
 
 _____________________________________________________________________
 Pour exécuter:
 
   Taper :
 
-    ./build/ex3.exe n
+    ./ex_1_3.exe n
 
     où n est un entier positif (taille des vecteur)
     si n n'est pas spécifié, le code prend n = 100000

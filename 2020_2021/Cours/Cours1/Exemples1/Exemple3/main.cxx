@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
     
   T2.stop();
 
-  std::cout << "          temps cpu" << std::endl;
-  std::cout << "calcul1 " << T1.elapsed() << " s" << std::endl;
-  std::cout << "calcul2 " << T2.elapsed() << " s" << std::endl;
+  std::cout << "                           temps cpu" << std::endl;
+  std::cout << "'mauvaise' loc. temporelle " << T1.elapsed() << " s" << std::endl;
+  std::cout << "   'bonne' loc. temporelle " << T2.elapsed() << " s" << std::endl;
 
   return 0;
  }

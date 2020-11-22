@@ -2,12 +2,15 @@
 
 rm -rf export
 mkdir -p export
-cp -rf Exemples *pdf export
+cp -rf Exemples1 *pdf export
 
 cd export
-rm -rf */*/build  */*/results*
+for f in build CMakeFiles CMakeCache.txt cmake_install.cmake "results*" "*.exe" .vscode "*~" Makefile
+do
+    find Exemples1 -name $f -prune -exec \rm -rf {} \;
+done
 
-tar cfz Exemples.tar.gz Exemples
-zip -r Exemples.zip Exemples
+tar cfz Exemples1.tar.gz Exemples1
+zip -rq Exemples1.zip Exemples1
 
-rm -rf Exemples
+rm -rf Exemples1

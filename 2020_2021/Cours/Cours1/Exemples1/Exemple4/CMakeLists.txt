@@ -5,4 +5,4 @@ set(CMAKE_RULE_MESSAGES OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_BUILD_TYPE Debug)
-add_executable(ex4.exe main.cxx init.cxx calcul.cxx)
+add_executable(ex_1_4.exe main.cxx init.cxx calcul.cxx)

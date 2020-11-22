@@ -224,13 +224,13 @@ for (i=1; i<n-1; i++) \\
 	\end{center}
 \end{frame}
 \begin{frame}
-	\parbox[t][1cm]{10cm}{6. Le c\oe ur utilise les copies de $u_1$, $u_2$, $u_3$ de la mémoire cache, calcule l'expression et place le résultat dans la mémoire cache :}
+	\parbox[t][1cm]{10cm}{7. Le c\oe ur utilise les copies de $u_1$, $u_2$, $u_3$ de la mémoire cache, calcule l'expression et place le résultat dans la mémoire cache :}
 	\begin{center}
 		\includegraphics[scale=0.6]{../../Images/sequentiel6}
 	\end{center}
 \end{frame}
 \begin{frame}
-	\parbox[t][1cm]{10cm}{6. Le bloc contenant le résultat est recopié dans la mémoire centrale :}
+	\parbox[t][1cm]{10cm}{8. Le bloc contenant le résultat est recopié dans la mémoire centrale :}
 	\begin{center}
 		\includegraphics[scale=0.6]{../../Images/sequentiel7}
 	\end{center}
@@ -259,6 +259,8 @@ for (i=1; i<n-1; i++) \\
 \vfill
 Examiner et tester l'exemple {\it Exemple1}
 
+\textcolor{red}{Attention: l'exemple ne fonctionnera que si PAPI est installé et configuré sur la machine}
+
 Lire le fichier Exemple1/README.txt pour des instructions de compilation et d'exécution.
  
 \vfill
@@ -276,14 +278,14 @@ Lire le fichier Exemple1/README.txt pour des instructions de compilation et d'ex
 
 \begin{frame}
 	\begin{center}
-	\includegraphics[scale=0.8]{Exemples/Exemple1/cycles.pdf}
+	\includegraphics[scale=0.75]{Exemples1/Exemple1/cycles.pdf}
 	\end{center}
 
 Un cycle est l'unité de temps pour le processeur. Le processeur qui a été utilisé ici, a une fréquence de 3 GHz.
 Un cycle prend à peu près $0.3\ 10^{-9}$ secondes. 
 \vfill
 
-Un calcul de $v_i$ (sauf $v_0$) prend $\sim 10^{-7}$ secondes.
+Un calcul de $v_i$ prend $\sim 0.6\ 10^{-7}$ secondes (sauf $v_0$ qui prend $\sim 3.5\ 10^{-7}$ secondes) dans le cas ci-dessus.
 \end{frame}
 
 \begin{frame}
@@ -291,7 +293,9 @@ Un calcul de $v_i$ (sauf $v_0$) prend $\sim 10^{-7}$ secondes.
 On voit donc qu'il est important de bien utiliser la mémoire cache.
 \vfill
 
-Pour obtenir le maximum de performances, il faudrait programmer en connaissant exactement l'organisation des mémoires cache. Un code qui est performant sur plusieurs machines différentes, est (très) compliqué à écrire.
+Pour obtenir le maximum de performances, il faudrait programmer en connaissant exactement l'organisation des mémoires cache. 
+
+Un code qui utilise l'information sur la mémoire cache de façon portable (indépendante de la machine), est (très) compliqué à écrire.
 
 \vfill
    \textcolor{blue}{C'est pourquoi, on essaie d'appliquer les règles suivantes : optimiser les localités spatiale et temporelle.}
@@ -332,7 +336,7 @@ Lire le fichier Exemple2/README.txt pour des instructions de compilation et d'ex
 \begin{frame}[fragile]
 	Exécuter l'exemple 2 en tapant:
 	\begin{verbatim}
-	./build/ex2.exe
+	./ex_1_2.exe
 	\end{verbatim}
 	qui additionne 2 matrices de taille $1024 \times 1024$
 	et comparer les temps de calcul.
@@ -342,7 +346,7 @@ Lire le fichier Exemple2/README.txt pour des instructions de compilation et d'ex
 	\begin{quote}
 		Ré-éxécuter le code en ajoutant un paramètre entier :
 
-			\quad\verb|./build/ex2.exe n|
+			\quad\verb|./ex2.exe n|
 
 		avec $n = 8, 16, 32, 64, 128, 256, 512, 1024, 2048$
 		qui additionne des matrices de taille $n\times n$.
@@ -356,7 +360,7 @@ Lire le fichier Exemple2/README.txt pour des instructions de compilation et d'ex
 \begin{frame}
 \frametitle{Localit\'e temporelle}
 Règle: 
-	\textcolor{red}{autant que possible, pour une zone m\'emoire, les instructions qui l'utilisent doivent s'ex\'ecuter de façon rapproch\'ee dans le temps}
+	\textcolor{red}{autant que possible, les instructions qui utilisent une même zone m\'emoire, doivent s'ex\'ecuter de façon rapproch\'ee dans le temps}
 	\vfill
 	
 	\begin{quote}
@@ -373,9 +377,12 @@ Lire le fichier Exemple3/README.txt pour des instructions de compilation et d'ex
 
 \begin{frame}[fragile]
 \frametitle{Utilisation du // interne au processeur}
-Règles: 
+
+En général, on laisse le compilateur essayer d'optimiser le code pour ce type d'amélioration, mais on peut essayer d'appliquer les règles suivantes (il peut y en avoir d'autres) :
+\vfill
+ 
 \begin{itemize}
-	\item essayer de rassembler plusieurs instructions simples en une seule (quand cela a un sens),
+	\item dérouler les boucles (si les instructions à l'intérieur de la boucle contiennent des opérations arithmétiques)
 	\begin{quote}
 		utiliser au maximum la pr\'esence de plusieurs unit\'es de calcul (additionneurs, multiplicateurs, etc) dans un c\oe ur
 	\end{quote}
@@ -384,35 +391,31 @@ Règles:
 		simplifier le travail du processeur (encha\^{i}nement des instructions le plus d\'eterministe possible).
 	\end{quote}
 \end{itemize}
-
-	Voir \textcolor{blue}{Exemple 4} : Déroulement de boucles
-
-(exemple extrait de la librairie d'analyse numérique LAPACK)
-
-
-Lire le fichier Exemple4/README.txt pour des instructions de compilation et d'exécution.
-
+\vfill
 \end{frame}
 
 \begin{frame}
+
+Voir \textcolor{blue}{Exemple 4} : Déroulement de boucles
+(exemple inspiré de la librairie d'analyse numérique LAPACK)
+
+\vfill 
+
+Lire le fichier Exemple4/README.txt pour des instructions de compilation et d'exécution.
+
+\vfill 
 	
-	Dans calcul1, une itération de la boucle contient 1 addition et 1 multiplication.
+	Dans calcul1, une itération de la boucle de longueur $n$ \newline \textcolor{white}{.}\hfill contient 1 addition et 1 multiplication.
 	
-	Dans calcul2, une itération de la boucle contient 4 additions et 4 multiplications.
+	Dans calcul2, une itération de la boucle de longueur $n/4$ \newline \textcolor{white}{.}\hfill contient 4 additions et 4 multiplications.
 	
 	\vfill
-	Donc l'ordinateur peut calculer simultanément certaines des oprérations en fonction du nombre de circuits d'addition et/ou de multiplication disponibles.
+	Donc l'ordinateur peut calculer simultanément certaines des opérations en fonction du nombre de circuits d'addition et/ou de multiplication disponibles.
 	
 	\vfill
 	A noter que calcul2 contient plus d'opérations sur les entiers que calcul1.
 	Malgré cela, calcul2 est tout de même plus rapide que calcul1.
-	
-	\vfill
-	{\bf Question.}
-	\begin{quote}
-		La version calcul2 illustre bien le // interne, mais ne donne pas des résultats corrects. Trouvez l'erreur.
-	\end{quote}
-	
+		
 \end{frame}
 
 \begin{frame}[fragile]
@@ -435,6 +438,7 @@ for (i=0; i<n; i++) {
 }
 \end{lstlisting}
 
+La meilleure version dépend des valeurs (vrai/faux) de terme1 et terme2
 \end{frame}
 
 
