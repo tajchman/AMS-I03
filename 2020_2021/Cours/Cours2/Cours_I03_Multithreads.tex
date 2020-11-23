@@ -959,7 +959,6 @@ Si on divise l'ensemble de itérations en paquets, il faudra faire les sommes de
 double s, s_partiel[nThreads];
 double s2, s2_partiel[nThreads];
 int iTh;
-
 /+#pragma omp parallel for \
 /+    default(shared) private(iTh)
 for (i=0; i<n; i++) {
@@ -974,12 +973,83 @@ for (iTh=0; iTh < nThreads; iTh++)
   s += s_partiel[iTh];
   s2 += s2_partiel[iTh];
 }
-moy = s/n;
-var = s2/n - moy*moy;
+moy=s/n; var=s2/n-moy*moy;
 \end{lstlisting}
-\vfill
 	
 \end{frame}
 
+\begin{frame}
+	Cette version est très fortement pénalisée par une mauvaise utilisation de la mémoire cache.
+	
+	On peut introduire un décalage entre les positions mémoires des vecteurs sommes partielles pour améliorer son comportement.
+\end{frame}
 
+\begin{frame}[fragile]
+	Une seconde version utilise les section critiques OpenMP (ou mieux les sections ``atomiques'')
+	
+	\vfill
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+double s = 0, s_partiel;
+double s2 = 0, s2_partiel;
+
+/+#pragma omp parallel default(shared) \
+/+      private(s_partiel, s2_partiel) 
+{
+ s_partiel = 0.0;s2_partiel = 0.0;
+/+#pragma omp for
+ for (i=0; i<n; i++) {
+   s_partiel+=v[i];s2_partiel+=v[i]*v[i];
+ }
+/+#pragma critical
+ {
+   s+=s_partiel;s2+=s2_partiel;
+ }
+}
+moy=s/n; var=s2/n-moy*moy;
+\end{lstlisting}
+
+	
+\end{frame}
+
+\begin{frame}
+	Une section critique protège des instructions qui ne peuvent pas être exécutées par plusieurs threads au même moment.
+	
+	\bigskip
+	Quand plusieurs threads arrivent au début de la section critique, ils rentrent dans la section critique l'un après l'autre. 
+	
+	\bigskip
+	Donc une section critique diminue le parallélisme du code mais permet d'éviter des collisions mémoire (plusieurs threads veulent mettre à jour les mêmes variables)
+\end{frame}
+
+\begin{frame}[fragile]
+Une dernière version utilise le mécanisme de réduction proposé par OpenMP:
+
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+double s = 0 ;
+double s2 = 0;
+
+/+# pragma omp parallel for \
+/+     default(shared) reduction(+: s, s2)
+for (i=0; i<n; i++) {
+  s += u[i];
+  s2 += u[i]*u[i];
+}
+moy = s / n ; 
+var = s2 /n - moy * moy ;
+\end{lstlisting}
+\end{frame}
 \end{document}
