@@ -868,12 +868,117 @@ for (i=0; i<n; i++)
 	
 \end{frame}
 
-
-
 \begin{frame}
+	L'exemple OpenMP 4 suggère les règles suivantes pour améliorer l'efficacité de la parallélisation multithreads:
+	
+\vfill
+	Règle : 
+	\begin{quote}
+		\textcolor{red}{La quantité d'instructions dans les régions parallèles doit être la plus grande possible par rapport aux instructions dans les régions séquentielles (c'est l'application de la loi d'Amdahl).}
+	\end{quote}
+
+\vfill
+    Règle :
+	\begin{quote}
+	\textcolor{red}{Le nombre de régions parallèles doit être le plus petit possible.}
+    \end{quote}
+\vfill
+
+Règle :
+\begin{quote}
+	\textcolor{red}{Pour une région parallèle donnée, le nombre de threads qui calcule cette région, doit être déterminé de façon ``optimale''.}
+\end{quote}
+\vfill
 \end{frame}
 
 \begin{frame}
+	Le nombre de threads optimal pour calculer une région parallèle est difficile à définir dans l'absolu.
+	
+\vfill
+	Cela dépend du temps mis par le système pour gérer les threads (création, activation, désactivation), pour maintenir la cohérence de cache, etc.
+	
+\vfill
+	Il faut que le temps calcul à l'intérieur du découpage de la région parallèle soit beaucoup plus grand que le temps de gestion multithreads.
+	
+\vfill
+	Cette règle a une signification similaire avec le ratio calculs/communications pour un code MPI.
+	
+\end{frame}
+
+\begin{frame}
+	Dans TBB (une des librairies multithreads) par exemple, la documentation conseille de commencer avec un découpage ou chaque thread passe $\sim 10^5$ cycles dans la région parallèle.
+	\bigskip
+	
+	Le plus raisonnable est de tester : augmenter le nombre de threads (inférieur ou égal au nombre de c\oe urs) tant que la parallélisation améliore le temps calcul.
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	Exemple OpenMP 5
+	\vfill
+	
+	Soit $v$ un vecteur de taille $n$.
+	
+	\vfill
+	On calcule la moyenne et la variance de $v$ par le code suivant
+	
+	\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+double s, s2;
+for (i=0; i<n; i++) {
+  s += v[i];
+  s2 += v[i]*v[i];
+}
+moy = s/n;
+var = s2/n - moy*moy;
+\end{lstlisting}
+	\vfill
+
+Si on divise l'ensemble de itérations en paquets, il faudra faire les sommes de $v_i$ et $v_i^2$ sur chaque paquet puis combiner ces sommes partielles pour obtenir les sommes sur l'ensemble des itérations.	\vfill
+
+\end{frame}
+
+\begin{frame}[fragile]
+	Une première version parallélisée serait
+	
+	\vfill
+	\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+double s, s_partiel[nThreads];
+double s2, s2_partiel[nThreads];
+int iTh;
+
+/+#pragma omp parallel for \
+/+    default(shared) private(iTh)
+for (i=0; i<n; i++) {
+  iTh = omp_get_thread_num();
+  s_partiel[iTh] += v[i];
+  s2_partiel[iTh] += v[i]*v[i];
+}
+
+s = 0.0; s2 = 0.0;
+for (iTh=0; iTh < nThreads; iTh++)
+{
+  s += s_partiel[iTh];
+  s2 += s2_partiel[iTh];
+}
+moy = s/n;
+var = s2/n - moy*moy;
+\end{lstlisting}
+\vfill
+	
 \end{frame}
 
 
