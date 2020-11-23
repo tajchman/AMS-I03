@@ -1,12 +1,11 @@
 #include <cmath>
-#include "init.hxx"
-#include "stat.hxx"
+#include "calcul.hxx"
 #include "sin.hxx"
 
-void init(std::vector<double> & pos,
-          std::vector<double> & v1,
-          std::vector<double> & v2,
-          int n1, int n2)
+void calcul(std::vector<double> & pos,
+            std::vector<double> & v1,
+            std::vector<double> & v2,
+            int n1, int n2)
 {
   double x;
   int i, n = pos.size();

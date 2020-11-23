@@ -47,7 +47,7 @@ public:
       m_end = omp_get_wtime();
       m_elapsed += m_end - m_start;
 #elif __cplusplus <= 199711L
-      gettimeofday(&m_end  , NULL);
+      gettimeofday(&m_end, NULL);
       m_elapsed += (m_end.tv_sec - m_start.tv_sec) 
 	+ 1e-6 * (m_end.tv_usec - m_start.tv_usec);
 #else

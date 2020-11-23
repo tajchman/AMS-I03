@@ -22,7 +22,7 @@ double sinus_taylor(double x)
        break;
    }
 
-   pause(2*i*i);
+   pause(5*i*i);
    return y;
 }
 

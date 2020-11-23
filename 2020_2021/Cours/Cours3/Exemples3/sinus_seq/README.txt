@@ -8,5 +8,5 @@ Pour compiler:
     cmake .
     make
 
-  Si tout s'est bien passé : un fichier executable sin_seq.exe
+  Si tout s'est bien passé : un fichier executable sinus_seq.exe
   est créé dans le répertoire
