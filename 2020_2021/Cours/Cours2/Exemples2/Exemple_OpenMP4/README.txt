@@ -1,35 +1,31 @@
-Exemple 2.2b : Hello World 2
-
-Chaque thread affiche son numéro dans son message
+Exemple OpenMP 4 : Addition de matrices
 _____________________________________________________________________
 Pour compiler:
 
   Se mettre dans le répertoire qui contient ce fichier
   Taper:
 
-    g++ -fopenmp main.cxx -o ex_2_openmp2.exe
+    g++ main1.cxx Matrice.cxx -o ex_2_seq.exe
+    g++ -fopenmp main1.cxx Matrice.cxx -o ex_2_openmp4_1.exe
+    g++ -fopenmp main2.cxx Matrice.cxx -o ex_2_openmp4_2.exe
+    g++ -fopenmp main3.cxx Matrice.cxx -o ex_2_openmp4_3.exe
 
-  Si tout s'est bien passé : un fichier ex_2_openmp2.exe est créé dans le 
-  répertoire
+  Si tout s'est bien passé : deux fichiers executables
+  ex_2_openmp4_1.exe, ex_2_openmp4_2.exe et ex_2_openmp3_2.exe 
+  sont créés dans le répertoire
 
 _____________________________________________________________________
 Pour exécuter:
 
   Taper :
 
-    OMP_NUM_THREADS=3 ./ex_2_openmp2.exe
+    OMP_NUM_THREADS=1 time ./ex_2_openmp4_1.exe
+    OMP_NUM_THREADS=1 time ./ex_2_openmp4_2.exe
+    OMP_NUM_THREADS=1 time ./ex_2_openmp4_3.exe
 
- 
-  Remarquer que les affichages sont incorrects. Refaire plusieurs
-  exécutions 
+    OMP_NUM_THREADS=3 time ./ex_2_openmp4_1.exe
+    OMP_NUM_THREADS=3 time ./ex_2_openmp4_2.exe
+    OMP_NUM_THREADS=3 time ./ex_2_openmp4_3.exe
 
-_____________________________________________________________________
-Deux versions corrigées:
-
-  On propose de remplacer main.cxx par main_corrige.cxx ou
-  main_corrige2.cxx
-
-  Examiner les différences avec main.cxx et
-  faire les mêmes tests 
     
   
