@@ -16,8 +16,7 @@ Pour exécuter:
 
   Taper :
 
-    export OMP_NUM_THREADS=3
-    ./ex_2_2b.exe
+    OMP_NUM_THREADS=3 ./ex_2_2b.exe
 
     
   

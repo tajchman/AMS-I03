@@ -227,7 +227,7 @@ Dans le même exemple, on trouvera la façon habituelle (et beaucoup plus simple
 	\begin{equation}
 	\begin{array}{l}
 for (i=1; i<n-1; i++) \\
-\quad  v_i = (u_{i-1} + 2*u_{i} + u_{i+1})/4;
+\quad  v_i = (u_{i-1} + 2 u_{i} + u_{i+1})/4;
 \end{array}
 	\end{equation}
 
@@ -347,10 +347,10 @@ $$
 	\vfill
 \end{frame}
 \begin{frame}
-	Dans le permier parcours, les 2 threads travaillent sur des composantes proches $u_k, u_{k+1}$
+	Dans le premier parcours, les 2 threads travaillent sur des composantes proches $u_k, u_{k+1}$
 	\bigskip
 	
-	Dans le second parcours, les 2 threads travaillent sur des composants éloignées (on suppose $N$ grand) : $u_k, u_{k+N/2}$
+	Dans le second parcours, les 2 threads travaillent sur des composantes éloignées (on suppose $N$ grand) : $u_k, u_{k+N/2}$
 	\vfill
 	
 	Donc la cohérence de cache sera plus couteuse pour le premier parcours.
@@ -390,8 +390,10 @@ $$
 \end{frame}
 
 \begin{frame}[fragile]
-	Pour l'exemple vu plus haut, on ajoute avant la boucle, le pragma
-	(ligne qui commence par \verb|#pragma|)
+Principe : on ajoute dans le code, des ``pragma'' (ligne qui commence par \verb|#pragma|)
+
+\vfill
+Par exemple:
 
 \vfill
 \lstset{%
@@ -402,16 +404,44 @@ $$
 	moredelim=[il][\color{red}]{/+},%
 }
 
-\begin{center}
 \begin{lstlisting}{C++}
-/+#pragma omp parallel for
-for (i=1; i<n-1; i++)
-  v[i] = (u[i-1] + 2*u[i] + u[i+1])/4;
+  /+#pragma omp parallel for
+
+  /+#pragma omp section
+
+  /+#pragma omp critical
+
+  /+#pragma omp master
 \end{lstlisting}
-\end{center}
 
 \vfill
-Si on compile le code sans l'option de compilation OpenMP, le pragma sera ignoré, donc on peut utiliser le même code source pour un exécutable séquentiel et multithreads.   
+Si on compile le code sans l'option de compilation OpenMP, les pragmas seront ignorés, donc on peut souvent utiliser le même code source pour un exécutable séquentiel et multithreads.   
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+OpenMP propose aussi quelques fonctions pour gérer le nombre de threads (\verb|omp_get_num_threads()|, \verb|omp_get_num_threads()|) et pour connaître le numéro de thread courant (\verb|omp_get_thread_num()|).
+
+\vfill Ces fonctions ne sont utilisables que dans un code compilé avec OpenMP.
+
+Pour garder un seul code, on peut utiliser la macro {\textunderscore}OPENMP qui vaux vrai si on compile avec OpenMP et faux sinon:
+\begin{center}
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+/+#ifdef _OPENMP
+// code parallele
+/+#else
+// code sequentiel
+/+#endif
+\end{lstlisting}
+\end{center}
 
 \end{frame}
 
@@ -483,7 +513,7 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}
 Le code ci-dessus est contenu dans l'\textcolor{blue}{Exemple2}.
 
 Lire le fichier README.txt pour compiler et exécuter le code.
@@ -497,6 +527,257 @@ Une variante se trouve dans l'\textcolor{blue}{Exemple2b}.
 Cette variante affiche aussi le numéro du thread qui écrit le message.
 
 Faire les mêmes tests que dans l'\textcolor{blue}{Exemple2}.
+\end{frame}
+
+\begin{frame}[fragile]
+	Exemple OpenMP 2 : variables partagées et privées
+	\vfill
+	
+	\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+
+\begin{lstlisting}{C++}
+std::string prefix = "Ici le thread ";
+int iTh;
+
+/+#pragma omp parallel
+{
+#ifdef _OPENMP
+ iTh = omp_get_thread_num();
+#else
+ iTh = 0;
+#endif
+ std::cout<<prefix<<iTh<<std::endl;
+}
+\end{lstlisting}
+
+\vfill
+Remarque: la fonction standard \verb|omp_get_thread_num| n'est pas définie si on ne compile pas en mode OpenMP, il faut donc la protéger avec la macro \verb|_OPENMP|
+\end{frame}
+
+\begin{frame}[fragile]
+
+	Dans une région parallèle, il faut déterminer la nature des variables:
+
+\begin{itemize}
+	\item \verb|prefix| est une chaîne de caractères constante dans la région parallèle, c'est donc une variable partagée entre les threads
+	\item \verb|iTh| est un entier qui a une valeur différente dans la région parallèle suivant les threads, c'est donc une variable privée par thread
+\end{itemize}
+
+\vfill
+Dans la pragma, on liste les variables privées et partagées : 
+
+{\small
+\begin{lstlisting}{C++}
+#pragma omp parallel shared(v1, v2) private(w1, w2)
+\end{lstlisting}
+}
+\vfill
+\textcolor{red}{Si on ne le fait pas, les variables définie dans la région séquentielle et modifiées dans la région parallèle auront une valeur indéterminée}.
+\vfill
+Souvent les variables sont partagées par défaut, mais on conseille de l'écrire explicitement.
+\end{frame}
+
+\begin{frame}[fragile]
+	Exemple corrigé:
+	
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+std::string prefix = "Ici le thread ";
+int iTh;
+
+/+#pragma omp parallel shared(prefix) private(iTh)
+{
+#ifdef _OPENMP
+  iTh = omp_get_thread_num();
+#else
+  iTh = 0;
+#endif
+  std::cout<< prefix << iTh <<std::endl;
+}
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	Exemple corrigé (seconde version): on définit \verb|iTh| à l'intérieur de la région parallèle (chaque région parallèle crée sa propre copie de \verb|iTh|) 
+	
+\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+std::string prefix = "Ici le thread ";
+	
+/+#pragma omp parallel shared(prefix)
+{
+  /+int iTh;
+#ifdef _OPENMP
+  iTh = omp_get_thread_num();
+#else
+  iTh = 0;
+#endif
+  std::cout << prefix << iTh <<std::endl;
+}
+	\end{lstlisting}
+	
+\end{frame}
+
+\begin{frame}[fragile]
+Exemple OpenMP 3
+
+    \vfill	
+    
+	Soient $u$, $v$ et $w$ des vecteurs de taille $n$, $a$ et $b$ des scalaires, le code ci-dessous calcule $w = a u + b v$
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
+
+\vspace{-0.1cm}
+\begin{lstlisting}{C++}
+  for (i=0; i<n; i++)
+    w[i] = a*u[i] + b*w[i];
+\end{lstlisting}
+\vfill
+
+Pour découper la boucle en T boucles partielles (où T est le nombre de threads), OpenMP propose de le faire lui-même:
+
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+
+\begin{lstlisting}{C++}
+/+#pragma omp parallel \
+/+  shared(u,v,w,a,b,n) private(i)
+{
+/+#pragma omp for
+  {
+    for (i=0; i<n; i++)
+      w[i] = a*u[i] + b*w[i];
+  }
+}
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+ou plus simplement:
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+
+\begin{lstlisting}{C++}
+/+#pragma omp parallel for \
+/+  shared(u,v,w,a,b,n) private(i)
+{
+  for (i=0; i<n; i++)
+    w[i] = a*u[i] + b*w[i];
+}
+\end{lstlisting}
+
+ou encore, si les variables sont partagées par défaut:
+\begin{lstlisting}{C++}
+/+#pragma omp parallel for
+{
+  for (i=0; i<n; i++)
+    w[i] = a*u[i] + b*w[i];
+}
+\end{lstlisting}
+
+L'indice de boucle qui suit immédiatement le pragma openmp for est implicitement privé
+\end{frame}
+
+\begin{frame}[fragile]
+	
+	Premier essai de parallélisation:
+	
+\begin{lstlisting}{C++}
+for (i=0; i<n; i++) {
+  \+#pragma omp parallel
+  {
+    \+#pragma omp for
+    {
+    for (j=0; j<m; j++)
+      C[i][j] = a*A[i][j] + b*B[i][j];
+    }
+  }
+}
+\end{lstlisting}
+	
+\end{frame}
+
+
+\begin{frame}[fragile]
+	Exemple OpenMP 3
+	
+	\vfill	
+	
+	Soient $A$, $B$ et $C$ des matrices de taille $n \times m$, $a$ et $b$ des scalaires, le code ci-dessous calcule $C = a A + b B$
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	\vfill
+	\begin{lstlisting}{C++}
+	for (i=0; i<n; i++)
+	for (j=0; j<m; j++)
+	C[i][j] = a*A[i][j] + b*B[i][j]
+	\end{lstlisting}
+	
+\end{frame}
+
+\begin{frame}[fragile]
+	
+	Premier essai de parallélisation:
+	
+	\begin{lstlisting}{C++}
+	for (i=0; i<n; i++) {
+	\+#pragma omp parallel
+	{
+	\+#pragma omp for
+	{
+	for (j=0; j<m; j++)
+	C[i][j] = a*A[i][j] + b*B[i][j];
+	}
+	}
+	}
+	\end{lstlisting}
+	
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\begin{frame}
 \end{frame}
 
 

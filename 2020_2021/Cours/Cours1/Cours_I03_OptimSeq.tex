@@ -15,6 +15,12 @@
 
 \usetheme[]{boxes}
 \usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
 %\usepackage{french}
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
 \subtitle{Quelques notions d'optimisation séquentielle}
