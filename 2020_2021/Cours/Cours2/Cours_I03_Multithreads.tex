@@ -2,6 +2,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
 
 \usepackage{xcolor}
 
@@ -216,8 +225,9 @@ for (i2=N2; i2<N3; i2++)
 \end{lstlisting}
 \vfill
 
-Voir plusieurs variantes dans l'\textcolor{blue}{Exemple 1}, codé en OpenMP.
+Voir plusieurs variantes dans le répertoire \textcolor{blue}{Exemples2/Exemple1}, codé en OpenMP.
 
+\vfill
 Dans le même exemple, on trouvera la façon habituelle (et beaucoup plus simple) de coder une boucle en OpenMP.
 \end{frame}
 
@@ -387,6 +397,28 @@ $$
 	Le principal (mais pas le seul) outil pour coder du parallélisme multithreads est OpenMP.
 
     \vfill
+    L'exposé ici ne présente que les aspects de base de OpenMP.
+    Pour ceux qui veulent réellement utiliser OpenMP dans leurs codes, on conseille l'utilisation de la documentation OpenMP.
+
+\vfill    
+    Par exemple:
+
+{\small    
+    \begin{quote}
+Tim Mattson (Intel) ''Introduction to OpenMP'' 
+
+\url{https://www.openmp.org/wp-content/uploads/Intro_To_OpenMP_Mattson.pdf}
+
+Formation ``OpenMP'' de l'IDRIS (CNRS)
+
+\url{http://www.idris.fr/media/formations/openmp/idris_openmp_cours-v2.10.pdf}
+
+OpenMP API 5.1 Specification 
+
+\url{https://www.openmp.org/wp-content/uploads/OpenMP-API-Specification-5-1.pdf}
+\end{quote}
+}
+     \vfill
 \end{frame}
 
 \begin{frame}[fragile]
@@ -483,12 +515,9 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 \vfill
 \end{frame}
 
-\begin{frame}
-	Exemple OpenMP 1
-\end{frame}
-
 \begin{frame}[fragile]
 	
+	Exemple OpenMP 1
 \lstset{%
 	language={C++},
 	breaklines=true,
@@ -504,29 +533,25 @@ Pour exécuter un code utilisant plusieurs threads, il y a plusieurs possibilit�
 \end{lstlisting}
 
 \vfill
+{\small
 \begin{itemize}
 	\item avant d'arriver au pragma, on est dans la partie séquentielle (seul le thread 0 est actif); 
 	\item quand l'exécution arrive sur la ligne \verb|#pragma|, le système crée (ou active) $N-1$ threads ($N$ est égal au nombre de c\oe urs ou à la valeur de \verb|OMP_NUM_THREADS| si cette variable d'environnement existe);
 	\item chacun des $N$ threads exécute la partie parallèle (le bloc d'instructions contenu entre les accolades);
 	\item quand tous les threads sont arrivés à la fin du bloc, les threads s'arrêtent (ou se mettent en pause) sauf le thread 0.
 \end{itemize}
+}
 
 \end{frame}
 
 \begin{frame}
-Le code ci-dessus est contenu dans l'\textcolor{blue}{Exemple2}.
+Le code ci-dessus est contenu dans le répertoire \textcolor{blue}{Exemples2/Exemple\_OpenMP1}.
 
 Lire le fichier README.txt pour compiler et exécuter le code.
 
 \bigskip
 Relancer plusieurs fois l'exécution, expliquer ce qui est affiché.
 
-\vfill
-Une variante se trouve dans l'\textcolor{blue}{Exemple2b}.
-
-Cette variante affiche aussi le numéro du thread qui écrit le message.
-
-Faire les mêmes tests que dans l'\textcolor{blue}{Exemple2}.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -637,6 +662,16 @@ std::string prefix = "Ici le thread ";
 	
 \end{frame}
 
+\begin{frame}
+	Le code ci-dessus est contenu dans le répertoire \textcolor{blue}{Exemples2/Exemple\_OpenMP2}.
+	
+	Lire le fichier README.txt pour compiler et exécuter le code.
+	
+	\bigskip
+	Relancer plusieurs fois l'exécution, expliquer ce qui est affiché.
+	
+\end{frame}
+
 \begin{frame}[fragile]
 Exemple OpenMP 3
 
@@ -654,7 +689,7 @@ Exemple OpenMP 3
 \vspace{-0.1cm}
 \begin{lstlisting}{C++}
   for (i=0; i<n; i++)
-    w[i] = a*u[i] + b*w[i];
+    w[i] = a*u[i] + b*v[i];
 \end{lstlisting}
 \vfill
 
@@ -673,10 +708,8 @@ Pour découper la boucle en T boucles partielles (où T est le nombre de threads
 /+  shared(u,v,w,a,b,n) private(i)
 {
 /+#pragma omp for
-  {
-    for (i=0; i<n; i++)
-      w[i] = a*u[i] + b*w[i];
-  }
+  for (i=0; i<n; i++)
+    w[i] = a*u[i] + b*v[i];
 }
 \end{lstlisting}
 
@@ -695,50 +728,33 @@ ou plus simplement:
 \begin{lstlisting}{C++}
 /+#pragma omp parallel for \
 /+  shared(u,v,w,a,b,n) private(i)
-{
   for (i=0; i<n; i++)
-    w[i] = a*u[i] + b*w[i];
-}
+    w[i] = a*u[i] + b*v[i];
 \end{lstlisting}
 
 ou encore, si les variables sont partagées par défaut:
 \begin{lstlisting}{C++}
 /+#pragma omp parallel for
-{
   for (i=0; i<n; i++)
-    w[i] = a*u[i] + b*w[i];
-}
+    w[i] = a*u[i] + b*v[i];
 \end{lstlisting}
 
 L'indice de boucle qui suit immédiatement le pragma openmp for est implicitement privé
 \end{frame}
 
-\begin{frame}[fragile]
+\begin{frame}
+	Le code ci-dessus est contenu dans le répertoire \textcolor{blue}{Exemples2/Exemple\_OpenMP3}.
 	
-	Premier essai de parallélisation:
-	
-\begin{lstlisting}{C++}
-for (i=0; i<n; i++) {
-  \+#pragma omp parallel
-  {
-    \+#pragma omp for
-    {
-    for (j=0; j<m; j++)
-      C[i][j] = a*A[i][j] + b*B[i][j];
-    }
-  }
-}
-\end{lstlisting}
-	
+	Lire le fichier README.txt pour compiler et exécuter le code.
+		
 \end{frame}
 
-
 \begin{frame}[fragile]
-	Exemple OpenMP 3
+	Exemple OpenMP 4
 	
 	\vfill	
 	
-	Soient $A$, $B$ et $C$ des matrices de taille $n \times m$, $a$ et $b$ des scalaires, le code ci-dessous calcule $C = a A + b B$
+	Soient $A$, $B$ et $C$ des matrices de taille $n\times m$, $a$ et $b$ des scalaires, le code ci-dessous calcule $C = a A + b B$
 	\lstset{%
 		language={C++},
 		breaklines=true,
@@ -746,33 +762,113 @@ for (i=0; i<n; i++) {
 		basicstyle=\ttfamily,
 		moredelim=[il][\color{red}]{/+},%
 	}
-	\vfill
-	\begin{lstlisting}{C++}
-	for (i=0; i<n; i++)
-	for (j=0; j<m; j++)
-	C[i][j] = a*A[i][j] + b*B[i][j]
-	\end{lstlisting}
 	
+	\vfill
+
+\begin{lstlisting}{C++}
+  for (i=0; i<n; i++)
+    for (j=0; j<m; j++)
+      C(i,j) = a*A(i,j) + b*B(i,j);
+\end{lstlisting}
+	\vfill
+	
+	Il y a deux boucles, on a le choix de découper
+	\begin{itemize}
+		\item la boucle externe sur $i$
+		\item la boucle interne sur $j$
+		\item les 2 boucles
+	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
-	
-	Premier essai de parallélisation:
+Parallélisation sur la boucle externe :
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
 	
 	\begin{lstlisting}{C++}
-	for (i=0; i<n; i++) {
-	\+#pragma omp parallel
-	{
-	\+#pragma omp for
-	{
-	for (j=0; j<m; j++)
-	C[i][j] = a*A[i][j] + b*B[i][j];
+/+#pragma omp parallel for \
+/+    default(shared) private(j)
+  for (i=0; i<n; i++)
+    for (j=0; j<m; j++)
+      C(i,j) = a*A(i,j) + b*B(i,j);
+\end{lstlisting}
+	\vfill
+	Ne pas oublier que seul l'indice $i$ de boucle qui est découpée est implicitement privé.
+	\bigskip
+	
+	L'indice $j$ de la boucle interne doit être privé pour que les résultats soient corrects.
+	\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	Parallélisation sur la boucle interne :
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
 	}
-	}
-	}
+	
+	\begin{lstlisting}{C++}
+  for (i=0; i<n; i++)
+  {
+/+#pragma omp parallel for default(shared)
+    for (j=0; j<m; j++)
+      C(i,j) = a*A(i,j) + b*B(i,j);
+  }
 	\end{lstlisting}
+	\vfill
+	Il y a $n$ régions parallèles (pour chaque itération de la boucle externe).
+	
+	\vfill
+	L'indice de boucle externe $i$ est constant dans les régions parallèles, donc il peut rester partagé.
+
+	\vfill
+	L'indice de boucle interne $j$ est implicitement privé.
+	\vfill
+\end{frame}
+
+
+\begin{frame}[fragile]
+	Parallélisation sur les 2 boucles :
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+	\begin{lstlisting}{C++}
+/+#pragma omp parallel for \
+/+   default(shared) collapse(2)
+for (i=0; i<n; i++)
+  for (j=0; j<m; j++)
+    C(i,j) = a*A(i,j) + b*B(i,j);
+\end{lstlisting}
+	\vfill
+	Il y a 1 région parallèle.
+		
+	\vfill
+	Les 2 indices de boucle $i$ et $j$ sont implicitement privés.
+	\vfill
+	Cela ne fonctionne que si les 2 instructions \verb|for| se suivent sans instruction intermédiaire.
+\end{frame}
+
+\begin{frame}
+	Le code ci-dessus est contenu dans le répertoire \textcolor{blue}{Exemples2/Exemple\_OpenMP4}.
+	
+	Lire le fichier README.txt pour compiler et exécuter le code.
 	
 \end{frame}
+
+
 
 \begin{frame}
 \end{frame}
