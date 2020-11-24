@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.08)
 set(CMAKE_RULE_MESSAGES OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(code "sinus_openmp_adaptatif.exe")
+set(code "sinus_omp_adaptatif.exe")
 
 find_package(OpenMP REQUIRED)
 
