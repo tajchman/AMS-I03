@@ -330,4 +330,39 @@ double x, norme = 0;
 
 \end{frame}
 
+\begin{frame}
+	Le répertoire \textcolor{blue}{Exemples3/sinus} contient 5 sous-répertoires
+	qui comparent tous le calcul de y=sin(x) soit par la fonction système soit une approximation par une formule de Taylor.
+	\medskip
+	
+	Remarque: on a artificiellement ralenti le calcul de la formule de Taylor pour mieux faire ressortir les temps de calcul.
+	
+	\begin{itemize}
+		\item \textcolor{blue}{sinus\_seq}: calcul séquentiel
+		\item \textcolor{blue}{sinus\_omp\_fine\_grain}: calcul OpenMP grain fin
+		\item \textcolor{blue}{sinus\_omp\_coarse\_grain}: calcul OpenMP grain grossier
+		\item \textcolor{blue}{sinus\_omp\_adaptatif}: calcul OpenMP grain grossier avec équilibrage de charge
+		\item \textcolor{blue}{sinus\_omp\_task}: calcul OpenMP par tâches
+	\end{itemize}
+
+\vfill
+
+\end{frame}
+
+\begin{frame}
+
+\framebox{
+\begin{minipage}{10cm}
+Devoir à rendre avant la prochaine séance :
+\bigskip
+
+\begin{quote}
+	Examiner les sources dans chaque sous-répertoire (\ {\tt main.cxx, calcul.cxx}\ ).
+	
+	Faire tourner plusieurs fois chaque version, commenter les résultats.
+\end{quote}
+\end{minipage}
+}
+\end{frame}
+
 \end{document}

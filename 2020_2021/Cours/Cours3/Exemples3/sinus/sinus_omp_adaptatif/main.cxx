@@ -52,7 +52,8 @@ int main(int argc, char **argv)
       T_thread.stop();
       elapsed[iThread] = T_thread.elapsed();
     }
-    C.update(elapsed);
+    C.update(elapsed); // calcul du decoupage 
+                       // pour equilibrer la charge
  
     T_calcul.stop();
     T_stat.start();

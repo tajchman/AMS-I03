@@ -1,0 +1,150 @@
+<html>
+
+<head>
+  <title>AMS-I03 : Programmation hybride et multi-coeurs</title>
+  <link href="style.css" rel="stylesheet" type="text/css">
+  <meta charset="UTF-8">
+</head>
+
+<body>
+
+<H1>Cours AMS-I03 : Programmation hybride et multi-coeurs<font color=gray><small>&nbsp;[2020/2021]</small></font></H1>
+<H2>Organisation</H2>
+<ul>
+  <li><b>Horaire :</b> Cours et TD/TP le vendredi matin &nbsp;<a href="Seances_AMS_I03_2020_2021.pdf">[Planning détaillé]</a></li>
+  <li><b>Déroulement :</b> 
+  <ul>
+    <li>Cours à distance avec Zoom</li>
+    <li>TD/TP avec connexion à distance sur les stations de travail de l'ENSTA
+			<a href="tutoDistanceENSTA.pdf">[Tutoriel fourni avec le cours AMS301]</a></li>
+  </ul>
+	</li>
+  <li><b>Enseignant : </b>
+  <ul>
+    <li><a href="mailto:marc.tajchman@cea.fr">Marc Tajchman</a>, CEA, DEN/DM2S/STMF/LMES</li>
+  </ul>
+	</li>
+<!--  <li><b>Description : </b> <a href="https://synapses.ensta-paristech.fr/catalogue/2019-2020/ue/2886/AMSI03-programmation-hybride-et-multicoeurs" target="_blank">page du catalogue SynapseS</a></li>
+-->
+</ul>
+
+<h2>Prérequis</h2>
+Il est conseillé aux étudiants qui souhaitent suivre ce cours, d'avoir déjà utilisé des machines de calcul sous linux, les outils standards (shell, éditeurs, etc) et les outils de progammation (tels que compilateurs, cmake, make, débogeurs, etc) disponibles dans cette plateforme.
+
+<p>
+La connaissance d'un langage de programmation utilisé dans le domaine
+scientifique, de préférence C++ (les notions de C++ nécessaires sont de
+niveau basique), est indispensable pour effectuer les travaux pratiques demandés.
+
+<p>
+Enfin, on supposera que les étudiants ont de bonnes notions en programmation parallèle avec MPI, obtenues par exemple en suivant <a href="http://perso.ensta-paristech.fr/~modave/AMS301" target="_blank">Cours AMS301 - Calcul Scientifique Parallèle</a>.
+<p>
+
+<h2>Programme du cours</h2>
+Le programme ci-dessus est indicatif, il est susceptible de légères adaptations. 
+<ul>
+  <li><b>Rappels sur les architectures des machines et différents types de programmation parallèle (1/2 séance)</b>
+	<p>
+	
+	<a href="Seance1/Cours_I03_Intro.pdf">Support de cours : Introduction et Rappels
+		d'architecture des ordinateurs</a></li>
+
+	<p>
+  <li><b>Optimisation de la programmation séquentielle (1/2 séance) </b></li>
+
+  <ul>
+    <li>   Mémoire cache des machines.</li>
+    <li>Notions de localités spatiale et temporelle.</li>
+    <li>Utiliser les possibilités du processeur.</li>
+    <li>Influence sur l'efficacité des algorithmes.</li>
+    <li>Exemples.
+			<li><a href="Seance1/Cours_I03_OptimSeq.pdf">Support de cours</a> et 
+	code source des exemples (<a href="Seance1/Exemples1.tar.gz">format tar + gzip</a>, 
+			<a href="Seance1/Exemples1.zip">format zip</a>)</li>
+  </ul> 
+
+	<p>
+  <li><b>Programmation multi-threads (2 séances)</b></li>
+  
+  <ul>
+    <li>Différents outils disponibles.</li>
+    <li>Exemples avec OpenMP et std::threads.</li>
+    <li>Partage ou non des variables.</li>
+    <li>Différentes techniques de programmation avec OpenMP (grain fin, grain grossier, programmation par tâches).</li>
+		<!--
+    <li><a href="TP2">Enoncé du
+	TP 2 et fichiers de code source associés</a> (<a
+					 href="TP2/TP2_corrige.tar.gz">corrigé</a>)</li>
+    <li><a href="TP3">Enoncé du
+	TP 3 et fichiers de code source associés</a> (<a
+					 href="TP3/TP3_corrige.tar.gz">corrigé</a>)</li>
+					 -->
+  </ul>
+  
+<p>
+  <li><b>Programmation hybride MPI - OpenMP (2 séances)</b></li>
+
+  <ul>
+    <li>  Intérêt de ce type d'approche. </li>
+    <li>Comparaison de différentes techniques MPI-OpenMP sur un code de calcul.</li> 
+		<!--
+	   <li><a href="AMS-I03-P2.pdf">Exposé</a></li>
+	   <li><a href="TP4">Enoncé du
+	TP 4 et fichiers de code source associés</a></li>
+	   <li><a href="TP5">Enoncé du
+	TP 5 et fichiers de code source associés</a></li>
+					 -->
+  </ul>
+  
+<p>
+  <li><b>Programmation des GPU (Graphics Processing Unit) (3 séances)</b></li>
+
+  <ul>
+    <li>Introduction aux GPU et à leur modèle de programmation.</li>
+		<!--
+	  <li><a href="Cours_I03_GPU.pdf">Exposé</a> (source: présentation utilisée
+		 par Pierre Kestener dans le cadre du même cours en 2017)</li>
+					 -->
+
+    <ul>
+      <li>Exemples avec le language Cuda.</li>
+		<!--
+	    <li><a href="TP6.tgz">TP 6 : exemples de code Cuda</a></li>
+	    <li><a href="TP7">TP 7 : énoncé (Cuda seconde partie) et code source associé</a></li>
+					 -->
+    </ul>
+
+    <li>Standard OpenCL. Fonctionnalités, avantages/inconvénients par rapport à Cuda. Exemple.</li> 
+		<!--
+    <ul>
+	    <li><a href="TP8">Demo OpenCL : code source associé</a></li>
+    </ul>
+					 -->
+
+  </ul>
+
+<p>
+<li><b>Quelques outils de plus haut niveau (1 séance)</b> 
+  <ul>
+    <li>Indépendance autant que possible du matériel</li>
+    <li>Programmation orientée-objet</li>
+    <li>Simplification de la programmation</li>
+  </ul>
+		<!--
+    <ul>
+	    <li><a href="TP9">TP 9 : code source associé à la séance</a></li>
+   </ul>
+					 -->
+
+<p>
+ <li><b>Examen (1 séance)</b></li>
+		<!--
+ <a href="Examen_AMS_I03_2018_2019.pdf">Sujet d'examen pour le cours
+ 2018/2019</a> <p>
+					 -->
+
+</ul>
+</p>
+
+</body>
+</html>
