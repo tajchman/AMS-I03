@@ -56,10 +56,278 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}
-	La programmation OpenMP vue dans les exemples jusqu'à present est de type ``grain fin'' : c'est OpenMP qui répartit le travail dans les régions parallèles entre les threads.
+\begin{frame}[fragile]
+	\frametitle{Programmation OpenMP de type ``grain fin''}
 	
-	Le programmeur a assez peu de possibilités pour adapter la programmation à un problème particulier
+	Cela consiste à ajouter un pragma devant les boucles à paralléliser pour que OpenMP découpe automatiquement l'ensemble de valeurs de l'indice de boucle en groupes.
+	
+	\vfill
+	Chaque thread prend en charge un des groupes. Chaque groupe est (à peu près) de même taille.
+	\vfill
+	
+	Par exemple:
+	
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+
+\begin{lstlisting}{C++}
+   /+#pragma omp parallel for
+   for (i=0; i<n; i++)
+     u[i] = f(a, v[i]);
+\end{lstlisting}
+	
+		
+	\vfill
+	Le programmeur a assez peu de possibilités pour adapter la répartition à un problème particulier
+\end{frame}
+
+
+\begin{frame}
+	Avantages~:
+	\begin{itemize}
+		\item Simple à programmer (si la boucle est simple).
+		
+		\item La différence entre le code parallèle et le code séquentiel est l'ajout de pragmas, donc on peut garder une seule version des sources.
+		
+		\item On peut paralléliser progressivement un code, choisir les boucles à paralléliser.
+	\end{itemize}
+
+\vfill
+
+	Désavantages~:
+	\begin{itemize}
+		\item Les régions parallèles sont souvent plus nombreuses et plus petites, ce qui décroît souvent les performances.
+		\item La répartition est équilibrée en nombre d'itérations pas en temps calcul, souvent certains threads ont fini avant les autres et sont inemployés.
+		\item Les boucles complexes sont plus difficiles ou impossibles à paralléliser (boucles ``while", boucles sur des indices non entiers, etc.)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	Soit l'algorithme suivant: on part d'une valeur initiale de $u$ et on calcule une suite de $nT$ valeurs de $u$ pour $t > 0$.
+	
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+	\begin{lstlisting}{C++}
+for (iT=0; iT < nT; iT++)
+{
+  dT = calcul_dt(u);
+  for (iX=0; iX < nX; iX++)
+    v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+  echange(u, v);
+}
+	\end{lstlisting}
+	
+	\vfill
+	La boucle externe (sur \verb|iT|) n'est pas parallélisable
+	\begin{itemize}
+		\item chaque itération modifie le même vecteur $v$,
+		\item chaque itération dépend de toutes les précédentes.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+Pour paralléliser, il ne reste que la boucle interne (sur \verb|iX|):
+
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+
+\begin{lstlisting}{C++}
+for (iT=0; iT < nT; iT++)
+{
+  dT = calcul_dt(u);
+  /+#pragma omp parallel for
+  for (iX=0; iX < nX; iX++)
+    v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+  echange(u, v);
+}
+\end{lstlisting}
+
+\vfill
+Il y a donc \verb|nT| régions parallèles (avec création des threads à l'entrée et destruction des threads à la sortie).
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Programmation OpenMP de type ``grain grossier''}
+
+\vfill
+Cela consiste à :
+\medskip
+
+\begin{itemize}
+	\item 
+	essayer de définir des régions parallèles plus grandes et moins nombreuses.
+\vfill
+
+\begin{quote}
+	Cela conduit souvent à des régions parallèles dans lesquelles une partie des instructions ne sont pas exécutées par tous les threads (utilisation des pragmas \textcolor{red}{\tt single} et \textcolor{red}{\tt master}, ou des indices de threads : {\tt omp\_get\_thread\_num()}).
+\end{quote}
+
+	\item découper soi-même les boucles internes pour mieux tenir compte de la différences de temps calcul entre les itérations.
+\end{itemize}
+
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	\textcolor{blue}{Illustration du premier point : on crée une seule région parallèle}
+	
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+	\begin{lstlisting}{C++}
+/+#pragma omp parallel default(shared)
+{
+  int iT, iX;
+  for (iT=0; iT < nT; iT++)
+  {
+    /+#pragma omp single
+    dT = calcul_dt(u);
+    
+    /+#pragma omp for
+    for (iX=0; iX < nX; iX++)
+      v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+
+    /+#pragma omp single
+    echange(u, v);
+  }
+}
+\end{lstlisting}
+	
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	\textcolor{blue}{Illustration du second point : on définit soi-même le découpage de la boucle interne}
+	
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+	\begin{lstlisting}{C++}
+#pragma omp parallel default(shared)
+{
+  int iT, iX;
+  /+int d_nX = nX/omp_get_num_threads();
+  /+int nX1 = omp_get_thread_num()*d_nX;
+  /+int nX2 = n1 + d_nX;
+  for (iT=0; iT < nT; iT++)
+  {
+    #pragma omp single
+    dT = calcul_dt(u);
+
+    /+for (iX=nX1; iX < nX2; iX++)
+      v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+	
+    #pragma omp single
+    echange(u, v);
+  }
+}
+	\end{lstlisting}
+	
+	\vfill
+\end{frame}
+
+\begin{frame}
+    \vfill
+	Avantages~:
+	\begin{itemize}
+		\item On crée moins de régions parallèles (une seule dans l'exemple).
+		\item Le découpage de la boucle interne est fait une seule fois et c'est le développeur qui détermine ce découpage.
+	\end{itemize}
+
+    \vfill
+    Suivant le type de problème, la programmation à grain grossier pourra être plus ou moins intéressante.
+    
+    \vfill
+	Désavantages~:
+    \begin{itemize}
+    	\item L'écriture du code est plus complexe (savoir quand mettre en pause certains threads par exemple).
+    	\item Il est moins facile de maintenir un source unique pour les versions séquentielle et parallèle.
+   \end{itemize} 
+    \vfill
+    
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Programmation OpenMP par tâches}
+
+On définit dans le codes des groupes d'instructions qui peuvent être exécutés en parallèle, qu'on appelle ``tâches''. 
+\vfill
+
+Il peut y avoir un nombre de tâches différent du nombre de threads (en général, il y aura plus de tâches que de threads).
+\vfill
+ 
+Quand les tâches sont définies, le système les met dans une file d'attente. Les tâches sont exécutées dès qu'un c\oe ur est disponible.
+\vfill
+Avantages : 
+\begin{itemize}
+	\item On peut définir un nombre de tâches inconnu à l'avance (boucle ``while'' par exemple).
+	\item Une tâche peut elle-même créer d'autres tâches (parallélisme à plusieurs niveaux).
+\end{itemize}
+Inconvénient : 
+\begin{itemize}
+	\item On ne sait pas exactement quand une tâche sera lancée, ce qui rend délicat la gestion des variables partagées.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+Exemple : Calcul de la norme d'un vecteur contenu dans un fichier
+(de longueur inconnue)
+
+	\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+
+\begin{lstlisting}{C++}
+
+std::ifstream f("donnees");
+double x, norme = 0;
+
+/+#pragma omp parallel default(shared) \
+/+     reduction(+: norme)
+{
+/+#pragma master
+  while (f >> x) {
+  /+#pragma task
+    {
+      y = x*x;
+      norme += y;
+    }
+  }
+ /+#task wait
+}
+\end{lstlisting}
+
 \end{frame}
 
 \end{document}

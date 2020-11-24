@@ -1052,4 +1052,64 @@ moy = s / n ;
 var = s2 /n - moy * moy ;
 \end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile]
+Quelques autres pragmas
+
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+/+#pragma omp barrier
+\end{lstlisting}
+
+\begin{quote}
+	Dans une région parallèle, les threads avancent indé\-pen\-dam\-ment les uns des autres. 
+	
+	Il faut parfois définir des barrières intermédiaires : si certains threads atteignent une position dans le code avant les autres, ils attendent les autres threads.
+	
+	Les pragma \textcolor{red}{\tt omp parallel} et  \textcolor{red}{\tt omp for} sont suivis d'une barrière implicite.
+\end{quote}
+\vfill
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\vfill 
+\lstset{%
+	language={C++},
+	breaklines=true,
+	captionpos=b,
+	basicstyle=\ttfamily,
+	moredelim=[il][\color{red}]{/+},%
+}
+\begin{lstlisting}{C++}
+/+#pragma omp single
+\end{lstlisting}
+
+\begin{quote}
+	Définit une sous-région dans une région parallèle. Le premier thread qui atteint le début de la sous-région, exécute les instructions qui sont dedans.
+	
+	Les autres threads sautent au-dessus de cette sous-région.
+	
+	\textcolor{red}{Il y a une barrière implicite à la fin de la sous-région.}	
+\end{quote}
+\begin{lstlisting}{C++}
+/+#pragma omp master
+\end{lstlisting}
+
+\begin{quote}
+	Définit une sous-région dans une région parallèle. Seul le thread 0 peut entrer dans la sous-région, et exécuter les instructions qui sont dedans.
+	
+	Les autres threads sautent au-dessus de cette sous-région.
+	
+	\textcolor{red}{Il y a pas de barrière implicite à la fin de la sous-région.} 
+\end{quote}
+\vfill 
+\end{frame}
 \end{document}
