@@ -23,18 +23,20 @@ int main(int argc, char **argv)
     size_t imax = G("imax", IMAX);
     int nThreads = G("threads", omp_get_max_threads());
 
+    std::cout << "\nn       : " << n
+	      << "\nthreads : " << nThreads
+	      << "\n" << std::endl;
+
     set_terms(imax);
 
-    std::cout << "\nn       : " << n << std::endl;
-    std::cout << "threads : " << nThreads << "\n" << std::endl;
-
-    std::cout << "n = " << n << std::endl;
     std::vector<double> pos(n, 0), v1(n, 0), v2(n, 0);
 
     std::vector<double> elapsed(nThreads);
     Charge C(n, nThreads);
 
     T_calcul.start();
+
+    omp_set_num_threads(nThreads);
 
     #pragma omp parallel default(shared)
     {

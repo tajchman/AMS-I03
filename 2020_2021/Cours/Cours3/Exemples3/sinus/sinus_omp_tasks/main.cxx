@@ -25,8 +25,10 @@ int main(int argc, char **argv)
     int nTasks = G("tasks", nThreads * 10);
     set_terms(imax);
      
-    std::cout << "\nn       : " << n << std::endl;
-    std::cout << "threads : " << nThreads << "\n" << std::endl;
+    std::cout << "\nn       : " << n
+	      << "\nthreads : " << nThreads
+	      << "\ntasks   : " << nTasks
+	      << "\n" << std::endl;
 
     std::vector<double> pos(n, 0), v1(n, 0), v2(n, 0);
    
@@ -45,10 +47,11 @@ int main(int argc, char **argv)
             int n_start = i * dn;
             int n_end = (i+1) * dn;
             calcul(pos, v1, v2, n_start, n_end);
-            #pragma omp critical
-            std::cout << omp_get_thread_num() 
-                      << ": n1 = " << n_start 
-                      << " n2 = " << n_end << std::endl;
+	    
+            // #pragma omp critical
+            // std::cout << omp_get_thread_num() 
+            //           << ": n1 = " << n_start 
+            //           << " n2 = " << n_end << std::endl;
           }
 
         #pragma omp task

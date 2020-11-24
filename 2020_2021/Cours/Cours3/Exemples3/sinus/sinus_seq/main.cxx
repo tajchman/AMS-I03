@@ -23,7 +23,9 @@ int main(int argc, char **argv)
 
     set_terms(imax);
      
-    std::cout << "\nn      :  " << n << std::endl;
+    std::cout << "\nn       : " << n
+	      << "\n" << std::endl;
+
     std::vector<double> pos(n, 0), v1(n, 0), v2(n, 0);
    
     T_calcul.start();

@@ -14,4 +14,4 @@ for v in versions:
     if err == 0:
         err = subprocess.call(["cmake", "."], cwd = "sinus_" + v)
     if err == 0:
-        err = subprocess.call(["cmake", "."], cwd = "sinus_" + v)
+        err = subprocess.call(["make"], cwd = "sinus_" + v)
