@@ -23,6 +23,7 @@ public:
   void initialize();
   double present();
   bool solve(unsigned int nSteps);
+  double iteration();
   double variation();
   void terminate();
   const Values & getOutput();
@@ -32,7 +33,7 @@ public:
   std::string codeName;
 
 protected:
-  double m_t;
+  double m_t, m_dt, m_lambda;
   size_t m_n[3];
   size_t m_dx[3];
   size_t m_di[3];

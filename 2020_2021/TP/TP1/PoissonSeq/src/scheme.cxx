@@ -19,8 +19,8 @@ Scheme::Scheme(const Parameters &P) :
 
    int i;
    for (i=0; i<3; i++) {
-     m_n[i] = m_P->n(i);
-     m_dx[i] = m_P->dx(i);
+     m_n[i] = m_P.n(i);
+     m_dx[i] = m_P.dx(i);
      m_di[i] = (m_n[i] < 2) ? 0 : 1;
    }
 
@@ -73,13 +73,13 @@ double Scheme::iteration()
   int i, j, k;
   double du, du_sum;
 
-  int imin = m_P->imin(0) ;
-  int jmin = m_P->imin(1) ;
-  int kmin = m_P->imin(2) ;
+  int imin = m_P.imin(0) ;
+  int jmin = m_P.imin(1) ;
+  int kmin = m_P.imin(2) ;
 
-  int imax = m_P->imax(0) ;
-  int jmax = m_P->imax(1) ;
-  int kmax = m_P->imax(2) ;
+  int imax = m_P.imax(0) ;
+  int jmax = m_P.imax(1) ;
+  int kmax = m_P.imax(2) ;
 
   du_sum = 0.0;
     
