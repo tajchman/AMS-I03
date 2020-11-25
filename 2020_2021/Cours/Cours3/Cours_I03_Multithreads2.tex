@@ -144,6 +144,12 @@ Pour paralléliser, il ne reste que la boucle interne (sur \verb|iX|):
 	breaklines=true,
 	captionpos=b,
 	basicstyle=\ttfamily,
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    rulecolor=\color{black},
+    showspaces=false,
+    showstringspaces=false,
 	moredelim=[il][\color{red}]{/+},%
 }
 
@@ -152,14 +158,16 @@ for (iT=0; iT < nT; iT++)
 {
   dT = calcul_dt(u);
   /+#pragma omp parallel for
-  for (iX=0; iX < nX; iX++)
-    v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+  {
+    for (iX=0; iX < nX; iX++)
+      v[iX]=f(u[iX-1],u[iX],u[iX+1],dT);
+  }
   echange(u, v);
 }
 \end{lstlisting}
 
 \vfill
-Il y a donc \verb|nT| régions parallèles (avec création des threads à l'entrée et destruction des threads à la sortie).
+Il y a donc \verb|nT| régions parallèles (avec création des threads à l'entrée - ligne 15 - et destruction des threads à la sortie - ligne 18).
 \vfill
 \end{frame}
 
@@ -332,7 +340,7 @@ double x, norme = 0;
 
 \begin{frame}
 	Le répertoire \textcolor{blue}{Exemples3/sinus} contient 5 sous-répertoires
-	qui comparent tous le calcul de y=sin(x) soit par la fonction système soit une approximation par une formule de Taylor.
+	qui comparent tous deux méthodes de calcul de y=sin(x), soit par la fonction système soit une approximation par une formule de Taylor.
 	\medskip
 	
 	Remarque: on a artificiellement ralenti le calcul de la formule de Taylor pour mieux faire ressortir les temps de calcul.
