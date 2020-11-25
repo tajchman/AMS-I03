@@ -29,7 +29,9 @@ public:
   const Values & getOutput();
   void setInput(const Values & u);
   void save(const char * /*fName*/);
+
   Timer & timer(int k) { return m_timers[k]; }
+  int ntimers() { return m_timers.size();}
   std::string codeName;
 
 protected:

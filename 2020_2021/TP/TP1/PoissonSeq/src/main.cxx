@@ -20,7 +20,7 @@ double f(double x, double y, double z)
 
 int main(int argc, char *argv[])
 {
-  Timer T_global;
+  Timer T_global, T_residu;
   T_global.start();
 
   Parameters Prm(argc, argv);
@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
 
   Values u_0(Prm);
   Scheme C(Prm);
+ 
   C.timer(0).start();
   C.initialize();
   u_0.init(f);
@@ -50,24 +51,31 @@ int main(int argc, char *argv[])
   C.setInput(u_0);
   C.timer(0).stop();
 
-  if (freq > 0) C.getOutput().plot(0);
-
-  int i;
-  for (i=0; i<nsteps; i++) {
-    C.solve(ksteps);
-    if (freq > 0) C.getOutput().plot(i);
+  for (int i=0; i<nsteps; i++) {
+    if (freq > 0) {
+      C.timer(2).start();
+      C.getOutput().plot(i);
+      C.timer(2).stop();
     }
 
-  if (Prm.convection())
-    std::cout << "convection ";
-  else
-    std::cout << "           ";
-  if (Prm.diffusion())
-    std::cout << "diffusion  ";
-  else
-    std::cout << "           ";
+    C.solve(ksteps);
+  }
 
+  if (freq > 0) {
+    C.timer(2).start();
+    C.getOutput().plot(nsteps);
+    C.timer(2).stop();
+  }
+ 
   T_global.stop();
-  std::cout << "cpu time " << std::setprecision(5) << T_global.elapsed() << " s\n";
+
+  std::cout << "\n" << std::setw(26) << "total" 
+            << std::setw(10) << T_global.elapsed() << " s";
+  int n = C.ntimers();
+  std::cout << " (times :";
+  for (int i=0; i<n; i++)
+    std::cout << " " << std::setw(5) << C.timer(i).name()
+	            << " " << std::setw(9) << std::fixed << C.timer(i).elapsed();
+  std::cout	  << ")   \n";
   return 0;
 }
