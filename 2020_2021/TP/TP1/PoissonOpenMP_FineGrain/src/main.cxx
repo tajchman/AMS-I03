@@ -87,8 +87,11 @@ int main(int argc, char *argv[])
 	            << " " << std::setw(9) << std::fixed << C.timer(i).elapsed();
   std::cout	  << ")   \n";
 
-  std::ofstream f("temps_0.dat");
-  f << 0 << " " << C.timer(0).elapsed() + C.timer(1).elapsed() << std::endl;
+  std::string s = "temps_";
+  s += std::to_string(Prm.nthreads()) + ".dat";
+  std::ofstream f(s.c_str());
+  f << Prm.nthreads() << " " 
+    << C.timer(1).elapsed() + C.timer(2).elapsed() << std::endl;
 
   return 0;
 }

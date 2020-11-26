@@ -40,10 +40,14 @@ public:
   void convection(bool b) { m_convection = b; }
   void diffusion(bool b) { m_diffusion = b; }
   
+  int nthreads() const { return m_nthreads; }
+  void nthreads(int n) { m_nthreads = n; }
+  
 private:
   std::ostream * m_out;
 
   std::string m_command;
+  int m_nthreads;
   int m_n[3];
   double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];

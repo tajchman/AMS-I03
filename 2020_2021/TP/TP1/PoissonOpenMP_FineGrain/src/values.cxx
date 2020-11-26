@@ -19,14 +19,15 @@ Values::Values(const Parameters & prm) : m_p(prm)
 void Values::init()
 {
   int i, j, k;
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
+   int imin = m_p.imin(0);
+   int jmin = m_p.imin(1);
+   int kmin = m_p.imin(2);
 
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
+   int imax = m_p.imax(0);
+   int jmax = m_p.imax(1);
+   int kmax = m_p.imax(2);
 
+#pragma omp parallel for private(j,k)
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++)
@@ -44,15 +45,16 @@ void Values::init(callback_t f)
   int jmax = m_p.imax(1);
   int kmax = m_p.imax(2);
 
-  double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
-  double xmin =  m_p.xmin(0);
-  double ymin =  m_p.xmin(1);
-  double zmin =  m_p.xmin(2);
+    double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
+    double xmin =  m_p.xmin(0);
+    double ymin =  m_p.xmin(1);
+    double zmin =  m_p.xmin(2);
 
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-      for (k=kmin; k<kmax; k++)
-        operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+#pragma omp parallel for private(j,k)
+    for (i=imin; i<imax; i++)
+      for (j=jmin; j<jmax; j++)
+        for (k=kmin; k<kmax; k++)
+          operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
 }
 
 std::ostream & operator<< (std::ostream & f, const Values & v)

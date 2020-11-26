@@ -95,7 +95,7 @@ double Scheme::iteration_domaine(int imin, int imax,
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   double du, du1, du2, du_sum = 0.0;
   
-
+  #pragma omp parallel for reduction(+:du_sum) private(j,k,du,du1,du2)
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
@@ -111,7 +111,7 @@ double Scheme::iteration_domaine(int imin, int imax,
 
         du = m_dt * (du1 + du2);
         m_v(i, j, k) = m_u(i, j, k) + du;
-        du_sum += du > 0 ? du : -du;
+          du_sum += du > 0 ? du : -du;
       }
 
     return du_sum;
