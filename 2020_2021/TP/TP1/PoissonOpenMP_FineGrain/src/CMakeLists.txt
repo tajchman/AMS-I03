@@ -6,37 +6,46 @@ get_filename_component(VERSION ${BASE_DIR} NAME)
 project(${VERSION})
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include(FindOpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  add_compile_options(--inline)
 endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include(FindOpenMP)
+
+add_subdirectory(util)
 
 include_directories(
   util
   ${CMAKE_BUILD_DIR}
   )
 
-add_executable(
-  ${VERSION} 
-  main.cxx
-  parameters.cxx
-  parameters.hxx
-  values.cxx
-  values.hxx
-  scheme.cxx
-  scheme.hxx
+set(REFERENCE PoissonSeq)
+
+foreach (CODE ${VERSION} ${REFERENCE})
+
+  add_executable(
+    ${CODE} 
+    main.cxx
+    parameters.cxx
+    parameters.hxx
+    values.cxx
+    values.hxx
+    scheme.cxx
+    scheme.hxx
   )
 
-target_link_libraries(
-   ${VERSION}
-   util
-)
+  target_link_libraries(
+    ${CODE}
+    util
+  )
 
-install(TARGETS ${VERSION} DESTINATION .)
+  install(TARGETS ${CODE} DESTINATION .)
+
+endforeach()
+
+target_compile_options(${VERSION} PUBLIC ${OpenMP_CXX_FLAGS})
+target_link_libraries(${VERSION} ${OpenMP_CXX_LIBRARIES})
 
 configure_file(version.hxx.in version.hxx @ONLY)
-

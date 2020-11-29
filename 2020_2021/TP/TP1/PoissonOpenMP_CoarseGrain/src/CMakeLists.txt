@@ -6,9 +6,18 @@ get_filename_component(VERSION ${BASE_DIR} NAME)
 project(${VERSION})
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+include(FindOpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_subdirectory(util)
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	add_compile_options(-DDEBUG)
+endif()
 
 include_directories(
   util

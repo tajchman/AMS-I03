@@ -449,7 +449,6 @@ inline
 GetPot::~GetPot()
 { 
     // may be some return strings had to be created, delete now !
-    std::cerr << "xxx" << std::endl;
     victorate(char*, __internal_string_container, it)
         delete [] *it;  
 }
@@ -793,7 +792,6 @@ GetPot::__process_section_label(const std::string& Section,
     }
     std::string section = "";
     if( section_stack.size() != 0 ) {
-        std::cerr << "xxx" << std::endl;
         victorate(std::string, section_stack, it)
             section += *it + "/";
     }

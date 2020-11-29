@@ -24,13 +24,23 @@ double force(double x, double y, double z)
   if (x < 0.5)
      return 0.0;
   else
-     return sin(x-0.5) * exp(- y*y);
+     return 1.0;
+//     return sin(x-0.5) * exp(- y*y);
 }
 
 int main(int argc, char *argv[])
 {
-  Timer T_global;
-  T_global.start();
+  AddTimer("total");
+  AddTimer("init");
+  AddTimer("calcul");
+  AddTimer("other");
+
+  Timer & T_total = GetTimer(0);
+  Timer & T_init = GetTimer(1);
+  Timer & T_calcul = GetTimer(2);
+  Timer & T_other = GetTimer(3);
+
+  T_total.start();
 
   Parameters Prm(argc, argv);
   if (Prm.help()) return 0;
@@ -38,57 +48,52 @@ int main(int argc, char *argv[])
 
   int itMax = Prm.itmax();
   int freq = Prm.freq();
-  int nsteps, ksteps;
   
-  if (freq > 0) {
-    nsteps = itMax/freq;
-    ksteps = freq;
-    Prm.out();
-  }
-  else {
-    nsteps = 1;
-    ksteps = itMax;
-  }
+  T_init.start();
+
+  Scheme C(Prm, force);
+  C.initialize();
 
   Values u_0(Prm);
-  Scheme C(Prm);
- 
-  C.timer(0).start();
-  C.initialize(force);
   u_0.init(cond_ini);
-
   C.setInput(u_0);
-  C.timer(0).stop();
+  T_init.stop();
+  std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+            << T_init.elapsed() << " s\n" << std::endl;
 
-  for (int i=0; i<nsteps; i++) {
-    if (freq > 0) {
-      C.timer(2).start();
-      C.getOutput().plot(i);
-      C.timer(2).stop();
+  for (int it=0; it < itMax; it++) {
+    if (freq > 0 && it % freq == 0) {
+      T_other.start();
+      C.getOutput().plot(it);
+      T_other.stop();
     }
 
-    C.solve(ksteps);
+    T_calcul.start();
+    C.iteration();
+    T_calcul.stop();
+
+    std::cout << "iteration " << std::setw(5) << it 
+              << "  variation " << std::setw(10) << C.variation()
+              << "  temps calcul " << std::setw(10) << std::setprecision(6) 
+              << T_calcul.elapsed() << " s"
+              << std::endl; 
   }
 
-  if (freq > 0) {
-    C.timer(2).start();
-    C.getOutput().plot(nsteps);
-    C.timer(2).stop();
+  if (freq > 0 && itMax % freq == 0) {
+    T_other.start();
+    C.getOutput().plot(itMax);
+    T_other.stop();
   }
- 
-  T_global.stop();
 
-  std::cout << "\n" << std::setw(26) << "total" 
-            << std::setw(10) << T_global.elapsed() << " s";
-  int n = C.ntimers();
-  std::cout << " (times :";
-  for (int i=0; i<n; i++)
-    std::cout << " " << std::setw(5) << C.timer(i).name()
-	            << " " << std::setw(9) << std::fixed << C.timer(i).elapsed();
-  std::cout	  << ")   \n";
+  C.terminate();
+
+  T_total.stop();
+
+  std::cout << "\n" << std::setw(26) << "temps total" 
+            << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
   std::ofstream f("temps_0.dat");
-  f << 0 << " " << C.timer(0).elapsed() + C.timer(1).elapsed() << std::endl;
+  f << 0 << " " << T_total.elapsed() << std::endl;
 
   return 0;
 }

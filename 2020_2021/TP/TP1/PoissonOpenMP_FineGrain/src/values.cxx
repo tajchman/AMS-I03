@@ -1,10 +1,11 @@
 #include "values.hxx"
+#include "os.hxx"
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
 
-Values::Values(const Parameters & prm) : m_p(prm)
+Values::Values(Parameters & prm) : m_p(prm)
 {
   int i, nn = 1;
   for (i=0; i<3; i++)
@@ -107,8 +108,15 @@ void Values::plot(int order) const {
   int jmax = m_p.imax(1);
   int kmax = m_p.imax(2);
 
-  s << m_p.resultPath() << "plot_"
-    << order << ".vtr";
+  s << m_p.resultPath();
+#ifdef _OPENMP
+  s << "/" << m_p.nthreads();
+#else
+  s << "/0";
+#endif
+  mkdir_p(s.str().c_str());
+  
+  s << "/plot_" << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";

@@ -9,7 +9,7 @@ class Values {
 
 public:
 
-  Values(Parameters & p);
+  Values(const Parameters & p);
   virtual ~Values() {}
   void operator= (const Values &);
   
@@ -34,7 +34,7 @@ private:
   int n1, n2;
   std::vector<double> m_u;
   int m_n[3];
-  Parameters & m_p;
+  const Parameters & m_p;
 };
 				   
 std::ostream & operator<< (std::ostream & f, const Values & v);

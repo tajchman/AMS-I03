@@ -2,7 +2,6 @@
 #define _TIMER_HXX
 
 #include <string>
-#include <vector>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -20,7 +19,6 @@ public:
   
   inline void reinit() { m_elapsed = 0.0; m_running = false; }
  
-  const std::string & name() const { return m_name; }
   std::string & name() { return m_name; }
   
   void start() {
@@ -61,7 +59,7 @@ public:
     }
   }
   
-  inline double elapsed() const { return m_elapsed; }
+  inline double elapsed() { return m_elapsed; }
   
 protected:
   
@@ -76,8 +74,5 @@ protected:
   bool m_running;
   std::string m_name;
 };
-
-void AddTimer(const char *name);
-Timer &  GetTimer(int n);
 
 #endif

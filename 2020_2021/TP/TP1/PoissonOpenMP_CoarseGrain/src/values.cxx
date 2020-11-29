@@ -3,8 +3,9 @@
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
+#include <omp.h>
 
-Values::Values(Parameters & prm) : m_p(prm)
+Values::Values(const Parameters & prm) : m_p(prm)
 {
   int i, nn = 1;
   for (i=0; i<3; i++)
@@ -19,13 +20,15 @@ Values::Values(Parameters & prm) : m_p(prm)
 void Values::init()
 {
   int i, j, k;
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
+  int iThread = omp_get_thread_num();
 
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
+  int imin = m_p.imin_local(0, iThread);
+  int jmin = m_p.imin_local(1, iThread);
+  int kmin = m_p.imin_local(2, iThread);
+
+  int imax = m_p.imax_local(0, iThread);
+  int jmax = m_p.imax_local(1, iThread);
+  int kmax = m_p.imax_local(2, iThread);
 
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
@@ -36,19 +39,22 @@ void Values::init()
 void Values::init(callback_t f)
 {
   int i, j, k;
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
+  int iThread = omp_get_thread_num();
 
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
+  int imin = m_p.imin_local(0, iThread);
+  int jmin = m_p.imin_local(1, iThread);
+  int kmin = m_p.imin_local(2, iThread);
+
+  int imax = m_p.imax_local(0, iThread);
+  int jmax = m_p.imax_local(1, iThread);
+  int kmax = m_p.imax_local(2, iThread);
 
   double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
   double xmin =  m_p.xmin(0);
   double ymin =  m_p.xmin(1);
   double zmin =  m_p.xmin(2);
 
+#pragma omp parallel for private(j,k)
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++)
@@ -95,7 +101,6 @@ void Values::swap(Values & other)
 
 void Values::plot(int order) const {
 
-  m_p.initOut();
   std::ostringstream s;
   int i, j, k;
   int imin = m_p.imin(0);

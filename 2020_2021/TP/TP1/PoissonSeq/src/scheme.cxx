@@ -6,34 +6,23 @@
 #include <iomanip>
 
 
-Scheme::Scheme(const Parameters &P) :
-   codeName(version), m_P(P), m_u(P), m_v(P), m_timers(3)  {
-   m_timers[0].name() = "init";
-   m_timers[1].name() = "solve";
-   m_timers[2].name() = "other";
-   m_duv = 0.0;
-   m_t = 0.0;
-   kStep = 0;
-   m_dt = 0.0;
+Scheme::Scheme(Parameters &P, callback_t f) :
+    codeName(version), m_P(P), m_u(P), m_v(P)  {
 
-   int i;
-   for (i=0; i<3; i++) {
-     m_n[i] = m_P.n(i);
-     m_dx[i] = m_P.dx(i);
-     m_di[i] = (m_n[i] < 2) ? 0 : 1;
-   }
-
-   m_dt = m_P.dt();
-}
-
-void Scheme::initialize(callback_t f)
-{
   m_u.init();
   m_v.init();
   m_f = f;
-  kStep = 1;
   m_t = 0.0;
   m_duv = 0.0;
+
+  int i;
+  for (i=0; i<3; i++) {
+    m_n[i] = m_P.n(i);
+    m_dx[i] = m_P.dx(i);
+    m_di[i] = (m_n[i] < 2) ? 0 : 1;
+  }
+
+  m_dt = m_P.dt();
 }
 
 Scheme::~Scheme()
@@ -74,9 +63,11 @@ bool Scheme::iteration()
   int jmax = m_P.imax(1) ;
   int kmax = m_P.imax(2) ;
 
-  m_duv = iteration_domaine(imin, imax, 
-                            jmin, jmax, 
-                            kmin, kmax);
+  m_duv = iteration_domaine(imin, imax, jmin, jmax, kmin, kmax);
+  m_t += m_dt;
+
+  m_u.swap(m_v);
+
   return true;
 }
 
@@ -117,45 +108,12 @@ double Scheme::iteration_domaine(int imin, int imax,
     return du_sum;
 }
 
-bool Scheme::solve(unsigned int nSteps)
-{
-
-  int iStep;
-
-  for (iStep=0; iStep < nSteps; iStep++) {
-
-    m_timers[1].start();
-    
-    if (! iteration()) return false;
-
-    m_t += m_dt;
-
-    m_u.swap(m_v);
-
-    m_timers[1].stop();
-    m_timers[2].start();
-    std::cout << " iteration " << std::setw(4) << kStep
-              << " variation " << std::setw(12) << std::setprecision(6) << m_duv;
-    size_t i, n = m_timers.size();
-    std::cout << " (times :";
-    for (i=0; i<n; i++)
-      std::cout << " " << std::setw(5) << m_timers[i].name()
-	        << " " << std::setw(9) << std::fixed << m_timers[i].elapsed();
-    std::cout	  << ")   \n";
-    m_timers[2].stop();
-
-    kStep++;
-  }
-  return true;
-}
-
-double Scheme::variation()
-{
-  return m_duv;
+void Scheme::initialize() {
+  std::cerr << "\nintialize " << codeName << std::endl;
 }
 
 void Scheme::terminate() {
-  std::cerr << "\n\nterminate " << codeName << std::endl;
+  std::cerr << "\nterminate " << codeName << std::endl;
 }
 
 const Values & Scheme::getOutput()
@@ -165,10 +123,8 @@ const Values & Scheme::getOutput()
 
 void Scheme::setInput(const Values & u)
 {
-  m_timers[2].start();
   m_u = u;
   m_v = u;
-  m_timers[2].stop();
 }
 
 void Scheme::save(const char * /*fName*/)

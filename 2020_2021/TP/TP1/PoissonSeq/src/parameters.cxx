@@ -6,6 +6,7 @@
 #include <unistd.h>
 #endif
 
+#include "os.hxx"
 #include "parameters.hxx"
 #include <iostream>
 #include <sstream>
@@ -35,15 +36,15 @@ void stime(char * buffer, int size)
 
 Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
 {
-  m_out = NULL;
+  m_out = false;
   m_help = options_contain("h") or long_options_contain("help");
 
   m_command = (*argv)[0];
   m_help = (*this).search(2, "-h", "--help");
 
-  m_n[0] = (*this)("n", 200);
-  m_n[1] = (*this)("m", 200);
-  m_n[2] = (*this)("p", 200);
+  m_n[0] = (*this)("n", 400);
+  m_n[1] = (*this)("m", 400);
+  m_n[2] = (*this)("p", 400);
   m_itmax = (*this)("it", 10);
 
   double d = 0.1/(m_n[0]*m_n[0]);
@@ -61,6 +62,10 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   
   if (!m_help) {
  
+    m_path = (*this)("path", ".");
+    if (m_path != ".") 
+       mkdir_p(m_path.c_str());
+
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
                 << ") is greater then the recommended maximum (" <<  dt_max
@@ -93,16 +98,10 @@ bool Parameters::help()
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
               << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"
-              << "                (default : no output)\n\n";
+              << "                (default : no output)\n"
+              << "path=<string> : results directory (default : '.')\n\n";
   }
   return m_help;
-}
-
-Parameters::~Parameters()
-{
-  if (m_out) {
-    delete m_out;
-  }
 }
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
@@ -110,38 +109,12 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
   f << "Domain :   "
     << "[" << 0 << "," << p.n(0) - 1  << "] x "
     << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]"
-    << "\n\n";
+    << "[" << 0 << "," << p.n(2) - 1  << "]\n";
 
-  f << "It. max : " << p.itmax() << "\n"
-    << "Dt :      " << p.dt() << "\n";
+  f << "It. max :  " << p.itmax() << "\n"
+    << "Dt :       " << p.dt() << "\n"
+    << "Results in " << p.resultPath() << std::endl;;
 
   return f;
 }
 
-std::ostream & Parameters::out()
-{
-  if (not m_out) {
-
-    char buffer[256];
-    stime(buffer, 256);
-
-    std::ostringstream pth;
-    pth << "results"
-        << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-        << "_" << buffer << "/";
-    m_path = pth.str();
-
-#if defined(_WIN32)
-    (void) _mkdir(m_path.c_str());
-#else
-    mkdir(m_path.c_str(), 0777);
-#endif
-
-
-    std::ostringstream s;
-    s << m_path << "/out.txt";
-    m_out = new std::ofstream(s.str().c_str());
-  }
-  return *m_out;
-}

@@ -15,8 +15,6 @@ class Parameters : public GetPot {
 public:
 
   Parameters(int argc, char **argv);
-  ~Parameters();
-  std::ostream & out();
   void info();
 
   int n(int i) const { return m_n[i]; }
@@ -41,7 +39,6 @@ public:
   void diffusion(bool b) { m_diffusion = b; }
   
 private:
-  std::ostream * m_out;
 
   std::string m_command;
   int m_n[3];
@@ -54,6 +51,7 @@ private:
   
   int m_freq;
 
+  bool m_out;
   std::string m_path;
   bool m_help;
 
