@@ -36,6 +36,13 @@ private:
   std::vector<double> m_u;
   int m_n[3];
   Parameters & m_p;
+  int imin, jmin, kmin;
+  int imax, jmax, kmax;
+
+  double dx, dy, dz;
+  double xmin, ymin, zmin;
+  double xmax, ymax, zmax;
+
 };
 				   
 std::ostream & operator<< (std::ostream & f, const Values & v);

@@ -20,6 +20,7 @@ Scheme::Scheme(Parameters &P, callback_t f) :
     m_n[i] = m_P.n(i);
     m_dx[i] = m_P.dx(i);
     m_di[i] = (m_n[i] < 2) ? 0 : 1;
+    m_xmin[i] = m_P.xmin(i);
   }
 
   m_dt = m_P.dt();
@@ -55,15 +56,11 @@ size_t Scheme::getDomainSize(int dim) const
 
 bool Scheme::iteration()
 {
-  m_duv = 0.0;
 
-  double du_sum = iteration_domaine(
-    m_P.imin(0), m_P.imax(0),
-    m_P.imin(1), m_P.imax(1),
-    m_P.imin(2), m_P.imax(1));
-
-
-  m_duv += du_sum;
+  m_duv = iteration_domaine(
+      m_P.imin(0), m_P.imax(0),
+      m_P.imin(1), m_P.imax(1),
+      m_P.imin(2), m_P.imax(1));
 
   m_t += m_dt;
   m_u.swap(m_v);
@@ -78,10 +75,9 @@ double Scheme::iteration_domaine(int imin, int imax,
   double lam_x = 1/(m_dx[0]*m_dx[0]);
   double lam_y = 1/(m_dx[1]*m_dx[1]);
   double lam_z = 1/(m_dx[2]*m_dx[2]);
-  double xmin =  m_P.xmin(0);
-  double ymin =  m_P.xmin(1);
-  double zmin =  m_P.xmin(2);
-
+  double xmin = m_xmin[0];
+  double ymin = m_xmin[1];
+  double zmin = m_xmin[2];
   int i,j,k;
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   double du, du1, du2, du_sum = 0.0;
@@ -92,12 +88,12 @@ double Scheme::iteration_domaine(int imin, int imax,
       for (k = kmin; k < kmax; k++) {
            
         du1 = (-2*m_u(i,j,k) + m_u(i+di,j,k) + m_u(i-di,j,k))*lam_x
-           + (-2*m_u(i,j,k) + m_u(i,j+dj,k) + m_u(i,j-dj,k))*lam_y
-           + (-2*m_u(i,j,k) + m_u(i,j,k+dk) + m_u(i,j,k-dk))*lam_z;
+            + (-2*m_u(i,j,k) + m_u(i,j+dj,k) + m_u(i,j-dj,k))*lam_y
+            + (-2*m_u(i,j,k) + m_u(i,j,k+dk) + m_u(i,j,k-dk))*lam_z;
 
         double x = xmin + i*m_dx[0];
-        double y = xmin + j*m_dx[1];
-        double z = xmin + k*m_dx[2];
+        double y = ymin + j*m_dx[1];
+        double z = zmin + k*m_dx[2];
         du2 = m_f(x,y,z);
 
         du = m_dt * (du1 + du2);

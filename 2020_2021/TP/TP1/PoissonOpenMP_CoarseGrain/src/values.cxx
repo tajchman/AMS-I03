@@ -18,26 +18,32 @@ Values::Values(Parameters & prm) : m_p(prm)
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
   m_u.resize(nn);
+
+  imin = m_p.imin(0);
+  jmin = m_p.imin(1);
+  kmin = m_p.imin(2);
+
+  imax = m_p.imax(0);
+  jmax = m_p.imax(1);
+  kmax = m_p.imax(2);
+
+  dx = m_p.dx(0);
+  dy = m_p.dx(1);
+  dz = m_p.dx(2);
+  
+  xmin =  m_p.xmin(0);
+  ymin =  m_p.xmin(1);
+  zmin =  m_p.xmin(2);
+  xmax =  xmin + (imax-imin) * dx;
+  ymax =  ymin + (jmax-jmin) * dy;
+  zmax =  zmin + (kmax-kmin) * dz;
 }
 
 void Values::init()
 {
   int i, j, k;
 
-#ifdef _OPENMP
-  int iThread = omp_get_thread_num();
-#else
-  int iThread = 0;
-#endif
-
-  int imin = m_p.imin_local(0, iThread);
-  int jmin = m_p.imin_local(1, iThread);
-  int kmin = m_p.imin_local(2, iThread);
-
-  int imax = m_p.imax_local(0, iThread);
-  int jmax = m_p.imax_local(1, iThread);
-  int kmax = m_p.imax_local(2, iThread);
-
+  #pragma omp parallel for private(j,k)
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++)
@@ -53,44 +59,25 @@ void Values::init(callback_t f)
   int iThread = 0;
 #endif
 
-  int imin = m_p.imin_local(0, iThread);
-  int jmin = m_p.imin_local(1, iThread);
-  int kmin = m_p.imin_local(2, iThread);
+  int imin_thread = m_p.imin_local(0, iThread);
+  int jmin_thread = m_p.imin_local(1, iThread);
+  int kmin_thread = m_p.imin_local(2, iThread);
 
-  int imax = m_p.imax_local(0, iThread);
-  int jmax = m_p.imax_local(1, iThread);
-  int kmax = m_p.imax_local(2, iThread);
+  int imax_thread = m_p.imax_local(0, iThread);
+  int jmax_thread = m_p.imax_local(1, iThread);
+  int kmax_thread = m_p.imax_local(2, iThread);
 
   double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
-  double xmin =  m_p.xmin(0);
-  double ymin =  m_p.xmin(1);
-  double zmin =  m_p.xmin(2);
 
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-      for (k=kmin; k<kmax; k++)
+  for (i=imin_thread; i<imax_thread; i++)
+    for (j=jmin_thread; j<jmax_thread; j++)
+      for (k=kmin_thread; k<kmax_thread; k++)
         operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
 }
 
 void Values::boundaries(callback_t f)
 {
   int i, j, k;
-
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
-
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
-
-  double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
-  double xmin =  m_p.xmin(0);
-  double ymin =  m_p.xmin(1);
-  double zmin =  m_p.xmin(2);
-  double xmax =  xmin + (imax-kmin) * dx;
-  double ymax =  ymin + (jmax-jmin) * dy;
-  double zmax =  zmin + (kmax-kmin) * dz;
 
   for (j=jmin; j<jmax; j++)
     for (k=kmin; k<kmax; k++) 

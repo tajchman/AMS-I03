@@ -23,10 +23,9 @@ double cond_ini(double x, double y, double z)
 double force(double x, double y, double z)
 {
   if (x < 0.5)
-     return 0.0;
+    return 0.0;
   else
-     return 1.0;
-//     return sin(x-0.5) * exp(- y*y);
+    return sin(x-0.5) * exp(- y*y);
 }
 
 int main(int argc, char *argv[])

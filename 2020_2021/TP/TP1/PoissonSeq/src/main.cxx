@@ -23,10 +23,9 @@ double cond_ini(double x, double y, double z)
 double force(double x, double y, double z)
 {
   if (x < 0.5)
-     return 0.0;
+    return 0.0;
   else
-     return 1.0;
-//     return sin(x-0.5) * exp(- y*y);
+    return sin(x-0.5) * exp(- y*y);
 }
 
 int main(int argc, char *argv[])
@@ -54,8 +53,9 @@ int main(int argc, char *argv[])
 
   Scheme C(Prm, force);
   C.initialize();
-  
+ 
   Values u_0(Prm);
+  u_0.boundaries(cond_ini);
   u_0.init(cond_ini);
   C.setInput(u_0);
   T_init.stop();
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     C.getOutput().plot(itMax);
     T_other.stop();
   }
- 
+
   C.terminate();
 
   T_total.stop();

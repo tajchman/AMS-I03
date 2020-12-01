@@ -77,7 +77,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-        m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+        m_imin[i]=1; m_imax[i] = 1; m_di[i] = 0;
       }
     }
   }
@@ -112,7 +112,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
-    << "Results in " << p.resultPath() << std::endl;;
+    << "Results in " << p.resultPath() << std::endl;
 
   return f;
 }

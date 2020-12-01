@@ -15,18 +15,30 @@ Values::Values(Parameters & prm) : m_p(prm)
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
   
   m_u.resize(nn);
+
+  imin = m_p.imin(0);
+  jmin = m_p.imin(1);
+  kmin = m_p.imin(2);
+
+  imax = m_p.imax(0);
+  jmax = m_p.imax(1);
+  kmax = m_p.imax(2);
+
+  dx = m_p.dx(0);
+  dy = m_p.dx(1);
+  dz = m_p.dx(2);
+  
+  xmin =  m_p.xmin(0);
+  ymin =  m_p.xmin(1);
+  zmin =  m_p.xmin(2);
+  xmax =  xmin + (imax-imin) * dx;
+  ymax =  ymin + (jmax-jmin) * dy;
+  zmax =  zmin + (kmax-kmin) * dz;
 }
 
 void Values::init()
 {
   int i, j, k;
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
-
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
 
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
@@ -37,23 +49,37 @@ void Values::init()
 void Values::init(callback_t f)
 {
   int i, j, k;
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
-
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
-
-  double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
-  double xmin =  m_p.xmin(0);
-  double ymin =  m_p.xmin(1);
-  double zmin =  m_p.xmin(2);
 
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++)
         operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+}
+
+void Values::boundaries(callback_t f)
+{
+  int i, j, k;
+
+  for (j=jmin; j<jmax; j++)
+    for (k=kmin; k<kmax; k++) 
+    {
+      operator()(imin,   j, k) = f(xmin, ymin + j*dy, zmin + k*dz);
+      operator()(imax-1, j, k) = f(xmax, ymin + j*dy, zmin + k*dz);
+    }
+
+  for (i=imin; i<imax; i++)
+    for (k=kmin; k<kmax; k++)
+    {
+      operator()(i, jmin,   k) = f(xmin+ i*dx, ymin, zmin + k*dz);
+      operator()(i, jmax-1, k) = f(xmin+ i*dx, ymax, zmin + k*dz);
+    }
+
+  for (i=imin; i<imax; i++)
+    for (j=jmin; j<jmax; j++)
+    {
+      operator()(i, j, kmin  ) = f(xmin+ i*dx, ymin + j*dy, zmax);
+      operator()(i, j, kmax-1) = f(xmin+ i*dx, ymin + j*dy, zmax);
+    }
 }
 
 std::ostream & operator<< (std::ostream & f, const Values & v)

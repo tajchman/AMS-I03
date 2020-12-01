@@ -20,24 +20,32 @@ elif args.compilers == 'intel':
     myenv['CC'] = 'icc'
     myenv['CXX'] = 'icpc'
 
-base = os.getcwd()
-srcDir = os.path.join(base, 'src')
-buildDir = os.path.join(base, 'build', args.compilers, args.type)
-installDir = os.path.join(base, 'install', args.compilers, args.type)
+for version in ['Seq', 'OpenMP_CoarseGrain']:
 
-if not os.path.exists(buildDir):
-  os.makedirs(buildDir)
+  base = os.getcwd()
+  srcDir = os.path.join(base, 'src')
+  buildDir = os.path.join(base, 'build', version, args.compilers, args.type)
+  installDir = os.path.join(base, 'install', args.compilers, args.type)
 
-err = subprocess.call(
-  ['cmake', 
-   '-DCMAKE_BUILD_TYPE=' + args.type,
-   '-DCMAKE_INSTALL_PREFIX=' + installDir,
-  srcDir],
+  if not os.path.exists(buildDir):
+    os.makedirs(buildDir)
+
+  if version == "Seq":
+    OP = 'false'
+  else:
+    OP = 'true'
+
+  err = subprocess.call(
+    [ 'cmake', 
+      '-DCMAKE_BUILD_TYPE=' + args.type,
+      '-DCMAKE_INSTALL_PREFIX=' + installDir,
+      '-DENABLE_OPENMP='+OP,
+      srcDir],
     cwd=buildDir, env=myenv)
 
-if err == 0:
-  err = subprocess.call(
-    ['make', 
-     'install'],
+  if err == 0:
+    err = subprocess.call(
+    [ 'make', 
+      'install'],
     cwd=buildDir, env=myenv)
 

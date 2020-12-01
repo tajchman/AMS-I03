@@ -15,6 +15,7 @@ public:
   
   void init(callback_t f);
   void init();
+  void boundaries(callback_t f);
 
   double & operator() (int i,int j,int k) {
     return m_u[n2*i + n1*j + k];
@@ -35,6 +36,13 @@ private:
   std::vector<double> m_u;
   int m_n[3];
   Parameters & m_p;
+  int imin, jmin, kmin;
+  int imax, jmax, kmax;
+
+  double dx, dy, dz;
+  double xmin, ymin, zmin;
+  double xmax, ymax, zmax;
+
 };
 				   
 std::ostream & operator<< (std::ostream & f, const Values & v);

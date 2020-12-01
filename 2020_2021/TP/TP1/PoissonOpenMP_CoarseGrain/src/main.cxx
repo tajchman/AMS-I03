@@ -27,10 +27,9 @@ double cond_ini(double x, double y, double z)
 double force(double x, double y, double z)
 {
   if (x < 0.5)
-     return 0.0;
+    return 0.0;
   else
-     return 1.0;
-//     return sin(x-0.5) * exp(- y*y);
+    return sin(x-0.5) * exp(- y*y);
 }
 
 int main(int argc, char *argv[])
@@ -66,7 +65,7 @@ int main(int argc, char *argv[])
   {
   u_0.init(cond_ini);
 
-  #pragma omp single
+  #pragma omp master
   {
   C.setInput(u_0);
   T_init.stop();
@@ -74,6 +73,7 @@ int main(int argc, char *argv[])
             << T_init.elapsed() << " s\n" << std::endl;
   }
 
+  #pragma omp barrier
   for (int it=0; it < itMax; it++) {
     #pragma omp single
     {
@@ -82,11 +82,14 @@ int main(int argc, char *argv[])
       C.getOutput().plot(it);
       T_other.stop();
       }
-    C.initIteration();
     }
 
+    #pragma omp master
     T_calcul.start();
+
     C.iteration();
+
+    #pragma omp master
     T_calcul.stop();
 
     #pragma omp single

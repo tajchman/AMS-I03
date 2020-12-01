@@ -176,13 +176,12 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << 0 << "," << p.n(1) - 1  << "] x "
     << "[" << 0 << "," << p.n(2) - 1  << "]\n";
 
-  f 
 #ifdef _OPENMP
-    << p.nthreads() << " thread(s)\n"
+  f << p.nthreads() << " thread(s)\n";
 #endif
-    << "It. max :  " << p.itmax() << "\n"
+  f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
-    << "Results in " << p.resultPath() << std::endl;;
+    << "Results in " << p.resultPath() << std::endl;
 
   return f;
 }
