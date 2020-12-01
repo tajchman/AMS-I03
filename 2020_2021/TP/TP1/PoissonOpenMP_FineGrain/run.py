@@ -7,6 +7,7 @@ parser.add_argument('threadsMax', type=int)
 parser.add_argument('-c', '--compilers', default='gnu')
 parser.add_argument('-t', '--type', default='Release', 
                     choices=['Release', 'Debug'])
+parser.add_argument('rest', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
 base = os.path.join('.', 
@@ -19,9 +20,9 @@ resultsDir = os.path.join('.', 'results', args.compilers, args.type)
 codeSeq = os.path.join(base, 'PoissonSeq')
 codePar = os.path.join(base, 'PoissonOpenMP_FineGrain')
 
-subprocess.call([codeSeq, "path=" + resultsDir])
+subprocess.call([codeSeq, "path=" + resultsDir] + args.rest)
 for i in range(1,args.threadsMax+1):
-    subprocess.call([codePar, 'threads=' + str(i), "path=" + resultsDir])
+    subprocess.call([codePar, 'threads=' + str(i), "path=" + resultsDir] + args.rest)
 
 with open('./.run.py', 'w') as f:
     f.write('resultsDir = "' + resultsDir + '"\n')

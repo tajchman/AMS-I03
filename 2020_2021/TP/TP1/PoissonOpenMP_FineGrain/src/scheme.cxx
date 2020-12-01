@@ -22,7 +22,7 @@ Scheme::Scheme(Parameters &P, callback_t f) :
     m_di[i] = (m_n[i] < 2) ? 0 : 1;
   }
 
-   m_dt = m_P.dt();
+  m_dt = m_P.dt();
 }
 
 Scheme::~Scheme()
@@ -55,17 +55,17 @@ size_t Scheme::getDomainSize(int dim) const
 
 bool Scheme::iteration()
 {
-  int imin = m_P.imin(0) ;
-  int jmin = m_P.imin(1) ;
-  int kmin = m_P.imin(2) ;
+  m_duv = 0.0;
 
-  int imax = m_P.imax(0) ;
-  int jmax = m_P.imax(1) ;
-  int kmax = m_P.imax(2) ;
+  double du_sum = iteration_domaine(
+    m_P.imin(0), m_P.imax(0),
+    m_P.imin(1), m_P.imax(1),
+    m_P.imin(2), m_P.imax(1));
 
-  m_duv = iteration_domaine(imin, imax, jmin, jmax, kmin, kmax);
+
+  m_duv += du_sum;
+
   m_t += m_dt;
-
   m_u.swap(m_v);
 
   return true;
@@ -102,7 +102,7 @@ double Scheme::iteration_domaine(int imin, int imax,
 
         du = m_dt * (du1 + du2);
         m_v(i, j, k) = m_u(i, j, k) + du;
-          du_sum += du > 0 ? du : -du;
+        du_sum += du > 0 ? du : -du;
       }
 
     return du_sum;

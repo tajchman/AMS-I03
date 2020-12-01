@@ -1,11 +1,14 @@
 #include "values.hxx"
+#include "os.hxx"
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
-Values::Values(const Parameters & prm) : m_p(prm)
+Values::Values(Parameters & prm) : m_p(prm)
 {
   int i, nn = 1;
   for (i=0; i<3; i++)
@@ -20,7 +23,12 @@ Values::Values(const Parameters & prm) : m_p(prm)
 void Values::init()
 {
   int i, j, k;
+
+#ifdef _OPENMP
   int iThread = omp_get_thread_num();
+#else
+  int iThread = 0;
+#endif
 
   int imin = m_p.imin_local(0, iThread);
   int jmin = m_p.imin_local(1, iThread);
@@ -39,7 +47,11 @@ void Values::init()
 void Values::init(callback_t f)
 {
   int i, j, k;
+#ifdef _OPENMP
   int iThread = omp_get_thread_num();
+#else
+  int iThread = 0;
+#endif
 
   int imin = m_p.imin_local(0, iThread);
   int jmin = m_p.imin_local(1, iThread);
@@ -54,11 +66,52 @@ void Values::init(callback_t f)
   double ymin =  m_p.xmin(1);
   double zmin =  m_p.xmin(2);
 
-#pragma omp parallel for private(j,k)
   for (i=imin; i<imax; i++)
     for (j=jmin; j<jmax; j++)
       for (k=kmin; k<kmax; k++)
         operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+}
+
+void Values::boundaries(callback_t f)
+{
+  int i, j, k;
+
+  int imin = m_p.imin(0);
+  int jmin = m_p.imin(1);
+  int kmin = m_p.imin(2);
+
+  int imax = m_p.imax(0);
+  int jmax = m_p.imax(1);
+  int kmax = m_p.imax(2);
+
+  double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
+  double xmin =  m_p.xmin(0);
+  double ymin =  m_p.xmin(1);
+  double zmin =  m_p.xmin(2);
+  double xmax =  xmin + (imax-kmin) * dx;
+  double ymax =  ymin + (jmax-jmin) * dy;
+  double zmax =  zmin + (kmax-kmin) * dz;
+
+  for (j=jmin; j<jmax; j++)
+    for (k=kmin; k<kmax; k++) 
+    {
+      operator()(imin,   j, k) = f(xmin, ymin + j*dy, zmin + k*dz);
+      operator()(imax-1, j, k) = f(xmax, ymin + j*dy, zmin + k*dz);
+    }
+
+  for (i=imin; i<imax; i++)
+    for (k=kmin; k<kmax; k++)
+    {
+      operator()(i, jmin,   k) = f(xmin+ i*dx, ymin, zmin + k*dz);
+      operator()(i, jmax-1, k) = f(xmin+ i*dx, ymax, zmin + k*dz);
+    }
+
+  for (i=imin; i<imax; i++)
+    for (j=jmin; j<jmax; j++)
+    {
+      operator()(i, j, kmin  ) = f(xmin+ i*dx, ymin + j*dy, zmax);
+      operator()(i, j, kmax-1) = f(xmin+ i*dx, ymin + j*dy, zmax);
+    }
 }
 
 std::ostream & operator<< (std::ostream & f, const Values & v)
@@ -111,8 +164,15 @@ void Values::plot(int order) const {
   int jmax = m_p.imax(1);
   int kmax = m_p.imax(2);
 
-  s << m_p.resultPath() << "plot_"
-    << order << ".vtr";
+  s << m_p.resultPath();
+#ifdef _OPENMP
+  s << "/" << m_p.nthreads();
+#else
+  s << "/0";
+#endif
+  mkdir_p(s.str().c_str());
+  
+  s << "/plot_" << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";

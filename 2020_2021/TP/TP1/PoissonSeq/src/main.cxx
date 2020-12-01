@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <cmath>
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 
   Scheme C(Prm, force);
   C.initialize();
-
+  
   Values u_0(Prm);
   u_0.init(cond_ini);
   C.setInput(u_0);
@@ -84,7 +85,7 @@ int main(int argc, char *argv[])
     C.getOutput().plot(itMax);
     T_other.stop();
   }
-
+ 
   C.terminate();
 
   T_total.stop();
@@ -92,8 +93,13 @@ int main(int argc, char *argv[])
   std::cout << "\n" << std::setw(26) << "temps total" 
             << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-  std::ofstream f("temps_0.dat");
-  f << 0 << " " << T_total.elapsed() << std::endl;
+  int id = 0;
+
+  std::string s = Prm.resultPath();
+  s += "/temps_";
+  s += std::to_string(id) + ".dat";
+  std::ofstream f(s.c_str());
+  f << id << " " << T_total.elapsed() << std::endl;
 
   return 0;
 }

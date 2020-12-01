@@ -9,7 +9,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  add_compile_options(--inline)
+  add_compile_options(-DDEBUG --inline)
 endif()
 
 include(FindOpenMP)
@@ -49,3 +49,4 @@ target_compile_options(${VERSION} PUBLIC ${OpenMP_CXX_FLAGS})
 target_link_libraries(${VERSION} ${OpenMP_CXX_LIBRARIES})
 
 configure_file(version.hxx.in version.hxx @ONLY)
+

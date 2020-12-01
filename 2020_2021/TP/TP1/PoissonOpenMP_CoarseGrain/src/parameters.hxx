@@ -7,16 +7,14 @@
 #include <memory>
 #include <functional>
 
-#include "GetPot.hxx"
+#include "arguments.hxx"
 
 typedef std::function<double(double, double, double)> callback_t;
 
-class Parameters : public GetPot {
+class Parameters : public Arguments {
 public:
 
   Parameters(int argc, char **argv);
-  ~Parameters();
-  std::ostream & out();
   void info();
 
   int n(int i) const { return m_n[i]; }
@@ -26,10 +24,14 @@ public:
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
   int di(int i) const { return m_di[i]; }
-  int imin_local(int i, int iThread) const 
-      { return m_imin_local[i][iThread]; }
+  
+  int imin_local(int i, int iThread) const { 
+     return m_imin_local[i][iThread]; 
+  }
   int imax_local(int i, int iThread) const 
-      { return m_imax_local[i][iThread]; }
+  {
+     return m_imax_local[i][iThread]; 
+  }
 
   int itmax() const { return m_itmax; }
   double dt() const { return m_dt; }
@@ -44,14 +46,19 @@ public:
   void convection(bool b) { m_convection = b; }
   void diffusion(bool b) { m_diffusion = b; }
   
+#ifdef _OPENMP
   int nthreads() const { return m_nthreads; }
   void nthreads(int n) { m_nthreads = n; }
+#endif
   
 private:
-  std::ostream * m_out;
 
   std::string m_command;
+
+#ifdef _OPENMP
   int m_nthreads;
+#endif
+
   int m_n[3];
   double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3], m_di[3];

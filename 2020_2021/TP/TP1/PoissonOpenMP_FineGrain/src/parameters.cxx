@@ -96,7 +96,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-        m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+        m_imin[i]=1; m_imax[i] = 1; m_di[i] = 0;
       }
     }
   }

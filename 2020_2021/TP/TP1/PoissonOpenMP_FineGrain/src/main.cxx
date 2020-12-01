@@ -26,8 +26,7 @@ double force(double x, double y, double z)
      return 0.0;
   else
      return 1.0;
-
-     return sin(x-0.5) * exp(- y*y);
+//     return sin(x-0.5) * exp(- y*y);
 }
 
 int main(int argc, char *argv[])
@@ -50,20 +49,21 @@ int main(int argc, char *argv[])
 
   int itMax = Prm.itmax();
   int freq = Prm.freq();
-
+  
   T_init.start();
 
   Scheme C(Prm, force);
   C.initialize();
-  
+ 
   Values u_0(Prm);
+  u_0.boundaries(cond_ini);
   u_0.init(cond_ini);
   C.setInput(u_0);
   T_init.stop();
   std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
             << T_init.elapsed() << " s\n" << std::endl;
 
-  for (int it=0; it<itMax; it++) {
+  for (int it=0; it < itMax; it++) {
     if (freq > 0 && it % freq == 0) {
       T_other.start();
       C.getOutput().plot(it);
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     T_calcul.stop();
 
     std::cout << "iteration " << std::setw(5) << it 
-              << "   variation " << std::setw(10) << C.variation()
+              << "  variation " << std::setw(10) << C.variation()
               << "  temps calcul " << std::setw(10) << std::setprecision(6) 
               << T_calcul.elapsed() << " s"
               << std::endl; 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     C.getOutput().plot(itMax);
     T_other.stop();
   }
- 
+
   C.terminate();
 
   T_total.stop();

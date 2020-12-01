@@ -7,11 +7,11 @@
 #include <memory>
 #include <functional>
 
-#include "GetPot.hxx"
+#include "arguments.hxx"
 
 typedef std::function<double(double, double, double)> callback_t;
 
-class Parameters : public GetPot {
+class Parameters : public Arguments {
 public:
 
   Parameters(int argc, char **argv);
@@ -51,7 +51,6 @@ private:
   
   int m_freq;
 
-  bool m_out;
   std::string m_path;
   bool m_help;
 

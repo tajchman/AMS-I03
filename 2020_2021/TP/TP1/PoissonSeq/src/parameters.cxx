@@ -7,6 +7,7 @@
 #endif
 
 #include "os.hxx"
+#include "arguments.hxx"
 #include "parameters.hxx"
 #include <iostream>
 #include <sstream>
@@ -34,18 +35,16 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
+Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 {
-  m_out = false;
-  m_help = options_contain("h") or long_options_contain("help");
+  m_help = options_contains("h") or options_contains("help");
 
-  m_command = (*argv)[0];
-  m_help = (*this).search(2, "-h", "--help");
+  m_command = argv[0];
 
-  m_n[0] = (*this)("n", 400);
-  m_n[1] = (*this)("m", 400);
-  m_n[2] = (*this)("p", 400);
-  m_itmax = (*this)("it", 10);
+  m_n[0] = Get("n", 400);
+  m_n[1] = Get("m", 400);
+  m_n[2] = Get("p", 400);
+  m_itmax = Get("it", 10);
 
   double d = 0.1/(m_n[0]*m_n[0]);
   double dt_max = d;
@@ -54,15 +53,15 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   d = 0.1/(m_n[2]*m_n[2]);
   if (dt_max > d) dt_max = d;
  
-  m_dt = (*this)("dt", dt_max);
-  m_freq = (*this)("out", -1);
+  m_dt = Get("dt", dt_max);
+  m_freq = Get("out", -1);
 
-  m_convection = (*this)("convection", 0) == 1;
-  m_diffusion = (*this)("diffusion", 0) == 1;
+  m_convection = Get("convection", 0) == 1;
+  m_diffusion = Get("diffusion", 0) == 1;
   
   if (!m_help) {
  
-    m_path = (*this)("path", ".");
+    m_path = Get("path", ".");
     if (m_path != ".") 
        mkdir_p(m_path.c_str());
 

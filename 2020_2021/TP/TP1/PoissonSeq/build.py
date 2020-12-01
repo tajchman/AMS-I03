@@ -4,7 +4,7 @@ import os, sys, subprocess, argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--type', default='Release', 
-                    choices=['Debug', 'Release'])
+                    choices=['Debug', 'Release', 'RelWithDebInfo'])
 parser.add_argument('-c', '--compilers', default='gnu')
 args = parser.parse_args()
 
@@ -22,8 +22,8 @@ elif args.compilers == 'intel':
 
 base = os.getcwd()
 srcDir = os.path.join(base, 'src')
-buildDir = os.path.join(base, 'build', args.compilers)
-installDir = os.path.join(base, 'install', args.compilers)
+buildDir = os.path.join(base, 'build', args.compilers, args.type)
+installDir = os.path.join(base, 'install', args.compilers, args.type)
 
 if not os.path.exists(buildDir):
   os.makedirs(buildDir)

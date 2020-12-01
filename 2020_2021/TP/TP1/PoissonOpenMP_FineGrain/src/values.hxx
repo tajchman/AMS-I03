@@ -15,6 +15,7 @@ public:
   
   void init(callback_t f);
   void init();
+  void boundaries(callback_t f);
 
   double & operator() (int i,int j,int k) {
     return m_u[n2*i + n1*j + k];

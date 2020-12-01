@@ -10,6 +10,8 @@
    #include <omp.h>
 #endif
 
+#include "os.hxx"
+#include "arguments.hxx"
 #include "parameters.hxx"
 #include <iostream>
 #include <sstream>
@@ -37,33 +39,31 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
+Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 {
-  m_out = NULL;
-  m_help = options_contain("h") or long_options_contain("help");
+  m_help = options_contains("h") or options_contains("help");
 
-  m_command = (*argv)[0];
-  m_help = (*this).search(2, "-h", "--help");
+  m_command = argv[0];
 
-  int n_threads_int = -1, nthreads_ext = -1;
-  m_nthreads = (*this)("threads", -1);
-  if (m_nthreads < 0) {
 #if defined(_OPENMP)
+  m_nthreads = Get("threads", 0);
+
+  if (m_nthreads<1) {
     const char * omp_var = std::getenv("OMP_NUM_THREADS");
     if (omp_var) m_nthreads = strtol(omp_var, NULL, 10);
-#endif
+    m_nthreads = Get("threads", m_nthreads);
   }
 
-#if defined(_OPENMP)
+  if (m_nthreads<1)
+    m_nthreads=1;
+
   omp_set_num_threads(m_nthreads);
 #endif
 
-  m_nthreads = (*this)("threads", 1);
-
-  m_n[0] = (*this)("n", 400);
-  m_n[1] = (*this)("m", 400);
-  m_n[2] = (*this)("p", 400);
-  m_itmax = (*this)("it", 10);
+  m_n[0] = Get("n", 400);
+  m_n[1] = Get("m", 400);
+  m_n[2] = Get("p", 400);
+  m_itmax = Get("it", 10);
 
   double d = 0.1/(m_n[0]*m_n[0]);
   double dt_max = d;
@@ -72,14 +72,18 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
   d = 0.1/(m_n[2]*m_n[2]);
   if (dt_max > d) dt_max = d;
  
-  m_dt = (*this)("dt", dt_max);
-  m_freq = (*this)("out", -1);
+  m_dt = Get("dt", dt_max);
+  m_freq = Get("out", -1);
 
-  m_convection = (*this)("convection", 0) == 1;
-  m_diffusion = (*this)("diffusion", 0) == 1;
+  m_convection = Get("convection", 0) == 1;
+  m_diffusion = Get("diffusion", 0) == 1;
   
   if (!m_help) {
  
+    m_path = Get("path", ".");
+    if (m_path != ".") 
+       mkdir_p(m_path.c_str());
+
     if (m_dt > dt_max)
       std::cerr << "Warning : provided dt (" << m_dt
                 << ") is greater then the recommended maximum (" <<  dt_max
@@ -92,44 +96,50 @@ Parameters::Parameters(int argc, char ** argv) : GetPot(argc, argv)
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
       if (m_n[i] < 2) {
-        m_imin[i]=0; m_imax[i] = 1; m_di[i] = 0;
+        m_imin[i]=1; m_imax[i] = 1; m_di[i] = 0;
       }
     }
   }
-  
-  int idecoupe = -1, maxn = -1, iT;
-  for (int i=0; i<3; i++) {
-    m_imin_local[i].resize(m_nthreads);
-    m_imax_local[i].resize(m_nthreads);
+ 
+  #ifdef _OPENMP
+  int nt = m_nthreads;
+  #else
+  int nt = 1;
+  #endif
 
-    for (iT = 0; iT < m_nthreads; iT++) 
+  int idecoupe = -1, iT, maxn=-1;
+  for (int i=0; i<3; i++) {
+    m_imin_local[i].resize(nt);
+    m_imax_local[i].resize(nt);
+
+    for (iT = 0; iT < nt; iT++) 
     {
        m_imin_local[i][iT] = m_imin[i];
        m_imax_local[i][iT] = m_imax[i];
     }
     if (m_imax[i] - m_imin[i] > maxn) {
-      maxn =  m_imax[i] - m_imin[i];
       idecoupe = i;
+      maxn = m_imax[i] - m_imin[i];
     }
   }
 
-  int di = (m_imax[idecoupe] - m_imin[idecoupe])/m_nthreads;
-  if (di * m_nthreads < m_imax[idecoupe] - m_imin[idecoupe])
-     di++;
+  maxn++;
+  int di = maxn/nt;
   
-  for (iT=0; iT < m_nthreads;iT++) {
-    int i0 = m_imin[idecoupe] + iT * di;
-    int i1 = i0 + di;
+  int i0 = 0, i1 = m_imin[idecoupe];
+  for (iT=0; iT < nt;iT++) {
+    i0 = i1;
+    i1 = i0 + di;
     m_imin_local[idecoupe][iT] = i0;
     m_imax_local[idecoupe][iT] = i1;
   }
-  m_imax_local[idecoupe][m_nthreads-1] = m_imax[idecoupe];
+  m_imax_local[idecoupe][nt-1] = m_imax[idecoupe];
  
 #ifdef DEBUG
-  for (iT=0; iT<m_nthreads; iT++) {
+  for (iT=0; iT<nt; iT++) {
     std::cerr << "Thread " << iT;
     for (int i=0; i < 3; i++)
-      std::cerr<< "  (" << m_imin_local[i][iT] << "," 
+      std::cerr<< "  [" << m_imin_local[i][iT] << "," 
                << m_imax_local[i][iT] <<")";
     std::cerr << std::endl;
   }
@@ -142,7 +152,9 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+#ifdef _OPENMP
               << "threads=<int> : nombre de threads OpenMP"
+#endif
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n=<int>       : number of internal points in the X direction (default: 400)\n"
@@ -151,16 +163,10 @@ bool Parameters::help()
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
               << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"
-              << "                (default : no output)\n\n";
+              << "                (default : no output)\n"
+              << "path=<string> : results directory (default : '.')\n\n";
   }
   return m_help;
-}
-
-Parameters::~Parameters()
-{
-  if (m_out) {
-    delete m_out;
-  }
 }
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
@@ -168,39 +174,16 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
   f << "Domain :   "
     << "[" << 0 << "," << p.n(0) - 1  << "] x "
     << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]"
-    << "\n\n";
+    << "[" << 0 << "," << p.n(2) - 1  << "]\n";
 
-  f << p.nthreads() << " thread(s)\n"
-    << "It. max : " << p.itmax() << "\n"
-    << "Dt :      " << p.dt() << "\n";
+  f 
+#ifdef _OPENMP
+    << p.nthreads() << " thread(s)\n"
+#endif
+    << "It. max :  " << p.itmax() << "\n"
+    << "Dt :       " << p.dt() << "\n"
+    << "Results in " << p.resultPath() << std::endl;;
 
   return f;
 }
 
-std::ostream & Parameters::out()
-{
-  if (not m_out) {
-
-    char buffer[256];
-    stime(buffer, 256);
-
-    std::ostringstream pth;
-    pth << "results"
-        << "_n_" << m_n[0] << "x" << m_n[1] << "x" << m_n[2]
-        << "_" << buffer << "/";
-    m_path = pth.str();
-
-#if defined(_WIN32)
-    (void) _mkdir(m_path.c_str());
-#else
-    mkdir(m_path.c_str(), 0777);
-#endif
-
-
-    std::ostringstream s;
-    s << m_path << "/out.txt";
-    m_out = new std::ofstream(s.str().c_str());
-  }
-  return *m_out;
-}

@@ -11,28 +11,27 @@
 #include <vector>
 #include "values.hxx"
 #include "parameters.hxx"
-#include "timer.hxx"
 
 class Scheme {
 
 public:
-  Scheme(const Parameters &P);
+  Scheme(Parameters &P, callback_t f);
   ~Scheme();
   size_t getDomainSize(int dim) const;
 
-  void initialize(callback_t f);
   double present();
 
   bool iteration();
   bool solve(unsigned int nSteps);
-  double variation();
+  double variation() { return m_duv; }
+
+  void initialize();
   void terminate();
+
   const Values & getOutput();
   void setInput(const Values & u);
-  void save(const char * /*fName*/);
+  void save(const char * fName);
 
-  Timer & timer(int k) { return m_timers[k]; }
-  int ntimers() { return m_timers.size();}
   std::string codeName;
 
 protected:
@@ -48,11 +47,8 @@ protected:
 
   Values m_u, m_v;
   double m_duv;
-  const Parameters &m_P;
+  Parameters &m_P;
   callback_t m_f;
-
-  std::vector<Timer> m_timers;
-  int kStep;
 };
 
 #endif /* SCHEME_HXX_ */

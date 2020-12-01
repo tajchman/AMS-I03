@@ -9,12 +9,13 @@ class Values {
 
 public:
 
-  Values(const Parameters & p);
+  Values(Parameters & p);
   virtual ~Values() {}
   void operator= (const Values &);
   
   void init(callback_t f);
   void init();
+  void boundaries(callback_t f);
 
   double & operator() (int i,int j,int k) {
     return m_u[n2*i + n1*j + k];
@@ -34,7 +35,7 @@ private:
   int n1, n2;
   std::vector<double> m_u;
   int m_n[3];
-  const Parameters & m_p;
+  Parameters & m_p;
 };
 				   
 std::ostream & operator<< (std::ostream & f, const Values & v);

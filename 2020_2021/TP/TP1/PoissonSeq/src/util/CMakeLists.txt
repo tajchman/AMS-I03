@@ -3,4 +3,5 @@ add_library(util
       keyPress.cxx 
       pause.cxx 
       timer.cxx
-      os.cxx)
+      os.cxx
+      arguments.cxx)

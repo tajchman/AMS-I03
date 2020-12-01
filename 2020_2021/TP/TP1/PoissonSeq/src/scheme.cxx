@@ -55,15 +55,11 @@ size_t Scheme::getDomainSize(int dim) const
 
 bool Scheme::iteration()
 {
-  int imin = m_P.imin(0) ;
-  int jmin = m_P.imin(1) ;
-  int kmin = m_P.imin(2) ;
 
-  int imax = m_P.imax(0) ;
-  int jmax = m_P.imax(1) ;
-  int kmax = m_P.imax(2) ;
-
-  m_duv = iteration_domaine(imin, imax, jmin, jmax, kmin, kmax);
+  m_duv = iteration_domaine(
+      m_P.imin(0), m_P.imax(0),
+      m_P.imin(1), m_P.imax(1),
+      m_P.imin(2), m_P.imax(1));
   m_t += m_dt;
 
   m_u.swap(m_v);

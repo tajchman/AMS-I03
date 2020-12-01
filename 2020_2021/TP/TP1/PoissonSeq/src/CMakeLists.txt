@@ -8,6 +8,10 @@ project(${VERSION})
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  add_compile_options(-DDEBUG --inline)
+endif()
+
 add_subdirectory(util)
 
 include_directories(
