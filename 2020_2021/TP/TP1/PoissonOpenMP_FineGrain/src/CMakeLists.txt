@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 
-get_filename_component(BASE_DIR ${CMAKE_SOURCE_DIR} PATH)
-get_filename_component(VERSION ${BASE_DIR} NAME)
+project(FineGrain)
 
-project(${VERSION})
+if (ENABLE_OPENMP)
+  find_package(OpenMP REQUIRED)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+  set(VERSION PoissonOpenMP_FineGrain)
+else()
+  set(VERSION PoissonSeq)
+endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -12,8 +19,6 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_compile_options(-DDEBUG --inline)
 endif()
 
-include(FindOpenMP)
-
 add_subdirectory(util)
 
 include_directories(
@@ -21,12 +26,9 @@ include_directories(
   ${CMAKE_BUILD_DIR}
   )
 
-set(REFERENCE PoissonSeq)
+configure_file(version.hxx.in version.hxx @ONLY)
 
-foreach (CODE ${VERSION} ${REFERENCE})
-
-  add_executable(
-    ${CODE} 
+set(SRCS
     main.cxx
     parameters.cxx
     parameters.hxx
@@ -36,17 +38,13 @@ foreach (CODE ${VERSION} ${REFERENCE})
     scheme.hxx
   )
 
-  target_link_libraries(
-    ${CODE}
-    util
-  )
+add_executable(
+  ${VERSION} 
+  ${SRCS})
 
-  install(TARGETS ${CODE} DESTINATION .)
+target_link_libraries(
+  ${VERSION}
+  util)
 
-endforeach()
-
-target_compile_options(${VERSION} PUBLIC ${OpenMP_CXX_FLAGS})
-target_link_libraries(${VERSION} ${OpenMP_CXX_LIBRARIES})
-
-configure_file(version.hxx.in version.hxx @ONLY)
+ install(TARGETS ${VERSION} DESTINATION .)
 
