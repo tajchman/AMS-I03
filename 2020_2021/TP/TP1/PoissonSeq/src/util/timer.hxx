@@ -33,12 +33,11 @@ public:
   }
   
   void stop() {
-    if (m_running == false) {
+    if (m_running) {
       std::chrono::duration<double> diff 
          = std::chrono::high_resolution_clock::now() - m_start;
 
       m_elapsed += diff.count();
-      std::cout << m_elapsed << std::endl;
       m_running = false;
     }
   }
