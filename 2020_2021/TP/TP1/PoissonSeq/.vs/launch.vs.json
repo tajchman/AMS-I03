@@ -6,7 +6,8 @@
       "type": "default",
       "project": "install/intel/Debug/PoissonSeq.exe",
       "projectTarget": "",
-      "name": "PoissonSeq.exe"
+      "name": "PoissonSeq.exe",
+      "args": ["n=20"]
     }
   ]
 }
