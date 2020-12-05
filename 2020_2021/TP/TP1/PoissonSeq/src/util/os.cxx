@@ -1,14 +1,28 @@
 
 
-#include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
 #include "os.hxx"
 
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
+
 #define PATH_MAX_STRING_SIZE 256
 
+int mkdir_portable(const char *path)
+{
+#if defined(_WIN32)
+  return _mkdir(path);
+#else 
+  return mkdir(path, 0755);
+#endif
+}
+
 /* recursive mkdir */
-int mkdir_p(const char *dir, const mode_t mode) {
+int mkdir_p(const char *dir) {
   
     char tmp[PATH_MAX_STRING_SIZE];
     char *p = NULL;
@@ -30,7 +44,7 @@ int mkdir_p(const char *dir, const mode_t mode) {
 
     /* check if path exists and is a directory */
     if (stat (tmp, &sb) == 0) {
-        if (S_ISDIR (sb.st_mode)) {
+        if (sb.st_mode & S_IFDIR) {
             return 0;
         }
     }
@@ -42,10 +56,11 @@ int mkdir_p(const char *dir, const mode_t mode) {
             /* test path */
             if (stat(tmp, &sb) != 0) {
                 /* path does not exist - create directory */
-                if (mkdir(tmp, mode) < 0) {
+                if (mkdir_portable(tmp) < 0) {
                     return -1;
                 }
-            } else if (!S_ISDIR(sb.st_mode)) {
+            }
+            else if (!(sb.st_mode & S_IFDIR)) {
                 /* not a directory */
                 return -1;
             }
@@ -55,12 +70,13 @@ int mkdir_p(const char *dir, const mode_t mode) {
     /* test path */
     if (stat(tmp, &sb) != 0) {
         /* path does not exist - create directory */
-        if (mkdir(tmp, mode) < 0) {
+        if (mkdir_portable(tmp) < 0) {
             return -1;
         }
-    } else if (!S_ISDIR(sb.st_mode)) {
+        else if (!(sb.st_mode & S_IFDIR)) {
         /* not a directory */
         return -1;
+        }
     }
     return 0;
 }

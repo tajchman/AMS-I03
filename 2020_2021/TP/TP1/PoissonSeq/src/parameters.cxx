@@ -37,7 +37,7 @@ void stime(char * buffer, int size)
 
 Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 {
-  m_help = options_contains("h") or options_contains("help");
+  m_help = options_contains("h") || options_contains("help");
 
   m_command = argv[0];
 
