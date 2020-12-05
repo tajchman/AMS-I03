@@ -17,10 +17,6 @@ Première exécution de la version parallèle :
 
   Taper :
 
-    ./ex_seq_2_1.exe 9
-
-  Taper :
-
     ./ex_seq_2_1.exe n
 
     où n est un entier positif (taille des vecteurs)

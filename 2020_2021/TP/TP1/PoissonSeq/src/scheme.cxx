@@ -61,8 +61,8 @@ bool Scheme::iteration()
       m_P.imin(0), m_P.imax(0),
       m_P.imin(1), m_P.imax(1),
       m_P.imin(2), m_P.imax(1));
-  m_t += m_dt;
 
+  m_t += m_dt;
   m_u.swap(m_v);
 
   return true;

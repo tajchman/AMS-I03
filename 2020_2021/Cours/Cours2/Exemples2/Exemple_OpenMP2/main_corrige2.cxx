@@ -10,12 +10,12 @@ std::string prefix = " Ici le thread " ;
 # pragma omp parallel
   {
     int iTh ;
-# ifdef _OPENMP
+#ifdef _OPENMP
     iTh = omp_get_thread_num () ;
-# else
+#else
     iTh = 0;
-# endif
-    std::cerr << prefix << iTh << std::endl ;
+#endif
+    std::cout << prefix << iTh << std::endl ;
   }
   return 0;
 }

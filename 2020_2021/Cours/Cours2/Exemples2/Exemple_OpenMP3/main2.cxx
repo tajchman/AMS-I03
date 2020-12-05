@@ -4,7 +4,7 @@
 #include "timer.hxx"
 
 int main(int argc, char **argv) {
-  
+
   Timer T_total, T_init, T_calcul, T_verif;
   T_total.start();
   

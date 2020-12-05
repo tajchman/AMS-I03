@@ -1,6 +1,7 @@
 #include "scheme.hxx"
 #include "parameters.hxx"
 #include "version.hxx"
+#include <cmath>
 
 #include <sstream>
 #include <iomanip>
@@ -100,9 +101,9 @@ double Scheme::iteration_domaine(int imin, int imax,
     int iThread = 0;
 #endif
     std::cerr << "iteration Thread " << iThread 
-              << "   [" << i0 << "," << i1 <<")"
-              << " x [" << j0 << "," << j1 <<")"
-              << " x [" << k0 << "," << k1 <<")" 
+              << "   [" << imin << "," << imax <<")"
+              << " x [" << jmin << "," << jmax <<")"
+              << " x [" << kmin << "," << kmax <<")" 
               << std::endl;
   }
 #endif
@@ -118,6 +119,7 @@ double Scheme::iteration_domaine(int imin, int imax,
   double du, du1, du2, du_sum = 0.0;
   
 
+  double x, y, z;
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
@@ -126,10 +128,13 @@ double Scheme::iteration_domaine(int imin, int imax,
             + (-2*m_u(i,j,k) + m_u(i,j+dj,k) + m_u(i,j-dj,k))*lam_y
             + (-2*m_u(i,j,k) + m_u(i,j,k+dk) + m_u(i,j,k-dk))*lam_z;
 
-        double x = xmin + i*m_dx[0];
-        double y = ymin + j*m_dx[1];
-        double z = zmin + k*m_dx[2];
-        du2 = m_f(x,y,z);
+        x = xmin + i*m_dx[0];
+        y = ymin + j*m_dx[1];
+        z = zmin + k*m_dx[2];
+        //du2 = (x < 0.5) ? 0.0 : sin(x-0.5) * exp(- y*y);
+        du2 = 0.0;
+        sin(4.);
+        //du2 = m_f(x,y,z);
 
         du = m_dt * (du1 + du2);
         m_v(i, j, k) = m_u(i, j, k) + du;

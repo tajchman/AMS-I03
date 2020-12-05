@@ -7,13 +7,13 @@ int main() {
   
   std::string prefix = " Ici le thread " ;
   int iTh ;
-# pragma omp parallel
+#pragma omp parallel
   {
-# ifdef _OPENMP
+#ifdef _OPENMP
     iTh = omp_get_thread_num () ;
-# else
+#else
     iTh = 0;
-# endif
+#endif
     std::cout << prefix << iTh << std::endl ;
   }
   return 0;

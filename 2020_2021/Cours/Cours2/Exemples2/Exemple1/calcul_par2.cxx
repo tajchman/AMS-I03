@@ -10,7 +10,7 @@ double calcul_par2(std::vector<double> & v,
                  const std::vector<double> & v_seq
                 )
 {
-  size_t i, N = u.size(), N0 = 0, N1=N/3, N2=2*N/3, N3=N;
+  size_t N = u.size(), N0 = 0, N1=N/3, N2=2*N/3, N3=N;
 
   Timer T;
   T.start();
@@ -19,16 +19,19 @@ double calcul_par2(std::vector<double> & v,
   {
   #pragma omp section
     {
+      int i;
       for (i = N0; i<N1; i++)
         v[i] = f(a, u[i]);
     }
   #pragma omp section
     {
+      int i;
       for (i = N1; i<N2; i++)
         v[i] = f(a, u[i]);
     }
   #pragma omp section
     {
+      int i;
       for (i = N2; i<N3; i++)
         v[i] = f(a, u[i]);
     }

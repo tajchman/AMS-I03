@@ -42,11 +42,25 @@ Values::Values(Parameters & prm) : m_p(prm)
 void Values::init()
 {
   int i, j, k;
+#ifdef _OPENMP
+  int iThread = omp_get_thread_num();
+#else
+  int iThread = 0;
+#endif
 
-  #pragma omp parallel for private(j,k)
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-      for (k=kmin; k<kmax; k++)
+  int imin_thread = m_p.imin_local(0, iThread);
+  int jmin_thread = m_p.imin_local(1, iThread);
+  int kmin_thread = m_p.imin_local(2, iThread);
+
+  int imax_thread = m_p.imax_local(0, iThread);
+  int jmax_thread = m_p.imax_local(1, iThread);
+  int kmax_thread = m_p.imax_local(2, iThread);
+
+  double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
+
+  for (i=imin_thread; i<imax_thread; i++)
+    for (j=jmin_thread; j<jmax_thread; j++)
+      for (k=kmin_thread; k<kmax_thread; k++)
         operator()(i,j,k) = 0.0;
 }
 

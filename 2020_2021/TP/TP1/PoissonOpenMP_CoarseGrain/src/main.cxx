@@ -64,8 +64,9 @@ int main(int argc, char *argv[])
 #pragma omp parallel 
   {
   u_0.init(cond_ini);
+  #pragma omp barrier
 
-  #pragma omp master
+  #pragma omp single
   {
   C.setInput(u_0);
   T_init.stop();
@@ -73,27 +74,25 @@ int main(int argc, char *argv[])
             << T_init.elapsed() << " s\n" << std::endl;
   }
 
-  #pragma omp barrier
   for (int it=0; it < itMax; it++) {
+    if (freq > 0 && it % freq == 0)
     #pragma omp single
     {
-    if (freq > 0 && it % freq == 0) {
       T_other.start();
       C.getOutput().plot(it);
       T_other.stop();
-      }
     }
 
     #pragma omp master
     T_calcul.start();
 
+    #pragma omp barrier
     C.iteration();
-
-    #pragma omp master
-    T_calcul.stop();
+    #pragma omp barrier
 
     #pragma omp single
     {
+    T_calcul.stop();
     std::cout << "iteration " << std::setw(5) << it 
               << "  variation " << std::setw(10) << C.variation()
               << "  temps calcul " << std::setw(10) << std::setprecision(6) 
