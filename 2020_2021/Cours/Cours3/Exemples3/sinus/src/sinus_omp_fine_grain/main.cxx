@@ -9,7 +9,7 @@
 #include "sin.hxx"
 #include "save.hxx"
 #include "timer.hxx"
-#include "GetPot.hxx"
+#include "arguments.hxx"
 
 int main(int argc, char **argv)
 {
@@ -17,10 +17,10 @@ int main(int argc, char **argv)
   T_total.start();
   
   {
-    GetPot G(argc, argv);
-    size_t n = G("n", 2000);
-    size_t imax = G("imax", IMAX);
-    int nThreads = G("threads", omp_get_max_threads());
+    Arguments A(argc, argv);
+    size_t n = A.Get("n", 2000);
+    size_t imax = A.Get("imax", IMAX);
+    int nThreads = A.Get("threads", omp_get_max_threads());
 
     set_terms(imax);
      

@@ -6,7 +6,7 @@ set(CMAKE_RULE_MESSAGES OFF)
 
 set(code "sinus_seq.exe")
 
-add_executable(${code} main.cxx sin.cxx calcul.cxx stat.cxx save.cxx)
+add_executable(${code} main.cxx arguments.cxx sin.cxx calcul.cxx stat.cxx save.cxx)
 
-
+install(TARGETS ${code} DESTINATION .)
 

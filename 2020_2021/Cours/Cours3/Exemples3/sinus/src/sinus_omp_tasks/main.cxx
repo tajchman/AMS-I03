@@ -2,15 +2,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <omp.h>
 
 #include "calcul.hxx"
 #include "stat.hxx"
 #include "sin.hxx"
 #include "save.hxx"
 #include "timer.hxx"
-#include "GetPot.hxx"
-#include <iostream>
-#include <omp.h>
+#include "arguments.hxx"
 
 int main(int argc, char **argv)
 {
@@ -18,11 +17,11 @@ int main(int argc, char **argv)
   T_total.start();
   
   {
-    GetPot G(argc, argv);
-    size_t n = G("n", 2000);
-    size_t imax = G("imax", IMAX);
-    int nThreads = G("threads", omp_get_max_threads());
-    int nTasks = G("tasks", nThreads * 10);
+    Arguments A(argc, argv);
+    size_t n = A.Get("n", 2000);
+    size_t imax = A.Get("imax", IMAX);
+    int nThreads = A.Get("threads", omp_get_max_threads());
+    int nTasks = A.Get("tasks", nThreads * 10);
     set_terms(imax);
      
     std::cout << "\nn       : " << n

@@ -53,13 +53,13 @@ for d in ['seq',
   if not os.path.exists(buildDir):
     os.makedirs(buildDir)
 
-  if not d == 'seq':
-    cmake_params.append('-DENABLE_OPENMP=ON')
-
   configureCmd = ['cmake'] + cmake_params + [srcDir]
   print(' '.join(configureCmd))
-  err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
 
-  if err == 0:
-     err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+  err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
+  if not err == 0:
+    break
+  err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+  if not err == 0:
+    break
 
