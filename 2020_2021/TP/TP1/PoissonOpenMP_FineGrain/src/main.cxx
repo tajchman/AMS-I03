@@ -23,7 +23,7 @@ double cond_ini(double x, double y, double z)
 
 double force(double x, double y, double z)
 {
-  if (x < 0.5)
+  if (x < 0.3)
     return 0.0;
   else
     return sin(x-0.5) * exp(- y*y);

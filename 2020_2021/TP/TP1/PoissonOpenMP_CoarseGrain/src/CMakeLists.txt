@@ -46,8 +46,8 @@ set(SRCS
   )
 
 add_executable(
-  ${VERSION} 
+  ${VERSION}.exe
   ${SRCS})
 
-install(TARGETS ${VERSION} DESTINATION .)
+install(TARGETS ${VERSION}.exe DESTINATION .)
 
