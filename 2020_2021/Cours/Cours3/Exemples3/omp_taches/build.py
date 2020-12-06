@@ -21,8 +21,8 @@ elif args.compilers == 'clang':
   myenv['CXX'] = 'clang++'
 elif args.compilers == 'msvc':
   compileCmd = ['ninja', 'install']
-  myenv['CC'] = 'cl.exe'
-  myenv['CXX'] = 'cl.exe'
+  myenv['CC'] = 'cl'
+  myenv['CXX'] = 'cl'
 elif args.compilers == 'intel':
   if plat == 'Windows':
     compileCmd = ['ninja', 'install']
@@ -34,32 +34,25 @@ elif args.compilers == 'intel':
     myenv['CXX'] = 'icpc'
 
 base = os.getcwd()
+srcDir = os.path.join(base, 'src')
+buildDir = os.path.join(base, 'build')
+installDir = os.path.join(base, 'install')
 
-for d in ['seq', 
-          'omp_fine_grain', 
-          'omp_coarse_grain',
-          'omp_adaptatif',
-          'omp_tasks']:
-  srcDir = os.path.join(base, 'src', 'sinus_' + d)
-  buildDir = os.path.join(base, 'build', 'sinus_' + d)
-  installDir = os.path.join(base, 'install')
+cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
 
-  cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
+if plat == 'Windows':
+  cmake_params.append('-GNinja')
+cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
 
-  if plat == 'Windows':
-    cmake_params.append('-GNinja')
-  cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
+if not os.path.exists(buildDir):
+  os.makedirs(buildDir)
 
-  if not os.path.exists(buildDir):
-    os.makedirs(buildDir)
+cmake_params.append('-DENABLE_OPENMP=ON')
 
-  if not d == 'seq':
-    cmake_params.append('-DENABLE_OPENMP=ON')
+configureCmd = ['cmake'] + cmake_params + [srcDir]
+print(' '.join(configureCmd))
+err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
 
-  configureCmd = ['cmake'] + cmake_params + [srcDir]
-  print(' '.join(configureCmd))
-  err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
-
-  if err == 0:
-     err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+if err == 0:
+  err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
 
