@@ -64,7 +64,8 @@ int main(int argc, char *argv[])
             << T_init.elapsed() << " s\n" << std::endl;
 
   for (int it=0; it < itMax; it++) {
-    if (freq > 0 && it % freq == 0) {
+    if (freq > 0 && it % freq == 0)
+    {
       T_other.start();
       C.getOutput().plot(it);
       T_other.stop();
