@@ -45,11 +45,16 @@ class grObject:
 
     def setPrefix(self, args):
         s = ""
-        for attr in ["linewidth", 
+        for attr in ["linewidth",
+                     "braceWidth",
+                     "braceWidthInner",
+                     "braceWidthOuter",
+                     "ref",
                      "linestyle", 
                      "fillcolor", 
                      "fillstyle", 
-                     "linecolor", 
+                     "linecolor",
+                     "dash", 
                      "arrowsize",
                      "framearc",
                      "orientation",
@@ -57,7 +62,11 @@ class grObject:
                      "dotscale",
                      "arrowinset",
                      "arrowsize",
-                     "showpoints"]:
+                     "showpoints",
+                     "textjustify",
+                     "angle",
+                     "opacity"
+        ]:
             if attr in args:
                 if s == "":
                     s += "["
@@ -73,7 +82,7 @@ class grObject:
             s += "]"
         if "arrow" in args:
             s += "{" + str(args["arrow"]) + "}"
-        self.prefix = s;
+        self.prefix = s
         pass
     
     def listOfPoints(self, p):
@@ -91,15 +100,15 @@ class grObject:
             c1 += q[1]
             pass
         if len(p) > 0:
-            c0 /= len(p);
-            c1 /= len(p);
+            c0 /= len(p)
+            c1 /= len(p)
             pass
         return Point(c0, c1)
 
     def __str__(self):
-        s = self.name;
-        s += self.prefix;
-        s += self.body;
+        s = self.name
+        s += self.prefix
+        s += self.body
         return s
 
     pass
@@ -110,8 +119,20 @@ class Line(grObject):
         self.name = "\\psline"
         self.setPrefix(args)
         p = [p1, p2]
-        self.body = self.listOfPoints(p);
-        self.center = self.getCenter(p);
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
+        pass
+    pass
+
+class Brace(grObject):
+    def __init__(self, p1, p2, text, **args):
+        grObject.__init__(self)
+        self.name = "\\psbrace"
+        self.setPrefix(args)
+        p = [p1, p2]
+        self.body = self.listOfPoints(p) + \
+            "{" + text + "}"
+        self.center = self.getCenter(p)
         pass
     pass
 
@@ -120,8 +141,8 @@ class Lines(grObject):
         grObject.__init__(self)
         self.name = "\\psline"
         self.setPrefix(args)
-        self.body = self.listOfPoints(p);
-        self.center = self.getCenter(p);
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
         pass
     pass
 
@@ -130,8 +151,8 @@ class Polygon(grObject):
         grObject.__init__(self)
         self.name = "\\pspolygon"
         self.setPrefix(args)
-        self.body = self.listOfPoints(p);
-        self.center = self.getCenter(p);
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
         pass
     pass
 
@@ -140,8 +161,8 @@ class Circle(grObject):
         grObject.__init__(self)
         self.name = "\\pscircle"
         self.setPrefix(args)
-        self.body = self.listOfPoints([c]) + "{" + str(r) + "}";
-        self.center = c;
+        self.body = self.listOfPoints([c]) + "{" + str(r) + "}"
+        self.center = c
         pass
     pass
 
@@ -150,19 +171,62 @@ class Dot(grObject):
         grObject.__init__(self)
         self.name = "\\psdot"
         self.setPrefix(args)
-        self.body = self.listOfPoints([c]);
-        self.center = c;
+        self.body = self.listOfPoints([c])
+        self.center = c
         pass
     pass
 
 class Text(grObject):
     def __init__(self, p, text, **args):
         grObject.__init__(self)
-        self.name = "\\rput[Bl]"
+        j = "l"
+        try:
+            j = args["justify"]
+            del args["justify"]
+        except:
+            pass
+            
+        o = "0"
+        try:
+            o = str(args["angle"])
+            del args["angle"]
+        except:
+            pass
+
+        self.name = "\\rput[b" + j + "]{" + o + "}"
+
         self.setPrefix(args)
-        self.center = p;
-        self.body = "{0}" + self.listOfPoints([p]) + \
+        self.center = p
+
+        self.body = self.listOfPoints([p]) + \
+            "{" + text + "}"
+        pass
+    pass
+
+class TextFront(grObject):
+    def __init__(self, p, text, **args):
+        grObject.__init__(self)
+        j = "l"
+        try:
+            j = args["justify"]
+            del args["justify"]
+        except:
+            pass
+            
+        o = "0"
+        try:
+            o = str(args["angle"])
+            del args["angle"]
+        except:
+            pass
+
+        self.name = "\\rput[b" + j + "]{" + o + "}"
+
+        self.setPrefix(args)
+        self.center = p
+        self.body = self.listOfPoints([p]) + \
             "{\psframebox*{" + text + "}}"
+
         pass
     pass
 
@@ -172,8 +236,19 @@ class Rectangle(grObject):
         self.name = "\\psframe"
         self.setPrefix(args)
         p = [p1, p2]
-        self.body = self.listOfPoints(p);
-        self.center = self.getCenter(p);
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
+        pass
+    pass
+    
+class RectangleText(grObject):
+    def __init__(self, p1, p2, text, **args):
+        grObject.__init__(self)
+        self.name = "\\psframe"
+        self.setPrefix(args)
+        p = [p1, p2]
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
         pass
     pass
     
@@ -183,8 +258,8 @@ class Arc(grObject):
         self.name = "\\psarc"
         self.setPrefix(args)
         self.body = self.listOfPoints([c]) \
-            + "{" + str(r) + "}{" + str(a0) + "}{" + str(a1) + "}";
-        self.center = c;
+            + "{" + str(r) + "}{" + str(a0) + "}{" + str(a1) + "}"
+        self.center = c
         pass
     pass
   
@@ -195,8 +270,8 @@ class Curve(grObject):
         self.name = "\\pscurve"
         self.setPrefix(args)
         p = [p1, p2, p3, p4]
-        self.body = self.listOfPoints(p);
-        self.center = self.getCenter(p);
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
         pass
     pass
   
@@ -206,8 +281,8 @@ class Bezier(grObject):
         self.name = "\\psbezier"
         self.setPrefix(args)
         p = [p1, p2, p3, p4]
-        self.body = self.listOfPoints(p);
-        self.center = self.getCenter(p);
+        self.body = self.listOfPoints(p)
+        self.center = self.getCenter(p)
         pass
     pass
   
@@ -216,8 +291,8 @@ class Ellipse(grObject):
         grObject.__init__(self)
         self.name = "\\psellipse"
         self.setPrefix(args)
-        self.body = self.listOfPoints([p]) + "(" + str(r1) +","+ str(r2) + ")";
-        self.center = p;
+        self.body = self.listOfPoints([p]) + "(" + str(r1) +","+ str(r2) + ")"
+        self.center = p
         pass
     pass
 
@@ -236,11 +311,12 @@ class pstricks:
     def open(self, fileName):
         self.f = open(fileName, 'w')
         s = """
-\\documentclass[10pt]{standalone}
+\\documentclass[10pt,dvipsnames]{standalone}
 \\usepackage[T1]{fontenc}
 \\usepackage[utf8]{inputenc}
 \\usepackage{listings}
 \\usepackage{pstricks}
+\\usepackage{pstricks-add}
 \\usepackage{auto-pst-pdf}
 \\usepackage{pst-plot}
 \\pagestyle{empty}

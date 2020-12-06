@@ -15,7 +15,8 @@ all: multithread0.pdf \
 	 ex2_memoire_1.pdf \
 	 ex2_memoire_2.pdf \
 	 ex2_memoire.pdf \
-	 enchainement.pdf
+	 enchainement.pdf \
+	 enchainement_coarse.pdf
 
 %.dvi: %.tex
 	latex $<
