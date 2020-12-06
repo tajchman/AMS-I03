@@ -11,8 +11,6 @@ args = parser.parse_args()
 myenv = os.environ.copy()
 plat = platform.system()
 
-cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
-
 if args.compilers == 'gnu':
   compileCmd = ['make', 'install']
   myenv['CC'] = 'gcc'
@@ -25,13 +23,11 @@ elif args.compilers == 'msvc':
   compileCmd = ['ninja', 'install']
   myenv['CC'] = 'cl'
   myenv['CXX'] = 'cl'
-  cmake_params.append('-GNinja')
 elif args.compilers == 'intel':
   if plat == 'Windows':
     compileCmd = ['ninja', 'install']
     myenv['CC'] = 'icl.exe'
     myenv['CXX'] = 'icl.exe'
-    cmake_params.append('-GNinja')
   else:  
     compileCmd = ['make', 'install']
     myenv['CC'] = 'icc'
@@ -44,6 +40,10 @@ for version in ['Seq', 'OpenMP_CoarseGrain']:
   buildDir = os.path.join(base, 'build', version, args.compilers, args.type)
   installDir = os.path.join(base, 'install', args.compilers, args.type)
 
+  cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
+
+  if plat == 'Windows':
+    cmake_params.append('-GNinja')
   cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
 
   if not os.path.exists(buildDir):

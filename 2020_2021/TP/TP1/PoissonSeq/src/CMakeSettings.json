@@ -1,4 +1,9 @@
 ﻿{
+  "environments": [
+    {
+      "baseDir": "${workspaceFolder}"
+    }
+   ],
   "configurations": [
     {
       "configurationType": "Debug",
@@ -76,13 +81,13 @@
       "variables": [
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "cl.exe"
+          "value": "icl.exe"
         },
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "cl.exe"
+          "value": "icl.exe"
         }
       ]
-    }
+    },
   ]
 }

@@ -15,8 +15,10 @@ base = os.path.join('.',
                     args.type)
 
 resultsDir = os.path.join('.', 'results', args.compilers, args.type)
+if not os.path.exists(resultsDir):
+   os.makedirs(resultsDir)
 
-codeSeq = os.path.join(base, 'PoissonSeq')
+codeSeq = os.path.join(base, 'PoissonSeq.exe')
 
 subprocess.call([codeSeq, "path=" + resultsDir] + args.rest)
 

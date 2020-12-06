@@ -1,6 +1,7 @@
 #include "scheme.hxx"
 #include "parameters.hxx"
 #include "version.hxx"
+#include <cmath>
 
 #include <sstream>
 #include <iomanip>
@@ -82,7 +83,9 @@ double Scheme::iteration_domaine(int imin, int imax,
   int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   double du, du1, du2, du_sum = 0.0;
   
-  #pragma omp parallel for reduction(+:du_sum) private(j,k,du,du1,du2)
+  double x, y, z;
+
+  #pragma omp parallel for reduction(+:du_sum) private(x,y,z,j,k,du,du1,du2)
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
@@ -91,9 +94,9 @@ double Scheme::iteration_domaine(int imin, int imax,
             + (-2*m_u(i,j,k) + m_u(i,j+dj,k) + m_u(i,j-dj,k))*lam_y
             + (-2*m_u(i,j,k) + m_u(i,j,k+dk) + m_u(i,j,k-dk))*lam_z;
 
-        double x = xmin + i*m_dx[0];
-        double y = ymin + j*m_dx[1];
-        double z = zmin + k*m_dx[2];
+        x = xmin + i*m_dx[0];
+        y = ymin + j*m_dx[1];
+        z = zmin + k*m_dx[2];
         du2 = m_f(x,y,z);
 
         du = m_dt * (du1 + du2);

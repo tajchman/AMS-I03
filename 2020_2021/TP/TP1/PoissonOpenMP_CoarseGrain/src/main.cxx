@@ -12,6 +12,7 @@
 #include "values.hxx"
 #include "scheme.hxx"
 #include "timer.hxx"
+#include "os.hxx"
 
 double cond_ini(double x, double y, double z)
 {
@@ -93,6 +94,7 @@ int main(int argc, char *argv[])
     #pragma omp single
     {
     T_calcul.stop();
+
     std::cout << "iteration " << std::setw(5) << it 
               << "  variation " << std::setw(10) << C.variation()
               << "  temps calcul " << std::setw(10) << std::setprecision(6) 
@@ -122,6 +124,7 @@ int main(int argc, char *argv[])
   #endif
 
   std::string s = Prm.resultPath();
+  mkdir_p(s.c_str());
   s += "/temps_";
   s += std::to_string(id) + ".dat";
   std::ofstream f(s.c_str());

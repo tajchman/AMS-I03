@@ -16,9 +16,11 @@ base = os.path.join('.',
                     args.type)
 
 resultsDir = os.path.join('.', 'results', args.compilers, args.type)
+if not os.path.exists(resultsDir):
+   os.makedirs(resultsDir)
 
-codeSeq = os.path.join(base, 'PoissonSeq')
-codePar = os.path.join(base, 'PoissonOpenMP_FineGrain')
+codeSeq = os.path.join(base, 'PoissonSeq.exe')
+codePar = os.path.join(base, 'PoissonOpenMP_CoarseGrain.exe')
 
 subprocess.call([codeSeq, "path=" + resultsDir] + args.rest)
 for i in range(1,args.threadsMax+1):

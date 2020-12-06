@@ -1,6 +1,7 @@
 
 #include <sys/types.h>
-#include <string.h>
+#include <cstring>
+#include <cstdlib.>
 #include "os.hxx"
 
 #ifdef _WIN32

@@ -44,7 +44,8 @@ import matplotlib.pyplot as plt
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10,16))
 
 ax1.plot(t, x, 'o-')
-ax1.set_ylabel('Temps CPU')
+ax1.set_ylabel('Temps CPU (s)')
+ax1.xaxis.set_ticks(range(1,threads+1))
 ax1.grid()
 
 ax2.plot(t, speedup, 'o-')
@@ -53,6 +54,7 @@ plt.ylim(0, threads)
 ax2.legend(['mesuré', 'théorique'])
 ax2.set_xlabel('Threads')
 ax2.set_ylabel('Speedup')
+ax2.xaxis.set_ticks(range(1,threads+1))
 ax2.grid()
 
 fig.set_size_inches(5, 7)
