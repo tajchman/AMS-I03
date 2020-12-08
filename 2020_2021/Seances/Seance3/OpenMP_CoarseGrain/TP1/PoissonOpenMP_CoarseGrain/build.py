@@ -12,11 +12,11 @@ myenv = os.environ.copy()
 plat = platform.system()
 
 if args.compilers == 'gnu':
-  compileCmd = ['make', 'install']
+  compileCmd = ['make', '--no-print-directory', 'install']
   myenv['CC'] = 'gcc'
   myenv['CXX'] = 'g++'
 elif args.compilers == 'clang':
-  compileCmd = ['make', 'install']
+  compileCmd = ['make', '--no-print-directory', 'install']
   myenv['CC'] = 'clang'
   myenv['CXX'] = 'clang++'
 elif args.compilers == 'msvc':
@@ -29,7 +29,7 @@ elif args.compilers == 'intel':
     myenv['CC'] = 'icl.exe'
     myenv['CXX'] = 'icl.exe'
   else:  
-    compileCmd = ['make', 'install']
+    compileCmd = ['make', '--no-print-directory', 'install']
     myenv['CC'] = 'icc'
     myenv['CXX'] = 'icpc'
 

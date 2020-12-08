@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   s += "/temps_";
   s += std::to_string(id) + ".dat";
   std::ofstream f(s.c_str());
-  f << id << " " << T_total.elapsed() << std::endl;
+  f << id << " " << T_total.elapsed() << " " << C.variation() << std::endl;
 
   return 0;
 }
