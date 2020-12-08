@@ -20,7 +20,6 @@ Scheme::Scheme(Parameters &P, callback_t f) :
   for (i=0; i<3; i++) {
     m_n[i] = m_P.n(i);
     m_dx[i] = m_P.dx(i);
-    m_di[i] = (m_n[i] < 2) ? 0 : 1;
     m_xmin[i] = m_P.xmin(i);
   }
 
@@ -80,7 +79,6 @@ double Scheme::iteration_domaine(int imin, int imax,
   double ymin = m_xmin[1];
   double zmin = m_xmin[2];
   int i,j,k;
-  int   di = m_di[0],     dj = m_di[1],     dk = m_di[2];
   double du, du1, du2, du_sum = 0.0;
   
   double x, y, z;
@@ -90,9 +88,9 @@ double Scheme::iteration_domaine(int imin, int imax,
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
            
-        du1 = (-2*m_u(i,j,k) + m_u(i+di,j,k) + m_u(i-di,j,k))*lam_x
-            + (-2*m_u(i,j,k) + m_u(i,j+dj,k) + m_u(i,j-dj,k))*lam_y
-            + (-2*m_u(i,j,k) + m_u(i,j,k+dk) + m_u(i,j,k-dk))*lam_z;
+        du1 = (-2*m_u(i,j,k) + m_u(i+1,j,k) + m_u(i-1,j,k))*lam_x
+            + (-2*m_u(i,j,k) + m_u(i,j+1,k) + m_u(i,j-1,k))*lam_y
+            + (-2*m_u(i,j,k) + m_u(i,j,k+1) + m_u(i,j,k-1))*lam_z;
 
         x = xmin + i*m_dx[0];
         y = ymin + j*m_dx[1];
@@ -107,14 +105,6 @@ double Scheme::iteration_domaine(int imin, int imax,
     return du_sum;
 }
 
-void Scheme::initialize() {
-  std::cerr << "\nintialize " << codeName << std::endl;
-}
-
-void Scheme::terminate() {
-  std::cerr << "\nterminate " << codeName << std::endl;
-}
-
 const Values & Scheme::getOutput()
 {
   return m_u;
@@ -124,10 +114,6 @@ void Scheme::setInput(const Values & u)
 {
   m_u = u;
   m_v = u;
-}
-
-void Scheme::save(const char * /*fName*/)
-{
 }
 
 

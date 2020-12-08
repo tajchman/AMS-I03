@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
   T_init.start();
 
   Scheme C(Prm, force);
-  C.initialize();
  
   Values u_0(Prm);
   u_0.boundaries(cond_ini);
@@ -86,8 +85,6 @@ int main(int argc, char *argv[])
     C.getOutput().plot(itMax);
     T_other.stop();
   }
-
-  C.terminate();
 
   T_total.stop();
 
