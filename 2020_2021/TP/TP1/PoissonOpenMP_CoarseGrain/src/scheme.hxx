@@ -22,15 +22,10 @@ public:
   double present();
 
   bool iteration();
-  bool solve(unsigned int nSteps);
   double variation() { return m_duv; }
-
-  void initialize();
-  void terminate();
 
   const Values & getOutput();
   void setInput(const Values & u);
-  void save(const char * fName);
 
   std::string codeName;
 
@@ -38,7 +33,6 @@ protected:
   double m_t, m_dt;
   size_t m_n[3];
   double m_dx[3];
-  size_t m_di[3];
   double m_xmin[3];
 
   double iteration_domaine(int imin, int imax, 

@@ -27,7 +27,7 @@ double cond_ini(double x, double y, double z)
 
 double force(double x, double y, double z)
 {
-  if (x < 0.5)
+  if (x < 0.3)
     return 0.0;
   else
     return sin(x-0.5) * exp(- y*y);
@@ -57,49 +57,49 @@ int main(int argc, char *argv[])
   T_init.start();
 
   Scheme C(Prm, force);
-  C.initialize();
  
   Values u_0(Prm);
   u_0.boundaries(cond_ini);
 
 #pragma omp parallel 
   {
-  u_0.init(cond_ini);
-  #pragma omp barrier
+    u_0.init(cond_ini);
+#pragma omp barrier
 
-  #pragma omp single
-  {
-  C.setInput(u_0);
-  T_init.stop();
-  std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
-            << T_init.elapsed() << " s\n" << std::endl;
-  }
-
-  for (int it=0; it < itMax; it++) {
-    if (freq > 0 && it % freq == 0)
-    #pragma omp single
+#pragma omp single
     {
-      T_other.start();
-      C.getOutput().plot(it);
-      T_other.stop();
+      C.setInput(u_0);
+      T_init.stop();
+      std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+		<< T_init.elapsed() << " s\n" << std::endl;
     }
 
-    #pragma omp master
-    T_calcul.start();
+    for (int it=0; it < itMax; it++) {
+      if (freq > 0 && it % freq == 0)
+#pragma omp single
+	{
+	  T_other.start();
+	  C.getOutput().plot(it);
+	  T_other.stop();
+	}
 
-    #pragma omp barrier
-    C.iteration();
-    #pragma omp barrier
+#pragma omp master
+      T_calcul.start();
 
-    #pragma omp single
-    {
-    T_calcul.stop();
+#pragma omp barrier
+      C.iteration();
+#pragma omp barrier
 
-    std::cout << "iteration " << std::setw(5) << it 
-              << "  variation " << std::setw(10) << C.variation()
-              << "  temps calcul " << std::setw(10) << std::setprecision(6) 
-              << T_calcul.elapsed() << " s"
-              << std::endl; 
+#pragma omp single
+      {
+	T_calcul.stop();
+
+	std::cout << "iteration " << std::setw(5) << it 
+		  << "  variation " << std::setw(10) << C.variation()
+		  << "  temps calcul " << std::setw(10) << std::setprecision(6) 
+		  << T_calcul.elapsed() << " s"
+		  << std::endl; 
+      }
     }
   }
 
@@ -107,21 +107,18 @@ int main(int argc, char *argv[])
     T_other.start();
     C.getOutput().plot(itMax);
     T_other.stop();
-    }
   }
-
-  C.terminate();
 
   T_total.stop();
 
   std::cout << "\n" << std::setw(26) << "temps total" 
             << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-  #ifdef _OPENMP
-    int id = Prm.nthreads();
-  #else
-    int id = 0;
-  #endif
+#ifdef _OPENMP
+  int id = Prm.nthreads();
+#else
+  int id = 0;
+#endif
 
   std::string s = Prm.resultPath();
   mkdir_p(s.c_str());

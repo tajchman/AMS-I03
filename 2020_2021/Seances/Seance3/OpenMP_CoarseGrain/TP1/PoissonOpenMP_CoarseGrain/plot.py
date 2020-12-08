@@ -35,8 +35,8 @@ for i in range(1,threads+1):
     x.append(u)
     speedup.append(x0/u)
 
-print(x)
-print(speedup)
+print("cpu times:", "".join(["{:9.3f}".format(u) for u in x]))
+print("speedups: ", "".join(["{:9.3f}".format(u) for u in speedup]))
 
 import matplotlib.pyplot as plt
 

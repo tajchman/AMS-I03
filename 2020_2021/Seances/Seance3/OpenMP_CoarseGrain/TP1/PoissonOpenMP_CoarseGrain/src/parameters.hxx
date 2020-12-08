@@ -24,6 +24,14 @@ public:
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
   
+  int imin_local(int i, int iThread) const { 
+     return m_imin_local[i][iThread]; 
+  }
+  int imax_local(int i, int iThread) const 
+  {
+     return m_imax_local[i][iThread]; 
+  }
+
   int itmax() const { return m_itmax; }
   double dt() const { return m_dt; }
 

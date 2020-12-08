@@ -60,13 +60,13 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   omp_set_num_threads(m_nthreads);
 #endif
 
-  m_n[0] = Get("n", 400);
-  m_n[1] = Get("m", 400);
-  m_n[2] = Get("p", 400);
+  m_n[0] = Get("n0", 400);
+  m_n[1] = Get("n1", 400);
+  m_n[2] = Get("n2", 400);
   m_itmax = Get("it", 10);
 
-  double d = 0.1/(m_n[0]*m_n[0]);
-  double dt_max = d;
+  double d;
+  double dt_max = 0.1/(m_n[0]*m_n[0]);
   d = 0.1/(m_n[1]*m_n[1]);
   if (dt_max > d) dt_max = d;
   d = 0.1/(m_n[2]*m_n[2]);
@@ -74,9 +74,6 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
  
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
-
-  m_convection = Get("convection", 0) == 1;
-  m_diffusion = Get("diffusion", 0) == 1;
   
   if (!m_help) {
  
@@ -92,12 +89,8 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
     for (int i=0; i<3; i++) {
       m_xmin[i] = 0.0;
       m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
-      m_di[i] = 1;
       m_imin[i] = 1;
       m_imax[i] = m_n[i]-1;
-      if (m_n[i] < 2) {
-        m_imin[i]=1; m_imax[i] = 1; m_di[i] = 0;
-      }
     }
   }
  
@@ -157,9 +150,9 @@ bool Parameters::help()
 #endif
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
-              << "n=<int>       : number of internal points in the X direction (default: 400)\n"
-              << "m=<int>       : number of internal points in the Y direction (default: 400)\n"
-              << "p=<int>       : number of internal points in the Z direction (default: 400)\n"
+              << "n1=<int>       : number of points in the X direction (default: 400)\n"
+              << "n2=<int>       : number of points in the Y direction (default: 400)\n"
+              << "n3=<int>       : number of points in the Z direction (default: 400)\n"
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
               << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"

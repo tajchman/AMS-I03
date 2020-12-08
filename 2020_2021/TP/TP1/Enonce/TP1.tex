@@ -215,12 +215,95 @@ Récupérer et décompresser un des fichiers \bigskip
 Un répertoire {\tt TP1/Poisson\_OpenMP\_fine\_grain} est créé et contient le code source incomplet de la version OpenMP grain fin.
  
 \vfill
-{\color{red}\bf
+{\color{red}
 	Attention:
-	\begin{quote}\color{red}\bf
+	\bigskip
+	
+	\begin{minipage}{\textwidth}\color{red}
 Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont contenues, créez un autre répertoire ailleurs et travaillez dans ce nouveau répertoire, sinon vous écraserez les modifications déjà faites !
-	\end{quote}
+	\end{minipage}
 }
 \vfill
+\end{frame}
+
+\begin{frame}[fragile]
+
+\begin{itemize}
+	\item 	Pour compiler, se placer dans le répertoire {\tt TP1/Poisson\_OpenMP\_fine\_grain} et taper:
+	
+	\hspace{-2cm}{\color{blue}\begin{verbatim}
+./build.py
+\end{verbatim}
+	}
+	
+	\vfill
+	(si cela ne marche pas, taper \verb|python ./build.py|).
+	
+	\vfill
+	\item Pour exécuter, rester dans le même répertoire et taper (sur une seule ligne):
+	
+	\hspace{2cm}
+	{\color{blue}\begin{verbatim}
+./install/gnu/Release/PoissonOpenMP_FineGrain.exe \
+		 threads=<n>
+\end{verbatim}
+	}
+	
+	\vfill
+	(à la place de {\tt <n>} taper 3 pour exécuter sur 3 threads (par exemple)
+	\vfill
+	
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+	Premier travail:
+\bigskip
+
+\framebox{\color{blue}%
+\begin{minipage}{\textwidth}
+		Dans le répertoire {\tt TP1/Poisson\_OpenMP\_fine\_grain}, paralléliser avec OpenMP grain fin:
+		
+		\begin{enumerate}
+			\item \color{blue}Chercher les parties du code à paralléliser
+			\item \color{blue}Ajouter les {\tt pragmas}
+			\item \color{blue}Identifier les variables partagées et privées
+			\item \color{blue}Compiler, lancer le code
+			\item \color{blue}Comparer avec la version séquentielle
+			\item \color{blue}Si différent, corriger le code parallélisé et revenir en (4)
+		\end{enumerate}
+	\end{minipage}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	On fournit aussi un script pour comparer les speedup pour différents nombres de threads:
+	
+{\color{blue}\begin{verbatim}
+./run.py <nthreads>
+\end{verbatim}
+}
+	qui lance plusieurs exécutions:
+	\begin{itemize}
+		\item version séquentielle
+		\item version OpenMP sur 1 thread
+		\item version OpenMP sur 2 threads
+		
+		...
+		\item version OpenMP sur \verb|nthreads| threads
+	\end{itemize}
+
+    et à la fin affiche un graphe nombre de threads .vs. temps CPU/speedup.
+    
+    \vfill
+    Remarque:
+    \medskip
+    
+    \hspace{2cm}\begin{minipage}{0.7\textwidth}
+    	Pour pouvoir utiliser le script {\tt run.py},
+    	il faut que le paquet {\tt matplotlib} (pour la version de python utilisée) soit installé
+    \end{minipage}
+	
 \end{frame}
 \end{document}

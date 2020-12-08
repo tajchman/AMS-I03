@@ -23,7 +23,6 @@ public:
 
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
-  int di(int i) const { return m_di[i]; }
   
   int imin_local(int i, int iThread) const { 
      return m_imin_local[i][iThread]; 
@@ -40,12 +39,6 @@ public:
   std::string resultPath() const { return m_path; }
   bool help();
 
-  bool convection() const { return m_convection; }
-  bool diffusion() const { return m_diffusion; }
-
-  void convection(bool b) { m_convection = b; }
-  void diffusion(bool b) { m_diffusion = b; }
-  
 #ifdef _OPENMP
   int nthreads() const { return m_nthreads; }
   void nthreads(int n) { m_nthreads = n; }
@@ -61,12 +54,11 @@ private:
 
   int m_n[3];
   double m_xmin[3], m_dx[3];
-  int m_imin[3], m_imax[3], m_di[3];
+  int m_imin[3], m_imax[3];
   std::vector<int> m_imin_local[3], m_imax_local[3];
   
   int m_itmax;
   double m_dt;
-  bool m_convection, m_diffusion;
   
   int m_freq;
 
