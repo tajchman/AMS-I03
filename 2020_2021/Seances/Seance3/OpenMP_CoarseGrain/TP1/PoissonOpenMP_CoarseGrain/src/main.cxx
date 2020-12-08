@@ -4,6 +4,10 @@
 #include <iomanip>
 #include <cmath>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "parameters.hxx"
 #include "values.hxx"
 #include "scheme.hxx"
@@ -91,7 +95,11 @@ int main(int argc, char *argv[])
   std::cout << "\n" << std::setw(26) << "temps total" 
             << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-  int id = 0;
+  #ifdef _OPENMP
+    int id = Prm.nthreads();
+  #else
+    int id = 0;
+  #endif
 
   std::string s = Prm.resultPath();
   mkdir_p(s.c_str());

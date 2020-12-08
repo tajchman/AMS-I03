@@ -6,6 +6,10 @@
 #include <unistd.h>
 #endif
 
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
+
 #include "os.hxx"
 #include "arguments.hxx"
 #include "parameters.hxx"
@@ -41,6 +45,21 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 
   m_command = argv[0];
 
+#if defined(_OPENMP)
+  m_nthreads = Get("threads", 0);
+
+  if (m_nthreads<1) {
+    const char * omp_var = std::getenv("OMP_NUM_THREADS");
+    if (omp_var) m_nthreads = strtol(omp_var, NULL, 10);
+    m_nthreads = Get("threads", m_nthreads);
+  }
+
+  if (m_nthreads<1)
+    m_nthreads=1;
+
+  omp_set_num_threads(m_nthreads);
+#endif
+
   m_n[0] = Get("n0", 400);
   m_n[1] = Get("n1", 400);
   m_n[2] = Get("n2", 400);
@@ -74,6 +93,50 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
       m_imax[i] = m_n[i]-1;
     }
   }
+ 
+  #ifdef _OPENMP
+  int nt = m_nthreads;
+  #else
+  int nt = 1;
+  #endif
+
+  int idecoupe = -1, iT, maxn=-1;
+  for (int i=0; i<3; i++) {
+    m_imin_local[i].resize(nt);
+    m_imax_local[i].resize(nt);
+
+    for (iT = 0; iT < nt; iT++) 
+    {
+       m_imin_local[i][iT] = m_imin[i];
+       m_imax_local[i][iT] = m_imax[i];
+    }
+    if (m_imax[i] - m_imin[i] > maxn) {
+      idecoupe = i;
+      maxn = m_imax[i] - m_imin[i];
+    }
+  }
+
+  maxn++;
+  int di = maxn/nt;
+  
+  int i0 = 0, i1 = m_imin[idecoupe];
+  for (iT=0; iT < nt;iT++) {
+    i0 = i1;
+    i1 = i0 + di;
+    m_imin_local[idecoupe][iT] = i0;
+    m_imax_local[idecoupe][iT] = i1;
+  }
+  m_imax_local[idecoupe][nt-1] = m_imax[idecoupe];
+ 
+#ifdef DEBUG
+  for (iT=0; iT<nt; iT++) {
+    std::cerr << "Thread " << iT;
+    for (int i=0; i < 3; i++)
+      std::cerr<< "  [" << m_imin_local[i][iT] << "," 
+               << m_imax_local[i][iT] <<")";
+    std::cerr << std::endl;
+  }
+#endif
 }
 
 bool Parameters::help()
@@ -82,6 +145,9 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+#ifdef _OPENMP
+              << "threads=<int> : nombre de threads OpenMP"
+#endif
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n1=<int>       : number of points in the X direction (default: 400)\n"
@@ -103,6 +169,9 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << 0 << "," << p.n(1) - 1  << "] x "
     << "[" << 0 << "," << p.n(2) - 1  << "]\n";
 
+#ifdef _OPENMP
+  f << p.nthreads() << " thread(s)\n";
+#endif
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
     << "Results in " << p.resultPath() << std::endl;

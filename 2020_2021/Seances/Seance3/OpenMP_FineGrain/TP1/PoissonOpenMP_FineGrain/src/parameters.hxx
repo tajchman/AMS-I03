@@ -31,9 +31,19 @@ public:
   std::string resultPath() const { return m_path; }
   bool help();
 
+#ifdef _OPENMP
+  int nthreads() const { return m_nthreads; }
+  void nthreads(int n) { m_nthreads = n; }
+#endif
+  
 private:
 
   std::string m_command;
+
+#ifdef _OPENMP
+  int m_nthreads;
+#endif
+
   int m_n[3];
   double m_xmin[3], m_dx[3];
   int m_imin[3], m_imax[3];

@@ -6,6 +6,10 @@
 #include <unistd.h>
 #endif
 
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
+
 #include "os.hxx"
 #include "arguments.hxx"
 #include "parameters.hxx"
@@ -40,6 +44,21 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   m_help = options_contains("h") || options_contains("help");
 
   m_command = argv[0];
+
+#if defined(_OPENMP)
+  m_nthreads = Get("threads", 0);
+
+  if (m_nthreads<1) {
+    const char * omp_var = std::getenv("OMP_NUM_THREADS");
+    if (omp_var) m_nthreads = strtol(omp_var, NULL, 10);
+    m_nthreads = Get("threads", m_nthreads);
+  }
+
+  if (m_nthreads<1)
+    m_nthreads=1;
+
+  omp_set_num_threads(m_nthreads);
+#endif
 
   m_n[0] = Get("n0", 400);
   m_n[1] = Get("n1", 400);
@@ -82,6 +101,9 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+#ifdef _OPENMP
+              << "threads=<int> : nombre de threads OpenMP"
+#endif
               << "convection=0/1: convection term (default: 1)\n"
               << "diffusion=0/1 : convection term (default: 1)\n"
               << "n1=<int>       : number of points in the X direction (default: 400)\n"
@@ -103,6 +125,9 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << 0 << "," << p.n(1) - 1  << "] x "
     << "[" << 0 << "," << p.n(2) - 1  << "]\n";
 
+#ifdef _OPENMP
+  f << p.nthreads() << " thread(s)\n";
+#endif
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
     << "Results in " << p.resultPath() << std::endl;
