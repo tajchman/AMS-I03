@@ -37,10 +37,19 @@ target_link_libraries(
   ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(
+  exemple_par2.exe 
+  main_par2.cxx
+  arguments.cxx)
+
+target_link_libraries(
+  exemple_par2.exe
+  ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(
   exemple_seq.exe 
   main_seq.cxx
   arguments.cxx)
 
-install(TARGETS exemple_seq.exe exemple_par.exe DESTINATION .)
+install(TARGETS exemple_seq.exe exemple_par.exe exemple_par2.exe DESTINATION .)
 
 

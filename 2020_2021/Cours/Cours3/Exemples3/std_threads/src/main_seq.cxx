@@ -6,7 +6,8 @@
 int main(int argc, char **argv)
 {
   Arguments A(argc, argv);
-  int n = A.Get("n", 10000000);
+
+  int n = A.Get("n", 100000000);
 
   Timer T;
   T.start();

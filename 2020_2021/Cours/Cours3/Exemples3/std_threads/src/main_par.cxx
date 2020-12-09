@@ -15,11 +15,11 @@ int main(int argc, char **argv)
   T.start();
 
   std::vector<double> a(n, 1.0), b(n, 2.0);
+  AddPartial Add(a, b, a);
 
-  int nIt = 100;
+  int nIt = 200;
   int iThread;
   int dn = n/nThreads;
-  AddPartial Add(a, b, a);
 
   for (int it=0; it<nIt; it++) {
     std::vector<std::thread> threads;
