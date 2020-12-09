@@ -18,4 +18,5 @@ install
 *.dat
 export
 .vs
+.vscode
 Workspace
