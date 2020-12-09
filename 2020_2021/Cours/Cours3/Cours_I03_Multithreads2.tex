@@ -62,7 +62,7 @@
 	Cela consiste à ajouter un pragma devant les boucles à paralléliser pour que OpenMP découpe automatiquement l'ensemble de valeurs de l'indice de boucle en groupes.
 	
 	\vfill
-	Chaque thread prend en charge un des groupes. Chaque groupe est (à peu près) de même taille.
+	Chaque thread prend en charge un des groupes. Chaque groupe est (à peu près) de même taille (en nombre d'itérations).
 	\vfill
 	
 	Par exemple:
@@ -309,37 +309,76 @@ Inconvénient :
 \end{frame}
 
 \begin{frame}[fragile]
-Exemple : Calcul de la norme d'un vecteur contenu dans un fichier
-(de longueur inconnue)
+Exemple : Calcul de la suite de Fibonacci définie par la récurrence
+$$
+F_n = F_{n-1} + F_{n-2}
+$$
+avec $F_0 = 0$ et $F_1 = 1$.
 
+\vfill
+Exemple de code en C/C++ (fonction récursive):
+ 
 	\lstset{%
 	language={C++},
-	breaklines=true,
 	captionpos=b,
-	basicstyle=\ttfamily,
-	moredelim=[il][\color{red}]{/+},%
+	basicstyle=\ttfamily
 }
 
 \begin{lstlisting}{C++}
-
-std::ifstream f("donnees");
-double x, norme = 0;
-
-/+#pragma omp parallel default(shared) \
-/+     reduction(+: norme)
+long f(int n)
 {
-/+#pragma master
-  while (f >> x) {
-  /+#pragma task
-    {
-      y = x*x;
-      norme += y;
-    }
-  }
- /+#task wait
+  if (n<2)
+    return n;
+  else
+    return f(n-1) + f(n-2);
 }
 \end{lstlisting}
 
+\end{frame}
+
+\begin{frame}[fragile]
+\vfill
+	On peut remarquer que :
+	\begin{itemize}
+		\item dans $f$, découpage du travail seulement en 2 parties
+		\item $f$ est récursive, donc si on utilise des pragma dans $f$, elles seront utilisées de façon récursive
+	\end{itemize}
+
+\bigskip
+Le nombre de threads utilisés peut rapidement dépasser le nombre de c\oe urs disponibles, ce qui est assez compliqué à gérer.
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	Première version utilisant des sections OpenMP
+	
+\begin{lstlisting}{C++}
+long f(int n) {
+  if (n < 2) return n;
+  
+  omp_set_num_threads(2)
+#pragma omp parallel
+  {
+  #pragma omp sections
+    {
+    #pragma omp section
+      a = f(n-1);		
+    #pragma omp section
+      b = f(n-2);
+    }
+  }
+  return a + b;
+}
+\end{lstlisting}
+
+\vspace{-2cm}\hfill\framebox{\begin{minipage}{6cm}
+Cette version va créer $2^L$ threads où $L$ est le nombre de niveaux de récursivité.
+\end{minipage}
+}
+\end{frame}
+
+\begin{frame}
+	Seconde version utilisant les tâches OpenMP:
 \end{frame}
 
 \begin{frame}

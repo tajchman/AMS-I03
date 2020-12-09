@@ -81,7 +81,7 @@ p.add(Text(p1 + (0,6), 'Parallélisme multithreads', justify="c"))
 p.add(Text(p1 + (0,5.2), 'grain grossier (coarse grain)', justify="c"))
 
 p.add(Text(p1 + (0,4), "{\LARGE (threads $T_i, i>0$ créés au début de l'execution}", justify="c"))
-p.add(Text(p1 + (0,3.3), '{\LARGE activés au debut de chaque région parallèle}', justify="c"))
+p.add(Text(p1 + (0,3.3), '{\LARGE activés au début de chaque région parallèle}', justify="c"))
 p.add(Text(p1 + (0,2.6), '{\LARGE et mis en pause à la fin de chaque région parallèle)}', justify="c"))
 
 p2 = p1 - (0, 1.5)
@@ -118,15 +118,15 @@ p.add(Line(p1 - (2,0),p19 - (2,0), arrow = '->', arrowsize=0.5, linewidth=0.15, 
 p.add(Line(p1 - (2,0), p9 - (2,0), linewidth=0.15, linecolor='red'))
 
 p.add(Line(p1 + (3.7,0),p9 + (3.7,0), arrow='<->', linewidth=0.1, arrowsize=0.3))
-p.add(Text(p1*0.5 + p9*0.5 + (4,-0.2), 'région parallèle'))
+p.add(Text(p1*0.5 + p9*0.5 + (4.2,-0.2), 'région parallèle'))
 
-p.add(TextFront(p3 + (-1.9, 0.1), "{\LARGE Threads 1-3 activés}"))
-p.add(TextFront(p4 + (-1.9, -0.8), "{\LARGE Threads 1-3 en pause}"))
+p.add(TextFront(p3 + (-1.75, 0.1), "{\LARGE Threads 1-3 activés}"))
+p.add(TextFront(p4 + (-1.75, -0.8), "{\LARGE Threads 1-3 en pause}"))
 p.add(Line(p3 - (1.3,0), p3 + (1.3,0), linewidth = 0.12))
 p.add(Line(p4 - (1.3,0), p4 + (1.3,0), linewidth = 0.12))
 
-p.add(TextFront(p6 + (-1.9, 0.1), "{\LARGE Threads 1-4 activés}"))
-p.add(TextFront(p7 + (-1.9, -0.8), "{\LARGE Threads 1-4 en pause}"))
+p.add(TextFront(p6 + (-1.75, 0.1), "{\LARGE Threads 1-4 activés}"))
+p.add(TextFront(p7 + (-1.75, -0.8), "{\LARGE Threads 1-4 en pause}"))
 p.add(Line(p6 - (1.3,0), p6 + (2.3,0), linewidth = 0.12))
 p.add(Line(p7 - (1.3,0), p7 + (2.3,0), linewidth = 0.12))
 

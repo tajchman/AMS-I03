@@ -23,14 +23,17 @@ add_executable(
   fib_seq.exe 
   main_seq.cxx
   arguments.cxx)
-  
+
+install(TARGETS fib_seq.exe DESTINATION .)
+ 
+set(v tasks)
 add_executable(
-  fib_tasks.exe 
-  main_tasks.cxx
+  fib_${v}.exe 
+  main_${v}.cxx
   arguments.cxx)
+  
+target_compile_options(fib_${v}.exe PUBLIC ${OpenMP_CXX_FLAGS})
+target_link_libraries(fib_${v}.exe ${OpenMP_CXX_LIBRARIES})
+install(TARGETS fib_${v}.exe DESTINATION .)
 
-target_compile_options(fib_tasks.exe PUBLIC ${OpenMP_CXX_FLAGS})
-target_link_libraries(fib_tasks.exe ${OpenMP_CXX_LIBRARIES})
-
-install(TARGETS fib_seq.exe fib_tasks.exe DESTINATION .)
 

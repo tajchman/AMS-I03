@@ -1,8 +1,6 @@
 #include "arguments.hxx"
 #include <iostream>
 
-#define LEVEL 10
-
 long fib_seq(int n)
 {
   long i, j;

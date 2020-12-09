@@ -288,7 +288,7 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 \end{frame}
 
 \begin{frame}
-	Premier travail:
+	Première partie:
 \bigskip
 
 \framebox{\color{blue}%
@@ -297,15 +297,13 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 		
 		\begin{enumerate}
 			\item \color{blue}Chercher les parties du code à paralléliser
-			\item \color{blue}Ajouter les {\tt pragmas}
+			\item \color{blue}Ajouter ou adapter les {\tt pragmas}
 			\item \color{blue}Identifier les variables partagées et privées
-			\item \color{blue}Compiler, lancer le code
+			\item \color{blue}Compiler, lancer le code avec différents nombres de threads
 			\item \color{blue}Comparer avec la version séquentielle
-			\item \color{blue}Si différent, corriger le code parallélisé et revenir en (4)
+			\item \color{blue}Si différent, revenir en (2)
 		\end{enumerate}
 	
-	\bigskip
-	    Envoyez votre code source modifié (compressé dans une archive), avec les résultats obtenus (copie des sorties écrans et fichiers pdf obtenus avec le script run.py) {\bf le 20/12/2020 au plus tard}.
 	\end{minipage}
 }
 
@@ -322,95 +320,69 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 	Un répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
 	
 	\vfill
-	{\color{red}
-		Attention:
-		\bigskip
-		
-		\begin{minipage}{\textwidth}\color{red}
-			Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont contenues, créez un autre répertoire ailleurs et travaillez dans ce nouveau répertoire, sinon vous écraserez les modifications déjà faites !
-		\end{minipage}
-	}
-	\vfill
+	Pour compiler et exécuter on utilisera la même procédure que dans le cas OpenMP grain fin.
+	
 \end{frame}
 
-\begin{frame}[fragile]
+
+\begin{frame}
+	Dans le parallélisme OpenMP gros grain, on découpe explicitement le domaine de calcul en plusieurs parties, chaque partie est calculée par un thread.
+	\vfill
 	
-	\begin{itemize}
-		\item 	Pour compiler, se placer dans le répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain} et taper:
-		
-		\hspace{-2cm}{\color{blue}\begin{verbatim}
-			./build.py
-			\end{verbatim}
-		}
-		
-		\vfill
-		(si cela ne marche pas, taper \verb|python ./build.py|).
-		
-		\vfill
-		\item Pour exécuter, rester dans le même répertoire et taper (sur une seule ligne):
-		
-		\hspace{2cm}
-		{\color{blue}\begin{verbatim}
-			./install/gnu/Release/PoissonOpenMP_FineGrain.exe \
-			threads=<n>
-			\end{verbatim}
-		}
-		
-		\vfill
-		(à la place de {\tt <n>} taper 3 pour exécuter sur 3 threads (par exemple)
-		\vfill
-		
-	\end{itemize}
+	Le type {\tt Parameters} possède 2 fonctions supplémentaires utiles pour le // gros grain :
+	\bigskip
+	
+	\begin{tabular}{ll}
+		{\tt imin\_local(i,iThread)}&indice des premiers points intérieurs \\ &  dans la direction $i$, pour la partie \\ 
+		&calculée par le thread {\tt iThread}\\ \\
+		{\tt imax\_local(i,iThread)}& indice des derniers points sur la \\
+		& frontière dans la direction $i$, pour la \\
+		& partie calculée par le thread {\tt iThread}
+	\end{tabular}
+	
 \end{frame}
 
 \begin{frame}
-	Premier travail:
+	Seconde partie:
 	\bigskip
 	
 	\framebox{\color{blue}%
 		\begin{minipage}{\textwidth}
-			Dans le répertoire {\tt TP1/Poisson\_OpenMP\_fine\_grain}, paralléliser avec OpenMP grain fin:
+			Dans le répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
 			
 			\begin{enumerate}
-				\item \color{blue}Chercher les parties du code à paralléliser
-				\item \color{blue}Ajouter les {\tt pragmas}
+				\item \color{blue}Ajouter une région parallèle dans le programme principal autour de la boucle en temps
+				\item \color{blue}Identifier les instructions dans la région parallèle qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
 				\item \color{blue}Identifier les variables partagées et privées
-				\item \color{blue}Compiler, lancer le code
+				\item \color{blue}Ajouter ou adapter les pragmas correspondantes
+				\item \color{blue}Dans chaque thread, faire une partie des boucles internes
+				\item \color{blue}Compiler, lancer le code avec différents nombres de threads
 				\item \color{blue}Comparer avec la version séquentielle
-				\item \color{blue}Si différent, corriger le code parallélisé et revenir en (4)
+				\item \color{blue}Si différent, revenir en (2)
 			\end{enumerate}
 		\end{minipage}
 	}
 	
 \end{frame}
 
-\begin{frame}[fragile]
-	On fournit aussi un script pour comparer les speedups pour différents nombres de threads:
-	
-	{\color{blue}\begin{verbatim}
-		./run.py <nthreads>
-		\end{verbatim}
-	}
-	qui lance plusieurs exécutions:
-	\begin{itemize}
-		\item version séquentielle
-		\item version OpenMP sur 1 thread
-		\item version OpenMP sur 2 threads
-		
-		...
-		\item version OpenMP sur \verb|<nthreads>| threads
-	\end{itemize}
-	
-	et à la fin affiche un graphe: nombre de threads .vs. temps CPU/speedup.
-	
-	\vfill
-	Remarque:
-	\medskip
-	
-	\hspace{1cm}\begin{minipage}{0.9\textwidth}
-		Pour pouvoir utiliser le script {\tt run.py},
-		il faut que le paquet {\tt matplotlib} (pour la version de python utilisée) soit installé
-	\end{minipage}
-	
+\begin{frame}
+\bigskip
+Envoyez par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
+
+\begin{itemize}
+	\item une description du travail réalisé (1-2 pages maximum)
+	\item le code source, avec vos modifications, dans une archive
+	(n'envoyez pas les répertoire build et install qui contiennent des binaires) 
+	\item les fichiers run***.log et speedups***.pdf que vous avez obtenus
+\end{itemize}
+
+\bigskip
+
+{\bf avant le 20/12/2020, au plus tard le 23/12/2020.}
+
+\bigskip
+\textcolor{red}{\bf Envoyez vos fichiers source même s'ils contiennent des erreurs.}
 \end{frame}
+
+
 \end{document}
