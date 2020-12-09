@@ -355,17 +355,15 @@ Le nombre de threads utilisés peut rapidement dépasser le nombre de c\oe urs d
 \begin{lstlisting}{C++}
 long f(int n) {
   if (n < 2) return n;
+  long a, b;
   
   omp_set_num_threads(2)
-#pragma omp parallel
+#pragma omp parallel sections
   {
-  #pragma omp sections
-    {
-    #pragma omp section
-      a = f(n-1);		
-    #pragma omp section
-      b = f(n-2);
-    }
+  #pragma omp section
+    a = f(n-1);		
+  #pragma omp section
+    b = f(n-2);
   }
   return a + b;
 }
@@ -378,12 +376,71 @@ Cette version va créer $2^L$ threads où $L$ est le nombre de niveaux de récur
 \end{frame}
 
 \begin{frame}
+	\vfill
+
+	Voir {\tt\textcolor{blue}{Exemples3/omp\_sections}}.
+	\vfill
+	
+	L'exemple fonctionne relativement bien, mais l'utilisation des sections a 2 désavantages:
+	
+	\begin{itemize}
+		\item Le nombre de sections est fixe pour chaque niveau de parallélisation.
+		\item Il faut bien utiliser la fonction {\tt\textcolor{blue}{omp\_set\_num\_threads}} sinon risque ``d'étouffer'' la machine
+	\end{itemize}
+
+	\vfill
+\end{frame}
+
+\begin{frame}[fragile]
 	Seconde version utilisant les tâches OpenMP:
+	
+	
+\begin{lstlisting}{C++}
+long fib_tasks(int n) {	
+  long i, j;
+  if (n<2)
+    return n;
+
+#pragma omp task shared(i, n)
+  i=fib_tasks(n-1);
+#pragma omp task shared(j, n)
+  j=fib_tasks(n-2);
+		
+#pragma omp taskwait
+		
+  return i+j;
+}
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}
+	
+\vfill
+
+Voir {\tt\textcolor{blue}{Exemples3/omp\_tasks}}.
+
+\vfill
+Cette version utilisant les tâches OpenMP permet d'enlever les désavantages des sections et de, plus, on peut contrôler le nombre total de threads utilisé par le code.
+
+\vfill
+Mais:
+\begin{itemize}
+	\item Faire attention au nombre de tâches créées (2 à la puissance $n$).
+
+	En pratique on met une limite au nombre de niveaux de récursivité.
+	
+\vfill
+	\item Utiliser les résultats d'une tâche seulement quand on est sûr que la tâche est terminée : pas de barrière implicite à la fin de {\tt omp task}
+	
+	Donc, il faut appeler {\tt omp taskwait} avant d'utiliser {\tt i} ou {\tt j} (pour calculer {\tt i+j}).
+\end{itemize}
+
 \end{frame}
 
 \begin{frame}
 	Le répertoire \textcolor{blue}{Exemples3/sinus} contient 5 sous-répertoires
-	qui comparent tous deux méthodes de calcul de y=sin(x), soit par la fonction système soit une approximation par une formule de Taylor.
+	qui tous comparent deux méthodes de calcul de $y=sin(x)$, soit par la fonction système soit une approximation par une formule de Taylor.
 	\medskip
 	
 	Remarque: on a artificiellement ralenti le calcul de la formule de Taylor pour mieux faire ressortir les temps de calcul.
@@ -402,18 +459,28 @@ Cette version va créer $2^L$ threads où $L$ est le nombre de niveaux de récur
 
 \begin{frame}
 
-\framebox{
-\begin{minipage}{10cm}
-Devoir à rendre avant la prochaine séance :
+Il existe plusieurs autres outils pour faire de la programmation multi-threads.
 \bigskip
 
-\begin{quote}
-	Examiner les sources dans chaque sous-répertoire (\ {\tt main.cxx, calcul.cxx}\ ).
-	
-	Faire tourner plusieurs fois chaque version, commenter les résultats.
-\end{quote}
-\end{minipage}
-}
+On commentera ici deux exemples qui utilisent 
+\begin{itemize}
+	\item{\tt std::thread} : similaires à pthread mais de style plus C++ et avec des mécanismes plus évolués
+	\item {\tt tbb} : Threads Building Blocks, aussi spécifiques à C++ et plus souples, mais à installer séparemment
+\end{itemize} 
+\end{frame}
+
+\begin{frame}
+Exemple utilisant {\tt std::thread}, voir \textcolor{blue}{\tt Exemples3/std\_thread}
+\bigskip
+
+Commentaires
+\end{frame}
+
+\begin{frame}
+Exemple utilisant {\tt tbb}, voir \textcolor{blue}{\tt Exemples3/tbb}
+\bigskip
+
+Commentaires
 \end{frame}
 
 \end{document}
