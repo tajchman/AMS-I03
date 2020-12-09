@@ -21,8 +21,8 @@ elif args.compilers == 'clang':
   myenv['CXX'] = 'clang++'
 elif args.compilers == 'msvc':
   compileCmd = ['ninja', 'install']
-  myenv['CC'] = 'cl'
-  myenv['CXX'] = 'cl'
+  myenv['CC'] = 'cl.exe'
+  myenv['CXX'] = 'cl.exe'
 elif args.compilers == 'intel':
   if plat == 'Windows':
     compileCmd = ['ninja', 'install']
