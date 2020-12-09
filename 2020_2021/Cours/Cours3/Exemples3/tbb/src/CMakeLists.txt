@@ -4,14 +4,11 @@ project(TBB)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules")
 
-find_package(TBB)
+find_package(TBB REQUIRED)
 
 include_directories(
   ${TBB_INCLUDE_DIRS}
   )
-
-
-find_package(OpenMP REQUIRED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -29,20 +26,19 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 endif()
 
 add_executable(
-  fib_seq.exe 
+  exemple_par.exe 
+  main_par.cxx
+  arguments.cxx)
+
+add_executable(
+  exemple_seq.exe 
   main_seq.cxx
   arguments.cxx)
 
-install(TARGETS fib_seq.exe DESTINATION .)
- 
-set(v tasks)
-add_executable(
-  fib_${v}.exe 
-  main_${v}.cxx
-  arguments.cxx)
-  
-target_compile_options(fib_${v}.exe PUBLIC ${OpenMP_CXX_FLAGS})
-target_link_libraries(fib_${v}.exe ${OpenMP_CXX_LIBRARIES})
-install(TARGETS fib_${v}.exe DESTINATION .)
+target_link_libraries(
+  exemple_par.exe 
+  ${TBB_LIBRARIES}
+)
+install(TARGETS exemple_seq.exe exemple_par.exe DESTINATION .)
 
 

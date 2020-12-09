@@ -47,8 +47,6 @@ cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
 if not os.path.exists(buildDir):
   os.makedirs(buildDir)
 
-cmake_params.append('-DENABLE_OPENMP=ON')
-
 configureCmd = ['cmake'] + cmake_params + [srcDir]
 print(' '.join(configureCmd))
 err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
