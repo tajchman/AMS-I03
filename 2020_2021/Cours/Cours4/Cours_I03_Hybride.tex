@@ -1,0 +1,122 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+	language=C++,
+	emptylines=1,
+	breaklines=true,
+	basicstyle=\ttfamily\color{black},
+	moredelim=**[is][\bf\color{red}]{@}{@},
+}
+
+\usetheme[]{boxes}
+\usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
+
+%\usepackage{french}
+\title{Programmation parallèle hybride}
+\author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
+\date{10/12/2020}
+
+\begin{document}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\large
+\begin{frame}
+	\frametitle{Cas envisagés}
+
+Du fait qu'il y a souvent plusieurs dispositifs matériels (clusters, machines multi-c\oe urs, GPU, etc.) et plusieurs outils logiciels associés, il est intéressant d'essayer de combiner leur utilisation.
+
+\vfill
+En fonction de ce qui est disponible sur les machines
+\begin{enumerate}
+	\item clusters (plus généralement, machines parallèles multi-n\oe uds) : MPI,
+	\item processeurs multi-c\oe urs : OpenMP (et autres outils : TBB, std::threads, ...),
+	\item accélérateurs de calcul (GPU ou autres) : Cuda, OpenCL,
+	\item outils PGAS (``partitionned global addressing system") : pour information (faibles performances),
+\end{enumerate}
+
+\vfill
+on testera plusieurs combinaisons.
+\end{frame}
+
+\begin{frame}
+\frametitle{Machines multi-n\oe uds et multi-c\oe urs}
+
+Pour utiliser la puissance de calcul de ce type de machine, on a souvent le choix entre 2 possibilités :
+\medskip
+\begin{itemize}
+	\item {\bf MPI} pour le parallélisme multi-n\oe uds et {\bf MPI} pour le parallélisme multi-c\oe urs.
+\medskip
+	\item {\bf MPI} pour le parallélisme multi-n\oe uds et {\bf OpenMP} pour le parallélisme multi-c\oe urs.
+\end{itemize}
+\vfill
+
+Sur des simulations de taille petite ou moyenne, on préfère souvent le premier choix pour des raisons de simplicité. 
+
+Par contre, sur des simulations de (très) grande taille, le ``tout MPI'' atteint plus rapidement ses limites d'utilisation.
+\end{frame}
+
+\begin{frame}
+	
+\vfill
+
+Avantages/inconvénients du tout MPI:
+	
+\vfill
+\begin{itemize}
+	\item[\LARGE $\mathbf\oplus$] programmation MPI n\oe uds-c\oe urs identique à la programmation MPI entre les n\oe uds
+	
+\vfill
+	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, les tampons utilisés pour les communication prennent plus de place(on atteint les limites sur des simulations très importantes)
+	
+\vfill
+	\item[\LARGE $\mathbf\ominus$] le temps consacré aux communications MPI augmente (et donc les speedups diminuent)
+\end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}
+
+
+\vfill
+	Avantages/inconvénients de la combinaison MPI-OpenMP:
+	
+\vfill
+	\begin{itemize}
+		\item[\LARGE $\mathbf\oplus$] les possibilités en nombre de n\oe uds-c\oe urs sont plus importantes
+	
+\vfill
+		\item[\LARGE $\mathbf\ominus$] la programmation MPI sur les n\oe uds et OpenMP sur les c\oe urs est plus complexe
+	
+\vfill
+		\item[\LARGE $\mathbf\ominus$] l'amélioration des performances n'est pas toujours évidente
+	\end{itemize}
+	
+	\vfill
+\end{frame}
+
+\begin{frame}
+	Exemple 4.1: taille des structures utilisées par MPI.
+\end{frame}
+\end{document}

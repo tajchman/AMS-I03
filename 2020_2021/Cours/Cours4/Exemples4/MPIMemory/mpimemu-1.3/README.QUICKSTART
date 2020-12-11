@@ -1,0 +1,26 @@
+################################################################################
+
+Quick Start Guide for mpimemu
+
+Please see README for mpimemu environment details.
+
+################################################################################
+
+## Latest Distributions
+########################################
+http://hpc.github.com/mpimemu
+
+Configure and build mpimemu.
+
+Modify util/env-setup-bash to meet your specific needs.
+
+NOTE: If you are using a shell other than bash, you can easily replicate
+      env-setup-bash's functionality in whatever language is most convenient.
+
+Source util/env-setup-bash to load your setup.
+
+Run mpimemu-run, found in the src directory.
+
+Run mpimemu-mkstats -i [/path/to/generated/data]
+
+Plot generated CSV data with your favorite utility or use mpimemu-plot.
