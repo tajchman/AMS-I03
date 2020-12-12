@@ -2,61 +2,115 @@
 #include <cstring>
 #include <iostream>
 
-Arguments::Arguments(int argc, char **argv)
+void Arguments::AddOption(const char *name)
 {
+  _options[name] = false;
+}
+
+template <>
+void Arguments::AddArgument(const char * name, int defaultValue)
+{
+  Argument A;
+  A.name = name;
+  A.value.Set(defaultValue);
+  A.type = TypeInt;
+  _arguments[name] = A;
+}
+template <>
+void Arguments::AddArgument(const char * name, bool defaultValue)
+{
+  Argument A;
+  A.name = name;
+  A.value.Set(defaultValue);
+  A.type = TypeBool;
+  _arguments[name] = A;
+}
+
+template <>
+void Arguments::AddArgument(const char * name, double defaultValue)
+{
+  Argument A;
+  A.name = name;
+  A.value.Set(defaultValue);
+  A.type = TypeReal;
+  _arguments[name] = A;
+}
+
+template <>
+void Arguments::AddArgument(const char * name, const char * defaultValue)
+{
+  Argument A;
+  A.name = name;
+  A.value.Set(defaultValue);
+  A.type = TypeString;
+  _arguments[name] = A;
+}
+
+void Arguments::Parse(int argc, char **argv)
+{
+  _cmd = argv[0];
+
   for (int iarg = 1; iarg < argc; iarg++) {
     const char *s = argv[iarg];
 
     if (strlen(s) > 1) {
       if (s[0] == '-') {
-        s++;
-        if (s[0] == '-')
-           _options.push_back(s + 1);
+        if (_options.find(s) == _options.end())
+          _options[s] = true;
       }
       else {
         const char * p = strchr(s, '=');
         if (p) {
-          std::string key(s, p);
-          std::string value(p+1);
-           _arguments[key] = value;
+          std::string k(s, p);
+          const char *key = k.c_str();
+          std::string v(p+1);
+          const char *value = v.c_str();
+          auto a = _arguments.find(key);
+          if (a != _arguments.end()) {
+            auto & b = a->second;
+            char *end;
+            if (b.type == TypeInt) {
+              b.value.intVal = strtol(value, &end, 10);
+              if (*end != '\0')
+                throw BadTypeArgument(key, value, TypeInt);
+            }
+            else if (b.type == TypeReal) {
+              b.value.doubleVal = strtod(value, &end);
+              if (*end != '\0')
+                throw BadTypeArgument(key, value, TypeReal);
+            }
+            else if (b.type == TypeString)
+              b.value.stringVal = value;
+            else if (b.type == TypeBool) {
+              if (strcasecmp(value, "true") == 0 || 
+                  strcmp(value, "1") == 0 || 
+                  strcasecmp(value, "vrai") == 0)
+                b.value.boolVal = true;
+              else if (strcasecmp(value, "false") == 0 || 
+                  strcmp(value, "0") == 0 ||
+                  strcasecmp(value, "faux") == 0)
+                b.value.boolVal = false;
+              else
+                throw BadTypeArgument(key, value, TypeBool);
+            }           
+          }
         }
       }
     }
   }
 }
 
-bool Arguments::options_contains(const char *s) {
-
-   bool v = false;
-   for (auto & e : _options)
-     if (e == s) {
-       v = true;
-       break;
-     }
-
-   return v;
-}
-
-int Arguments::Get(const char * name, int defaultValue)
+void Arguments::Usage()
 {
-  auto t = _arguments.find(name);
-  if (t == _arguments.end())
-     return defaultValue;
-  return strtol(t->second.c_str(), NULL, 10);
+  std::cout << "Usage : " << _cmd;
+
+  for (auto & o : _options)
+    std::cout << " [" << o.first << "]";
+
+  for (auto & a : _arguments)
+    std::cout << " " << a.first;
+  std::cout << std::endl;
 }
 
-double Arguments::Get(const char *name, double defaultValue)
-{
-  auto t = _arguments.find(name);
-  if (t == _arguments.end())
-     return defaultValue;
-  return strtod(t->second.c_str(), NULL);
-}
-  
-const char * Arguments::Get(const char *name, const char * defaultValue)
-{
-  auto t = _arguments.find(name);
-  if (t == _arguments.end())
-     return defaultValue;
-  return t->second.c_str();
-}
+
+

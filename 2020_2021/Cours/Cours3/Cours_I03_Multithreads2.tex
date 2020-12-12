@@ -185,7 +185,7 @@ Cela consiste à :
 	Cela conduit souvent à des régions parallèles dans lesquelles une partie des instructions ne sont pas exécutées par tous les threads (utilisation des pragmas \textcolor{red}{\tt single} et \textcolor{red}{\tt master}, ou des indices de threads : {\tt omp\_get\_thread\_num()}).
 \end{quote}
 
-	\item découper soi-même les boucles internes pour mieux tenir compte de la différences de temps calcul entre les itérations.
+	\item découper soi-même les boucles internes pour mieux tenir compte de la différence de temps calcul entre les itérations.
 \end{itemize}
 
 \vfill
@@ -247,9 +247,11 @@ Cela consiste à :
 #pragma omp parallel default(shared)
 {
   int iT, iX;
-  /+int d = nX/omp_get_num_threads();
-  /+int nX1 = omp_get_thread_num()*d;
-  /+int nX2 = n1 + d;
+  /+int iTh = omp_get_thread_num();
+  /+int nTh = omp_get_num_threads();
+  /+int d = nX/nTh;
+  /+int nX1 = iTh*d;
+  /+int nX2 = n1 + d; if(iTh==nTh-1)nX2=nX; 
   for (iT=0; iT < nT; iT++)
   {
     #pragma omp single
@@ -396,7 +398,8 @@ Cette version va créer $2^L$ threads où $L$ est le nombre de niveaux de récur
 	
 	
 \begin{lstlisting}{C++}
-long fib_tasks(int n) {	
+long fib_tasks(int n) {
+	
   long i, j;
   if (n<2)
     return n;

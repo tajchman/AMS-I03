@@ -69,9 +69,19 @@ double iteration(Values & v, Values & u, double dt, double (*f)(double x, double
     return du;
 }
 
+
 int main(int argc, char **argv)
 {
-  Arguments A(argc, argv);
+  Arguments A;
+  A.AddArgument("n", 50);
+  A.AddArgument("it", 10);
+  A.AddArgument("dt", 0.0001);
+  A.Parse(argc, argv);
+
+  if (A.GetOption("-h") || A.GetOption("--help")) {
+    Usage();
+    return -1;
+  }
 
   int n = A.Get("n", 50);
   int iT, nT = A.Get("it", 50);

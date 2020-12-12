@@ -85,7 +85,16 @@ double iteration(Values & v, Values & u, double dt, double (*f)(double x, double
 
 int main(int argc, char **argv)
 {
-  Arguments A(argc, argv);
+  Arguments A;
+  A.AddArgument("n", 50);
+  A.AddArgument("it", 10);
+  A.AddArgument("dt", 0.0001);
+
+  A.Parse(argc, argv);
+  if (A.GetOption("h") || A.GetOption("help")) {
+    A.Usage();
+    return -1;
+  }
 
   int rank, size;
   MPI_Init(&argc, &argv);
@@ -95,9 +104,14 @@ int main(int argc, char **argv)
   std::string outName = "out_" + std::to_string(rank) + ".txt";
   fOut.open(outName);
 
-  int nGlobal = A.Get("n", 50);
-  int iT, nT = A.Get("it", 50);
-  double dT = A.Get("dt", 0.25/(nGlobal*nGlobal)), du;
+  int nGlobal, iT, nT;
+  A.Get("n", nGlobal);
+  A.Get("it", nT);
+
+  A.Set("dt", 0.25/(nGlobal*nGlobal));
+  double dT;
+  A.Get("dt", dT);
+  double du;
 
   int n = nGlobal/size;
   int m = nGlobal;
