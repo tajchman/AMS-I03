@@ -55,7 +55,7 @@ void Arguments::Parse(int argc, char **argv)
 
     if (strlen(s) > 1) {
       if (s[0] == '-') {
-        if (_options.find(s) == _options.end())
+        if (_options.find(s) != _options.end())
           _options[s] = true;
       }
       else {
@@ -107,8 +107,18 @@ void Arguments::Usage()
   for (auto & o : _options)
     std::cout << " [" << o.first << "]";
 
-  for (auto & a : _arguments)
-    std::cout << " " << a.first;
+  for (auto & a : _arguments) {
+    std::cout << " [" << a.first << "=";
+    if (a.second.type == TypeInt)
+       std::cout << "<int>";
+    if (a.second.type == TypeReal)
+       std::cout << "<real>";
+    if (a.second.type == TypeString)
+       std::cout << "<string>";
+    if (a.second.type == TypeBool)
+       std::cout << "<0/1/false/true/faux/vrai>";
+    std::cout << "]";
+  }
   std::cout << std::endl;
 }
 
