@@ -10,7 +10,7 @@ std::ofstream fOut;
 
 double f(double x, double y)
 {
-  return cos(M_PI * (x-0.5)) * cos(M_PI * (y-0.5);
+  return cos(M_PI * (x-0.5)) * cos(M_PI * (y-0.5));
 }
 double u0(double x, double y)
 {
@@ -19,10 +19,6 @@ double u0(double x, double y)
 double g(double x, double y)
 {
   return 1.0;
-}
-double u0(double x, double y)
-{
-  return 0.0;
 }
 
 void init(Values & u, double (*f)(double x, double y))
@@ -44,10 +40,10 @@ void boundary(Values & u, double (*g)(double x, double y))
          ymin = u.ymin(), ymax = u.ymax(), dy = u.dy();
 
   for (j=jmin_ext; j<=jmax_ext; j++)
-    u(imin_ext, j) = g(xmin, ymin + i*dy);
+    u(imin_ext, j) = g(xmin, ymin + j*dy);
 
   for (j=jmin_ext; j<=jmax_ext; j++)
-    u(imax_ext, j) = g(xmax, ymin + i*dy);
+      u(imax_ext, j) = g(xmax, ymin + j*dy);
   
   for (i=imin_ext; i<=imax_ext; i++)
     u(i, jmin_ext) = g(xmin + i*dx, ymin);
@@ -109,24 +105,27 @@ int main(int argc, char **argv)
   std::cout << "\tversion sequentielle\n" << std::endl;
   
   Values U(n,n), V(n,n);
-  
+  fOut << U.dx() << std::endl;
+
   init(U, u0);
   boundary(U, g);
   V = U;
 
-  if (n < 10)
-    std::cout << U << std::endl;
-  else
-    std::cout << "iteration " << "  variation " << std::endl;
+  if (n < 10) {
+    fOut << "Condition initiale" << std::endl;
+    fOut << U << std::endl;
+  }
+  std::cout << "iteration " << "  variation " << std::endl;
 
   for (iT=0; iT<nT; iT++) 
   {
     du = iteration(V, U, dT, f);
     swap(U, V);
 
-    if (n < 10)
-      std::cout << U << std::endl;
-
+    if (n < 10) {
+      fOut << "Itération " << iT+1 << std::endl;
+      fOut << U << std::endl;
+      }
     std::cout << std::setw(9) << iT << std::setw(12) << du << std::endl;
   }
   return 0;

@@ -9,14 +9,15 @@ public:
   MemoryUsed();
   ~MemoryUsed();
 
-  void measure(const char *step);
-  void setRank(int r) { _rank=r; }
+  void initMeasure();
+  void endMeasure(const char *step);
+  void setRank(int r, int s) { _rank=r, _size=s; }
 
 private:
 
   std::ofstream _f;
   std::string _fNameTemp, _fName;
-  long _pid, _rank, _m0;
+  long _pid, _rank, _size, _m0;
 };
 
 #endif
