@@ -86,12 +86,18 @@ Avantages/inconvénients du tout MPI:
 \vfill
 \begin{itemize}
 	\item[\LARGE $\mathbf\oplus$] programmation MPI n\oe uds-c\oe urs identique à la programmation MPI entre les n\oe uds
+	\vfill
+	
+	\item[\LARGE $\mathbf\oplus$] les librairies MPI sont de mieux en mieux optimisées (en particulier si plieurs processus sont sur le même processeur)
 	
 \vfill
-	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, les tampons utilisés pour les communication prennent plus de place(on atteint les limites sur des simulations très importantes)
+	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, les tampons utilisés pour les communication prennent plus de place
+	\bigskip
 	
-\vfill
-	\item[\LARGE $\mathbf\ominus$] le temps consacré aux communications MPI augmente (et donc les speedups diminuent)
+	\begin{quote}
+On atteint actuellement les limites des machines parallèles sur des simulations avec des nombres de processus $> 10^6$.
+	\end{quote}
+	
 \end{itemize}
 \vfill
 \end{frame}
@@ -105,18 +111,22 @@ Avantages/inconvénients du tout MPI:
 \vfill
 	\begin{itemize}
 		\item[\LARGE $\mathbf\oplus$] les possibilités en nombre de n\oe uds-c\oe urs sont plus importantes
+		
+\begin{quotation}\noindent%
+Le nombre total de processus MPI diminue (un seul processus MPI par n\oe ud de calcul.)
+\end{quotation}
 	
 \vfill
 		\item[\LARGE $\mathbf\ominus$] la programmation MPI sur les n\oe uds et OpenMP sur les c\oe urs est plus complexe
 	
 \vfill
-		\item[\LARGE $\mathbf\ominus$] l'amélioration des performances n'est pas toujours évidente
+		\item[\LARGE $\mathbf\ominus$] l'amélioration des performances n'est pas toujours évidente surtout pour des nombres de processus petits ou moyens.
 	\end{itemize}
 	
 	\vfill
 \end{frame}
 
 \begin{frame}
-	Exemple 4.1: taille des structures utilisées par MPI.
+	Exemples4/MemoireMPI : exemple de ressource mémoire utilisée par MPI.
 \end{frame}
 \end{document}
