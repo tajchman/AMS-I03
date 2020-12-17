@@ -3,14 +3,12 @@
 #include <iomanip>
 #include <fstream>
 #include <mpi.h>
+#include <omp.h>
 
 #include "values.hxx"
 #include "arguments.hxx"
-//#include "memory_used.hxx"
 
 std::ofstream fOut;
-//MemoryUsed M;
-
 
 double f(double x, double y)
 {
@@ -70,9 +68,8 @@ double iteration(Values & v, Values & u, double dt, double (*f)(double x, double
   double lx = 0.5*dt/(dx*dx);
   double ly = 0.5*dt/(dy*dy);
 
-  double du, du_local;
+  double du, du_local = 0.0;
 
-  #pragma omp parallel for private (i,j) reduction(+:du_local)
   for (i=imin_int; i<=imax_int; i++)
     for (j=jmin_int; j<=jmax_int; j++) {
       v(i,j) = u(i,j) 
@@ -82,9 +79,7 @@ double iteration(Values & v, Values & u, double dt, double (*f)(double x, double
       du_local += std::abs(v(i,j) - u(i,j));
     }
 
-//  M.initMeasure(); 
   MPI_Allreduce(&du_local, &du, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-//  M.endMeasure("MPI_Allreduce");
 
   return du;
 }
@@ -103,11 +98,9 @@ void synchronize(Values & u,
     for (j=jmin_ext; j<=jmax_ext; j++)
       bufferOut[j-jmin_ext] = u(imin_ext+1, j);
     
-//    M.initMeasure();
     MPI_Sendrecv(bufferOut.data(), nj, MPI_DOUBLE, neighbour[0], 0, 
                  bufferIn.data(),  nj, MPI_DOUBLE, neighbour[0], 0,
                  MPI_COMM_WORLD, &status);
-//    M.endMeasure("MPI_Sendrecv");
 
     for (j=jmin_ext; j<=jmax_ext; j++)
       u(imin_ext, j) = bufferIn[j-jmin_ext];
@@ -118,11 +111,9 @@ void synchronize(Values & u,
     for (j=jmin_ext; j<=jmax_ext; j++)
       bufferOut[j-jmin_ext] = u(imax_ext-1, j);
 
-//    M.initMeasure();
     MPI_Sendrecv(bufferOut.data(), nj, MPI_DOUBLE, neighbour[1], 0, 
                  bufferIn.data(),  nj, MPI_DOUBLE, neighbour[1], 0,
                  MPI_COMM_WORLD, &status);
-//    M.endMeasure("MPI_Sendrecv");
 
     for (j=jmin_ext; j<=jmax_ext; j++)
       u(imax_ext, j) = bufferIn[j-jmin_ext];
@@ -133,11 +124,9 @@ void synchronize(Values & u,
     for (i=imin_ext; i<=imax_ext; i++)
       bufferOut[i-imin_ext] = u(i, jmin_ext+1);
 
-//    M.initMeasure();
     MPI_Sendrecv(bufferOut.data(), ni, MPI_DOUBLE, neighbour[2], 0, 
                  bufferIn.data(),  ni, MPI_DOUBLE, neighbour[2], 0,
                  MPI_COMM_WORLD, &status);
-//    M.endMeasure("MPI_Sendrecv");
 
     for (i=imin_ext; i<=imax_ext; i++)
       u(i, jmin_ext) = bufferIn[i-imin_ext];
@@ -148,11 +137,9 @@ void synchronize(Values & u,
     for (i=imin_ext; i<=imax_ext; i++)
       bufferOut[i-imin_ext] = u(i, jmax_ext-1);
 
-//    M.initMeasure();
     MPI_Sendrecv(bufferOut.data(), ni, MPI_DOUBLE, neighbour[3], 0, 
                  bufferIn.data(),  ni, MPI_DOUBLE, neighbour[3], 0,
                  MPI_COMM_WORLD, &status);
-//    M.endMeasure("MPI_Sendrecv");
 
     for (i=imin_ext; i<=imax_ext; i++)
       u(i, jmax_ext) = bufferIn[i-imin_ext];
@@ -171,21 +158,21 @@ void subDomainGeom(MPI_Comm & comm, int &n, int &m,
   
   int nGlobal_int_min = 1 + coord[0]*n;
   int nGlobal_int_max = nGlobal_int_min + n - 1;
+  int nGlobal_ext_min = nGlobal_int_min - 1;
+  int nGlobal_ext_max = nGlobal_int_max + 1;
   if (coord[0] == dim[0]-1) {
     nGlobal_int_max = nGlobal;
     n = nGlobal - n * (dim[0]-1);
   }
-  int nGlobal_ext_min = nGlobal_int_min - 1;
-  int nGlobal_ext_max = nGlobal_int_max + 1;
 
   int mGlobal_int_min = 1 + coord[1]*m;
   int mGlobal_int_max = mGlobal_int_min + m - 1;
+  int mGlobal_ext_min = mGlobal_int_min - 1;
+  int mGlobal_ext_max = mGlobal_int_max + 1;
   if (coord[1] == dim[1]-1) {
     mGlobal_int_max = nGlobal;
     m = nGlobal - m * (dim[1]-1);
   }
-  int mGlobal_ext_min = mGlobal_int_min - 1;
-  int mGlobal_ext_max = mGlobal_int_max + 1;
   
   xmin = dx * nGlobal_ext_min;
   xmax = dx * nGlobal_ext_max;
@@ -199,16 +186,15 @@ int main(int argc, char **argv)
   A.AddArgument("n", 200);
   A.AddArgument("it", 10);
   A.AddArgument("dt", 0.0001);
+  A.AddArgument("threads", 1);
 
   A.Parse(argc, argv);
 
   int rank, size;
 
-  //M.initMeasure();
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  //M.setRank(rank, size);
     
   int dim[2] = {size, 1};
   int period[2] = {0, 0};
@@ -219,7 +205,6 @@ int main(int argc, char **argv)
   MPI_Cart_create(MPI_COMM_WORLD, 2, dim, period, reorder, &comm);
   MPI_Comm_rank(comm, &rank);
   MPI_Cart_coords(comm, rank, 2, coord);
-  //M.endMeasure("MPI_Init + MPI_Cart");
 
   if (A.GetOption("-h") || A.GetOption("--help")) {
     if (rank==0)
@@ -238,12 +223,17 @@ int main(int argc, char **argv)
   double dT, du;
   A.Set("dt", 0.25/(nGlobal*nGlobal));
   A.Get("dt", dT);
+  
+  int nThreads;
+  A.Get("threads", nThreads);
+  omp_set_num_threads(nThreads);
 
   if (rank == 0) {
     std::cout << "\nEquation de la chaleur\n\t[" 
               << nGlobal << " x " << nGlobal << "] points intérieurs\n"
               << "\t" << nT << " iterations en temps\n\tdt = " << dT << "\n" << std::endl;
-    std::cout << "\tversion parallele sur " << size << " processus\n" << std::endl;
+    std::cout << "\tversion parallele sur " << size << " processus et "
+              << nThreads << " thread(s) par processus\n" << std::endl;
   }
 
   int n, m;
@@ -254,7 +244,6 @@ int main(int argc, char **argv)
                 nGlobal, coord, dim);
 
   Values U(n, m, xmin, xmax, ymin, ymax);
-  fOut << U.dx() << std::endl;
   init(U, u0);
 
   int neighbour[] = {-1, -1, -1, -1};
@@ -290,8 +279,6 @@ int main(int argc, char **argv)
         std::cout << std::setw(9) << iT << std::setw(12) << du << std::endl;
   }
 
-  //M.initMeasure();
   MPI_Finalize();
-  //M.endMeasure("MPI_Finalize");
   return 0;
 }

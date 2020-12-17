@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(Tasks)
 
 find_package(MPI REQUIRED)
+find_package(OpenMP REQUIRED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -19,21 +20,19 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   endif()
 endif()
 
-add_executable(
-  poisson_seq.exe
-  main_seq.cxx
-  #memory_used.cxx
-  arguments.cxx)
-
 include_directories(
   ${MPI_INCLUDES}
 )
 
+set(code poisson_mpi_openmp_fine_grain.exe)
+
 add_executable(
-  poisson_mpi.exe
+  ${code}
   main_mpi.cxx
-  #memory_used.cxx
   arguments.cxx)
 
-install(TARGETS poisson_seq.exe poisson_mpi.exe DESTINATION .)
+target_compile_options(${code} PUBLIC ${OpenMP_CXX_FLAGS})
+target_link_libraries(${code} ${OpenMP_CXX_LIBRARIES})
+
+install(TARGETS ${code} DESTINATION .)
  

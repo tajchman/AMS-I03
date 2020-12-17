@@ -293,7 +293,7 @@ MPI_Init_thread(int *argc, char ***argv,
 \end{frame}
 
 \begin{frame}[fragile]
-	Exemple de combinaison MPI-OpenMP grain fin
+	Exemple MPI-OpenMP grain fin
 	
 \lstset{%
 	language={C++},
@@ -311,24 +311,27 @@ MPI_Init_thread(int *argc, char ***argv,
 
 \begin{lstlisting}{C++}
 /+MPI_Init(..., MPI_FUNNELED, ...);
-	
-for (iT=0; iT < nT; iT++){
-  dT = calcul_dt(u);
-/+  MPI_Allreduce(&dT, &dT_global, ...)
+int nX = // nombre de points locaux	
+doubl dT, dT_local;
+for (iT=0; iT < nT; iT++)
+{
+  dT_local = calcul_dt(u);
+/+  MPI_Allreduce(&dT_local,&dT, ...)
   
 /+#pragma omp parallel for
-  for (iX=0; iX < nX; iX++)
-	v[iX]=f(u[iX-1],u[iX],u[iX+1],dT_global);
-	
+  for (iX=0; iX < nX-1; iX++)
+    v[iX]=f(u[iX-1],u[iX],u[iX+1],dT);
+    
   echange(u, v);
-/+  echanges des cellules fantomes par MPI  
+/+  //echanges MPI sur frontiere locale  
 }
 	\end{lstlisting}
 	
 \end{frame}
 
 \begin{frame}[fragile]
-Exemple de combinaison MPI-OpenMP grain grossier
+Exemple MPI-OpenMP grain grossier
+(version 1)
 
 \lstset{%
 	language={C++},
@@ -344,37 +347,125 @@ Exemple de combinaison MPI-OpenMP grain grossier
 	moredelim=[il][\color{red}]{/+},%
 }
 
-\begin{lstlisting}{C++}
+\begin{lstlisting}[firstnumber=1]{C++}
 /+MPI_Init(..., MPI_FUNNELED, ...);
-
-for (iT=0; iT < nT; iT++){
-dT = calcul_dt(u);
-/+  MPI_Allreduce(&dT, &dT_global, ...)
-
-/+#pragma omp parallel for
-for (iX=0; iX < nX; iX++)
-v[iX]=f(u[iX-1],u[iX],u[iX+1],dT_global);
-
-echange(u, v);
-/+  echanges des cellules fantomes par MPI  
-}
+int nX = // nombre de points locaux (MPI)
+ 
 /+#pragma omp parallel default(shared)
 {
-int iT, iX;
-for (iT=0; iT < nT; iT++)
-{
-/+#pragma omp single
-dT = calcul_dt(u);
+  int iT, iX;
+  for (iT=0; iT < nT; iT++) {
+  
+/+#pragma omp master
+  {
+    dT_local = calcul_dt(u);
+/+    MPI_Allreduce(&dT_local, &dT, ...)
+  }
+/+#pragma omp barrier
+  
+\end{lstlisting}
 
-/+#pragma omp for
-for (iX=1; iX < nX-1; iX++)
-v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+\end{frame}
+\begin{frame}[fragile]
+	Exemple MPI-OpenMP grain grossier (version 1, suite)
+	
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		numbers=left,
+		numbersep=5pt,
+		numberstyle=\tiny\color{gray},
+		rulecolor=\color{black},
+		showspaces=false,
+		showstringspaces=false,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+\begin{lstlisting}[firstnumber=15]{C++}
+  /+#pragma omp for
+  for (iX=1; iX < nX-1; iX++)
+    v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
 
-/+#pragma omp single
-echange(u, v);
-}
+  /+#pragma omp master
+  {
+    echange(u, v);
+/+    //echanges MPI sur frontiere locale    
+  }
 }
 \end{lstlisting}
 
+\end{frame}
+\begin{frame}[fragile]
+	Exemple MPI-OpenMP grain grossier (version 2)
+	
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		numbers=left,
+		numbersep=5pt,
+		numberstyle=\tiny\color{gray},
+		rulecolor=\color{black},
+		showspaces=false,
+		showstringspaces=false,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+	\begin{lstlisting}[firstnumber=1]{C++}
+/+MPI_Init(..., MPI_SERIALIZED, ...);
+int nX = // nombre de points locaux (MPI)
+	
+/+#pragma omp parallel default(shared)
+{
+  int iT, iX;
+  for (iT=0; iT < nT; iT++) {
+
+  /+#pragma omp single
+  {
+    dT_local = calcul_dt(u);
+  /+  MPI_Allreduce(&dT_local, &dT, ...)
+  }
+	
+\end{lstlisting}
+	
+\end{frame}
+\begin{frame}[fragile]
+	Exemple MPI-OpenMP grain grossier (vrsion 2, suite)
+	
+	\lstset{%
+		language={C++},
+		breaklines=true,
+		captionpos=b,
+		basicstyle=\ttfamily,
+		numbers=left,
+		numbersep=5pt,
+		numberstyle=\tiny\color{gray},
+		rulecolor=\color{black},
+		showspaces=false,
+		showstringspaces=false,
+		moredelim=[il][\color{red}]{/+},%
+	}
+	
+	\begin{lstlisting}[firstnumber=14]{C++}
+	
+  /+#pragma omp for
+  for (iX=1; iX < nX-1; iX++)
+    v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
+
+  /+#pragma omp single
+  {
+    echange(u, v);
+    /+// echanges MPI sur frontiere locale    
+  }
+}
+\end{lstlisting}
+	
+\end{frame}
+
+\begin{frame}
+Exemple4/PoissonMPI : code MPI auquel est ajoutée une parallélisation OpenMP grain fin
 \end{frame}
 \end{document}
