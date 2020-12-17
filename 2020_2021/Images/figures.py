@@ -319,6 +319,7 @@ class pstricks:
 \\usepackage{pstricks-add}
 \\usepackage{auto-pst-pdf}
 \\usepackage{pst-plot}
+\\usepackage{pst-func}
 \\pagestyle{empty}
 \\begin{document}
 \\fontfamily{%s}\\selectfont

@@ -66,9 +66,9 @@ on testera plusieurs combinaisons.
 Pour utiliser la puissance de calcul de ce type de machine, on a souvent le choix entre 2 possibilités :
 \medskip
 \begin{itemize}
-	\item {\bf MPI} pour le parallélisme multi-n\oe uds et {\bf MPI} pour le parallélisme multi-c\oe urs.
+	\item {\bf MPI} pour le parallélisme multi-n\oe uds et {\bf MPI} pour le parallélisme multi-c\oe urs (plusieurs processus MPI sur chaque n\oe ud).
 \medskip
-	\item {\bf MPI} pour le parallélisme multi-n\oe uds et {\bf OpenMP} pour le parallélisme multi-c\oe urs.
+	\item {\bf MPI} pour le parallélisme multi-n\oe uds et {\bf OpenMP} pour le parallélisme multi-c\oe urs (un processus MPI sur chaque n\oe ud).
 \end{itemize}
 \vfill
 
@@ -91,9 +91,11 @@ Avantages/inconvénients du tout MPI:
 	\item[\LARGE $\mathbf\oplus$] les librairies MPI sont de mieux en mieux optimisées (en particulier si plieurs processus sont sur le même processeur)
 	
 \vfill
-	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, les tampons utilisés pour les communication prennent plus de place
+	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, la mémoire utilisée pour les communications aussi (``cellules fantomes'', ``halos'')
 	\bigskip
 	
+\bigskip
+
 	\begin{quote}
 On atteint actuellement les limites des machines parallèles sur des simulations avec des nombres de processus $> 10^6$.
 	\end{quote}
@@ -127,6 +129,113 @@ Le nombre total de processus MPI diminue (un seul processus MPI par n\oe ud de c
 \end{frame}
 
 \begin{frame}
-	Exemples4/MemoireMPI : exemple de ressource mémoire utilisée par MPI.
+	Exemples4/MemoireMPI : ressource mémoire utilisée par MPI (MPI\_Init et MPI\_Finalize, seulement, pas d'échange de messages).
+	\bigskip
+	
+	Lire le fichier README.txt pour des instructions
+\end{frame}
+
+\begin{frame}
+	Combinaison des modèles MPI et OpenMP en modèle hybride MPI-OpenMP:
+
+\begin{center}
+	\includegraphics[scale=0.45]{../../Images/modeleHybride}
+\end{center}
+
+\begin{itemize}
+	\item Les différents processus $P_0$, $P_1$, ... ont chacun leur mémoire locale $M_0$, $M_1$, ....
+	\item A l'intérieur de chaque processus $P_i$, un ou plusieurs threads travaillent avec la mémoire locale $M_i$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\vfill
+\begin{itemize}
+	\item Pas de synchronisation a priori entre les sections multi-threads entre les différents processus, donc besoin éventuel de combiner des barrières OpenMP et MPI
+	\vfill
+	
+	\item 2 types de réductions dans OpenMP et MPI, donc pour faire une réduction complète, il faut combiner ces 2 réductions
+	\vfill
+	
+	\item On peut a priori échanger des messages entre chaque threads de 2 processus différents
+\end{itemize}
+	\vfill	
+	
+\end{frame}
+
+\begin{frame}
+	Exemple sur 2 processus, chacun avec plusieurs threads
+	\includegraphics[scale=0.4]{../../Images/enchainementHybride1}
+\end{frame}
+
+\begin{frame}
+	Quelques types différents de messages
+	\includegraphics[scale=0.4]{../../Images/enchainementHybride2}
+\end{frame}
+
+\begin{frame}
+\vfill
+Le grand nombre de situations possibles est très difficile à gérer pour ceux qui développent les libraires OpenMP et MPI
+
+	\vfill
+Pour cette raison, 4 niveaux de compatibilité entre OpenMP et MPI, ont été définis:
+	\vfill
+
+\begin{itemize}
+	\item {\tt\textcolor{blue}{MPI\_THREAD\_SINGLE}}:
+	
+	Un seul thread par processus (donc pas d'OpenMP)
+	\item {\tt\textcolor{blue}{MPI\_THREAD\_FUNNELED}}:
+	
+	Parmi les threads, seul celui qui a initialisé MPI peut utiliser des fonctions MPI
+	\item {\tt\textcolor{blue}{MPI\_THREAD\_SERIALIZED}}:
+	
+	A un instant donné, un seul thread peut utiliser des fonctions MPI (mais pas toujours le même thread)
+	\item {\tt\textcolor{blue}{MPI\_THREAD\_MULTIPLE}}:
+	
+	Pas de restrictions, tous les threads peuvent utiliser les fonctions MPI.
+	
+\end{itemize}
+
+\vfill
+
+\end{frame}
+
+\begin{frame}[fragile]
+Plus le niveau de compatibilité permet de souplesse dans l'utilisation des fonctions MPI et des pragmas OpenMP, plus la gestion interne des threads dans les processus est coûteuse.
+
+\textcolor{blue}{Donc, il faut choisir le niveau le plus bas suffisant pour l'algorithme du code}
+
+\vfill
+Pour choisir le niveau de compatibilité, il faut remplacer
+\begin{lstlisting}
+MPI_Init(int *argc, char ***argv)
+\end{lstlisting}
+
+par
+\begin{lstlisting}
+MPI_Init_thread(int *argc, char ***argv,
+                int required, int *provided)
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	où {\tt required} est un entier qui peut prendre une des 4 valeurs \begin{itemize}
+		\item {\tt MPI\_THREAD\_SINGLE},
+		\item {\tt MPI\_THREAD\_FUNNELED},
+		\item {\tt MPI\_THREAD\_SERIALIZED},
+		\item {\tt MPI\_THREAD\_MULTIPLE}
+	\end{itemize}   
+	\vfill
+	
+	et {\tt provided} est un entier qui reçoit le niveau de compatibilité effectivement proposé par la version de MPI
+	
+	\vfill
+	\textcolor{red}{Il est important de comparer les valeurs de {\tt required} et {\tt provided} pour vérifier que le niveau demandé est effectivement disponible.} 
+\end{frame}
+
+\begin{frame}
+	Exemples4/Hybrides : différents niveaux de combinaison MPI-OpenMP
 \end{frame}
 \end{document}

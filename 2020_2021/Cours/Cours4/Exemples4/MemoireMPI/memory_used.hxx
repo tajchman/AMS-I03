@@ -20,4 +20,6 @@ private:
   long _pid, _rank, _size, _m0;
 };
 
+void GetMeasure(const char *step, int size, int & mean, int & stddev);
+
 #endif
