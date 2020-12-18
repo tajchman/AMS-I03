@@ -91,7 +91,7 @@ Avantages/inconvénients du tout MPI:
 	\item[\LARGE $\mathbf\oplus$] les librairies MPI sont de mieux en mieux optimisées (en particulier si plieurs processus sont sur le même processeur)
 	
 \vfill
-	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, la mémoire utilisée pour les communications aussi (``cellules fantomes'', ``halos'')
+	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, la mémoire utilisée pour les communications aussi (``cellules fant\^omes'', ``halos'')
 	\bigskip
 	
 \bigskip
@@ -240,6 +240,10 @@ MPI_Init_thread(int *argc, char ***argv,
 	
 	\vfill
 	\textcolor{blue}{{\tt MPI\_Init(...)} est équivalent à {\tt MPI\_Init\_thread(..., MPI\_THREAD\_SINGLE. ...)}}
+	
+	\vfill
+	\texttt{MPI\_Init\_thread} doit être appelé depuis un seul thread (en général le thread 0 dans une région séquentielle pour OpenMP mais
+	ce n'est pas obligatoire)
 \end{frame}
 
 \begin{frame}
@@ -250,7 +254,7 @@ MPI_Init_thread(int *argc, char ***argv,
 	Sans utiliser le tags, parfois cela marche, parfois non.
 	
 	\medskip
-	Situation analogue aux échanges MPI asynchrones (\texttt{MPI\_Isend/MPI\_Irecv}). D'ailleurs, MPI utilise aussi de threads en interne pour ce type d'échanges.
+	Situation analogue aux échanges MPI asynchrones (\texttt{MPI\_Isend/MPI\_Irecv}). D'ailleurs, MPI utilise aussi des threads en interne pour ce type d'échanges.
 	\vfill
 \end{frame}
 
@@ -433,7 +437,7 @@ int nX = // nombre de points locaux (MPI)
 	
 \end{frame}
 \begin{frame}[fragile]
-	Exemple MPI-OpenMP grain grossier (vrsion 2, suite)
+	Exemple MPI-OpenMP grain grossier (version 2, suite)
 	
 	\lstset{%
 		language={C++},
@@ -463,6 +467,14 @@ int nX = // nombre de points locaux (MPI)
 }
 \end{lstlisting}
 	
+\end{frame}
+
+\begin{frame}
+	Les appels MPI globaux (\texttt{MPI\_Reduce}, \texttt{MPI\_Gather}, etc)
+	doivent être faits dans un seul thread par processus (celui qui a appelé \texttt{MPI\_Init\_thread}).
+	
+	\bigskip
+	En général, les appels sont faits dans les parties séquentielles (au sens OpenMP) ou dans les parties des régions OpenMP parallèles contrôlées par les \texttt{pragma omp master}. 
 \end{frame}
 
 \begin{frame}
