@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <array>
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -36,7 +37,8 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int argc, char ** argv, int size, int rank) : Arguments(argc, argv)
+Parameters::Parameters(int argc, char ** argv, int size, int rank) 
+  : Arguments(argc, argv), m_neighbour{-1, -1, -1, -1, -1, -1}
 {
   m_size = size;
   m_rank = rank;
@@ -44,12 +46,24 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank) : Arguments(a
   int dim[3] = {size, 1, 1};
   int period[3] = {0, 0, 0};
   int reorder = 0;
-  int coord[3];
-
+  std::array<int, 3> coord, coord2;
+  
   MPI_Cart_create(MPI_COMM_WORLD, 3, dim, period, reorder, &m_comm);
-  MPI_Comm_rank(m_comm, &rank);
-  MPI_Cart_coords(m_comm, rank, 3, coord);
- 
+  MPI_Cart_coords(m_comm, rank, 3, &(coord[0]));
+  
+  for (int i=0; i<3; i++) {
+    if (coord[i] > 0) {
+      coord2 = coord;
+      coord2[i]--;
+      MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i]);
+    }
+    if (coord[i] < dim[i]) {
+      coord2 = coord;
+      coord2[i]++;
+      MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i+1]);
+    }
+  }
+
   m_help = options_contains("h") || options_contains("help");
 
   m_command = argv[0];

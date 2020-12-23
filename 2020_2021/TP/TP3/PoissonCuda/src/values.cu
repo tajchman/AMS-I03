@@ -38,16 +38,12 @@ Values::Values(Parameters & prm) : m_p(prm)
 }
 
 __global__
-void zeroValue(int n0, int n1, int n2, double *u)
+void zeroValue(int n, double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
-  int j = threadIdx.y + blockIdx.y * blockDim.y;
-  int k = threadIdx.z + blockIdx.z * blockDim.z;
-  int p;
 
-  if (i<n0 && j<n1 && k<n2) {
-    p = i + j*n0 + k*n0*n1;
-    u[p] = 0.0;
+  if (i<n) {
+    u[i] = 0.0;
   }
 }
 
@@ -84,13 +80,11 @@ void initValue(int n0, int n1, int n2,
 
 void Values::zero()
 {
-  dim3 dimBlock(8,8,8);
-  dim3 dimGrid(ceil(m_n[0]/double(dimBlock.x)),
-               ceil(m_n[1]/double(dimBlock.y)),
-               ceil(m_n[2]/double(dimBlock.z)));
+  int n = m_n[0]*m_n[1]*m_n[2];
+  dim3 dimBlock(1024);
+  dim3 dimGrid(ceil(n/double(dimBlock.x)));
 
-  zeroValue<<<dimGrid, dimBlock>>>
-        (m_n[0], m_n[1], m_n[2], m_u);
+  zeroValue<<<dimGrid, dimBlock>>>(n, m_u);
 }
 
 void Values::init()
@@ -108,7 +102,7 @@ void Values::init()
 }
 
 __global__
-void boundZValue(int n0, int n1, int k, 
+void boundZValue(int n0, int n1, int n2, int k, 
                double xmin, double ymin, double zmin,
                double dx, double dy, double dz,
                double *u)
@@ -124,7 +118,7 @@ void boundZValue(int n0, int n1, int k,
 }
 
 __global__
-void boundYValue(int n0, int j, int n2, 
+void boundYValue(int n0, int n1, int n2, int j,
                double xmin, double ymin, double zmin,
                double dx, double dy, double dz,
                double *u)
@@ -140,7 +134,7 @@ void boundYValue(int n0, int j, int n2,
 }
 
 __global__
-void boundXValue(int i, int n1, int n2, 
+void boundXValue(int n0, int n1, int n2, int i, 
                double xmin, double ymin, double zmin,
                double dx, double dy, double dz,
                double *u)
@@ -162,37 +156,37 @@ void Values::boundaries()
                ceil(m_n[1]/double(dimBlock.y)));
 
   boundZValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], 0, 
+  (m_n[0], m_n[1], m_n[2], 0, 
    xmin,   ymin,   zmin, 
    dx,     dy,     dz, 
    m_u);
 
   boundZValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], 
+  (m_n[0], m_n[1], m_n[2], m_n[2]-1, 
    xmin,   ymin,   zmin, 
    dx,     dy,     dz, 
    m_u);
 
   boundYValue<<<dimGrid, dimBlock>>>
-  (m_n[0], 0, m_n[2],
+  (m_n[0], m_n[1], m_n[2], 0,
    xmin,   ymin,   zmin, 
    dx,     dy,     dz, 
    m_u);
 
   boundYValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], 
+  (m_n[0], m_n[1], m_n[2], m_n[1]-1,
    xmin,   ymin,   zmin, 
    dx,     dy,     dz, 
    m_u);
 
   boundXValue<<<dimGrid, dimBlock>>>
-  (0, m_n[1], m_n[2], 
+  (m_n[2], m_n[1], m_n[2], 0,
    xmin,   ymin,   zmin, 
    dx,     dy,     dz, 
    m_u);
   
   boundXValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], 
+  (m_n[0], m_n[1], m_n[2], m_n[0] - 1, 
    xmin,   ymin,   zmin, 
    dx,     dy,     dz, 
    m_u);
@@ -228,7 +222,10 @@ void Values::print(std::ostream & f) const
 
 void Values::swap(Values & other)
 {
-  m_u.swap(other.m_u);
+  double * temp_u = m_u;
+  m_u = other.m_u;
+  other.m_u = temp_u;
+  
   int i, temp;
   for (i=0; i<3; i++) {
     temp = m_n[i];
@@ -300,7 +297,7 @@ void Values::plot(int order) const {
     << "</RectilinearGrid>\n"
     << "</VTKFile>\n" <<std::endl;
 }
-*/
+
 void Values::operator= (const Values &other)
 {
   int i;

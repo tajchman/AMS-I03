@@ -106,38 +106,63 @@ double Scheme::iteration_domaine(int imin, int imax,
 
 void Scheme::synchronize()
 {
-  int i, imin_ext = 0, imax_ext = u.n()+1;
-  int j, jmin_ext = 0, jmax_ext = u.m()+1;
-  int ni = imax_ext - imin_ext + 1;
-  int nj = jmax_ext - jmin_ext + 1;
-  MPI_Status status;
 
-  if (M_P.neighbour[0] >= 0) {
-    std::vector<double> bufferIn(nj), bufferOut(nj);
-    for (j=jmin_ext; j<=jmax_ext; j++)
-      bufferOut[j-jmin_ext] = u(imin_ext+1, j);
+  for (int idim=0; idim<3; idim++) {
 
+    int jdim = (idim+1)%3;
+    int kdim = (idim+2)%3;
+
+    int omin_ext = 0, omax_ext = m_n[idim] + 1;
+    int pmin_ext = 0, pmax_ext = m_n[jdim] + 1; 
+    int qmin_ext = 0, qmax_ext = m_n[kdim] + 1;
+    int k, p, q, m = pmax_ext*qmax_ext;
+    std::array<int, 3> i;
+    std::vector<double> bufferIn(m), bufferOut(m);
+    MPI_Status status;
+
+    int voisin = m_P.neighbour(2*idim);
+    if (voisin >=0) {
+      i[idim] = omin_ext;
+      for (k=0, p=pmin_ext; p<pmax_ext; p++)
+        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          bufferOut[k++] = m_u(i);
+        }
 //    M.initMeasure();
-    MPI_Sendrecv(bufferOut.data(), nj, MPI_DOUBLE, neighbour[0], 0,
-                 bufferIn.data(),  nj, MPI_DOUBLE, neighbour[0], 0,
-                 MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
+                   bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
+                   MPI_COMM_WORLD, &status);
 //    M.endMeasure("MPI_Sendrecv");
-
-    for (j=jmin_ext; j<=jmax_ext; j++)
-      u(imin_ext, j) = bufferIn[j-jmin_ext];
+      i[idim] = omax_ext-1;
+      for (k=0, p=pmin_ext; p<pmax_ext; p++)
+        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          m_u(i) = bufferIn[k++];
+        }
     }
 
-  if (neighbour[1] >= 0) {
-    std::vector<double> bufferIn(nj), bufferOut(nj);
-    for (j=jmin_ext; j<=jmax_ext; j++)
-      bufferOut[j-jmin_ext] = u(imax_ext-1, j);
-
+    voisin = m_P.neighbour(2*idim+1);
+    if (voisin >=0) {
+      i[idim] = omax_ext;
+      for (k=0, p=pmin_ext; p<pmax_ext; p++)
+        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          bufferOut[k++] = m_u(i);
+        }
 //    M.initMeasure();
-    MPI_Sendrecv(bufferOut.data(), nj, MPI_DOUBLE, neighbour[1], 0,
-                 bufferIn.data(),  nj, MPI_DOUBLE, neighbour[1], 0,
-                 MPI_COMM_WORLD, &status);
+      MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
+                   bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
+                   MPI_COMM_WORLD, &status);
 //    M.endMeasure("MPI_Sendrecv");
-
+      i[idim] = omin_ext+1;
+      for (k=0, p=pmin_ext; p<pmax_ext; p++)
+        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          m_u(i) = bufferIn[k++];
+        }
+    }
+  }
+}
 
 const Values & Scheme::getOutput()
 {

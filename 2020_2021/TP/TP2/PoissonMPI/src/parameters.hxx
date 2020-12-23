@@ -28,13 +28,14 @@ public:
   
   int itmax() const { return m_itmax; }
   double dt() const { return m_dt; }
-
+  
   int freq() const { return m_freq; }
   std::string resultPath() const { return m_path; }
   bool help();
 
   int rank() const { return m_rank; }
   int size() const { return m_size; }
+  int neighbour(int i) const { return m_neighbour[i]; }
 
 private:
 
@@ -52,6 +53,7 @@ private:
   bool m_help;
 
   int m_size, m_rank;
+  int m_neighbour[6];
   MPI_Comm m_comm;
 };
 

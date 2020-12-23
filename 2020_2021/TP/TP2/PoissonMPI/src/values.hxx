@@ -4,7 +4,7 @@
 #include "parameters.hxx"
 #include <vector>
 #include <iostream>
-
+#include <array>
 class Values {
 
 public:
@@ -22,6 +22,12 @@ public:
   }
   double operator() (int i,int j,int k) const {
     return m_u[n2*i + n1*j + k];
+  }
+  double & operator() (std::array<int,3> & i) {
+    return m_u[n2*i[0] + n1*i[1] + i[2]];
+  }
+  double operator() (std::array<int,3> & i) const {
+    return m_u[n2*i[0] + n1*i[1] + i[2]];
   }
 
   void plot(int order) const;
