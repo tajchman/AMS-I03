@@ -12,8 +12,6 @@ myenv = os.environ.copy()
 plat = platform.system()
 
 compileCmd = ['make', '--no-print-directory', 'install']
-myenv['CC'] = 'mpicc'
-myenv['CXX'] = 'mpicxx'
 
 base = os.getcwd()
 srcDir = os.path.join(base, 'src')

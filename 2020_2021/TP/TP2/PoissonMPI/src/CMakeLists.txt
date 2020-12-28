@@ -20,6 +20,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 endif()
 
 include_directories(
+  ${MPI_CXX_INCLUDE_DIRS}
   util
   ${CMAKE_BUILD_DIR}
 )
@@ -28,18 +29,21 @@ configure_file(version.hxx.in version.hxx @ONLY)
 
 set(SRCS
   main.cxx
-    parameters.cxx
-    values.cxx
+  parameters.cxx
+  values.cxx
   scheme.cxx
-    util/arguments.cxx
-    util/os.cxx
-    util/pause.cxx
-    util/timer.cxx
+  util/arguments.cxx
+  util/os.cxx
+  util/pause.cxx
+  util/timer.cxx
   )
 
 add_executable(
   ${VERSION}.exe 
-  ${SRCS})
+  ${SRCS}
+  )
+
+target_link_libraries(${VERSION}.exe ${MPI_mpi_cxx_LIBRARY} ${MPI_mpi_LIBRARY})
 
 install(TARGETS ${VERSION}.exe DESTINATION .)
  
