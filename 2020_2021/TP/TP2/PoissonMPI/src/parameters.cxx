@@ -57,7 +57,7 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
       coord2[i]--;
       MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i]);
     }
-    if (coord[i] < dim[i]) {
+    if (coord[i] < dim[i]-1) {
       coord2 = coord;
       coord2[i]++;
       MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i+1]);
