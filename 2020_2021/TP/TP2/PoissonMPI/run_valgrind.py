@@ -20,7 +20,10 @@ if not os.path.exists(resultsDir):
    os.makedirs(resultsDir)
 
 command = ['mpirun', '-n', str(args.nprocs), 
-           '--xterm', '-1!', os.path.join(base, 'PoissonMPI.exe')]
+           '--xterm', '-1!', 'valgrind', 
+           '--leak-check=full', '--show-leak-kinds=all',
+           '--suppressions=/usr/share/openmpi/openmpi-valgrind.supp',
+           os.path.join(base, 'PoissonMPI.exe')]
 
 subprocess.call(command + args.rest)
 

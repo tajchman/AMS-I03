@@ -51,24 +51,22 @@ int main(int argc, char *argv[])
 
   Parameters Prm(argc, argv, size, rank);
   if (Prm.help()) return 0;
-  
-  if (rank == 0)
-    std::cout << Prm << std::endl;
+
+  std::cout << Prm << std::endl;
 
   int itMax = Prm.itmax();
   int freq = Prm.freq();
-  
-  if (rank == 0)
-    T_init.start();
+
+  T_init.start();
 
   Scheme C(Prm, force);
- 
+
   Values u_0(Prm);
   u_0.boundaries(cond_ini);
   u_0.init(cond_ini);
   C.setInput(u_0);
   T_init.stop();
-  std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+  std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6)
             << T_init.elapsed() << " s\n" << std::endl;
 
   for (int it=0; it < itMax; it++) {
@@ -86,11 +84,11 @@ int main(int argc, char *argv[])
     C.synchronize();
     T_calcul.stop();
 
-    std::cout << "iteration " << std::setw(5) << it 
+    std::cout << "iteration " << std::setw(5) << it
               << "  variation " << std::setw(10) << C.variation()
-              << "  temps calcul " << std::setw(10) << std::setprecision(6) 
+              << "  temps calcul " << std::setw(10) << std::setprecision(6)
               << T_calcul.elapsed() << " s"
-              << std::endl; 
+              << std::endl;
   }
 
   if (freq > 0 && itMax % freq == 0) {
@@ -103,7 +101,7 @@ int main(int argc, char *argv[])
 
   T_total.stop();
 
-  std::cout << "\n" << std::setw(26) << "temps total" 
+  std::cout << "\n" << std::setw(26) << "temps total"
             << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
   #ifdef _OPENMP

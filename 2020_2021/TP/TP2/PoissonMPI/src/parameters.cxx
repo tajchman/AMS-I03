@@ -37,9 +37,14 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int argc, char ** argv, int size, int rank) 
+Parameters::Parameters(int argc, char ** argv, int size, int rank)
   : Arguments(argc, argv), m_neighbour{-1, -1, -1, -1, -1, -1}
 {
+  m_command = argv[0];
+  m_help = options_contains("h") || options_contains("help");
+
+  if (m_help) return;
+
   m_size = size;
   m_rank = rank;
 
@@ -47,10 +52,11 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   int period[3] = {0, 0, 0};
   int reorder = 0;
   std::array<int, 3> coord, coord2;
-  
+
   MPI_Cart_create(MPI_COMM_WORLD, 3, dim, period, reorder, &m_comm);
   MPI_Cart_coords(m_comm, rank, 3, &(coord[0]));
-  
+  std::cout << " " << coord[0] << " " << coord[1] << " " << coord[2] << std::endl;
+
   for (int i=0; i<3; i++) {
     if (coord[i] > 0) {
       coord2 = coord;
@@ -62,15 +68,13 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
       coord2[i]++;
       MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i+1]);
     }
+    std::cout << i << ": " << m_neighbour[2*i]
+              << " " << m_neighbour[2*i+1] << std::endl;
   }
 
-  m_help = options_contains("h") || options_contains("help");
-
-  m_command = argv[0];
-
-  m_n_global[0] = Get("n0", 400);
-  m_n_global[1] = Get("n1", 400);
-  m_n_global[2] = Get("n2", 400);
+  m_n_global[0] = Get("n0", 401);
+  m_n_global[1] = Get("n1", 401);
+  m_n_global[2] = Get("n2", 401);
   m_itmax = Get("it", 10);
 
   double d;
@@ -79,40 +83,40 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   if (dt_max > d) dt_max = d;
   d = 0.1/(m_n_global[2]*m_n_global[2]);
   if (dt_max > d) dt_max = d;
- 
+
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
-  
-  if (!m_help) {
- 
-    m_path = Get("path", ".");
-    if (m_path != ".") 
-       mkdir_p(m_path.c_str());
 
-    if (m_dt > dt_max)
-      std::cerr << "Warning : provided dt (" << m_dt
-                << ") is greater then the recommended maximum (" <<  dt_max
-                << ")" << std::endl;
-    
-    for (int i=0; i<3; i++) {
-      m_xmin[i] = 0.0;
-      m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]+1) : 0.0;
-      m_n[i] = m_n_global[i]/dim[i];
-  
-      int nGlobal_int_min = 1 + coord[i]*m_n[i];
-      int nGlobal_int_max = nGlobal_int_min + m_n[i] - 1;
-      if (coord[i] == dim[i]-1) {
-        nGlobal_int_max = m_n_global[i];
-        m_n[i] = m_n_global[i] - m_n[i] * (dim[0]-1);
-      }
-      int nGlobal_ext_min = nGlobal_int_min - 1;
-      int nGlobal_ext_max = nGlobal_int_max + 1;
-      m_imin[i] = 1;
-      m_imax[i] = m_n[i]-1;
+  m_path = Get("path", ".");
+  if (m_path != ".")
+     mkdir_p(m_path.c_str());
 
-      m_xmin[i] = m_dx[i] * nGlobal_ext_min;
-      m_xmax[i] = m_dx[i] * nGlobal_ext_max;
+  if (m_dt > dt_max)
+    std::cerr << "Warning : provided dt (" << m_dt
+              << ") is greater then the recommended maximum (" <<  dt_max
+              << ")" << std::endl;
+
+  for (int i=0; i<3; i++) {
+    m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
+    std::cout << "dx[" << i << "] : " << m_dx[i] << std::endl;
+
+    m_n[i] = m_n_global[i]/dim[i];
+    int nGlobal_int_min = 1 + coord[i]*m_n[i];
+    int nGlobal_int_max = nGlobal_int_min + m_n[i] - 1;
+    if (coord[i] == dim[i]-1) {
+      nGlobal_int_max = m_n_global[i] - 2;
+      m_n[i] = m_n_global[i] - m_n[i] * (dim[i]-1);
     }
+
+    std::cout << "m_n[" << i << "] : " << m_n[i] << std::endl;
+    int nGlobal_ext_min = nGlobal_int_min - 1;
+    int nGlobal_ext_max = nGlobal_int_max + 1;
+    m_imin[i] = 1;
+    m_imax[i] = m_n[i]-1;
+
+    m_xmin[i] = m_dx[i] * nGlobal_ext_min;
+    m_xmax[i] = m_dx[i] * nGlobal_ext_max;
+    std::cout << "x[" << i << "] : " << m_xmin[i] << " " << m_xmax[i] << std::endl;
   }
 }
 
@@ -122,9 +126,9 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
-              << "n0=<int>       : number of points in the X direction (default: 400)\n"
-              << "n1=<int>       : number of points in the Y direction (default: 400)\n"
-              << "n2=<int>       : number of points in the Z direction (default: 400)\n"
+              << "n0=<int>       : number of points in the X direction (default: 401)\n"
+              << "n1=<int>       : number of points in the Y direction (default: 401)\n"
+              << "n2=<int>       : number of points in the Z direction (default: 401)\n"
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
               << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"
@@ -137,9 +141,9 @@ bool Parameters::help()
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
   f << "Domain :   "
-    << "[" << 0 << "," << p.n(0) - 1  << "] x "
-    << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]\n";
+    << "[" << p.xmin(0) << "," << p.xmax(0) << "] x "
+    << "[" << p.xmin(1) << "," << p.xmax(1) << "] x "
+    << "[" << p.xmin(1) << "," << p.xmax(1) << "]\n";
 
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
@@ -147,4 +151,3 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
 
   return f;
 }
-

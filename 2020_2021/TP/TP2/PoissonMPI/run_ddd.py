@@ -20,7 +20,7 @@ if not os.path.exists(resultsDir):
    os.makedirs(resultsDir)
 
 command = ['mpirun', '-n', str(args.nprocs), 
-           '--xterm', '-1!', os.path.join(base, 'PoissonMPI.exe')]
+           '--xterm', '-1!', 'ddd', os.path.join(base, 'PoissonMPI.exe')]
 
 subprocess.call(command + args.rest)
 

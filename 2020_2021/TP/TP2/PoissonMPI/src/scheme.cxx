@@ -68,7 +68,7 @@ bool Scheme::iteration()
   return true;
 }
 
-double Scheme::iteration_domaine(int imin, int imax, 
+double Scheme::iteration_domaine(int imin, int imax,
                                  int jmin, int jmax,
                                  int kmin, int kmax)
 {
@@ -79,14 +79,14 @@ double Scheme::iteration_domaine(int imin, int imax,
   double ymin = m_xmin[1];
   double zmin = m_xmin[2];
   int i,j,k;
-  double du, du1, du2, du_sum = 0.0;
-  
+  double du, du1, du2, du_sum, du_sum_local = 0.0;
+
   double x, y, z;
 
   for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
-           
+
         du1 = (-2*m_u(i,j,k) + m_u(i+1,j,k) + m_u(i-1,j,k))*lam_x
             + (-2*m_u(i,j,k) + m_u(i,j+1,k) + m_u(i,j-1,k))*lam_y
             + (-2*m_u(i,j,k) + m_u(i,j,k+1) + m_u(i,j,k-1))*lam_z;
@@ -98,9 +98,10 @@ double Scheme::iteration_domaine(int imin, int imax,
 
         du = m_dt * (du1 + du2);
         m_v(i, j, k) = m_u(i, j, k) + du;
-        du_sum += du > 0 ? du : -du;
+        du_sum_local += du > 0 ? du : -du;
       }
 
+    MPI_Allreduce(&du_sum_local, &du_sum, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
     return du_sum;
 }
 
@@ -112,9 +113,9 @@ void Scheme::synchronize()
     int jdim = (idim+1)%3;
     int kdim = (idim+2)%3;
 
-    int omin_ext = 0, omax_ext = m_n[idim] + 1;
-    int pmin_ext = 0, pmax_ext = m_n[jdim] + 1; 
-    int qmin_ext = 0, qmax_ext = m_n[kdim] + 1;
+    int omin_ext = 0, omax_ext = m_n[idim];
+    int pmin_ext = 0, pmax_ext = m_n[jdim];
+    int qmin_ext = 0, qmax_ext = m_n[kdim];
     int k, p, q, m = pmax_ext*qmax_ext;
     std::array<int, 3> i;
     std::vector<double> bufferIn(m), bufferOut(m);
@@ -126,39 +127,39 @@ void Scheme::synchronize()
       for (k=0, p=pmin_ext; p<pmax_ext; p++)
         for (q=qmin_ext; q<qmax_ext; q++, k++) {
           i[jdim] = p; i[kdim] = q;
-          bufferOut[k++] = m_u(i);
+          bufferOut[k] = m_u(i);
         }
 //    M.initMeasure();
       MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
                    bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
-                   MPI_COMM_WORLD, &status);
+                   m_P.comm(), &status);
 //    M.endMeasure("MPI_Sendrecv");
       i[idim] = omax_ext-1;
       for (k=0, p=pmin_ext; p<pmax_ext; p++)
         for (q=qmin_ext; q<qmax_ext; q++, k++) {
           i[jdim] = p; i[kdim] = q;
-          m_u(i) = bufferIn[k++];
+          m_u(i) = bufferIn[k];
         }
     }
 
     voisin = m_P.neighbour(2*idim+1);
     if (voisin >=0) {
-      i[idim] = omax_ext;
+      i[idim] = omax_ext-1;
       for (k=0, p=pmin_ext; p<pmax_ext; p++)
         for (q=qmin_ext; q<qmax_ext; q++, k++) {
           i[jdim] = p; i[kdim] = q;
-          bufferOut[k++] = m_u(i);
+          bufferOut[k] = m_u(i);
         }
 //    M.initMeasure();
       MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
                    bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
-                   MPI_COMM_WORLD, &status);
+                   m_P.comm(), &status);
 //    M.endMeasure("MPI_Sendrecv");
-      i[idim] = omin_ext+1;
+      i[idim] = omin_ext;
       for (k=0, p=pmin_ext; p<pmax_ext; p++)
         for (q=qmin_ext; q<qmax_ext; q++, k++) {
           i[jdim] = p; i[kdim] = q;
-          m_u(i) = bufferIn[k++];
+          m_u(i) = bufferIn[k];
         }
     }
   }
@@ -174,5 +175,3 @@ void Scheme::setInput(const Values & u)
   m_u = u;
   m_v = u;
 }
-
-

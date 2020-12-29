@@ -13,7 +13,7 @@ Values::Values(Parameters & prm) : m_p(prm)
 
   n1 = m_n[2];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
-  
+
   m_u.resize(nn);
 
   imin = m_p.imin(0);
@@ -27,7 +27,7 @@ Values::Values(Parameters & prm) : m_p(prm)
   dx = m_p.dx(0);
   dy = m_p.dx(1);
   dz = m_p.dx(2);
-  
+
   xmin =  m_p.xmin(0);
   ymin =  m_p.xmin(1);
   zmin =  m_p.xmin(2);
@@ -63,7 +63,7 @@ void Values::boundaries(callback_t f)
   int i, j, k;
 
   for (j=jmin; j<jmax; j++)
-    for (k=kmin; k<kmax; k++) 
+    for (k=kmin; k<kmax; k++)
     {
       operator()(imin,   j, k) = f(xmin, ymin + j*dy, zmin + k*dz);
       operator()(imax-1, j, k) = f(xmax, ymin + j*dy, zmin + k*dz);
@@ -141,26 +141,26 @@ void Values::plot(int order) const {
   s << "/0";
 #endif
   mkdir_p(s.str().c_str());
-  
+
   s << "/plot_" << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << imin << " " << imax-1  << " " 
-    << jmin << " " << jmax-1  << " " 
-    << kmin << " " << kmax-1 
+    << imin << " " << imax-1  << " "
+    << jmin << " " << jmax-1  << " "
+    << kmin << " " << kmax-1
     << "\">\n"
     << "<Piece Extent=\""
-    << imin << " " << imax-1  << " " 
-    << jmin << " " << jmax-1  << " " 
-    << kmin << " " << kmax-1 
+    << imin << " " << imax-1  << " "
+    << jmin << " " << jmax-1  << " "
+    << kmin << " " << kmax-1
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";
   f << "  <DataArray type=\"Float64\" Name=\"values\" format=\"ascii\">\n";
-  
+
   for (k=kmin; k<kmax; k++)
     for (j=jmin; j<jmax; j++) {
       for (i=imin; i<imax; i++)
@@ -168,15 +168,15 @@ void Values::plot(int order) const {
       f << "\n";
     }
   f << " </DataArray>\n";
-   
+
   f << "</PointData>\n";
 
   f << " <Coordinates>\n";
-  
+
   for (k=0; k<3; k++) {
-    f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\"" 
+    f << "   <DataArray type=\"Float64\" Name=\"" << char('X' + k) << "\""
       << " format=\"ascii\">";
-    
+
     int imin = m_p.imin(k);
     int imax = m_p.imax(k);
     for (i=imin; i<imax; i++)
@@ -184,7 +184,7 @@ void Values::plot(int order) const {
     f << "   </DataArray>\n";
   }
   f << " </Coordinates>\n";
-  
+
   f << "</Piece>\n"
     << "</RectilinearGrid>\n"
     << "</VTKFile>\n" <<std::endl;
@@ -193,9 +193,9 @@ void Values::plot(int order) const {
 void Values::operator= (const Values &other)
 {
   int i;
-  
+
   for (i=0; i<3; i++)
     m_n[i] = other.m_n[i];
-  
+
   m_u = other.m_u;
 }
