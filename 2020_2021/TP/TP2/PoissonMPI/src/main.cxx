@@ -17,7 +17,7 @@ double cond_ini(const std::array<double, 3> & x)
   double yc = x[1] - 0.5;
   double zc = x[2] - 0.5;
 
-  if (xc*xc+yc*yc+zc*zc < 0.1)
+  if (xc*xc+yc*yc+zc*zc < 0.09)
     return 1.0;
   else
     return 0.0;
@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
 
   T_comm.start();
   C.synchronize();
+  C.getOutput().plot(99);
   T_comm.stop();
 
   for (int it=0; it < itMax; it++) {

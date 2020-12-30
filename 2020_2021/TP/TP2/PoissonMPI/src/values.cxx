@@ -2,6 +2,7 @@
 #include "os.hxx"
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include <cstdlib>
 #include <cstring>
 
@@ -14,7 +15,7 @@ Values::Values(Parameters & prm) : m_p(prm)
     m_imax[i] = m_p.imax(i);
     m_dx[i] = m_p.dx(i);
     m_xmin[i] =  m_p.xmin(i);
-    m_xmax[i] =  m_xmin[i] + (m_imax[i]-m_imin[i]) * m_dx[i];
+    m_xmax[i] =  m_p.xmax(i);
     nn *= (m_imax[i] - m_imin[i] + 3);
   }
 
@@ -30,7 +31,7 @@ void Values::init()
   for (i=m_imin[0]; i<=m_imax[0]; i++)
     for (j=m_imin[1]; j<=m_imax[1]; j++)
       for (k=m_imin[1]; k<=m_imax[2]; k++)
-        operator()({i,j,k}) = 0.0;
+        operator()({i,j,k}) = 0;
 }
 
 void Values::init(callback_t f)
@@ -41,13 +42,14 @@ void Values::init(callback_t f)
 
   for (i=m_imin[0]; i<=m_imax[0]; i++)
     for (j=m_imin[1]; j<=m_imax[1]; j++)
-      for (k=m_imin[1]; k<=m_imax[2]; k++) {
+      for (k=m_imin[2]; k<=m_imax[2]; k++) {
         p = {i,j,k};
         x = { m_xmin[0] + i*m_dx[0], 
               m_xmin[1] + j*m_dx[1], 
               m_xmin[2] + k*m_dx[2]
               };
         operator()(p) = f(x);
+      }
 }
 
 void Values::boundaries(callback_t f)
@@ -69,7 +71,7 @@ void Values::boundaries(callback_t f)
     if (m_p.neighbour(2*idim) < 0) {
       i[idim] = omin-1;
       x[idim] = m_xmin[idim];
-      for (p=pmin; p<pmax; p++)
+      for (p=pmin; p<=pmax; p++)
         for (q=qmin; q<=qmax; q++) {
           i[jdim] = p; i[kdim] = q;
           x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
@@ -81,7 +83,7 @@ void Values::boundaries(callback_t f)
     if (m_p.neighbour(2*idim+1) < 0) {
       i[idim] = omax+1;
       x[idim] = m_xmax[idim];
-      for (p=pmin; p<pmax; p++)
+      for (p=pmin; p<=pmax; p++)
         for (q=qmin; q<=qmax; q++) {
           i[jdim] = p; i[kdim] = q;
           x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
@@ -173,7 +175,7 @@ void Values::plot(int order) const {
   for (k=kmin; k<=kmax; k++) {
     for (j=jmin; j<=jmax; j++) {
       for (i=imin; i<=imax; i++)
-        f << " " << operator()(i,j,k);
+        f << " " << std::setw(9) << operator()({i,j,k});
       f << "\n";
     }
     f << "\n";

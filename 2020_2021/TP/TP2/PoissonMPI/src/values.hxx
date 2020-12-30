@@ -18,16 +18,16 @@ public:
   void boundaries(callback_t f);
 
   double & operator() (int i,int j,int k) {
-    return m_u[n2*i + n1*j + k];
+    return m_u[n2*k + n1*j + i];
   }
   double operator() (int i,int j,int k) const {
-    return m_u[n2*i + n1*j + k];
+    return m_u[n2*k + n1*j + i];
   }
   double & operator() (const std::array<int,3> & i) {
-    return m_u[n2*i[0] + n1*i[1] + i[2]];
+    return m_u[n2*i[2] + n1*i[1] + i[0]];
   }
   double operator() (const std::array<int,3> & i) const {
-    return m_u[n2*i[0] + n1*i[1] + i[2]];
+    return m_u[n2*i[2] + n1*i[1] + i[0]];
   }
 
   void plot(int order) const;

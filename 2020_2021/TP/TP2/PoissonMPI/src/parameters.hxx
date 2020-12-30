@@ -41,7 +41,7 @@ public:
 private:
 
   std::string m_command;
-  int m_n[3], m_n_global[3];
+  int m_n_global[3];
   double m_xmin[3], m_xmax[3], m_dx[3];
   int m_imin[3], m_imax[3];
 

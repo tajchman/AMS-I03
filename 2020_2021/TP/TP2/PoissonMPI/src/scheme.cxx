@@ -74,7 +74,7 @@ double Scheme::iteration_domaine(int imin, int imax,
         x = xmin + i*m_dx[0];
         y = ymin + j*m_dx[1];
         z = zmin + k*m_dx[2];
-        du2 = m_f(x,y,z);
+        du2 = m_f({x,y,z});
 
         du = m_dt * (du1 + du2);
         m_v(i, j, k) = m_u(i, j, k) + du;

@@ -28,7 +28,6 @@ for t in args.type:
     os.makedirs(buildDir)
 
   configureCmd = ['cmake'] + cmake_params + [srcDir]
-  print(' '.join(configureCmd))
   err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
 
   if err == 0:

@@ -97,12 +97,14 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   for (int i=0; i<3; i++) {
     m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
 
-    m_n[i] = m_n_global[i]/dim[i];
-    int nGlobal_int_min = 1 + coord[i]*m_n[i];
-    int nGlobal_int_max = nGlobal_int_min + m_n[i] - 1;
-    if (coord[i] == dim[i]-1) {
+    int n = (m_n_global[i]-2)/dim[i];
+    int nGlobal_int_min = 1 + coord[i]*n;
+    int nGlobal_int_max;
+    if (coord[i] < dim[i]-1) {
+      nGlobal_int_max = nGlobal_int_min + n - 1;
+    }
+    else {
       nGlobal_int_max = m_n_global[i] - 2;
-      m_n[i] = m_n_global[i] - m_n[i] * (dim[i]-1);
     }
 
     int nGlobal_ext_min = nGlobal_int_min - 1;
