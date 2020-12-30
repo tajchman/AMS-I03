@@ -12,7 +12,7 @@ public:
   Values(Parameters & p);
   virtual ~Values() {}
   void operator= (const Values &);
-  
+
   void init(callback_t f);
   void init();
   void boundaries(callback_t f);
@@ -23,34 +23,33 @@ public:
   double operator() (int i,int j,int k) const {
     return m_u[n2*i + n1*j + k];
   }
-  double & operator() (std::array<int,3> & i) {
+  double & operator() (const std::array<int,3> & i) {
     return m_u[n2*i[0] + n1*i[1] + i[2]];
   }
-  double operator() (std::array<int,3> & i) const {
+  double operator() (const std::array<int,3> & i) const {
     return m_u[n2*i[0] + n1*i[1] + i[2]];
   }
 
   void plot(int order) const;
   void swap(Values & other);
-  int size(int i) const { return m_n[i]; }
+  int size(int i) const { return m_imax[i] - m_imin[i] + 1; }
   void print(std::ostream &f) const;
-  
+
 private:
-  
+
   Values(const Values &);
   int n1, n2;
   std::vector<double> m_u;
-  int m_n[3];
   Parameters & m_p;
-  int imin, jmin, kmin;
-  int imax, jmax, kmax;
+  int m_imin[3];
+  int m_imax[3];
 
-  double dx, dy, dz;
-  double xmin, ymin, zmin;
-  double xmax, ymax, zmax;
+  double m_dx[3];
+  double m_xmin[3];
+  double m_xmax[3];
 
 };
-				   
+
 std::ostream & operator<< (std::ostream & f, const Values & v);
 
 #endif

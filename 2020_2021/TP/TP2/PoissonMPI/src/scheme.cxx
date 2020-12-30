@@ -18,7 +18,6 @@ Scheme::Scheme(Parameters &P, callback_t f) :
 
   int i;
   for (i=0; i<3; i++) {
-    m_n[i] = m_P.n(i);
     m_dx[i] = m_P.dx(i);
     m_xmin[i] = m_P.xmin(i);
   }
@@ -35,32 +34,13 @@ double Scheme::present()
   return m_t;
 }
 
-size_t Scheme::getDomainSize(int dim) const
-{
-  size_t d;
-  switch (dim) {
-    case 0:
-      d = m_n[0];
-      break;
-    case 1:
-      d = m_n[1];
-      break;
-    case 2:
-      d = m_n[2];
-      break;
-    default:
-      d = 1;
-  }
-  return d;
-}
-
 bool Scheme::iteration()
 {
 
   m_duv = iteration_domaine(
       m_P.imin(0), m_P.imax(0),
       m_P.imin(1), m_P.imax(1),
-      m_P.imin(2), m_P.imax(1));
+      m_P.imin(2), m_P.imax(2));
 
   m_t += m_dt;
   m_u.swap(m_v);
@@ -83,9 +63,9 @@ double Scheme::iteration_domaine(int imin, int imax,
 
   double x, y, z;
 
-  for (i = imin; i < imax; i++)
-    for (j = jmin; j < jmax; j++)
-      for (k = kmin; k < kmax; k++) {
+  for (i = imin; i <= imax; i++)
+    for (j = jmin; j <= jmax; j++)
+      for (k = kmin; k <= kmax; k++) {
 
         du1 = (-2*m_u(i,j,k) + m_u(i+1,j,k) + m_u(i-1,j,k))*lam_x
             + (-2*m_u(i,j,k) + m_u(i,j+1,k) + m_u(i,j-1,k))*lam_y
@@ -113,19 +93,20 @@ void Scheme::synchronize()
     int jdim = (idim+1)%3;
     int kdim = (idim+2)%3;
 
-    int omin_ext = 0, omax_ext = m_n[idim];
-    int pmin_ext = 0, pmax_ext = m_n[jdim];
-    int qmin_ext = 0, qmax_ext = m_n[kdim];
-    int k, p, q, m = pmax_ext*qmax_ext;
+    int omin = m_P.imin(idim), omax = m_P.imax(idim);
+    int pmin = m_P.imin(jdim), pmax = m_P.imax(jdim);
+    int qmin = m_P.imin(kdim), qmax = m_P.imax(kdim);
+    int k, p, q, m = (pmax-pmin+1)*(qmax-qmin+1);
+
     std::array<int, 3> i;
     std::vector<double> bufferIn(m), bufferOut(m);
     MPI_Status status;
 
     int voisin = m_P.neighbour(2*idim);
     if (voisin >=0) {
-      i[idim] = omin_ext;
-      for (k=0, p=pmin_ext; p<pmax_ext; p++)
-        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+      i[idim] = omin;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
           i[jdim] = p; i[kdim] = q;
           bufferOut[k] = m_u(i);
         }
@@ -134,9 +115,9 @@ void Scheme::synchronize()
                    bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
                    m_P.comm(), &status);
 //    M.endMeasure("MPI_Sendrecv");
-      i[idim] = omax_ext-1;
-      for (k=0, p=pmin_ext; p<pmax_ext; p++)
-        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+      i[idim] = omax + 1;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
           i[jdim] = p; i[kdim] = q;
           m_u(i) = bufferIn[k];
         }
@@ -144,9 +125,9 @@ void Scheme::synchronize()
 
     voisin = m_P.neighbour(2*idim+1);
     if (voisin >=0) {
-      i[idim] = omax_ext-1;
-      for (k=0, p=pmin_ext; p<pmax_ext; p++)
-        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+      i[idim] = omax;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
           i[jdim] = p; i[kdim] = q;
           bufferOut[k] = m_u(i);
         }
@@ -155,9 +136,9 @@ void Scheme::synchronize()
                    bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
                    m_P.comm(), &status);
 //    M.endMeasure("MPI_Sendrecv");
-      i[idim] = omin_ext;
-      for (k=0, p=pmin_ext; p<pmax_ext; p++)
-        for (q=qmin_ext; q<qmax_ext; q++, k++) {
+      i[idim] = omin - 1;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
           i[jdim] = p; i[kdim] = q;
           m_u(i) = bufferIn[k];
         }

@@ -23,16 +23,16 @@ long find_info(const char *fileName, const char *name)
   char* line = strtok(buffer, delims);
 
   while (line != NULL && found == 0)
+  {
+    search_result = strstr(line, name);
+    if (search_result != NULL)
     {
-      search_result = strstr(line, name);
-      if (search_result != NULL)
-        {
-	  sscanf(line, "%*s %ld", &value);
-	  found = 1;
-        }
-
-      line = strtok(NULL, delims);
+      sscanf(line, "%*s %ld", &value);
+      found = 1;
     }
+    line = strtok(NULL, delims);
+  }
+  
   return value;
 }
 
@@ -91,7 +91,7 @@ void GetMeasure(const char *step, int size, int & mean, int & stddev)
     moy += val;
     moy2 += val*val;
   }
-  
+
   moy /= size;
   moy2 = std::sqrt(moy2/size - moy*moy);
 

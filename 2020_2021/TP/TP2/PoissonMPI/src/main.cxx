@@ -11,23 +11,29 @@
 #include "timer.hxx"
 #include "os.hxx"
 
-double cond_ini(double x, double y, double z)
+double cond_ini(const std::array<double, 3> & x)
 {
-  x -= 0.5;
-  y -= 0.5;
-  z -= 0.5;
-  if (x*x+y*y+z*z < 0.1)
+  double xc = x[0] - 0.5;
+  double yc = x[1] - 0.5;
+  double zc = x[2] - 0.5;
+
+  if (xc*xc+yc*yc+zc*zc < 0.1)
     return 1.0;
   else
     return 0.0;
 }
 
-double force(double x, double y, double z)
+double cond_lim(const std::array<double, 3> & x)
 {
-  if (x < 0.3)
+  return 2.0;
+}
+
+double force(const std::array<double, 3> & x)
+{
+  if (x[0] < 0.3)
     return 0.0;
   else
-    return sin(x-0.5) * exp(- y*y);
+    return sin(x[0]-0.5) * cos(x[1]-0.5) * exp(- x[2]*x[2]);
 }
 
 int main(int argc, char *argv[])
@@ -35,12 +41,14 @@ int main(int argc, char *argv[])
   AddTimer("total");
   AddTimer("init");
   AddTimer("calcul");
+  AddTimer("comm");
   AddTimer("other");
 
   Timer & T_total = GetTimer(0);
   Timer & T_init = GetTimer(1);
   Timer & T_calcul = GetTimer(2);
-  Timer & T_other = GetTimer(3);
+  Timer & T_comm = GetTimer(3);
+  Timer & T_other = GetTimer(4);
 
   T_total.start();
 
@@ -62,12 +70,17 @@ int main(int argc, char *argv[])
   Scheme C(Prm, force);
 
   Values u_0(Prm);
-  u_0.boundaries(cond_ini);
+  u_0.boundaries(cond_lim);
   u_0.init(cond_ini);
   C.setInput(u_0);
   T_init.stop();
+
   std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6)
             << T_init.elapsed() << " s\n" << std::endl;
+
+  T_comm.start();
+  C.synchronize();
+  T_comm.stop();
 
   for (int it=0; it < itMax; it++) {
     if (freq > 0 && it % freq == 0) {
@@ -80,9 +93,9 @@ int main(int argc, char *argv[])
     C.iteration();
     T_calcul.stop();
 
-    T_calcul.start();
+    T_comm.start();
     C.synchronize();
-    T_calcul.stop();
+    T_comm.stop();
 
     std::cout << "iteration " << std::setw(5) << it
               << "  variation " << std::setw(10) << C.variation()

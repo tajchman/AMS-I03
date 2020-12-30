@@ -13,3 +13,4 @@ load*
 .vscode
 analyse
 .run.py
+*.vtr

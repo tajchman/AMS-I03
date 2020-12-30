@@ -17,7 +17,6 @@ class Scheme {
 public:
   Scheme(Parameters &P, callback_t f);
   ~Scheme();
-  size_t getDomainSize(int dim) const;
 
   double present();
 
@@ -33,7 +32,6 @@ public:
 
 protected:
   double m_t, m_dt;
-  size_t m_n[3];
   double m_dx[3];
   double m_xmin[3];
 

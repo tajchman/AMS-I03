@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <array>
 #include <vector>
 #include <memory>
 #include <functional>
@@ -10,7 +11,7 @@
 
 #include "arguments.hxx"
 
-typedef std::function<double(double, double, double)> callback_t;
+typedef std::function<double(const std::array<double, 3> & )> callback_t;
 
 class Parameters : public Arguments {
 public:
@@ -18,7 +19,6 @@ public:
   Parameters(int argc, char **argv, int size, int rank);
   void info();
 
-  int n(int i) const { return m_n[i]; }
   double dx(int i) const { return m_dx[i]; }
   double xmin(int i) const { return m_xmin[i]; }
   double xmax(int i) const { return m_xmax[i]; }

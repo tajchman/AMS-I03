@@ -68,13 +68,11 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
       coord2[i]++;
       MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i+1]);
     }
-    std::cout << i << ": " << m_neighbour[2*i]
-              << " " << m_neighbour[2*i+1] << std::endl;
   }
 
-  m_n_global[0] = Get("n0", 401);
-  m_n_global[1] = Get("n1", 401);
-  m_n_global[2] = Get("n2", 401);
+  m_n_global[0] = Get("n0", 21);
+  m_n_global[1] = Get("n1", 21);
+  m_n_global[2] = Get("n2", 21);
   m_itmax = Get("it", 10);
 
   double d;
@@ -98,7 +96,6 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
 
   for (int i=0; i<3; i++) {
     m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
-    std::cout << "dx[" << i << "] : " << m_dx[i] << std::endl;
 
     m_n[i] = m_n_global[i]/dim[i];
     int nGlobal_int_min = 1 + coord[i]*m_n[i];
@@ -108,15 +105,16 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
       m_n[i] = m_n_global[i] - m_n[i] * (dim[i]-1);
     }
 
-    std::cout << "m_n[" << i << "] : " << m_n[i] << std::endl;
     int nGlobal_ext_min = nGlobal_int_min - 1;
     int nGlobal_ext_max = nGlobal_int_max + 1;
     m_imin[i] = 1;
-    m_imax[i] = m_n[i]-1;
+    m_imax[i] = nGlobal_int_max - nGlobal_int_min + 1;
 
     m_xmin[i] = m_dx[i] * nGlobal_ext_min;
     m_xmax[i] = m_dx[i] * nGlobal_ext_max;
-    std::cout << "x[" << i << "] : " << m_xmin[i] << " " << m_xmax[i] << std::endl;
+
+    std::cout << "global_int[" << i << "] : " << nGlobal_int_min << " " << nGlobal_int_max << std::endl;
+    std::cout << "global_ext[" << i << "] : " << nGlobal_ext_min << " " << nGlobal_ext_max << std::endl;
   }
 }
 
@@ -141,9 +139,14 @@ bool Parameters::help()
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
   f << "Domain :   "
-    << "[" << p.xmin(0) << "," << p.xmax(0) << "] x "
-    << "[" << p.xmin(1) << "," << p.xmax(1) << "] x "
-    << "[" << p.xmin(1) << "," << p.xmax(1) << "]\n";
+    << "[" << p.xmin(0) << ", " << p.xmax(0) << "] x "
+    << "[" << p.xmin(1) << ", " << p.xmax(1) << "] x "
+    << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
+
+  f << "Interior points :   "
+    << "[" << p.imin(0) << ", ..., " << p.imax(0) << "] x "
+    << "[" << p.imin(1) << ", ..., " << p.imax(1) << "] x "
+    << "[" << p.imin(2) << ", ..., " << p.imax(2) << "]\n";
 
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
