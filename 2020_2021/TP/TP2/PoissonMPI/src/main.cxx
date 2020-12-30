@@ -78,30 +78,28 @@ int main(int argc, char *argv[])
   std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6)
             << T_init.elapsed() << " s\n" << std::endl;
 
-  T_comm.start();
-  C.synchronize();
-  C.getOutput().plot(99);
-  T_comm.stop();
-
   for (int it=0; it < itMax; it++) {
+
     if (freq > 0 && it % freq == 0) {
       T_other.start();
       C.getOutput().plot(it);
       T_other.stop();
     }
 
-    T_calcul.start();
-    C.iteration();
-    T_calcul.stop();
-
     T_comm.start();
     C.synchronize();
     T_comm.stop();
 
-    std::cout << "iteration " << std::setw(5) << it
-              << "  variation " << std::setw(10) << C.variation()
-              << "  temps calcul " << std::setw(10) << std::setprecision(6)
+    T_calcul.start();
+    C.iteration();
+    T_calcul.stop();
+
+    std::cout << "iter. " << std::setw(3) << it
+              << "  variation " << std::setw(10) << std::setprecision(4) << C.variation()
+              << "  temps calcul " << std::setw(8) << std::setprecision(3)
               << T_calcul.elapsed() << " s"
+              << "  comm. " << std::setw(8) << std::setprecision(3)
+              << T_comm.elapsed() << " s"
               << std::endl;
   }
 

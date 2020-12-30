@@ -55,7 +55,6 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
 
   MPI_Cart_create(MPI_COMM_WORLD, 3, dim, period, reorder, &m_comm);
   MPI_Cart_coords(m_comm, rank, 3, &(coord[0]));
-  std::cout << " " << coord[0] << " " << coord[1] << " " << coord[2] << std::endl;
 
   for (int i=0; i<3; i++) {
     if (coord[i] > 0) {
@@ -70,9 +69,9 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
     }
   }
 
-  m_n_global[0] = Get("n0", 21);
-  m_n_global[1] = Get("n1", 21);
-  m_n_global[2] = Get("n2", 21);
+  m_n_global[0] = Get("n0", 401);
+  m_n_global[1] = Get("n1", 401);
+  m_n_global[2] = Get("n2", 401);
   m_itmax = Get("it", 10);
 
   double d;
@@ -114,9 +113,6 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
 
     m_xmin[i] = m_dx[i] * nGlobal_ext_min;
     m_xmax[i] = m_dx[i] * nGlobal_ext_max;
-
-    std::cout << "global_int[" << i << "] : " << nGlobal_int_min << " " << nGlobal_int_max << std::endl;
-    std::cout << "global_ext[" << i << "] : " << nGlobal_ext_min << " " << nGlobal_ext_max << std::endl;
   }
 }
 

@@ -91,7 +91,7 @@ void Scheme::synchronize()
   for (int idim=0; idim<3; idim++) {
 
     int jdim = (idim+1)%3;
-    int kdim = (idim+2)%3;
+    int kdim = (jdim+1)%3;
 
     int omin = m_P.imin(idim), omax = m_P.imax(idim);
     int pmin = m_P.imin(jdim), pmax = m_P.imax(jdim);
@@ -110,12 +110,12 @@ void Scheme::synchronize()
           i[jdim] = p; i[kdim] = q;
           bufferOut[k] = m_u(i);
         }
-//    M.initMeasure();
+
       MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
                    bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
                    m_P.comm(), &status);
-//    M.endMeasure("MPI_Sendrecv");
-      i[idim] = omax + 1;
+
+      i[idim] = omin - 1;
       for (k=0, p=pmin; p<=pmax; p++)
         for (q=qmin; q<=qmax; q++, k++) {
           i[jdim] = p; i[kdim] = q;
@@ -131,12 +131,12 @@ void Scheme::synchronize()
           i[jdim] = p; i[kdim] = q;
           bufferOut[k] = m_u(i);
         }
-//    M.initMeasure();
+
       MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
                    bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
                    m_P.comm(), &status);
-//    M.endMeasure("MPI_Sendrecv");
-      i[idim] = omin - 1;
+
+      i[idim] = omax + 1;
       for (k=0, p=pmin; p<=pmax; p++)
         for (q=qmin; q<=qmax; q++, k++) {
           i[jdim] = p; i[kdim] = q;

@@ -71,8 +71,8 @@ void Values::boundaries(callback_t f)
     if (m_p.neighbour(2*idim) < 0) {
       i[idim] = omin-1;
       x[idim] = m_xmin[idim];
-      for (p=pmin; p<=pmax; p++)
-        for (q=qmin; q<=qmax; q++) {
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
           i[jdim] = p; i[kdim] = q;
           x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
           x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
@@ -83,8 +83,8 @@ void Values::boundaries(callback_t f)
     if (m_p.neighbour(2*idim+1) < 0) {
       i[idim] = omax+1;
       x[idim] = m_xmax[idim];
-      for (p=pmin; p<=pmax; p++)
-        for (q=qmin; q<=qmax; q++) {
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
           i[jdim] = p; i[kdim] = q;
           x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
           x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
