@@ -10,7 +10,6 @@ perf*
 load*
 *.o[0-9]*
 *.po[0-9]*
-.vscode
 analyse
 .run.py
 *.vtr
