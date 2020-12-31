@@ -38,6 +38,9 @@ public:
   int neighbour(int i) const { return m_neighbour[i]; }
   MPI_Comm & comm() { return m_comm; }
   
+  int nthreads() const { return m_nthreads; }
+  void nthreads(int n) { m_nthreads = n; }
+
 private:
 
   std::string m_command;
@@ -56,6 +59,8 @@ private:
   int m_size, m_rank;
   int m_neighbour[6];
   MPI_Comm m_comm;
+
+  int m_nthreads;
 };
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p);

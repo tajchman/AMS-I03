@@ -20,7 +20,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
+
+#ifdef USE_MPI
 #include <mpi.h>
+#endif
+
+#if defined(_OPENMP)
+   #include <omp.h>
+#endif
 
 void stime(char * buffer, int size)
 {
@@ -68,6 +75,16 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
       MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i+1]);
     }
   }
+
+  m_nthreads = Get("threads", 1);
+
+#if defined(_OPENMP)
+  const char * omp_var = std::getenv("OMP_NUM_THREADS");
+  if (omp_var) m_nthreads = strtol(omp_var, NULL, 10);
+  omp_set_num_threads(m_nthreads);
+#else
+  m_nthreads = 1;
+#endif
 
   m_n_global[0] = Get("n0", 401);
   m_n_global[1] = Get("n1", 401);
@@ -122,6 +139,7 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
+              << "threads=<int> : nombre de threads OpenMP\n"
               << "n0=<int>       : number of points in the X direction (default: 401)\n"
               << "n1=<int>       : number of points in the Y direction (default: 401)\n"
               << "n2=<int>       : number of points in the Z direction (default: 401)\n"
@@ -146,7 +164,8 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << p.imin(1) << ", ..., " << p.imax(1) << "] x "
     << "[" << p.imin(2) << ", ..., " << p.imax(2) << "]\n";
 
-  f << "It. max :  " << p.itmax() << "\n"
+  f << p.nthreads() << " thread(s)\n"
+    << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
     << "Results in " << p.resultPath() << std::endl;
 
