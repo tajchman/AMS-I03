@@ -17,6 +17,4 @@ install
 .settings
 *.dat
 export
-.vs
-.vscode
 Workspace
