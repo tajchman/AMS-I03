@@ -55,7 +55,7 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   m_size = size;
   m_rank = rank;
 
-  int dim[3] = {size, 1, 1};
+  int dim[3] = {1, size, 1};
   int period[3] = {0, 0, 0};
   int reorder = 0;
   std::array<int, 3> coord, coord2;
