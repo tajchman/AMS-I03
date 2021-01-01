@@ -26,6 +26,9 @@ public:
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
 
+  int imin_global(int i) const { return m_imin_global[i]; }
+  int imax_global(int i) const { return m_imax_global[i]; }
+
   int itmax() const { return m_itmax; }
   double dt() const { return m_dt; }
 
@@ -36,14 +39,14 @@ public:
   int rank() const { return m_rank; }
   int size() const { return m_size; }
   int neighbour(int i) const { return m_neighbour[i]; }
-  MPI_Comm & comm() { return m_comm; }
+  MPI_Comm & comm() const { return m_comm; }
   
 private:
 
   std::string m_command;
   int m_n_global[3];
   double m_xmin[3], m_xmax[3], m_dx[3];
-  int m_imin[3], m_imax[3];
+  int m_imin[3], m_imax[3], m_imin_global[3], m_imax_global[3];
 
   int m_itmax;
   double m_dt;
@@ -55,7 +58,7 @@ private:
 
   int m_size, m_rank;
   int m_neighbour[6];
-  MPI_Comm m_comm;
+  mutable MPI_Comm m_comm;
 };
 
 std::ostream & operator<<(std::ostream &f, const Parameters & p);

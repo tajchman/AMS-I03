@@ -13,3 +13,4 @@ load*
 analyse
 .run.py
 *.vtr
+.vs

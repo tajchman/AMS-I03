@@ -40,6 +40,7 @@ void Values::init(callback_t f)
   std::array<int, 3> p;
   std::array<double, 3> x;
 
+#pragma omp parallel for private(i,j,k,p,x)
   for (i=m_imin[0]; i<=m_imax[0]; i++)
     for (j=m_imin[1]; j<=m_imax[1]; j++)
       for (k=m_imin[2]; k<=m_imax[2]; k++) {

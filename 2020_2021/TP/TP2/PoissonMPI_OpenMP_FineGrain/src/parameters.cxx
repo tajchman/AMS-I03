@@ -20,14 +20,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
-
-#ifdef USE_MPI
 #include <mpi.h>
-#endif
 
 #if defined(_OPENMP)
    #include <omp.h>
 #endif
+
+#include "timer.hxx"
 
 void stime(char * buffer, int size)
 {
@@ -55,7 +54,10 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   m_size = size;
   m_rank = rank;
 
-  int dim[3] = {1, size, 1};
+  Timer& T_comm = GetTimer(3);
+  T_comm.start();
+
+  int dim[3] = {size, 1, 1};
   int period[3] = {0, 0, 0};
   int reorder = 0;
   std::array<int, 3> coord, coord2;
@@ -75,6 +77,7 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
       MPI_Cart_rank(m_comm, &(coord2[0]), &m_neighbour[2*i+1]);
     }
   }
+  T_comm.stop();
 
   m_nthreads = Get("threads", 1);
 
@@ -105,10 +108,12 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   if (m_path != ".")
      mkdir_p(m_path.c_str());
 
-  if (m_dt > dt_max)
-    std::cerr << "Warning : provided dt (" << m_dt
-              << ") is greater then the recommended maximum (" <<  dt_max
-              << ")" << std::endl;
+  if (rank == 0) {
+    if (m_dt > dt_max)
+      std::cerr << "Warning : provided dt (" << m_dt
+        << ") is greater then the recommended maximum (" << dt_max
+        << ")" << std::endl;
+  }
 
   for (int i=0; i<3; i++) {
     m_dx[i] = m_n_global[i]>1 ? 1.0/(m_n_global[i]-1) : 0.0;
@@ -130,12 +135,15 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
 
     m_xmin[i] = m_dx[i] * nGlobal_ext_min;
     m_xmax[i] = m_dx[i] * nGlobal_ext_max;
+
+    m_imin_global[i] = nGlobal_ext_min;
+    m_imax_global[i] = nGlobal_ext_max;
   }
 }
 
 bool Parameters::help()
 {
-  if (m_help) {
+  if (m_rank == 0 && m_help) {
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
@@ -152,22 +160,63 @@ bool Parameters::help()
   return m_help;
 }
 
+void sendString(const std::string& str, int dest, int tag, MPI_Comm comm)
+{
+  unsigned len = str.size();
+  MPI_Send(&len, 1, MPI_UNSIGNED, dest, tag, comm);
+  if (len != 0)
+    MPI_Send(str.data(), len, MPI_CHAR, dest, tag, comm);
+}
+
+void recvString(std::string& str, int src, int tag, MPI_Comm comm)
+{
+  unsigned len;
+  MPI_Status s;
+  MPI_Recv(&len, 1, MPI_UNSIGNED, src, tag, comm, &s);
+  if (len != 0) {
+    std::vector<char> tmp(len+1);
+    MPI_Recv(tmp.data(), len, MPI_CHAR, src, tag, comm, &s);
+    tmp[len] = '\0';
+    str.assign(tmp.begin(), tmp.end());
+  }
+  else
+    str.clear();
+}
+
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
-  f << "Domain :   "
+  std::ostringstream s;
+  s << "Process " << p.rank() << "\n";
+  s << "  Domain :   "
     << "[" << p.xmin(0) << ", " << p.xmax(0) << "] x "
     << "[" << p.xmin(1) << ", " << p.xmax(1) << "] x "
     << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
 
-  f << "Interior points :   "
-    << "[" << p.imin(0) << ", ..., " << p.imax(0) << "] x "
-    << "[" << p.imin(1) << ", ..., " << p.imax(1) << "] x "
-    << "[" << p.imin(2) << ", ..., " << p.imax(2) << "]\n";
+  s << "  Point indices :   "
+    << "[" << p.imin_global(0) << " ... " << p.imax_global(0) << "] x "
+    << "[" << p.imin_global(1) << " ... " << p.imax_global(1) << "] x "
+    << "[" << p.imin_global(2) << " ... " << p.imax_global(2) << "]\n";
 
-  f << p.nthreads() << " thread(s)\n"
-    << "It. max :  " << p.itmax() << "\n"
-    << "Dt :       " << p.dt() << "\n"
-    << "Results in " << p.resultPath() << std::endl;
+  std::string message = s.str();
+
+  if (p.rank() == 0) {
+    f << p.nthreads() << " thread(s)\n"
+      << "It. max :  " << p.itmax() << "\n"
+      << "Dt :       " << p.dt() << "\n"
+      << "Results in " << p.resultPath() << "\n" << std::endl;
+  }
+  MPI_Barrier(p.comm());
+
+  if (p.rank() == 0) {
+    f << message << std::endl;
+    for (int i = 1; i < p.size(); i++) {
+      recvString(message, i, 0, p.comm());
+      f << message << std::endl;
+    }
+  }
+  else {
+    sendString(message, 0, 0, p.comm());
+  }
 
   return f;
 }

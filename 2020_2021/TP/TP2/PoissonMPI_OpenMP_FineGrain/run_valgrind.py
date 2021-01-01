@@ -23,7 +23,7 @@ command = ['mpirun', '-n', str(args.nprocs),
            '--xterm', '-1!', 'valgrind', 
            '--leak-check=full', '--show-leak-kinds=all',
            '--suppressions=/usr/share/openmpi/openmpi-valgrind.supp',
-           os.path.join(base, 'PoissonMPI_FineGrain.exe')]
+           os.path.join(base, 'PoissonMPI_FineGrain')]
 
 subprocess.call(command + args.rest)
 

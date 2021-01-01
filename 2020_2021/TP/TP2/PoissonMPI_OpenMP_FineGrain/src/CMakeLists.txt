@@ -2,11 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 
 project(PoissonMPI_FineGrain)
 set(VERSION PoissonMPI_FineGrain)
+
 find_package(MPI REQUIRED)
 find_package(OpenMP REQUIRED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -41,16 +44,18 @@ set(SRCS
   )
 
 add_executable(
-  ${VERSION}.exe 
+  ${VERSION} 
   ${SRCS}
   )
 
 target_link_libraries(
-    ${VERSION}.exe 
-    ${MPI_mpi_cxx_LIBRARY} 
-    ${MPI_mpi_LIBRARY} 
-    ${OpenMP_CXX_LIBRARIES}
+  ${VERSION} 
+  ${MPI_mpi_cxx_LIBRARY}
+  ${MPI_mpi_LIBRARY}
+  ${MPI_impicxx_LIBRARY}
+  ${MPI_impi_LIBRARY}
+  ${OpenMP_CXX_LIBRARIES}
 )
 
-install(TARGETS ${VERSION}.exe DESTINATION .)
+install(TARGETS ${VERSION} DESTINATION .)
  

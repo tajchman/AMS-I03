@@ -18,7 +18,7 @@ if not os.path.exists(resultsDir):
    os.makedirs(resultsDir)
 
 command = ['mpirun', '-n', str(args.nprocs), 
-           'ddd', os.path.join(base, 'PoissonMPI_FineGrain.exe')]
+           'ddd', os.path.join(base, 'PoissonMPI_FineGrain')]
 
 subprocess.call(command + args.rest)
 

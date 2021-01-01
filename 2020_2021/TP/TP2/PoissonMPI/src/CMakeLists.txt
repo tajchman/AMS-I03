@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(PoissonMPI)
 set(VERSION PoissonMPI)
+
 find_package(MPI REQUIRED)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -39,11 +40,16 @@ set(SRCS
   )
 
 add_executable(
-  ${VERSION}.exe 
+  ${VERSION} 
   ${SRCS}
   )
 
-target_link_libraries(${VERSION}.exe ${MPI_mpi_cxx_LIBRARY} ${MPI_mpi_LIBRARY})
+target_link_libraries(
+  ${VERSION} 
+  ${MPI_mpi_cxx_LIBRARY}
+  ${MPI_mpi_LIBRARY}
+  ${MPI_impicxx_LIBRARY}
+  ${MPI_impi_LIBRARY})
 
-install(TARGETS ${VERSION}.exe DESTINATION .)
+install(TARGETS ${VERSION} DESTINATION .)
  

@@ -75,8 +75,12 @@ int main(int argc, char *argv[])
   C.setInput(u_0);
   T_init.stop();
 
-  std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6)
-            << T_init.elapsed() << " s\n" << std::endl;
+  MPI_Barrier(Prm.comm());
+  if (Prm.rank() == 0) {
+    std::cout << "\n  temps init "
+              << std::setw(10) << std::setprecision(6)
+              << T_init.elapsed() << " s\n" << std::endl;
+  }
 
   for (int it=0; it < itMax; it++) {
 
@@ -94,13 +98,15 @@ int main(int argc, char *argv[])
     C.iteration();
     T_calcul.stop();
 
-    std::cout << "iter. " << std::setw(3) << it
-              << "  variation " << std::setw(10) << std::setprecision(4) << C.variation()
-              << "  temps calcul " << std::setw(8) << std::setprecision(3)
-              << T_calcul.elapsed() << " s"
-              << "  comm. " << std::setw(8) << std::setprecision(3)
-              << T_comm.elapsed() << " s"
-              << std::endl;
+    if (Prm.rank() == 0) {
+      std::cout << "iter. " << std::setw(3) << it
+        << "  variation " << std::setw(10) << std::setprecision(4) << C.variation()
+        << "  temps calcul " << std::setw(8) << std::setprecision(3)
+        << T_calcul.elapsed() << " s"
+        << "  comm. " << std::setw(8) << std::setprecision(3)
+        << T_comm.elapsed() << " s"
+        << std::endl;
+    }
   }
 
   if (freq > 0 && itMax % freq == 0) {
@@ -113,8 +119,9 @@ int main(int argc, char *argv[])
 
   T_total.stop();
 
-  std::cout << "\n" << std::setw(26) << "temps total"
-            << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
+  if (Prm.rank() == 0)
+    std::cout << "\n" << std::setw(26) << "temps total"
+              << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
   #ifdef _OPENMP
     int id = Prm.nthreads();
@@ -122,12 +129,18 @@ int main(int argc, char *argv[])
     int id = 0;
   #endif
 
-  std::string s = Prm.resultPath();
-  mkdir_p(s.c_str());
-  s += "/temps_";
-  s += std::to_string(id) + ".dat";
-  std::ofstream f(s.c_str());
-  f << id << " " << T_total.elapsed() << " " << C.variation() << std::endl;
+  if (Prm.rank() == 0) {
+    std::string s = Prm.resultPath();
+    mkdir_p(s.c_str());
+    s += "/temps_t_";
+    s += std::to_string(id);
+    s += "_p_";
+    s += std::to_string(Prm.size());
+    s += ".dat";
+    std::ofstream f(s.c_str());
+    f << id << " " << Prm.size() << " " 
+      << T_total.elapsed() << " " << C.variation() << std::endl;
+  }
 
   return 0;
 }
