@@ -139,6 +139,44 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
     m_imin_global[i] = nGlobal_ext_min;
     m_imax_global[i] = nGlobal_ext_max;
   }
+
+  int idecoupe = -1, iT, maxn = -1;
+  for (int i = 0; i < 3; i++) {
+    m_imin_thread[i].resize(m_nthreads);
+    m_imax_thread[i].resize(m_nthreads);
+
+    for (iT = 0; iT < m_nthreads; iT++)
+    {
+      m_imin_thread[i][iT] = m_imin[i];
+      m_imax_thread[i][iT] = m_imax[i];
+    }
+    if (m_imax[i] - m_imin[i] > maxn) {
+      idecoupe = i;
+      maxn = m_imax[i] - m_imin[i];
+    }
+  }
+
+  maxn++;
+  int di = maxn / m_nthreads;
+
+  int i0 = m_imin[idecoupe], i1;
+  for (iT = 0; iT < m_nthreads; iT++) {
+    i1 = i0 + di;
+    m_imin_thread[idecoupe][iT] = i0;
+    m_imax_thread[idecoupe][iT] = i1;
+    i0 = i1 + 1;
+  }
+  m_imax_thread[idecoupe][m_nthreads - 1] = m_imax[idecoupe];
+
+#ifdef DEBUG
+  for (iT = 0; iT < m_nthreads; iT++) {
+    std::cerr << "Thread " << iT;
+    for (int i = 0; i < 3; i++)
+      std::cerr << "  [" << m_imin_thread[i][iT] << ","
+      << m_imax_thread[i][iT] << ")";
+    std::cerr << std::endl;
+  }
+#endif
 }
 
 bool Parameters::help()

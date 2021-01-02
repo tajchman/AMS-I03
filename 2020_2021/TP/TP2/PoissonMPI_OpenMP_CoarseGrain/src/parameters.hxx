@@ -23,8 +23,8 @@ public:
   double xmin(int i) const { return m_xmin[i]; }
   double xmax(int i) const { return m_xmax[i]; }
 
-  int imin_thread(int i, int ith) const { return m_imin_thread[i]; }
-  int imax_thread(int i, int ith) const { return m_imax_thread[i]; }
+  int imin_thread(int i, int ith) const { return m_imin_thread[i][ith]; }
+  int imax_thread(int i, int ith) const { return m_imax_thread[i][ith]; }
 
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
@@ -52,10 +52,9 @@ private:
   std::string m_command;
   int m_n_global[3];
   double m_xmin[3], m_xmax[3], m_dx[3];
-  int m_imin_thread[3], m_imax_thread[3], 
-      m_imin[3], m_imax[3], 
+  int m_imin[3], m_imax[3], 
       m_imin_global[3], m_imax_global[3];
-
+  std::vector<int> m_imin_thread[3], m_imax_thread[3];
   int m_itmax;
   double m_dt;
 

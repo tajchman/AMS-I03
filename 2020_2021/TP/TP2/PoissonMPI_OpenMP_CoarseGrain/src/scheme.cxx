@@ -37,21 +37,23 @@ double Scheme::present()
 bool Scheme::iteration()
 {
   int ith = omp_get_thread_num();
-  int duv = iteration_domaine(
+  int du = iteration_domaine(
       m_P.imin_thread(0, ith), m_P.imax_thread(0, ith),
       m_P.imin_thread(1, ith), m_P.imax_thread(1, ith),
       m_P.imin_thread(2, ith), m_P.imax_thread(2, ith));
-
-#pragma omp critical
-  m_duv += duv;
+ 
+#pragma omp atomic
+  m_duv += du;
 
 #pragma omp barrier
 
 #pragma omp master
   {
+    double du_global;
     m_t += m_dt;
     m_u.swap(m_v);
-    MPI_Allreduce(&du_sum_local, &m_duv, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+    MPI_Allreduce(&m_duv, &du_global, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+    m_duv = du_global;
   }
 
   return true;
@@ -71,8 +73,6 @@ double Scheme::iteration_domaine(int imin, int imax,
   double du, du1, du2, du_sum_local = 0.0;
 
   double x, y, z;
-
-#pragma omp parallel for private(du1, du2, du, x, y, z, j, k) reduction(+:du_sum_local)
   for (i = imin; i <= imax; i++)
     for (j = jmin; j <= jmax; j++)
       for (k = kmin; k <= kmax; k++) {
@@ -91,7 +91,7 @@ double Scheme::iteration_domaine(int imin, int imax,
         du_sum_local += du > 0 ? du : -du;
       }
 
-    return du_sum_local;
+  return du_sum_local;
 }
 
 void Scheme::synchronize()
