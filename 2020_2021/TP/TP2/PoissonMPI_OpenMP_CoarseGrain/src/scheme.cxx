@@ -36,6 +36,9 @@ double Scheme::present()
 
 bool Scheme::iteration()
 {
+#pragma omp single
+  m_duv = 0;
+
   int ith = omp_get_thread_num();
   int du = iteration_domaine(
       m_P.imin_thread(0, ith), m_P.imax_thread(0, ith),
