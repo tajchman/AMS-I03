@@ -1,6 +1,6 @@
 Code de resolution approchée de l'équation de la chaleur
 
-Version MPI
+Version MPI - OpenMP Fine Grain
 
 _____________________
 Pour compiler
@@ -8,6 +8,6 @@ Pour compiler
 ./build.py
 
 _____________________
-Pour exécuter sur 3 processus MPI
+Pour exécuter sur 3 processus MPI, chacun avec 2 threads
 
-mpirun -n 3 ./install/poisson_mpi.exe 
+mpirun -n 3 ./build/Gnu/Release/PoissonMPI_FineGrain threads=2

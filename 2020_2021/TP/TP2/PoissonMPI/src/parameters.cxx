@@ -159,10 +159,11 @@ void recvString(std::string& str, int src, int tag, MPI_Comm comm)
   MPI_Status s;
   MPI_Recv(&len, 1, MPI_UNSIGNED, src, tag, comm, &s);
   if (len != 0) {
-    std::vector<char> tmp(len+1);
-    MPI_Recv(tmp.data(), len, MPI_CHAR, src, tag, comm, &s);
+    char * tmp = new char[len+1];
+    MPI_Recv(tmp, len, MPI_CHAR, src, tag, comm, &s);
     tmp[len] = '\0';
-    str.assign(tmp.begin(), tmp.end());
+    str = tmp;
+    delete [] tmp;
   }
   else
     str.clear();
@@ -180,7 +181,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
   s << "  Point indices :   "
     << "[" << p.imin_global(0) << " ... " << p.imax_global(0) << "] x "
     << "[" << p.imin_global(1) << " ... " << p.imax_global(1) << "] x "
-    << "[" << p.imin_global(2) << " ... " << p.imax_global(2) << "]\n";
+    << "[" << p.imin_global(2) << " ... " << p.imax_global(2) << "]\n\n";
 
   std::string message = s.str();
 
@@ -192,10 +193,10 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
   MPI_Barrier(p.comm());
 
   if (p.rank() == 0) {
-    f << message << std::endl;
+    f << message;
     for (int i = 1; i < p.size(); i++) {
       recvString(message, i, 0, p.comm());
-      f << message << std::endl;
+      f << message;
     }
   }
   else {

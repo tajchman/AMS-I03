@@ -10,4 +10,4 @@ Pour compiler
 _____________________
 Pour exécuter sur 3 processus MPI
 
-mpirun -n 3 ./install/poisson_mpi.exe 
+mpirun -n 3 ./build/Gnu/Release/PoissonMPI

@@ -52,7 +52,13 @@ int main(int argc, char *argv[])
 
   T_total.start();
 
-  MPI_Init(&argc, &argv);
+  int required = MPI_THREAD_FUNNELED, provided;
+  MPI_Init_thread(&argc, &argv, required, &provided);
+  if (provided < required) {
+    MPI_Abort(MPI_COMM_WORLD, -1);
+    return -1;
+  }
+
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);

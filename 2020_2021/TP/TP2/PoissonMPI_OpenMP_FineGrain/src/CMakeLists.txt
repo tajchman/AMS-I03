@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(PoissonMPI_FineGrain)
 set(VERSION PoissonMPI_FineGrain)
+project(${VERSION})
 
 find_package(MPI REQUIRED)
 find_package(OpenMP REQUIRED)

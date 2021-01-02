@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(PoissonMPI)
 set(VERSION PoissonMPI)
+project(${VERSION})
 
 find_package(MPI REQUIRED)
 

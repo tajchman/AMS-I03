@@ -30,9 +30,9 @@ double cond_lim(const std::array<double, 3> & x)
 
 double force(const std::array<double, 3> & x)
 {
-  if (x[0] < 0.3)
-    return 0.0;
-  else
+//  if (x[0] < 0.3)
+//    return 0.0;
+//  else
     return sin(x[0]-0.5) * cos(x[1]-0.5) * exp(- x[2]*x[2]);
 }
 
