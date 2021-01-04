@@ -1,11 +1,15 @@
+cmake_minimum_required(VERSION 3.18)
+
 get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+project(${CODE} C CXX)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories(util)
 
 add_executable(${CODE}
   main.cxx
-  calcul_Pi.cxx)
-
-target_link_libraries(${CODE}
-  util
+  calcul_Pi.cxx
+  util/timer.cxx
   )
 
 install(TARGETS ${CODE} DESTINATION .)

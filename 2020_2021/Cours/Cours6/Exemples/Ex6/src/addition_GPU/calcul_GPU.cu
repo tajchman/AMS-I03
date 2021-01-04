@@ -59,7 +59,8 @@ void Calcul_GPU::addition()
   Timer T; T.start();
   
   vecAdd<<<gridSize, blockSize>>>(d_w, d_u, d_v, m_n);
-  cudaDeviceSynchronize();
+  CUDA_CHECK_KERNEL();
+  
   T.stop();
   std::cerr << "\t\ttemps add.   : " << T.elapsed() << std::endl;
 }

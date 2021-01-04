@@ -30,7 +30,6 @@ double Calcul_Pi(std::size_t n)
     }
   }
   
-  
   return ((4.0*p)/ITERATIONS)/n;
 }
 
