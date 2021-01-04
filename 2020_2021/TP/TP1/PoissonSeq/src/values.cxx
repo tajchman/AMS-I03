@@ -2,6 +2,7 @@
 #include "os.hxx"
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 #include <cstdlib>
 #include <cstring>
 
@@ -11,75 +12,88 @@ Values::Values(Parameters & prm) : m_p(prm)
   for (i=0; i<3; i++)
     nn *= (m_n[i] = m_p.n(i));
 
-  n1 = m_n[2];      // nombre de points dans la premiere direction
-  n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
-  
+  for (i=0; i<3; i++) {
+    m_imin[i] = m_p.imin(i);
+    m_imax[i] = m_p.imax(i);
+    m_dx[i] = m_p.dx(i);
+    m_xmin[i] =  m_p.xmin(i);
+    m_xmax[i] =  m_p.xmax(i);
+    nn *= (m_imax[i] - m_imin[i] + 3);
+  }
+
+  n1 = m_imax[0] - m_imin[0] + 3;      // nombre de points dans la premiere direction
+  n2 = (m_imax[1] - m_imin[1] + 3) * n1; // nombre de points dans le plan des 2 premieres directions
   m_u.resize(nn);
-
-  imin = m_p.imin(0);
-  jmin = m_p.imin(1);
-  kmin = m_p.imin(2);
-
-  imax = m_p.imax(0);
-  jmax = m_p.imax(1);
-  kmax = m_p.imax(2);
-
-  dx = m_p.dx(0);
-  dy = m_p.dx(1);
-  dz = m_p.dx(2);
-  
-  xmin =  m_p.xmin(0);
-  ymin =  m_p.xmin(1);
-  zmin =  m_p.xmin(2);
-  xmax =  xmin + (imax-imin) * dx;
-  ymax =  ymin + (jmax-jmin) * dy;
-  zmax =  zmin + (kmax-kmin) * dz;
 }
 
 void Values::init()
 {
   int i, j, k;
 
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-      for (k=kmin; k<kmax; k++)
-        operator()(i,j,k) = 0.0;
+  for (i=m_imin[0]; i<=m_imax[0]; i++)
+    for (j=m_imin[1]; j<=m_imax[1]; j++)
+      for (k=m_imin[1]; k<=m_imax[2]; k++)
+        operator()({i,j,k}) = 0;
 }
 
 void Values::init(callback_t f)
 {
   int i, j, k;
+  std::array<int, 3> p;
+  std::array<double, 3> x;
 
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-      for (k=kmin; k<kmax; k++)
-        operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+  for (i=m_imin[0]; i<=m_imax[0]; i++)
+    for (j=m_imin[1]; j<=m_imax[1]; j++)
+      for (k=m_imin[2]; k<=m_imax[2]; k++) {
+        p = {i,j,k};
+        x = { m_xmin[0] + i*m_dx[0], 
+              m_xmin[1] + j*m_dx[1], 
+              m_xmin[2] + k*m_dx[2]
+              };
+        operator()(p) = f(x);
+      }
 }
 
 void Values::boundaries(callback_t f)
 {
-  int i, j, k;
+  for (int idim=0; idim<3; idim++) {
 
-  for (j=jmin; j<jmax; j++)
-    for (k=kmin; k<kmax; k++) 
-    {
-      operator()(imin,   j, k) = f(xmin, ymin + j*dy, zmin + k*dz);
-      operator()(imax-1, j, k) = f(xmax, ymin + j*dy, zmin + k*dz);
+    int jdim = (idim+1)%3;
+    int kdim = (idim+2)%3;
+
+    int omin = m_imin[idim], omax = m_imax[idim];
+    int pmin = m_imin[jdim], pmax = m_imax[jdim];
+    int qmin = m_imin[kdim], qmax = m_imax[kdim];
+
+    int p, q;
+
+    std::array<int, 3> i;
+    std::array<double, 3> x;
+
+    if (m_p.neighbour(2*idim) < 0) {
+      i[idim] = omin-1;
+      x[idim] = m_xmin[idim];
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
+          i[jdim] = p; i[kdim] = q;
+          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+          operator()(i) = f(x);
+        }
     }
 
-  for (i=imin; i<imax; i++)
-    for (k=kmin; k<kmax; k++)
-    {
-      operator()(i, jmin,   k) = f(xmin+ i*dx, ymin, zmin + k*dz);
-      operator()(i, jmax-1, k) = f(xmin+ i*dx, ymax, zmin + k*dz);
+    if (m_p.neighbour(2*idim+1) < 0) {
+      i[idim] = omax+1;
+      x[idim] = m_xmax[idim];
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
+          i[jdim] = p; i[kdim] = q;
+          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+          operator()(i) = f(x);
+        }
     }
-
-  for (i=imin; i<imax; i++)
-    for (j=jmin; j<jmax; j++)
-    {
-      operator()(i, j, kmin  ) = f(xmin+ i*dx, ymin + j*dy, zmax);
-      operator()(i, j, kmax-1) = f(xmin+ i*dx, ymin + j*dy, zmax);
-    }
+  }
 }
 
 std::ostream & operator<< (std::ostream & f, const Values & v)
@@ -90,47 +104,49 @@ std::ostream & operator<< (std::ostream & f, const Values & v)
 
 void Values::print(std::ostream & f) const
 {
-    int i, j, k;
-    int imin = m_p.imin(0);
-    int jmin = m_p.imin(1);
-    int kmin = m_p.imin(2);
+  int i, j, k;
+  int imin = m_imin[0], jmin = m_imin[1], kmin = m_imin[2];
+  int imax = m_imax[0], jmax = m_imax[1], kmax = m_imax[2];
 
-    int imax = m_p.imax(0);
-    int jmax = m_p.imax(1);
-    int kmax = m_p.imax(2);
+  for (i=imin; i<=imax; i++) {
+    for (j=jmin; j<=jmax; j++) {
+      for (k=kmin; k<=kmax; k++)
+        f << " " << operator()(i,j,k);
+      f << std::endl;
+    }
+    f << std::endl;
+  }
+}
 
-    for (i=imin; i<imax; i++) {
-      for (j=jmin; j<jmax; j++) {
-        for (k=kmin; k<kmax; k++)
-          f << " " << operator()(i,j,k);
-        f << std::endl;
-        }
-        f << std::endl;
-      }
+template<typename T>
+void swap(T & a, T & b)
+{
+  T t = a;
+  a = b;
+  b = t;
 }
 
 void Values::swap(Values & other)
 {
   m_u.swap(other.m_u);
-  int i, temp;
+  int i;
   for (i=0; i<3; i++) {
-    temp = m_n[i];
-    m_n[i] = other.m_n[i];
-    other.m_n[i] = temp;
+    ::swap(m_imin[i], other.m_imin[i]);
+    ::swap(m_imax[i], other.m_imax[i]);
+    ::swap(m_dx[i], other.m_dx[i]);
+    ::swap(m_xmin[i], other.m_xmin[i]);
+    ::swap(m_xmax[i], other.m_xmax[i]);
   }
+  ::swap(n1, other.n1);
+  ::swap(n2, other.n2);
 }
 
 void Values::plot(int order) const {
 
   std::ostringstream s;
   int i, j, k;
-  int imin = m_p.imin(0);
-  int jmin = m_p.imin(1);
-  int kmin = m_p.imin(2);
-
-  int imax = m_p.imax(0);
-  int jmax = m_p.imax(1);
-  int kmax = m_p.imax(2);
+  int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
+  int imax = m_imax[0]+1, jmax = m_imax[1]+1, kmax = m_imax[2]+1;
 
   s << m_p.resultPath();
   s << "/0";
