@@ -15,7 +15,7 @@ Calcul_CPU::Calcul_CPU(std::size_t n)
   std::cerr << "\t\ttemps init 1 : " << T1.elapsed() << std::endl;
   Timer T2; T2.start();
 
-  std::size_t i;
+  int i;
   double x;
 
 #pragma omp parallel for private(x)
@@ -47,7 +47,7 @@ double Calcul_CPU::verification()
 {
   Timer T; T.start();
   
-  std::size_t i, n = h_u.size();
+  int i, n = h_u.size();
 
   double s = 0;
 #pragma omp parallel for reduction(+:s)
