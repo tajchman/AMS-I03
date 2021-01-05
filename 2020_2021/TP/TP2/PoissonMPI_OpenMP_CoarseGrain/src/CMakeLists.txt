@@ -11,6 +11,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+if (CMAKE_VERSION VERSION_LESS "3.1")
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+  endif ()
+else()
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif ()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_compile_options(-DDEBUG)
@@ -50,10 +58,6 @@ add_executable(
 
 target_link_libraries(
   ${VERSION} 
-  ${MPI_mpi_cxx_LIBRARY}
-  ${MPI_mpi_LIBRARY}
-  ${MPI_impicxx_LIBRARY}
-  ${MPI_impi_LIBRARY}
   ${OpenMP_CXX_LIBRARIES}
 )
 

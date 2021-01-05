@@ -58,10 +58,6 @@ add_executable(
 
 target_link_libraries(
   ${VERSION} 
-  ${MPI_mpi_cxx_LIBRARY}
-  ${MPI_mpi_LIBRARY}
-  ${MPI_impicxx_LIBRARY}
-  ${MPI_impi_LIBRARY}
   ${OpenMP_CXX_LIBRARIES}
 )
 
