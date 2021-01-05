@@ -5,13 +5,11 @@ import os, sys, subprocess, argparse, platform
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--type', nargs='+', default=['Release','Debug'], 
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
-parser.add_argument('-c', '--compilers', default='gnu')
 args = parser.parse_args()
 
 myenv = os.environ.copy()
 myenv['CC'] = 'mpicc'
 myenv['CXX'] = 'mpicxx'
-
 compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()
