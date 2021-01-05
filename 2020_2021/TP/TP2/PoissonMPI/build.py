@@ -37,7 +37,9 @@ for t in args.type:
 
   configureCmd = ['cmake'] + cmake_params + [srcDir]
   err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
-
-  if err == 0:
-    err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+  if not err == 0:
+    break
+  err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+  if not err == 0:
+    break
 
