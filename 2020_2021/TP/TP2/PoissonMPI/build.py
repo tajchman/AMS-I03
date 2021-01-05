@@ -5,12 +5,11 @@ import os, sys, subprocess, argparse, platform
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--type', nargs='+', default=['Release','Debug'], 
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
-parser.add_argument('-c', '--compilers', default='gnu')
 args = parser.parse_args()
 
 myenv = os.environ.copy()
-plat = platform.system()
-
+myenv['CC'] = 'mpicc'
+myenv['CXX'] = 'mpicxx'
 compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()
@@ -18,8 +17,8 @@ srcDir = os.path.join(base, 'src')
 
 for t in args.type:
   print ('\nbuild ', t, '\n')
-  buildDir = os.path.join(base, 'build', args.compilers, t)
-  installDir = os.path.join(base, 'install', args.compilers, t)
+  buildDir = os.path.join(base, 'build', t)
+  installDir = os.path.join(base, 'install', t)
 
   cmake_params = ['-DCMAKE_BUILD_TYPE=' + t]
   cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
