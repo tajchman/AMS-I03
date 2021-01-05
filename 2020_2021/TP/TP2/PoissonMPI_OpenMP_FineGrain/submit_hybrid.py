@@ -13,10 +13,10 @@ testDir = os.getcwd()
 s = '''#!/bin/bash
 #
 #  Name of the job (used to build the name of the standard output stream)
-#$ -N myjob
+#$ -N output_n_{0}_t_{1}
 #
 #  Number of MPI task requested
-#$ -pe mpi {}
+#$ -pe mpi {2}
 #
 #  The job is located in the current working directory
 #$ -cwd
@@ -24,8 +24,12 @@ s = '''#!/bin/bash
 #  Merge standard error and standard output streams
 #$ -j y
 
-source {}/env.sh
-mpirun -map-by slot:pe={} -np {} --mca btl vader,self --display-map {}/install/Release/PoissonMPI {} ;
-'''.format(args.nprocs * args.nthreads, testDir, args.nthreads, args.nprocs, testDir, ' '.join(args.rest))
+mpirun -np {0} --map-by socket --display-map {3}/install/Release/PoissonMPI_FineGrain threads={1} {4} ;
+'''.format(args.nthreads, args.nprocs, args.nprocs * args.nthreads, testDir, ' '.join(args.rest))
 
-print s
+
+subFile = 'submit_n_' + str(args.nprocs) + '_t_' + str(args.nthreads) + '.sh'
+with open(subFile, 'w') as f:
+   f.write(s)
+
+subprocess.call(['qsub', subFile])

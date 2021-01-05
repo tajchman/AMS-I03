@@ -30,9 +30,9 @@ double cond_lim(const std::array<double, 3> & x)
 
 double force(const std::array<double, 3> & x)
 {
-//  if (x[0] < 0.3)
-//    return 0.0;
-//  else
+  if (x[0] < 0.3)
+    return 0.0;
+  else
     return sin(x[0]-0.5) * cos(x[1]-0.5) * exp(- x[2]*x[2]);
 }
 
@@ -123,22 +123,15 @@ int main(int argc, char *argv[])
     std::cout << "\n" << std::setw(26) << "temps total"
               << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-  #ifdef _OPENMP
-    int id = Prm.nthreads();
-  #else
-    int id = 0;
-  #endif
-
   if (Prm.rank() == 0) {
     std::string s = Prm.resultPath();
     mkdir_p(s.c_str());
-    s += "/temps_t_";
-    s += std::to_string(id);
-    s += "_p_";
+    s += "/temps_";
+    s += "_n_";
     s += std::to_string(Prm.size());
     s += ".dat";
     std::ofstream f(s.c_str());
-    f << id << " " << Prm.size() << " " 
+    f << 0 << " " << Prm.size() << " " 
       << T_total.elapsed() << " " << C.variation() << std::endl;
   }
 

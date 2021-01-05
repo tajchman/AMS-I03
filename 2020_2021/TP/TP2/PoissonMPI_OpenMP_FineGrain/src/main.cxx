@@ -129,19 +129,16 @@ int main(int argc, char *argv[])
     std::cout << "\n" << std::setw(26) << "temps total"
               << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-  #ifdef _OPENMP
-    int id = Prm.nthreads();
-  #else
-    int id = 0;
-  #endif
+  int id = Prm.nthreads();
 
   if (Prm.rank() == 0) {
     std::string s = Prm.resultPath();
     mkdir_p(s.c_str());
-    s += "/temps_t_";
-    s += std::to_string(id);
-    s += "_p_";
+    s += "/temps";
+    s += "_n_";
     s += std::to_string(Prm.size());
+    s += "_t_";
+    s += std::to_string(id);
     s += ".dat";
     std::ofstream f(s.c_str());
     f << id << " " << Prm.size() << " " 
