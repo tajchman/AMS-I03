@@ -5,14 +5,20 @@ import os, sys, subprocess, argparse, platform
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--type', nargs='+', default=['Release','Debug'], 
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
-parser.add_argument('-c', '--compilers', default='gnu')
 args = parser.parse_args()
 
 myenv = os.environ.copy()
-myenv['CC'] = 'mpicc'
-myenv['CXX'] = 'mpicxx'
-
-compileCmd = ['make', '--no-print-directory', 'install']
+p = platform.system()
+if p == 'Windows':
+  gen = '-GNinja'
+  myenv['CC'] = 'mpicc.bat'
+  myenv['CXX'] = 'mpicxx.bat'
+  compileCmd = ['ninja', 'install']
+elif p == 'Linux':
+  gen = '-GUnix Makefiles'
+  myenv['CC'] = 'mpicc'
+  myenv['CXX'] = 'mpicxx'
+  compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()
 srcDir = os.path.join(base, 'src')
@@ -24,6 +30,7 @@ for t in args.type:
 
   cmake_params = ['-DCMAKE_BUILD_TYPE=' + t]
   cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
+  cmake_params.append(gen)
 
   if not os.path.exists(buildDir):
     os.makedirs(buildDir)

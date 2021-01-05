@@ -14,10 +14,10 @@ if p == 'Windows':
 elif p == 'Linux':
     compiler = 'Gnu'
 
-base = os.path.join(os.getcwd(), 'build', compiler, 'Release')
+base = os.path.join(os.getcwd(), 'build', 'Release')
 code = os.path.join(base, 'PoissonMPI')
 
-resultsDir = os.path.join(os.getcwd(), 'results', compiler, 'Release')
+resultsDir = os.path.join(os.getcwd(), 'results', 'Release')
 if not os.path.exists(resultsDir):
    os.makedirs(resultsDir)
 
