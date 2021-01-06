@@ -137,16 +137,16 @@ void Values::boundaries()
   dim3 dimBlock(16,16);
 
   dim3 dimGrid2(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[1]/double(dimBlock.y)));
-  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imin[2], xmin, dx, m_u);
-  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imax[2], xmin, dx, m_u);
+  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imin[2], m_xmin, m_dx, m_u);
+  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imax[2], m_xmin, m_dx, m_u);
 
   dim3 dimGrid1(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
-  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imin[1], xmin, dx, m_u);
-  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imax[1], xmin, dx, m_u);
+  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imin[1], m_xmin, m_dx, m_u);
+  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imax[1], m_xmin, m_dx, m_u);
 
   dim3 dimGrid0(ceil(m_n_local[1]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
-  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imin[0], xmin, dx, m_u);
-  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imax[0], xmin, dx, m_u);
+  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imin[0], m_xmin, m_dx, m_u);
+  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imax[0], m_xmin, m_dx, m_u);
 }
 
 
@@ -159,35 +159,37 @@ std::ostream & operator<< (std::ostream & f, const Values & v)
 void Values::print(std::ostream & f) const
 {
     int i, j, k;
-    int imin = m_p.imin(0);
-    int jmin = m_p.imin(1);
-    int kmin = m_p.imin(2);
 
-    int imax = m_p.imax(0);
-    int jmax = m_p.imax(1);
-    int kmax = m_p.imax(2);
-
-    for (i=imin; i<imax; i++) {
-      for (j=jmin; j<jmax; j++) {
-        for (k=kmin; k<kmax; k++)
-          f << " " << operator()(i,j,k);
-        f << std::endl;
+    for (i=m_imin[0]; i<=m_imax[0]; i++) {
+      for (j=m_imin[1]; j<=m_imax[1]; j++) {
+        for (k=m_imin[2]; k<=m_imax[2]; k++) {
+//          f << " " << operator()(i,j,k);
         }
-        f << std::endl;
+//        f << std::endl;
       }
+//        f << std::endl;
+    }
+}
+
+template<typename T>
+void swap(T & a, T & b)
+{
+  T t = a;
+  a = b;
+  b = t;
 }
 
 void Values::swap(Values & other)
 {
-  double * temp_u = m_u;
-  m_u = other.m_u;
-  other.m_u = temp_u;
-  
-  int i, temp;
+  ::swap(m_u, other.m_u);
+  int i;
   for (i=0; i<3; i++) {
-    temp = m_n[i];
-    m_n[i] = other.m_n[i];
-    other.m_n[i] = temp;
+    ::swap(m_imin[i], other.m_imin[i]);
+    ::swap(m_imax[i], other.m_imax[i]);
+    ::swap(m_n_local[i], other.m_n_local[i]);
+    ::swap(m_dx[i], other.m_dx[i]);
+    ::swap(m_xmin[i], other.m_xmin[i]);
+    ::swap(m_xmax[i], other.m_xmax[i]);
   }
 }
 
@@ -229,7 +231,7 @@ void Values::plot(int order) const {
   for (k=kmin; k<kmax; k++)
     for (j=jmin; j<jmax; j++) {
       for (i=imin; i<imax; i++)
-        f << " " << operator()(i,j,k);
+//        f << " " << operator()(i,j,k);
       f << "\n";
     }
   f << " </DataArray>\n";
@@ -258,9 +260,14 @@ void Values::plot(int order) const {
 void Values::operator= (const Values &other)
 {
   int i;
-  
-  for (i=0; i<3; i++)
-    m_n[i] = other.m_n[i];
-  
+
+  for (i=0; i<3; i++) {
+    m_imin[i] = other.m_imin[i];
+    m_imax[i] = other.m_imax[i];
+    m_n_local[i] = other.m_n_local[i];
+    m_xmin[i] = other.m_xmin[i];
+    m_xmax[i] = other.m_xmax[i];
+    m_dx[i] = other.m_dx[i];
+  }
   m_u = other.m_u;
 }

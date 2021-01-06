@@ -6,12 +6,11 @@
 #include <iomanip>
 
 
-Scheme::Scheme(Parameters &P, callback_t f) :
+Scheme::Scheme(Parameters &P) :
     codeName(version), m_P(P), m_u(P), m_v(P)  {
 
   m_u.init();
   m_v.init();
-  m_f = f;
   m_t = 0.0;
   m_duv = 0.0;
 
@@ -51,7 +50,7 @@ double Scheme::iteration_domaine(int imin, int imax,
                                  int jmin, int jmax,
                                  int kmin, int kmax)
 {
-  double du_sum;
+  double du_sum = 0.0;
 /*
  for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
