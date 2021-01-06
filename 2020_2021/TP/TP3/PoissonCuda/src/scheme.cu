@@ -17,7 +17,6 @@ Scheme::Scheme(Parameters &P, callback_t f) :
 
   int i;
   for (i=0; i<3; i++) {
-    m_n[i] = m_P.n(i);
     m_dx[i] = m_P.dx(i);
     m_xmin[i] = m_P.xmin(i);
   }
@@ -32,25 +31,6 @@ Scheme::~Scheme()
 double Scheme::present()
 {
   return m_t;
-}
-
-size_t Scheme::getDomainSize(int dim) const
-{
-  size_t d;
-  switch (dim) {
-    case 0:
-      d = m_n[0];
-      break;
-    case 1:
-      d = m_n[1];
-      break;
-    case 2:
-      d = m_n[2];
-      break;
-    default:
-      d = 1;
-  }
-  return d;
 }
 
 bool Scheme::iteration()
@@ -71,19 +51,9 @@ double Scheme::iteration_domaine(int imin, int imax,
                                  int jmin, int jmax,
                                  int kmin, int kmax)
 {
-  double lam_x = 1/(m_dx[0]*m_dx[0]);
-  double lam_y = 1/(m_dx[1]*m_dx[1]);
-  double lam_z = 1/(m_dx[2]*m_dx[2]);
-  double xmin = m_xmin[0];
-  double ymin = m_xmin[1];
-  double zmin = m_xmin[2];
-  int i,j,k;
-  double du, du1, du2, du_sum = 0.0;
-  
-  double x, y, z;
-
-  /*
-  for (i = imin; i < imax; i++)
+  double du_sum;
+/*
+ for (i = imin; i < imax; i++)
     for (j = jmin; j < jmax; j++)
       for (k = kmin; k < kmax; k++) {
            

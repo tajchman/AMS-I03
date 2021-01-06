@@ -17,34 +17,27 @@ public:
   void zero();
   void boundaries();
 
-  double & operator() (int i,int j,int k) {
-    return m_u[n2*i + n1*j + k];
-  }
-  double operator() (int i,int j,int k) const {
-    return m_u[n2*i + n1*j + k];
-  }
-
   void plot(int order) const;
   void swap(Values & other);
-  int size(int i) const { return m_n[i]; }
+  int size(int i) const { return m_imax[i] - m_imin[i] + 1; }
   void print(std::ostream &f) const;
-  
-private:
-  
-  Values(const Values &);
-  int n1, n2;
-  double * m_u;
-  int m_n[3];
-  Parameters & m_p;
-  int imin, jmin, kmin;
-  int imax, jmax, kmax;
 
-  double dx, dy, dz;
-  double xmin, ymin, zmin;
-  double xmax, ymax, zmax;
+private:
+
+  Values(const Values &);
+  int n1, n2, nn;
+  double * m_u;
+  Parameters & m_p;
+  int m_imin[3];
+  int m_imax[3];
+  int m_n_local[3];
+
+  double m_dx[3];
+  double m_xmin[3];
+  double m_xmax[3];
 
 };
-				   
+
 std::ostream & operator<< (std::ostream & f, const Values & v);
 
 #endif

@@ -54,4 +54,4 @@ add_executable(
   )
 
 install(TARGETS ${VERSION} DESTINATION .)
- 
+

@@ -8,33 +8,24 @@
 
 Values::Values(Parameters & prm) : m_p(prm)
 {
-  int i, nn = 1;
-  for (i=0; i<3; i++)
-    nn *= (m_n[i] = m_p.n(i));
+  int i;
 
-  n1 = m_n[2];      // nombre de points dans la premiere direction
-  n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
-  
+  for (i=0; i<3; i++) {
+    m_imin[i] = m_p.imin(i);
+    m_imax[i] = m_p.imax(i);
+    m_n_local[i] = m_imax[i] - m_imin[i] + 1;
+    m_dx[i] = m_p.dx(i);
+    m_xmin[i] = m_p.xmin(i);
+    m_xmax[i] = m_p.xmax(i);
+    nn *= m_n_local[i];
+  }
+
+  n1 = m_n_local[0];      // nombre de points dans la premiere direction
+  n2 = m_n_local[1] * n1; // nombre de points dans le plan des 2 premieres directions
+  nn = n2 * m_n_local[2];
+
   cudaMalloc(&m_u, nn*sizeof(double));
 
-  imin = m_p.imin(0);
-  jmin = m_p.imin(1);
-  kmin = m_p.imin(2);
-
-  imax = m_p.imax(0);
-  jmax = m_p.imax(1);
-  kmax = m_p.imax(2);
-
-  dx = m_p.dx(0);
-  dy = m_p.dx(1);
-  dz = m_p.dx(2);
-  
-  xmin =  m_p.xmin(0);
-  ymin =  m_p.xmin(1);
-  zmin =  m_p.xmin(2);
-  xmax =  xmin + (imax-imin) * dx;
-  ymax =  ymin + (jmax-jmin) * dy;
-  zmax =  zmin + (kmax-kmin) * dz;
 }
 
 __global__
@@ -62,9 +53,8 @@ double cond_lim(double x, double y, double z)
 }
 
 __global__
-void initValue(int n0, int n1, int n2, 
-               double xmin, double ymin, double zmin,
-               double dx, double dy, double dz,
+void initValue(int n[3], 
+               double xmin[3], double dx[3],
                double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
@@ -72,124 +62,91 @@ void initValue(int n0, int n1, int n2,
   int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (i<n0 && j<n1 && k<n2) {
-    p = i + j*n0 + k*n0*n1;
-    u[p] = cond_ini(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+  if (i<n[0] && j<n[1] && k<n[2]) {
+    p = i + j*n[0] + k*n[0]*n[1];
+    u[p] = cond_ini(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
   }
 }
 
 void Values::zero()
 {
-  int n = m_n[0]*m_n[1]*m_n[2];
   dim3 dimBlock(1024);
-  dim3 dimGrid(ceil(n/double(dimBlock.x)));
+  dim3 dimGrid(ceil(nn/double(dimBlock.x)));
 
-  zeroValue<<<dimGrid, dimBlock>>>(n, m_u);
+  zeroValue<<<dimGrid, dimBlock>>>(nn, m_u);
 }
 
 void Values::init()
 {
   dim3 dimBlock(8,8,8);
-  dim3 dimGrid(ceil(m_n[0]/double(dimBlock.x)),
-               ceil(m_n[1]/double(dimBlock.y)),
-               ceil(m_n[2]/double(dimBlock.z)));
+  dim3 dimGrid(ceil(m_n_local[0]/double(dimBlock.x)),
+               ceil(m_n_local[1]/double(dimBlock.y)),
+               ceil(m_n_local[2]/double(dimBlock.z)));
 
   initValue<<<dimGrid, dimBlock>>>
-        (m_n[0], m_n[1], m_n[2], 
-         xmin,   ymin,   zmin, 
-         dx,     dy,     dz, 
-         m_u);
+        (m_n_local, m_xmin, m_dx, m_u);
 }
 
 __global__
-void boundZValue(int n0, int n1, int n2, int k, 
-               double xmin, double ymin, double zmin,
-               double dx, double dy, double dz,
+void boundZValue(int *n, int k, 
+               double *xmin, double *dx,
                double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   int j = threadIdx.y + blockIdx.y * blockDim.y;
   int p;
 
-  if (i<n0 && j<n1) {
-    p = i + j*n0 + k*n0*n1;
-    u[p] = cond_lim(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+  if (i<n[0] && j<n[1]) {
+    p = i + j*n[0] + k*n[0]*n[1];
+    u[p] = cond_lim(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
   }
 }
 
 __global__
-void boundYValue(int n0, int n1, int n2, int j,
-               double xmin, double ymin, double zmin,
-               double dx, double dy, double dz,
+void boundYValue(int *n, int j,
+               double *xmin, double *dx,
                double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   int k = threadIdx.y + blockIdx.y * blockDim.y;
   int p;
 
-  if (i<n0 && k<n2) {
-    p = i + j*n0 + k*n0*n1;
-    u[p] = cond_lim(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+  if (i<n[0] && k<n[2]) {
+    p = i + j*n[0] + k*n[0]*n[1];
+    u[p] = cond_lim(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
   }
 }
 
 __global__
-void boundXValue(int n0, int n1, int n2, int i, 
-               double xmin, double ymin, double zmin,
-               double dx, double dy, double dz,
+void boundXValue(int *n, int i, 
+               double *xmin, double *dx,
                double *u)
 {
   int j = threadIdx.x + blockIdx.x * blockDim.x;
   int k = threadIdx.y + blockIdx.y * blockDim.y;
   int p;
 
-  if (j<n1 && k<n2) {
-    p = i + j*n0 + k*n0*n1;
-    u[p] = cond_lim(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+  if (j<n[1] && k<n[2]) {
+    p = i + j*n[0] + k*n[0]*n[1];
+    u[p] = cond_lim(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
   }
 }
 
 void Values::boundaries()
 {
   dim3 dimBlock(16,16);
-  dim3 dimGrid(ceil(m_n[0]/double(dimBlock.x)),
-               ceil(m_n[1]/double(dimBlock.y)));
 
-  boundZValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], 0, 
-   xmin,   ymin,   zmin, 
-   dx,     dy,     dz, 
-   m_u);
+  dim3 dimGrid2(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[1]/double(dimBlock.y)));
+  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imin[2], xmin, dx, m_u);
+  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imax[2], xmin, dx, m_u);
 
-  boundZValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], m_n[2]-1, 
-   xmin,   ymin,   zmin, 
-   dx,     dy,     dz, 
-   m_u);
+  dim3 dimGrid1(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
+  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imin[1], xmin, dx, m_u);
+  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imax[1], xmin, dx, m_u);
 
-  boundYValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], 0,
-   xmin,   ymin,   zmin, 
-   dx,     dy,     dz, 
-   m_u);
-
-  boundYValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], m_n[1]-1,
-   xmin,   ymin,   zmin, 
-   dx,     dy,     dz, 
-   m_u);
-
-  boundXValue<<<dimGrid, dimBlock>>>
-  (m_n[2], m_n[1], m_n[2], 0,
-   xmin,   ymin,   zmin, 
-   dx,     dy,     dz, 
-   m_u);
-  
-  boundXValue<<<dimGrid, dimBlock>>>
-  (m_n[0], m_n[1], m_n[2], m_n[0] - 1, 
-   xmin,   ymin,   zmin, 
-   dx,     dy,     dz, 
-   m_u);
+  dim3 dimGrid0(ceil(m_n_local[1]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
+  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imin[0], xmin, dx, m_u);
+  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imax[0], xmin, dx, m_u);
 }
 
 

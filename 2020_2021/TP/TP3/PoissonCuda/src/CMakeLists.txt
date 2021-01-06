@@ -1,10 +1,21 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.17)
 
 set(VERSION PoissonCuda)
 project(${VERSION} LANGUAGES CXX CUDA)
-
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+find_package(CUDAToolkit)
+set(CMAKE_CUDA_ARCHITECTURES OFF)
+
+if (CMAKE_VERSION VERSION_LESS "3.1")
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+  endif ()
+else()
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif ()
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_compile_options(-DDEBUG)
@@ -21,7 +32,8 @@ endif()
 include_directories(
   util
   ${CMAKE_BUILD_DIR}
-  )
+  ${CUDAToolkit_INCLUDE_DIRS}
+)
 
 configure_file(version.hxx.in version.hxx @ONLY)
 
@@ -37,8 +49,14 @@ set(SRCS
   )
 
 add_executable(
-  ${VERSION}.exe 
-  ${SRCS})
+  ${VERSION} 
+  ${SRCS}
+  )
 
-install(TARGETS ${VERSION}.exe DESTINATION .)
+target_link_libraries(
+  ${VERSION} 
+  ${CUDA_CUDART}
+  )
+
+install(TARGETS ${VERSION} DESTINATION .)
 

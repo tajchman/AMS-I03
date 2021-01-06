@@ -37,13 +37,14 @@ void stime(char * buffer, int size)
 
 Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 {
+  m_command = argv[0];
   m_help = options_contains("h") || options_contains("help");
 
-  m_command = argv[0];
+  if (m_help) return;
 
-  m_n[0] = Get("n0", 400);
-  m_n[1] = Get("n1", 400);
-  m_n[2] = Get("n2", 400);
+  m_n[0] = Get("n0", 401);
+  m_n[1] = Get("n1", 401);
+  m_n[2] = Get("n2", 401);
   m_itmax = Get("it", 10);
 
   double d;
@@ -55,24 +56,21 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
  
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
-  
-  if (!m_help) {
- 
-    m_path = Get("path", ".");
-    if (m_path != ".") 
-       mkdir_p(m_path.c_str());
 
-    if (m_dt > dt_max)
-      std::cerr << "Warning : provided dt (" << m_dt
-                << ") is greater then the recommended maximum (" <<  dt_max
-                << ")" << std::endl;
-    
-    for (int i=0; i<3; i++) {
-      m_xmin[i] = 0.0;
-      m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
-      m_imin[i] = 1;
-      m_imax[i] = m_n[i]-1;
-    }
+  m_path = Get("path", ".");
+  if (m_path != ".")
+     mkdir_p(m_path.c_str());
+
+  if (m_dt > dt_max)
+    std::cerr << "Warning : provided dt (" << m_dt
+        << ") is greater then the recommended maximum (" << dt_max
+        << ")" << std::endl;
+
+  for (int i=0; i<3; i++) {
+    m_xmin[i] = 0.0;
+    m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
+    m_imin[i] = 1;
+    m_imax[i] = m_n[i]-1;
   }
 }
 
@@ -82,11 +80,9 @@ bool Parameters::help()
     std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
-              << "convection=0/1: convection term (default: 1)\n"
-              << "diffusion=0/1 : convection term (default: 1)\n"
-              << "n1=<int>       : number of points in the X direction (default: 400)\n"
-              << "n2=<int>       : number of points in the Y direction (default: 400)\n"
-              << "n3=<int>       : number of points in the Z direction (default: 400)\n"
+              << "n0=<int>       : number of points in the X direction (default: 401)\n"
+              << "n1=<int>       : number of points in the Y direction (default: 401)\n"
+              << "n2=<int>       : number of points in the Z direction (default: 401)\n"
               << "dt=<real>     : time step size (default : value to assure stable computations)\n"
               << "it=<int>      : number of time steps (default : 10)\n"
               << "out=<int>     : number of time steps between saving the solution on files\n"
@@ -99,13 +95,18 @@ bool Parameters::help()
 std::ostream & operator<<(std::ostream &f, const Parameters & p)
 {
   f << "Domain :   "
-    << "[" << 0 << "," << p.n(0) - 1  << "] x "
-    << "[" << 0 << "," << p.n(1) - 1  << "] x "
-    << "[" << 0 << "," << p.n(2) - 1  << "]\n";
+    << "[" << p.xmin(0) << ", " << p.xmax(0) << "] x "
+    << "[" << p.xmin(1) << ", " << p.xmax(1) << "] x "
+    << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
+
+  f << "  Point indices :   "
+    << "[" << p.imin(0) << " ... " << p.imax(0) << "] x "
+    << "[" << p.imin(1) << " ... " << p.imax(1) << "] x "
+    << "[" << p.imin(2) << " ... " << p.imax(2) << "]\n\n";
 
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
-    << "Results in " << p.resultPath() << std::endl;
+    << "Results in " << p.resultPath() << "\n" << std::endl;
 
   return f;
 }

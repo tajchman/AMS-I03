@@ -10,14 +10,6 @@
 #include "timer.hxx"
 #include "os.hxx"
 
-double force(double x, double y, double z)
-{
-  if (x < 0.3)
-    return 0.0;
-  else
-    return sin(x-0.5) * exp(- y*y);
-}
-
 int main(int argc, char *argv[])
 {
   AddTimer("total");
@@ -34,14 +26,15 @@ int main(int argc, char *argv[])
 
   Parameters Prm(argc, argv);
   if (Prm.help()) return 0;
+
   std::cout << Prm << std::endl;
 
   int itMax = Prm.itmax();
   int freq = Prm.freq();
-  
+
   T_init.start();
 
-  Scheme C(Prm, force);
+  Scheme C(Prm);
  
   Values u_0(Prm);
   u_0.boundaries();
@@ -87,10 +80,9 @@ int main(int argc, char *argv[])
 
   std::string s = Prm.resultPath();
   mkdir_p(s.c_str());
-  s += "/temps_";
-  s += std::to_string(id) + ".dat";
+  s += "/temps_gpu.dat";
   std::ofstream f(s.c_str());
-  f << id << " " << T_total.elapsed() << std::endl;
+  f << 0 << " " << T_total.elapsed() << std::endl;
 
   return 0;
 }

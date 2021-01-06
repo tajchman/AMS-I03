@@ -3,7 +3,7 @@
 import os, sys, subprocess, argparse, platform
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--type', nargs='+', default=['Release','Debug'], 
+parser.add_argument('-t', '--type', default='Release', 
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
 args = parser.parse_args()
 
