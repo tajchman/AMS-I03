@@ -113,18 +113,37 @@ Fonctions du type {\tt Scheme} :
 \end{frame}
 
 \begin{frame}
+
+Sur chacun des $p$ sous-domaines de $\Omega$ (chaque sous-domaine est géré par un processus MPI)
+\bigskip
+
 	Fonctions du type {\tt Parameters} :
 	\bigskip
 	
 	\begin{tabular}{ll}
-		{\tt n(i)} & nombre de points dans la direction $i$ \\
-		&  ($0=X$,$1=Y$, $2=Z$), y compris sur la frontière \\
-		{\tt imin(i)}& indice des premiers points intérieurs \\ &  dans la direction $i$\\
-		{\tt imax(i)}& indice des derniers points sur la frontière \\ & dans la direction $i$ \\ \\
+		{\tt imin(i)}& indice des premiers points intérieurs dans la \\ &  direction $i$ pour le sous-domaine courant \\
+		{\tt imax(i)}& indice des derniers points intérieurs dans la \\ & direction $i$ pour le sous-domaine courant\\ \\
+		{\tt imin\_global(i)}& indice des premiers points intérieurs \\ &  dans la direction $i$ \\
+		{\tt imax\_global(i)}& indice des derniers points intérieurs \\ & dans la direction $i$ \\ \\
 		{\tt dx(i)} & dimension d'une subdivision dans la direction $i$\\
-		{\tt xmin(i)} & coordonnée minimale de $\Omega$ dans la direction $i$ \\ \\
+		{\tt xmin(i)} & coordonnée minimale de $\Omega$ dans la direction $i$ \\
+		{\tt xmax(i)} & coordonnée maximale de $\Omega$ dans la direction $i$ \\
+	\end{tabular}
+	
+\end{frame}
+
+
+\begin{frame}
+	\begin{tabular}{ll}
 		{\tt itmax()} & nombre d'itérations en temps \\
-		{\tt dt()} & intervalle de temps entre 2 itérations \\
+		{\tt dt()} & intervalle de temps entre 2 itérations \\ \\
+		{\tt neighbour(k)} & indice des sous-domaines voisins \\
+                 & (1-2 à gauche ou à droite suivant X) \\
+                 & (3-4 en arrière ou en avant suivant Y) \\
+                 & (5-6 en bas ou en haut suivant Z) \\ 
+                 & -1 si pas de voisin sur un côté du sous-domaine \\ \\
+		{\tt rank()} & indice du processus \\ & (= nombre de processus)\\
+		{\tt size()} & nombre du processus \\ & (= nombre de sous-domaines) \\ \\ 
 		{\tt freq()} & fréquence de sortie des résultats intermédiaires \\
 		& (nombre d'itérations entre 2 sorties)
 	\end{tabular}
@@ -134,31 +153,34 @@ Fonctions du type {\tt Scheme} :
 \begin{frame}
 	
 \vfill
-Les points de calcul à l'intérieur du domaine $\Omega$ ont des indices $(i,j,k)$ tels que:
+{\bf Pour un processus MPI $P$} : les points de calcul à l'intérieur du sous-domaine $\Omega_p$ ont des indices $(i,j,k)$ tels que:
 \bigskip
 
 \begin{tabular}{lclcl}
-	{\tt imin(0)} & $\leq$ & {\tt i} & $<$ & {\tt imax(0)} \\
-	{\tt imin(1)} & $\leq$ & {\tt j} & $<$ & {\tt imax(1)} \\
-	{\tt imin(2)} & $\leq$ & {\tt k} & $<$ & {\tt imax(2)} \\
+	{\tt imin(0)} & $\leq$ & {\tt i} & $\leq$ & {\tt imax(0)} \\
+	{\tt imin(1)} & $\leq$ & {\tt j} & $\leq$ & {\tt imax(1)} \\
+	{\tt imin(2)} & $\leq$ & {\tt k} & $\leq$ & {\tt imax(2)} \\
 \end{tabular}
 \vfill
 
-Les points sur la frontière du domaine $\partial\Omega$ ont des indices $(i,j,k)$ tels que:
+{\bf Pour un processus MPI $P$} : les points sur la frontière du sous-domaine $\partial\Omega$ ont des indices $(i,j,k)$ tels que:
 \bigskip
 
 \begin{tabular}{lcl}
-	{\tt i = imin(0)-1} & ou & {\tt i = imax(0)}  \\
-	{\tt j = imin(j)-1} & ou & {\tt j = imax(1)}  \\
-	{\tt k = imin(k)-1} & ou & {\tt k = imax(2)} 
+	{\tt i = imin(0)-1} & ou & {\tt i = imax(0)+1}  \\
+	{\tt j = imin(j)-1} & ou & {\tt j = imax(1)+1}  \\
+	{\tt k = imin(k)-1} & ou & {\tt k = imax(2)+1} 
 \end{tabular}
+
+\vfill
+Point frontière du sous domaine = point au bord du sous-domaine voisin ou point frontière du domaine global.
 \vfill
 	
 	
 \end{frame}
 
 \begin{frame}
-Fonctions du type {\tt Values}:
+Fonctions du type {\tt Values} pour le sous-domaine courant :
 \bigskip
 
 \begin{tabular}{ll}
@@ -191,12 +213,12 @@ Fonctions du type {\tt Values}:
 
 \hspace{2cm}
 {\color{blue}\begin{verbatim}
-./install/gnu/Release/PoissonSeq.exe
+mpirun -n X ./install/Release/PoissonMPI.exe
 \end{verbatim}
 }
 
 \vfill
-Pour voir les options d'exécution possibles, taper \verb|./install/gnu/Release/PoissonSeq.exe --help|
+Pour voir les options d'exécution possibles, taper \verb|./install/Release/PoissonMPI.exe --help|
 \end{itemize}
 
 \vfill
@@ -205,14 +227,14 @@ Noter les valeurs obtenues et les temps de calcul affichés, ils serviront de r�
 \end{frame}
 
 \begin{frame}[fragile]
-	\frametitle{Version multithreads avec OpenMP (grain fin)}
+	\frametitle{Version hybride MPI-OpenMP (grain fin)}
 	
 Récupérer et décompresser un des fichiers \bigskip
 
-\href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP1\_OpenMP\_FineGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.zip}{\tt TP1\_OpenMP\_FineGrain\_incomplet.zip}
+\href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP2\_MPI\_OpenMP\_FineGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.zip}{\tt TP2\_MPI\_OpenMP\_FineGrain\_incomplet.zip}
 \bigskip
 
-Un répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
+Un répertoire {\tt TP2/Poisson\_OpenMP\_FineGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
  
 \vfill
 {\color{red}
