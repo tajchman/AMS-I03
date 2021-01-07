@@ -35,7 +35,7 @@
 
 %\usepackage{french}
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
-\subtitle{Travail pratique n°2}
+\subtitle{Travail pratique 2}
 \author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
 \date{02/12/2020}
 
@@ -46,10 +46,10 @@
 
 \large
 \begin{frame}
-	\section{Travail pratique n°2}
-	\frametitle{Travail pratique n°2}
+	\section{Travail pratique 2}
+	\frametitle{Travail pratique 2}
 
-A partir d'un code parallélisé avec MPI qui calcule une solution approchée du problème suivant~:
+On  part d'un code parallélisé avec MPI qui calcule une solution approchée du problème suivant~:
 
 \medskip
 \begin{quote}
@@ -66,20 +66,19 @@ $$
 où $f$ et $g$ sont des fonctions données.
 \end{quote}
 
-Le code utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_1\times n_2\times n_3$ subdivisions.
+Le code utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_0\times n_1\times n_2$ subdivisions.
 
-Récupérer le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.tar.gz}{\tt TP2\_sequentiel.tar.gz}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Structure du code séquentiel}
+	\frametitle{Structure du code}
 	
-	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.tar.gz}{\tt TP1\_sequentiel.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.zip}{\tt TP1\_sequentiel.zip}.
+	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI.tar.gz}{\tt TP2\_MPI.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI.zip}{\tt TP2\_MPI.zip}.
 	
     \medskip
-	 Se placer dans le répertoire {\tt TP1/PoissonSeq} créé. 
+	 Se placer dans le répertoire {\tt TP2/PoissonMPI} créé. 
 	
-	Le code séquentiel est réparti en plusieurs fichiers principaux dans le sous-répertoire {\tt src}:
+	Le code est réparti en plusieurs fichiers principaux dans le sous-répertoire {\tt src}:
     \medskip
     
 	\hfill\begin{minipage}{8cm}
@@ -105,7 +104,8 @@ Fonctions du type {\tt Scheme} :
 & solution à l'instant suivant)\\
 {\tt variation()} & retourne la variation entre 2 instants \\ 
 & de calcul successifs\\ \\
-
+{\tt synchronize()} & copie les valeurs sur le bord d'un domaine \\
+& vers les domaines voisins \\ \\
 {\tt getOutput()} & renvoie une variable de type {\tt Values} qui \\ & contient les dernières valeurs calculées \\
 {\tt setInput(u)} & rentre dans {\tt Scheme} les valeurs initiales \\
 \end{tabular}
@@ -113,18 +113,37 @@ Fonctions du type {\tt Scheme} :
 \end{frame}
 
 \begin{frame}
+
+Sur chacun des $p$ sous-domaines de $\Omega$ (chaque sous-domaine est géré par un processus MPI)
+\bigskip
+
 	Fonctions du type {\tt Parameters} :
 	\bigskip
 	
 	\begin{tabular}{ll}
-		{\tt n(i)} & nombre de points dans la direction $i$ \\
-		&  ($0=X$,$1=Y$, $2=Z$), y compris sur la frontière \\
-		{\tt imin(i)}& indice des premiers points intérieurs \\ &  dans la direction $i$\\
-		{\tt imax(i)}& indice des derniers points sur la frontière \\ & dans la direction $i$ \\ \\
+		{\tt imin(i)}& indice des premiers points intérieurs dans la \\ &  direction $i$ pour le sous-domaine courant \\
+		{\tt imax(i)}& indice des derniers points intérieurs dans la \\ & direction $i$ pour le sous-domaine courant\\ \\
+		{\tt imin\_global(i)}& indice des premiers points intérieurs \\ &  dans la direction $i$ \\
+		{\tt imax\_global(i)}& indice des derniers points intérieurs \\ & dans la direction $i$ \\ \\
 		{\tt dx(i)} & dimension d'une subdivision dans la direction $i$\\
-		{\tt xmin(i)} & coordonnée minimale de $\Omega$ dans la direction $i$ \\ \\
+		{\tt xmin(i)} & coordonnée minimale de $\Omega$ dans la direction $i$ \\
+		{\tt xmax(i)} & coordonnée maximale de $\Omega$ dans la direction $i$ \\
+	\end{tabular}
+	
+\end{frame}
+
+
+\begin{frame}
+	\begin{tabular}{ll}
 		{\tt itmax()} & nombre d'itérations en temps \\
-		{\tt dt()} & intervalle de temps entre 2 itérations \\
+		{\tt dt()} & intervalle de temps entre 2 itérations \\ \\
+		{\tt neighbour(k)} & indice des sous-domaines voisins \\
+                 & (1-2 à gauche ou à droite suivant X) \\
+                 & (3-4 en arrière ou en avant suivant Y) \\
+                 & (5-6 en bas ou en haut suivant Z) \\ 
+                 & -1 si pas de voisin sur un côté du sous-domaine \\ \\
+		{\tt rank()} & indice du processus \\ & (= nombre de processus)\\
+		{\tt size()} & nombre du processus \\ & (= nombre de sous-domaines) \\ \\ 
 		{\tt freq()} & fréquence de sortie des résultats intermédiaires \\
 		& (nombre d'itérations entre 2 sorties)
 	\end{tabular}
@@ -134,31 +153,34 @@ Fonctions du type {\tt Scheme} :
 \begin{frame}
 	
 \vfill
-Les points de calcul à l'intérieur du domaine $\Omega$ ont des indices $(i,j,k)$ tels que:
+{\bf Pour un processus MPI $P$} : les points de calcul à l'intérieur du sous-domaine $\Omega_p$ ont des indices $(i,j,k)$ tels que:
 \bigskip
 
 \begin{tabular}{lclcl}
-	{\tt imin(0)} & $\leq$ & {\tt i} & $<$ & {\tt imax(0)} \\
-	{\tt imin(1)} & $\leq$ & {\tt j} & $<$ & {\tt imax(1)} \\
-	{\tt imin(2)} & $\leq$ & {\tt k} & $<$ & {\tt imax(2)} \\
+	{\tt imin(0)} & $\leq$ & {\tt i} & $\leq$ & {\tt imax(0)} \\
+	{\tt imin(1)} & $\leq$ & {\tt j} & $\leq$ & {\tt imax(1)} \\
+	{\tt imin(2)} & $\leq$ & {\tt k} & $\leq$ & {\tt imax(2)} \\
 \end{tabular}
 \vfill
 
-Les points sur la frontière du domaine $\partial\Omega$ ont des indices $(i,j,k)$ tels que:
+{\bf Pour un processus MPI $P$} : les points sur la frontière du sous-domaine $\partial\Omega$ ont des indices $(i,j,k)$ tels que:
 \bigskip
 
 \begin{tabular}{lcl}
-	{\tt i = imin(0)-1} & ou & {\tt i = imax(0)}  \\
-	{\tt j = imin(j)-1} & ou & {\tt j = imax(1)}  \\
-	{\tt k = imin(k)-1} & ou & {\tt k = imax(2)} 
+	{\tt i = imin(0)-1} & ou & {\tt i = imax(0)+1}  \\
+	{\tt j = imin(j)-1} & ou & {\tt j = imax(1)+1}  \\
+	{\tt k = imin(k)-1} & ou & {\tt k = imax(2)+1} 
 \end{tabular}
+
+\vfill
+Point frontière du sous domaine = point au bord du sous-domaine voisin ou point frontière du domaine global.
 \vfill
 	
 	
 \end{frame}
 
 \begin{frame}
-Fonctions du type {\tt Values}:
+Fonctions du type {\tt Values} pour le sous-domaine courant :
 \bigskip
 
 \begin{tabular}{ll}
@@ -191,12 +213,12 @@ Fonctions du type {\tt Values}:
 
 \hspace{2cm}
 {\color{blue}\begin{verbatim}
-./install/gnu/Release/PoissonSeq.exe
+mpirun -n X ./install/Release/PoissonMPI.exe
 \end{verbatim}
 }
 
 \vfill
-Pour voir les options d'exécution possibles, taper \verb|./install/gnu/Release/PoissonSeq.exe --help|
+Pour voir les options d'exécution possibles, taper \verb|./install/Release/PoissonMPI.exe --help|
 \end{itemize}
 
 \vfill
@@ -205,14 +227,14 @@ Noter les valeurs obtenues et les temps de calcul affichés, ils serviront de r�
 \end{frame}
 
 \begin{frame}[fragile]
-	\frametitle{Version multithreads avec OpenMP (grain fin)}
+	\frametitle{Version hybride MPI-OpenMP (grain fin)}
 	
 Récupérer et décompresser un des fichiers \bigskip
 
-\href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP1\_OpenMP\_FineGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.zip}{\tt TP1\_OpenMP\_FineGrain\_incomplet.zip}
+\href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP2\_MPI\_OpenMP\_FineGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.zip}{\tt TP2\_MPI\_OpenMP\_FineGrain\_incomplet.zip}
 \bigskip
 
-Un répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
+Un répertoire {\tt TP2/Poisson\_MPI\_OpenMP\_FineGrain} est créé et contient le code source incomplet de la version MPI OpenMP grain fin.
  
 \vfill
 {\color{red}
@@ -229,7 +251,7 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 \begin{frame}[fragile]
 
 \begin{itemize}
-	\item 	Pour compiler, se placer dans le répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain} et taper:
+	\item 	Pour compiler, se placer dans le répertoire {\tt TP1/PoissonMPI\_OpenMP\_FineGrain} et taper:
 	
 	\hspace{-2cm}{\color{blue}\begin{verbatim}
 ./build.py
@@ -244,7 +266,7 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 	
 	\hspace{2cm}
 	{\color{blue}\begin{verbatim}
-./install/gnu/Release/PoissonOpenMP_FineGrain.exe \
+mpirun -n 2 ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
 		 threads=<n>
 \end{verbatim}
 	}
@@ -348,11 +370,11 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 	
 	\framebox{\color{blue}%
 		\begin{minipage}{\textwidth}
-			Dans le répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
+			Dans le répertoire {\tt TP2/PoissonMPI\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
 			
 			\begin{enumerate}
-				\item \color{blue}Ajouter une région parallèle dans le programme principal autour de la boucle en temps
-				\item \color{blue}Identifier les instructions dans la région parallèle qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
+				\item \color{blue}Ajouter une région parallèle OpenMP dans le programme principal autour de la boucle en temps
+				\item \color{blue}Identifier les instructions dans la région parallèle OpenMP qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
 				\item \color{blue}Identifier les variables partagées et privées
 				\item \color{blue}Ajouter ou adapter les pragmas correspondantes
 				\item \color{blue}Dans chaque thread, faire une partie des boucles internes

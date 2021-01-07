@@ -1,93 +1,73 @@
 ﻿{
-  "environments": [
-    {
-      "baseDir": "${workspaceFolder}"
-    }
-   ],
+  "environments": [ { "baseDir": "${workspaceFolder}" } ],
   "configurations": [
     {
       "configurationType": "Debug",
-      "name": "MSVC_${configurationType}",
+      "name": "{configurationType}",
       "generator": "Ninja",
-      "buildRoot": "${projectDir}/../build/Seq/msvc/${configurationType}",
-      "installRoot": "${projectDir}/../install/msvc/${configurationType}",
+      "buildRoot": "${projectDir}/../build/${configurationType}",
+      "installRoot": "${projectDir}/../install/{configurationType}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
         {
+          "name": "CMAKE_CUDA_COMPILER",
+          "value": "nvcc.exe",
+          "type": "STRING"
+        },
+        {
+          "name": "CUDAHOSTCXX",
+          "value": "icl.exe",
+          "type": "STRING"
+        },
+
+        {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "cl.exe"
+          "value": "icl.exe",
+          "type": "STRING"
         },
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "cl.exe"
+          "value": "icl.exe",
+          "type": "STRING"
         }
       ]
     },
     {
-      "configurationType": "Release",
-      "name": "MSVC_${configurationType}",
+      "configurationType": "MSVCDebug",
+      "name": "{configurationType}",
       "generator": "Ninja",
-      "buildRoot": "${projectDir}/../build/Seq/msvc/${configurationType}",
-      "installRoot": "${projectDir}/../install/intel/${configurationType}",
+      "buildRoot": "${projectDir}/../build/${configurationType}",
+      "installRoot": "${projectDir}/../install/{configurationType}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
         {
+          "name": "CMAKE_CUDA_COMPILER",
+          "value": "nvcc.exe",
+          "type": "STRING"
+        },
+        {
+          "name": "CUDAHOSTCXX",
+          "value": "icl.exe",
+          "type": "STRING"
+        },
+
+        {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "cl.exe"
+          "value": "icl.exe",
+          "type": "STRING"
         },
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "cl.exe"
+          "value": "icl.exe",
+          "type": "STRING"
         }
       ]
-    },
-    {
-      "configurationType": "Debug",
-      "name": "Intel_${configurationType}",
-      "generator": "Ninja",
-      "buildRoot": "${projectDir}/../build/Seq/intel/${configurationType}",
-      "installRoot": "${projectDir}/../install/intel/${configurationType}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
-      "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "variables": [
-        {
-          "name": "CMAKE_CXX_COMPILER",
-          "value": "icl.exe"
-        },
-        {
-          "name": "CMAKE_C_COMPILER",
-          "value": "icl.exe"
-        }
-      ]
-    },
-    {
-      "configurationType": "Release",
-      "name": "Intel_${configurationType}",
-      "generator": "Ninja",
-      "buildRoot": "${projectDir}/../build/Seq/intel/${configurationType}",
-      "installRoot": "${projectDir}/../install/intel/${configurationType}",
-      "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
-      "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
-      "variables": [
-        {
-          "name": "CMAKE_CXX_COMPILER",
-          "value": "icl.exe"
-        },
-        {
-          "name": "CMAKE_C_COMPILER",
-          "value": "icl.exe"
-        }
-      ]
-    },
+    }
   ]
 }

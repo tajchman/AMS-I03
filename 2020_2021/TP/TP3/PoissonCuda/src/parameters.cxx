@@ -68,6 +68,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 
   for (int i=0; i<3; i++) {
     m_xmin[i] = 0.0;
+    m_xmax[i] = 1.0;
     m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
     m_imin[i] = 1;
     m_imax[i] = m_n[i]-1;
@@ -99,7 +100,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << p.xmin(1) << ", " << p.xmax(1) << "] x "
     << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
 
-  f << "  Point indices :   "
+  f << "Point indices :   "
     << "[" << p.imin(0) << " ... " << p.imax(0) << "] x "
     << "[" << p.imin(1) << " ... " << p.imax(1) << "] x "
     << "[" << p.imin(2) << " ... " << p.imax(2) << "]\n\n";

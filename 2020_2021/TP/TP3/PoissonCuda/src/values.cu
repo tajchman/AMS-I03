@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cuda.h>
+#include "cuda_check.cuh"
 
 Values::Values(Parameters & prm) : m_p(prm)
 {
@@ -13,7 +14,7 @@ Values::Values(Parameters & prm) : m_p(prm)
   for (i=0; i<3; i++) {
     m_imin[i] = m_p.imin(i);
     m_imax[i] = m_p.imax(i);
-    m_n_local[i] = m_imax[i] - m_imin[i] + 1;
+    m_n_local[i] = m_imax[i] - m_imin[i] + 3;
     m_dx[i] = m_p.dx(i);
     m_xmin[i] = m_p.xmin(i);
     m_xmax[i] = m_p.xmax(i);
@@ -23,20 +24,45 @@ Values::Values(Parameters & prm) : m_p(prm)
   n1 = m_n_local[0];      // nombre de points dans la premiere direction
   n2 = m_n_local[1] * n1; // nombre de points dans le plan des 2 premieres directions
   nn = n2 * m_n_local[2];
+  std::cerr << "nn = " << nn << std::endl;
+  CUDA_CHECK_OP(cudaMalloc(&m_u, nn*sizeof(double)));
+  h_u = new double[nn];
+  h_synchronized = false;
 
-  cudaMalloc(&m_u, nn*sizeof(double));
+  std::ofstream f1("avant_zero");
+  print(f1);
+  zero();
+  std::ofstream f2("apres_zero");
+  print(f2);
+}
 
+Values::~Values()
+{
+  delete [] h_u;
+  cudaFree(m_u);
 }
 
 __global__
 void zeroValue(int n, double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
-
   if (i<n) {
     u[i] = 0.0;
   }
 }
+
+void Values::zero()
+{
+  return;
+  int dimBlock = 256;
+  int dimGrid = (nn + dimBlock - 1)/dimBlock;
+
+  std::cerr << "dimGrid " << dimGrid << std::endl;
+  zeroValue<<<dimGrid, dimBlock>>>(nn, m_u);
+  CUDA_CHECK_KERNEL();
+  h_synchronized = false;
+}
+
 
 __device__
 double cond_ini(double x, double y, double z)
@@ -68,14 +94,6 @@ void initValue(int n[3],
   }
 }
 
-void Values::zero()
-{
-  dim3 dimBlock(1024);
-  dim3 dimGrid(ceil(nn/double(dimBlock.x)));
-
-  zeroValue<<<dimGrid, dimBlock>>>(nn, m_u);
-}
-
 void Values::init()
 {
   dim3 dimBlock(8,8,8);
@@ -83,8 +101,8 @@ void Values::init()
                ceil(m_n_local[1]/double(dimBlock.y)),
                ceil(m_n_local[2]/double(dimBlock.z)));
 
-  initValue<<<dimGrid, dimBlock>>>
-        (m_n_local, m_xmin, m_dx, m_u);
+  initValue<<<dimGrid, dimBlock>>>(m_n_local, m_xmin, m_dx, m_u);
+  CUDA_CHECK_KERNEL();
 }
 
 __global__
@@ -147,6 +165,9 @@ void Values::boundaries()
   dim3 dimGrid0(ceil(m_n_local[1]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
   boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imin[0], m_xmin, m_dx, m_u);
   boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imax[0], m_xmin, m_dx, m_u);
+  CUDA_CHECK_KERNEL();
+
+  h_synchronized = false;
 }
 
 
@@ -159,15 +180,20 @@ std::ostream & operator<< (std::ostream & f, const Values & v)
 void Values::print(std::ostream & f) const
 {
     int i, j, k;
+    
+    if (!h_synchronized) {
+      cudaMemcpy(h_u, m_u, nn, cudaMemcpyDeviceToHost);
+      h_synchronized = true;
+    }
 
     for (i=m_imin[0]; i<=m_imax[0]; i++) {
       for (j=m_imin[1]; j<=m_imax[1]; j++) {
         for (k=m_imin[2]; k<=m_imax[2]; k++) {
-//          f << " " << operator()(i,j,k);
+          f << " " << operator()(i,j,k);
         }
-//        f << std::endl;
+        f << std::endl;
       }
-//        f << std::endl;
+        f << std::endl;
     }
 }
 

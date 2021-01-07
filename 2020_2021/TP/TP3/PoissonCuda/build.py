@@ -28,6 +28,9 @@ for t in args.type:
   buildDir = os.path.join(base, 'build', t)
   installDir = os.path.join(base, 'install', t)
 
+  if p == 'Windows':
+  	compileCmd = compileCmdBase + ['-property:Configuration=' + t]
+
   cmake_params = ['-DCMAKE_BUILD_TYPE=' + t]
   cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
   cmake_params.append(gen)

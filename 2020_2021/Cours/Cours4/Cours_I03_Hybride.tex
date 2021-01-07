@@ -91,7 +91,7 @@ Avantages/inconvénients du tout MPI:
 	\item[\LARGE $\mathbf\oplus$] les librairies MPI sont de mieux en mieux optimisées (en particulier si plieurs processus sont sur le même processeur)
 	
 \vfill
-	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (n° c\oe urs $\times$ n° n\oe uds), les structures internes de MPI, la mémoire utilisée pour les communications aussi (``cellules fant\^omes'', ``halos'')
+	\item[\LARGE $\mathbf\ominus$] le nombre de processus MPI augmente plus vite (nombre c\oe urs $\times$ nombre n\oe uds), les structures internes de MPI, la mémoire utilisée pour les communications aussi (``cellules fant\^omes'', ``halos'')
 	\bigskip
 	
 \bigskip
@@ -455,8 +455,9 @@ int nX = // nombre de points locaux (MPI)
 	
 	\begin{lstlisting}[firstnumber=14]{C++}
 	
-  /+#pragma omp for
-  for (iX=1; iX < nX-1; iX++)
+  nX1 = ...
+  nX2 = ...
+  for (iX=nX1; iX < nX2; iX++)
     v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
 
   /+#pragma omp single
@@ -477,7 +478,4 @@ int nX = // nombre de points locaux (MPI)
 	En général, les appels sont faits dans les parties séquentielles (au sens OpenMP) ou dans les parties des régions OpenMP parallèles contrôlées par les \texttt{pragma omp master}. 
 \end{frame}
 
-\begin{frame}
-Exemple4/PoissonMPI : code MPI auquel est ajoutée une parallélisation OpenMP grain fin
-\end{frame}
 \end{document}
