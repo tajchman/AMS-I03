@@ -35,7 +35,7 @@
 
 %\usepackage{french}
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
-\subtitle{Travail pratique n°2}
+\subtitle{Travail pratique 2}
 \author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
 \date{02/12/2020}
 
@@ -46,8 +46,8 @@
 
 \large
 \begin{frame}
-	\section{Travail pratique n°2}
-	\frametitle{Travail pratique n°2}
+	\section{Travail pratique 2}
+	\frametitle{Travail pratique 2}
 
 A partir d'un code parallélisé avec MPI qui calcule une solution approchée du problème suivant~:
 
@@ -68,18 +68,18 @@ où $f$ et $g$ sont des fonctions données.
 
 Le code utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_1\times n_2\times n_3$ subdivisions.
 
-Récupérer le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.tar.gz}{\tt TP2\_sequentiel.tar.gz}
+Récupérer le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI.tar.gz}{\tt TP2\_MPI.tar.gz}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Structure du code séquentiel}
 	
-	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.tar.gz}{\tt TP1\_sequentiel.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.zip}{\tt TP1\_sequentiel.zip}.
+	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP2_MPI.tar.gz}{\tt TP2\_MPI.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP2_MPI.zip}{\tt TP2\_MPI.zip}.
 	
     \medskip
-	 Se placer dans le répertoire {\tt TP1/PoissonSeq} créé. 
+	 Se placer dans le répertoire {\tt TP2/PoissonMPI} créé. 
 	
-	Le code séquentiel est réparti en plusieurs fichiers principaux dans le sous-répertoire {\tt src}:
+	Le code est réparti en plusieurs fichiers principaux dans le sous-répertoire {\tt src}:
     \medskip
     
 	\hfill\begin{minipage}{8cm}
@@ -348,11 +348,11 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 	
 	\framebox{\color{blue}%
 		\begin{minipage}{\textwidth}
-			Dans le répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
+			Dans le répertoire {\tt TP2/Poisson\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
 			
 			\begin{enumerate}
-				\item \color{blue}Ajouter une région parallèle dans le programme principal autour de la boucle en temps
-				\item \color{blue}Identifier les instructions dans la région parallèle qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
+				\item \color{blue}Ajouter une région parallèle OpenMP dans le programme principal autour de la boucle en temps
+				\item \color{blue}Identifier les instructions dans la région parallèle OpenMP qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
 				\item \color{blue}Identifier les variables partagées et privées
 				\item \color{blue}Ajouter ou adapter les pragmas correspondantes
 				\item \color{blue}Dans chaque thread, faire une partie des boucles internes
