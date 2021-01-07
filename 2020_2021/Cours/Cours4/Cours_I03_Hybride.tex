@@ -388,8 +388,9 @@ int nX = // nombre de points locaux (MPI)
 	}
 	
 \begin{lstlisting}[firstnumber=15]{C++}
-  /+#pragma omp for
-  for (iX=1; iX < nX-1; iX++)
+  nX1 = ...
+  nX2 = ...
+  for (iX=nX1; iX < nX2; iX++)
     v[iX] = f(u[iX-1],u[iX],u[iX+1],dT)
 
   /+#pragma omp master
