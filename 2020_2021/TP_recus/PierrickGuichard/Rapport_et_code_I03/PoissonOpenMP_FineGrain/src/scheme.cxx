@@ -84,7 +84,7 @@ double Scheme::iteration_domaine(int imin, int imax,
 
   
   #pragma omp parallel for default(shared) \
-  private(i, j, k, du1, du2, du) reduction(+: du_sum)
+  private(i, j, k, du1, du2, du, x, y, z) reduction(+: du_sum)
   for (i = imin; i < imax; i++){
     for (j = jmin; j < jmax; j++){
       for (k = kmin; k < kmax; k++) {

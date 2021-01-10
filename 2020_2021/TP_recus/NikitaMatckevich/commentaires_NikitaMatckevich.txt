@@ -1,0 +1,61 @@
+Tres bon travail
+
+Par grand chose à dire.
+
+1. En général, on utilise omp atomic à la place de omp critical quand la région critique (à l'intérieur de omp critical) est simplement une opération arithmétique
+
+2. Plutot que "omp single nowait" j'aurais mis "omp master", mais cela n'a pas d'importance.
+
+3. Sinon vous pouvier fusionner les 2 pragma single, remplacer:
+
+  #pragma omp single
+  {
+    C.setInput(std::move(u_0));
+  }
+
+  #pragma omp single nowait
+  {
+    T_init.stop();
+    std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+            << T_init.elapsed() << " s\n" << std::endl;
+  }
+
+par
+
+ #pragma omp single
+  {
+    C.setInput(std::move(u_0));
+    T_init.stop();
+    std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+            << T_init.elapsed() << " s\n" << std::endl;
+  }
+
+4. Par contre, dans la boucle en temps, avec les pragma single nowait, j'ai obtenu des temps calculs incorrects (les résultats sont bons et le temps total est bon aussi).
+
+Par exemple :
+______________________________________
+
+Domain :   [0,399] x [0,399] x [0,399]
+5 thread(s)
+It. max :  10
+Dt :       6.25e-07
+Results in .\results\intel\Release
+
+
+iteration     0  variation    59709.3  temps calcul   0.293205 s   <----- ?
+iteration     1  variation    33911.6  temps calcul   0.293205 s   <----- ?
+iteration     2  variation    25175.9  temps calcul   0.582066 s
+iteration     3  variation    20512.3  temps calcul   0.582066 s
+iteration     4  variation    17677.6  temps calcul   0.898081 s
+iteration     5  variation    15751.3  temps calcul   0.898081 s
+iteration     6  variation    14346.4  temps calcul    1.25827 s
+iteration     7  variation    13266.9  temps calcul    1.25827 s
+iteration     8  variation    12404.8  temps calcul    1.54311 s
+iteration     9  variation    11695.5  temps calcul    1.54311 s
+
+               temps total   3.27798 s <------ correct
+______________________________________
+
+Il vaut mieux mettre une pragma single à la ligne 80 de main.cxx (pas de nowait à cet endroit).
+
+

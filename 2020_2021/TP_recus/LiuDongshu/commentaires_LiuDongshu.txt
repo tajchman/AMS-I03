@@ -1,0 +1,9 @@
+Quelques commentaires
+
+1. Sur la partie fine grain, rien à dire.
+
+2. Sur la partie coarse grain, les résultats sont corrects, mais vous ne faites que du 'gros grain partiel'. La région // est dans la boucle en temps et donc on rentre et on sort de la région // autant de fois qu'il y a d'itérations en temps.
+
+C'est correct, mais c'est dommage
+
+3. En général, on utilise plutot "omp atomic" que "omp critical" parce que "omp atomic" est plus rapide (mais omp atomic est seulement valable pour les operations simples comme a += b)

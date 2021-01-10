@@ -1,0 +1,45 @@
+Bon travail
+
+1. Dans scheme.cxx vous avec parallélisé la triple boucle aux lignes 89-91 en précisant les variables privées et partagées, ce qui est très bien. Dans les variables partagées vous avez oublié lam_x, lam_y, lam_z et dans les variables privées vous avez oublié i,j,k. Cela ne pose pas de problème ici (implicitement le compilateur les a traitées comme ça).
+Mais à partir du moment où vous faites une liste partielle, il  vaut mieux faire une liste complète.
+
+2. Vous avez oublié de protéger omp_get_thread_num (encadrer avec #ifdef _OPENMP) et de donner une valeur à iThread quand on compile en mode non openmp. Du coup, il y a une erreur de compilation si on compile en mode non openmp
+
+3. Aux lignes 72-80 vous pourriez réorganiser les lignes pour avoir moins de pragma single et gagner des barrières
+
+Au lieu de 
+
+# pragma omp single
+  m_duv = 0.;
+  #pragma omp barrier
+  
+  #pragma omp critical
+  {
+    m_duv += duv_loc;
+  }
+
+  # pragma omp single
+  {
+    m_t += m_dt;
+    m_u.swap(m_v);
+  }
+
+écire par exemple:
+
+
+# pragma omp single
+{
+  m_duv = 0.;
+  m_t += m_dt;
+  m_u.swap(m_v);
+}
+
+#pragma omp critical
+{
+  m_duv += duv_loc;
+}
+
+Comme ca on élimine une pragma single (et sa barrière)
+
+Aussi, on utilise en général omp atomic plus rapide que omp critical (puisque ici la région critique est une simple addition)
+

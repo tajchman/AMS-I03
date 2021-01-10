@@ -1,0 +1,9 @@
+Quelques commentaires:
+
+1. Les résultats de la version grain fin montrent qu'il y a probalement une erreur (sur ma machine je n'obtiens pas d'amélioration de performance)
+
+En examinant scheme.cxx, on voit que les variables x,y et z ne sont pas privées par thread alors que chaque thread les modifie.
+
+C'est donc une erreur (je ne m'explique pas bien pourquoi les résultats sont tout de même corrects) mais les temps calculs s'en ressentent (parce que les variables x, y et z voyagent entre les mémoire cache)
+
+2. Rien a dire sur la partie grain grossier par contre

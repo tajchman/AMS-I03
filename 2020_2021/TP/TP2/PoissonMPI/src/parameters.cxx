@@ -45,10 +45,10 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   m_command = argv[0];
   m_help = options_contains("h") || options_contains("help");
 
-  if (m_help) return;
-
   m_size = size;
   m_rank = rank;
+
+  if (m_help) return;
 
   Timer& T_comm = GetTimer(3);
   T_comm.start();
@@ -130,7 +130,7 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
 bool Parameters::help()
 {
   if (m_rank == 0 && m_help) {
-    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
+    std::cerr << "Usage : ./PoissonMPI <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
               << "n0=<int>       : number of points in the X direction (default: 401)\n"

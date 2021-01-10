@@ -153,11 +153,11 @@ Principales différence entre les CPU et les GPU (situation actuelle) :
 \hline
 \rowcolor{Cyan} & & CPU & & GPU \\
 \hline
-nombre de c\oe urs & \faFrownO & $\sim$ 10 à 30 & \faSmileO & $\sim$ 1000 à 10000 \\
+nombre de c\oe urs & \faMehO & $\sim$ 4 à 64 & \faSmileO & $\sim$ 1000 à 10000 \\
 \hline
 chaque c\oe ur     & \faSmileO & $+$ performant	& \faFrownO &  $-$ performant \\
 \hline
-jeu d'instructions & \faSmileO & plus général   & \faFrownO &  spécialisé calcul \\
+jeu d'instructions & \faSmileO & plus général   & \faMehO &  spécialisé calcul \\
 \hline
 bande passante     & \faFrownO & $-$ importante & \faSmileO & $+$ importante \\
 \hline
@@ -166,19 +166,43 @@ latence            & \faSmileO & $+$ petite & \faFrownO & $+$ grande \\
 \end{tabular}
 \end{center}
 
-Ici, latence : durée de l'initialisation des transferts mémoire - processeur, bande passante : vitesse des transferts mémoire - processeur.
+Ici, latence, bande passante : durée initialisation et quantité échangée par seconde entre la mémoire et le processeur.
 
-\vfill
-La puissance de calcul des GPU dépassent celle des CPU : les c\oe urs GPU sont moins puissants que les c\oe urs CPU mais (beaucoup) plus nombreux. 
 \vfill
 \end{frame}
 
 \begin{frame}
 
+\vfill
+La puissance de calcul (nombre de c\oe urs $\times$ performance d'un c\oe ur) des GPU dépassent celle des CPU : les c\oe urs GPU sont moins puissants que les c\oe urs CPU mais (beaucoup) plus nombreux.
+
 \begin{center}
-\includegraphics[scale=0.4]{../../Images/Perf_CPU_GPU}
+\includegraphics[scale=0.3]{../../Images/Perf_CPU_GPU}
 \end{center}
 \vfill
+\end{frame}
+
+\begin{frame}
+	Pourquoi une telle différence ?
+	\vfill
+	\begin{itemize}
+		\item \textcolor{blue}{Les CPU exécutent tous les traitements, parallèles ou non}
+		
+	\vfill
+		\begin{quote}
+		Par conception, les CPU sont optimisés pour des calculs séquentiels : beaucoup de mémoire cache, plusieurs additionneurs/multiplicateurs, prédiction de branches, exécution d'instructions ``dans le désordre'' (out-of-order)
+		 \end{quote}
+	 
+	 \vfill
+		\item \textcolor{blue}{Les GPU supposent que le degré de parallélisme est élevé}
+		
+	\vfill
+		\begin{quote}
+        Par conception, les GPU maximisent la bande passante utilisable par beaucoup de threads, moins de mémoire cache (latence compensée par le multithreads massif), circuits de contrôle partagés entre les threads
+   		\end{quote}
+	
+		
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -220,6 +244,18 @@ Les résultats ne seront pas toujours exactement les mêmes sur CPU et sur GPU:
 \item Depuis, on a du 64 bits (double précision) sur GPU, {\bfseries mais} pas toujours les mêmes précisions entre le GPU et le CPU pour les additions/multiplications/divisions/..., les modes d'arrondi ne sont pas toujours identiques
 \end{itemize}
 
+\end{frame}
+
+\begin{frame}
+	Jusque 2000, la seule façon de programmer les GPU est l'utilisation de OpenGL, DirectX, etc.
+	
+	A partir de 2000, apparaissent les modèles de programmation Cuda ()
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\begin{frame}
 \end{frame}
 
 \end{document}

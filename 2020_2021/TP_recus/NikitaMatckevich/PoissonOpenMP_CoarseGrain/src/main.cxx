@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
   for (int it=0; it < itMax; it++) {
     
-    #pragma omp single nowait
+    #pragma omp single
     {
       if (freq > 0 && it % freq == 0) {
         T_other.start();

@@ -1,0 +1,20 @@
+Quelques commentaires
+
+1. Sur la partie grain fin, rien à dire
+
+2. Par contre, sur la partie grain grossier, les temps de calcul diminuent mais les résultats sont faux. Vous auriez du remarquer que les valeurs affichées à l'écran dépendent du nombre de threads.
+
+3. Par exemple, dans main.cxx les deux régions parallèles sont
+
+- entre les lignes 70 et 74 
+- entre les lignes 97 e 146
+
+Donc la pragma single à la ligne 76 n'est pas dans une région //. A cet endroit il n'y a qu'un seul thread et donc cette pragma ne sert à rien.
+
+4. A la ligne 97, vous mettez une "pragma omp parallel for" qui a pour effet de distribuer les itérations en temps entre les threads.
+
+Or la boucle en temps (it = 0 à it = itMax-1) n'est pas parallélisable !!
+Pour commencer une itération il faut avoir fait toutes les précédentes.
+
+La parallélisation consiste a faire les itérations dans un ordre non défini à l'avance et donc donne des résultats faux.
+

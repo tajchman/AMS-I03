@@ -1,0 +1,30 @@
+Très bon travail
+
+Pas grand chose à dire:
+
+1. Dans la version coarse grain, scheme.cxx, lignes 72 à 78, vous pourriez réorganiser les lignes pour réduire le nombre de pragma single.
+
+A la place de:
+
+  #pragma omp master
+  m_t += m_dt;
+  #pragma omp single
+  m_duv = 0;
+  #pragma omp atomic
+  m_duv+=m_duv1;
+  #pragma omp single
+  m_u.swap(m_v);
+
+une possibilité serait:
+
+  #pragma omp single 
+  {
+    m_t += m_dt;
+    m_duv = 0;
+    m_u.swap(m_v); 
+  }
+  #pragma omp atomic
+  m_duv+=m_duv1;
+
+(on gagne une barrière)
+

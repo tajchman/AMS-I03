@@ -1,0 +1,38 @@
+Très bon travail
+
+1. Dans la version grain fin, pas grand chose à dire : vous n'avez pas parallélisé l'initialisation. Ici cela n'a pas beaucoup d'importance, mais cela ne coutait pas grand chose.
+
+2. Dans la version grain grossier, vous avez utilisé imin/imax_local dans la direction X mais pas dans les directions Y et Z. Ici c'est correct parce que le découpage se fait seulement dans la direction X. Mais pour plus de sécurité, traitez les 3 directions de la meme façon. Sinon erreur le jour ou on change le découpage dans parameters.cxx
+
+3. Vous pourriez réorganiser les lignes 67-81 dans scheme.cxx (vers gros grain)
+Au lieu de
+
+	#pragma omp single
+	{ 
+	m_duv=0.0;
+	m_t += m_dt;
+	}
+	
+	#pragma omp critical
+	m_duv+=m_duv_loc;
+	
+	#pragma omp barrier
+	
+	#pragma omp single
+	m_u.swap(m_v);
+  
+on pourrait écrire
+
+	#pragma omp single
+	{ 
+	m_duv=0.0;
+	m_t += m_dt;
+	m_u.swap(m_v);
+	}
+	
+	
+	#pragma omp critical
+	m_duv+=m_duv_loc;
+
+et changer omp critical par omp atomic parce que la region critique est une seule opération arithmétique
+  

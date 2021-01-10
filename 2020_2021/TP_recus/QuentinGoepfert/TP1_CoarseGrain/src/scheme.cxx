@@ -58,7 +58,12 @@ size_t Scheme::getDomainSize(int dim) const
 bool Scheme::iteration()
 { 
   double duv_loc;
+#ifdef _OPENMP
   int iThread = omp_get_thread_num();
+#else
+  int iThread = 0;
+#endif
+
   duv_loc = iteration_domaine(
       m_P.imin_local(0, iThread), m_P.imax_local(0, iThread),
       m_P.imin_local(1, iThread), m_P.imax_local(1, iThread),

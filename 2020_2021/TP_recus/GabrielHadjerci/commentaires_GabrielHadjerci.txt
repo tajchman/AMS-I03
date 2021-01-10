@@ -1,0 +1,28 @@
+Très bon travail, quelques commentaires:
+
+1. D'abord sur les résultats, vous faites les mesures sur un processeur à 4 coeurs (cf cpuinfo.txt), donc vous n'aurez pas plus qu'un speedup de 4 même sur 8 threads.
+Donc vos résultats sont pas mal.
+
+2. Dans scheme.cxx (ligne 86), vous appliquez une pragma (avec collapse) sur une triple boucle (ce qui est bien).
+Il serait plus prudent de spécifier explicitement que i, j, k sont privées.
+Pour une boucle simple, l'indice est privé par défaut, mais pour plusieurs, je ne mettrais pas la main au feu que c'est prévu dans la norme OpenMP. Cela peut être le cas sur certaines versions d'OpenMP mais sur d'autres.
+
+3. Bonne idée d'utiliser une variable iThread pour ne pas appeler omp_get_num_thread à chaque itération
+
+Je ne suis pas sur qu'on gagne 
+   - dans un cas on appelle la fonction omp_get_num_thread
+   - dans l'autre, on passe un argument de plus à l'appel de C.iteration
+Mais c'est une bonne idée de toute façon.
+
+Par contre, pourquoi initialiser ithread à 1 dans le cas non parallèle (et pas à 0) ??
+De toute façon, cela n'a pas d'importance parce que ithread n'est pas utilisé dans le cas non //
+
+4. Utiliser un vecteur pour les sommes partielles est correct. Ici, cette solution ne diminue pas 
+   ou très peu l'efficacité parce qu'on initialise m_temp une seule fois par itération (ping-pong entre les mémoires cache des différents coeurs).
+
+   On utilise d'habitude une pragma atomic à la place :
+   #pragma atomic
+   m_duv += du_sum;
+
+   Ou alors, on définit un vecteur de taille numThreads*100 (par exemple) et on utilise que les composantes m_temp[100*iThread] pour éviter le false sharing (nom correct du ping-pong entre les caches).
+   En C++ moderne (C++17), il existe une fonction qui donne la valeur à mettre à la place de 100

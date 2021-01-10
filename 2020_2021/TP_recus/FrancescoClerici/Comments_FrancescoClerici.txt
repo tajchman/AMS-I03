@@ -1,0 +1,79 @@
+Very good work, only a few comments:
+
+1. The number of threads has already been selected in parameters.cxx (set_num_threads), no need to specify it again (at the same value in the omp pragma).
+But it's not an error.
+
+2. In the main program of the coarse grain version there are too many "pragma single" 
+
+For example, instead of 
+	  #pragma omp single
+      if (freq > 0 && it % freq == 0) {
+        T_other.start();
+        C.getOutput().plot(it);
+        T_other.stop();
+      }
+    
+	  #pragma omp single
+      T_calcul.start();
+
+(2 Omp barriers)
+
+you could write
+
+	  #pragma omp single
+	  {
+        if (freq > 0 && it % freq == 0) {
+          T_other.start();
+          C.getOutput().plot(it);
+          T_other.stop();
+        }
+        T_calcul.start();
+      }
+
+(only 1 OpenMP barrier)
+
+3. You could join the 2 external // regions in main.cxx :
+
+Instead of
+
+  #pragma omp parallel default(shared) num_threads(Prm.nthreads())
+  {
+    u_0.boundaries(cond_ini);
+	u_0.init(cond_ini);
+	
+	#pragma omp single
+    C.setInput(u_0);
+  }
+  T_init.stop();
+  std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+            << T_init.elapsed() << " s\n" << std::endl;
+	
+  int itMax = Prm.itmax();
+  
+  #pragma omp parallel default(shared) num_threads(Prm.nthreads())
+  {
+	int it;
+    for (it=0; it < itMax; it++) {
+	  
+
+you could write:
+
+  int itMax = Prm.itmax(); // itMax must be a shared variable
+
+  #pragma omp parallel default(shared) num_threads(Prm.nthreads())
+  {
+    u_0.boundaries(cond_ini);
+	u_0.init(cond_ini);
+	
+    #pragma omp single 
+    {
+      C.setInput(u_0);
+      T_init.stop();
+      std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
+                << T_init.elapsed() << " s\n" << std::endl;
+	}
+
+	int it;
+    for (it=0; it < itMax; it++) {
+	  
+Not very important, you will not gain much speedup 
