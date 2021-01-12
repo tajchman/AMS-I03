@@ -26,8 +26,6 @@ int main(int argc, char **argv)
     if (found != std::string::npos && found < fileOut.size()-1)
     fileOut.insert(found+1, "res_"); 
   }
-  std::cerr << fileIn << std::endl << fileOut << std::endl;
-  return 0;
   
   Timer T1, T2, T3;
   T1.start();

@@ -1,0 +1,84 @@
+Quelques comentaires :
+
+1. C'est bien d'avoir testé et comparé les différents endroits ou ajouter des pragma OpenMP et aussi de vérifier que les résultats sont corrects
+
+2. Quand vous tracez des courbes, mettez clairement la signification des axes X et Y.
+
+   Par exemple pour le graphique "temps total" en haut de la page 2 du rapport, ce qui est tracé ce n'est pas l'accélération mais le temps de calcul
+
+   De même, le 3ème graphique ce qui est tracé c'est l'INVERSE de l'accélération (accélération = Temps(séquentiel)/Temps(parallèle))
+
+4. Les temps calcul sont bizarres.
+
+   Clairement vous avez oublié de préciser les variables privées.
+
+   C'est pour cela que vous obtenez des temps calculs qui augmentent avec le nbre de threads.
+   Donc la parallélisation de votre code fait le contraire de ce qu'on espère (réduire le temps de calcul).
+
+   En fait le code passe le plus clair de son temps à balader des variables qui devraient être privées entre les caches des différents coeurs
+
+   La seule courbe qui diminue avec le nombre de threads est l'initialisation quand vous parallélisez toutes les courbes (voir le commentaire suivant)
+
+2. Examinons ce qui se passe quand vous avez une triple boucle:
+
+  for (i = imin; i < imax; i++)
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) {
+      ...
+      }
+
+Supposons que vous utilisiez 5 threads.
+_____________________________________
+Si vous parallélisez toutes les boucles
+
+  #pragma omp parallel for             <---- ici on utilise tous les (5) threads disponibles
+  for (i = imin; i < imax; i++)
+    #pragma omp parallel for           <---- ici il ne reste plus de threads disponibles 
+    for (j = jmin; j < jmax; j++)
+      #pragma omp parallel for         <---- ici il ne reste plus de threads disponibles 
+      for (k = kmin; k < kmax; k++) {
+      ...
+      }
+
+Donc les pragma internes ne servent à rien, parce que le pragma le plus externe a déjà réservé tous les threads. Le seul point positif ici, c'est que i, j et k sont implicitement privés (chaque thread met des valeurs différentes dans i,j,k)
+
+_____________________________________
+Si vous parallélisez seulement la boucle externe
+
+  #pragma omp parallel for
+  for (i = imin; i < imax; i++)
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) {
+      ...
+      }
+
+La variable (indice de boucle) i est implicitement privée et donc chaque thread utilise sa propre copie de i -> correct
+Par contre, j et k sont partagés. Donc si plusieurs threads mettent des valeurs différentes dans j et k, soit les résultats sont faux, soit le système passe son temps à recopier j et k entre les caches des coeurs et les temps calculs sont mauvais. 
+
+_____________________________________
+Si vous parallélisez une boucle interne
+
+  for (i = imin; i < imax; i++)
+  #pragma omp parallel for
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) {
+      ...
+      }
+
+La variable (indice de boucle) i est n'est pas dans une région // -> correct
+La variable (indice de boucle) j est implicitement privée -> correct
+Par contre, k est partagée. Donc si plusieurs threads mettent des valeurs différentes dans j et k, soit les résultats sont faux, soit le système passe son temps à recopier j et k entre les caches des coeurs et les temps calculs sont mauvais. 
+
+_____________________________________
+Donc, la bonne façon de faire, c'est:
+- d'utiliser un seule pragma (pour la boucle multiple)
+- d'indiquer correctement les variables privées
+
+  #pragma omp parallel for private(j,k)
+  for (i = imin; i < imax; i++)
+    for (j = jmin; j < jmax; j++)
+      for (k = kmin; k < kmax; k++) {
+      ...
+      }
+
+(pas besoin de dire que i est privée)
