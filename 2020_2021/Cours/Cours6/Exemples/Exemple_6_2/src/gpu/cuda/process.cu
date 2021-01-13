@@ -127,15 +127,14 @@ __global__ void smoothGPU(double *g_odata,
   if ((idx < width) && (idy < height)) {
 
     if ((idx >= nGauss) && (idx < width-nGauss) &&
-	(idy >= nGauss) && (idy < height-nGauss)) {
+	      (idy >= nGauss) && (idy < height-nGauss)) {
       double sum = 0;
       for (int x = -nGauss; x <= nGauss; x++) { 
-	for (int y = -nGauss; y <= nGauss; y++) { 
-	  sum += d_GKernel[x+nGauss][y+nGauss]*g_idata[(idx+x)+(idy+y)*width];
-	}
+	      for (int y = -nGauss; y <= nGauss; y++) { 
+	        sum += d_GKernel[x+nGauss][y+nGauss]*g_idata[(idx+x)+(idy+y)*width];
+      	}
       }
       g_odata[idx + idy*width] = sum;
-//      printf("%d %d: %f\n", idx, idy, sum);
     }
     else
       g_odata[idx + idy*width] = g_idata[idx + idy*width];
@@ -179,18 +178,19 @@ __global__ void sobelGPU(double * gOut, double * gIn,
   if ((idx < width) && (idy < height)) {
 
     if ((idx > 0) && (idx < width-1) &&
-	(idy > 0) && (idy < height-1)) {
+	      (idy > 0) && (idy < height-1)) {
       int x,y;
       double s;
       double sum, sumx = 0, sumy = 0;
 //      printf("%d %d : %f\n", idx, idy, gIn[idx + idy*width] );
 
       for(x=-1; x<=1; x++)
-	for(y=-1; y<=1; y++) {
-	  s = gIn[(idx+x)+(idy+y)*width];
-	  sumx+=s*d_dx[x+1][y+1];
-	  sumy+=s*d_dy[x+1][y+1];
-	}
+	      for(y=-1; y<=1; y++) {
+	        s = gIn[(idx+x)+(idy+y)*width];
+	        sumx+=s*d_dx[x+1][y+1];
+	        sumy+=s*d_dy[x+1][y+1];
+        }
+        
       sum=fabs(sumx)+fabs(sumy);
       gOut[idx + idy*width] = (sum>255.0) ? 255.0 : sum;
 //      printf("%d %d : %f\n", idx, idy, sum);
