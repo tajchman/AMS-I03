@@ -145,6 +145,21 @@ Ces traitements sont souvent très parallélisables et donc les constructeurs de
 \end{frame}
 
 \begin{frame}
+	Jusque 2000, la seule façon de programmer les GPU est l'utilisation de OpenGL, DirectX, etc.
+	
+	Utilisation principalement pour des traitements graphiques.
+	
+	\bigskip
+	
+	La puissance de calcul des GPU a conduit à essayer de les utiliser pour des traitements non graphiques.
+	On parle alors de GPGPU (General Purpose computing on Graphics Processing Units).
+	
+	\bigskip
+	A partir de 2000, apparaissent les modèles de programmation adaptés aux (GP)GPU : Ati Stream (ATI-AMD), Cuda (Nvidia, ``Compute Unified Device Architecture''), puis OpenCL (interface générique).
+	
+\end{frame}
+
+\begin{frame}
 Principales différence entre les CPU et les GPU (situation actuelle) :
 
 \vspace{-0.4cm}
@@ -174,7 +189,7 @@ Ici, latence, bande passante : durée initialisation et quantité échangée par
 \begin{frame}
 
 \vfill
-La puissance de calcul (nombre de c\oe urs $\times$ performance d'un c\oe ur) des GPU dépassent celle des CPU : les c\oe urs GPU sont moins puissants que les c\oe urs CPU mais (beaucoup) plus nombreux.
+La puissance de calcul théorique (nombre de c\oe urs $\times$ performance d'un c\oe ur) des GPU dépassent celle des CPU : les c\oe urs GPU sont moins puissants que les c\oe urs CPU mais (beaucoup) plus nombreux.
 
 \begin{center}
 \includegraphics[scale=0.3]{../../Images/Perf_CPU_GPU}
@@ -226,6 +241,30 @@ Structure interne comparée (schématique):
 \end{frame}
 
 \begin{frame}
+	Actuellement, un GPU doit toujours être associé à un CPU (pour gérer le clavier, la souris, le réseau, les disques, etc.).
+	
+	\vfill
+	 Chacun a sa propre mémoire de travail et donc il faut pouvoir transférer des données entre tous les éléments.
+	 
+	 \vfill
+\begin{tabular}{cc}
+	\begin{minipage}[b]{0.4\textwidth}
+	Comparaison des vitesses de transfert entre les unités de calcul et les différentes mémoires:
+    \end{minipage}&
+	\includegraphics{../../Images/GpuCpuBandwidth}
+\end{tabular}
+\end{frame}
+	
+\begin{frame}
+	Certains types de problèmes sont bien adaptés au calcul sur GPU, d'autres (beaucoup) moins
+	
+	\includegraphics[scale=0.28]{../../Images/GPU_algos}
+	
+	Problème $N$-corps: $N$ objets massifs exercent entre eux des forces de gravité (exemple: systèmes d'étoiles)
+	
+\end{frame}
+
+\begin{frame}
 Sur une seule machine, pour :
 \begin{tabular}{ll}
 calculs séquentiels ou faiblement // :& utiliser le CPU \\
@@ -240,22 +279,32 @@ A adapter à chaque cas !!
 
 Les résultats ne seront pas toujours exactement les mêmes sur CPU et sur GPU:
 \begin{itemize}
-\item Jusque $\sim$ 2000, les GPU (Nvidia) calculaient seulement en simple précision (32 bits) : pas besoin de 15 décimales pour calculer la couleur de pixels
+\item Jusque $\sim$ 2000, les GPU (Nvidia) calculaient seulement en simple précision (32 bits) : pas besoin de 15 décimales pour calculer la couleur de pixels.
 \item Depuis, on a du 64 bits (double précision) sur GPU, {\bfseries mais} pas toujours les mêmes précisions entre le GPU et le CPU pour les additions/multiplications/divisions/..., les modes d'arrondi ne sont pas toujours identiques
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}
-	Jusque 2000, la seule façon de programmer les GPU est l'utilisation de OpenGL, DirectX, etc.
+\begin{tabular}{ll}
+	Structure d'un GPU Nvidia &
+	\begin{minipage}{0.5\textwidth}
+		Les c\oe urs du GPU sont groupés dans des ``streaming processors'' (32 coeurs)
+	\end{minipage} \\	
+	\includegraphics[scale=1]{../../Images/Nvidia}&
+	\includegraphics[scale=0.8]{../../Images/Nvidia2}
+\end{tabular}
+\end{frame}
+
+\begin{frame}
+	Modèle de programmation CUDA : les threads utilisateurs sont groupés en blocs de threads, organisés en grilles de blocs.
 	
-	A partir de 2000, apparaissent les modèles de programmation Cuda ()
-\end{frame}
+\begin{center}
+\includegraphics[scale=0.7]{../../Images/ThreadsGPU}
+\includegraphics[scale=0.7]{../../Images/HardGPU}
+\end{center}
 
-\begin{frame}
-\end{frame}
-
-\begin{frame}
+	Les blocs de threads sont dans une file d'attente. Le premier bloc de threads de la file est envoyé vers un ``streaming processor'' disponible. Quand un streaming processor a fini d'exécuter un bloc de threads, il est disponible pour le bloc suivant de la file.
 \end{frame}
 
 \end{document}

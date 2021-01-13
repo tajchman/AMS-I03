@@ -43,7 +43,7 @@ def readTemps(n):
     return (0.0, 0.0)
 
 with open('run_' + version + '.log', 'w') as log:
-    
+    print(codeSeq)
     proc = Popen([codeSeq, "path=" + resultsDir] + args.rest,
                  stdout=PIPE, encoding='utf-8')
     while proc.poll() is None:

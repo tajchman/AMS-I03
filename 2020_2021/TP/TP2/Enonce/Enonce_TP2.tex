@@ -37,7 +37,7 @@
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
 \subtitle{Travail pratique 2}
 \author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
-\date{02/12/2020}
+\date{mise à jour le 10/01/2021}
 
 \begin{document}
 \begin{frame}
@@ -49,7 +49,7 @@
 	\section{Travail pratique 2}
 	\frametitle{Travail pratique 2}
 
-On  part d'un code parallélisé avec MPI qui calcule une solution approchée du problème suivant~:
+On part d'un code parallélisé avec MPI qui calcule une solution approchée du problème suivant~:
 
 \medskip
 \begin{quote}
@@ -251,7 +251,7 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 \begin{frame}[fragile]
 
 \begin{itemize}
-	\item 	Pour compiler, se placer dans le répertoire {\tt TP1/PoissonMPI\_OpenMP\_FineGrain} et taper:
+	\item 	Pour compiler, se placer dans le répertoire {\tt TP2/PoissonMPI\_OpenMP\_FineGrain} et taper:
 	
 	\hspace{-2cm}{\color{blue}\begin{verbatim}
 ./build.py
@@ -266,13 +266,14 @@ Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont co
 	
 	\hspace{2cm}
 	{\color{blue}\begin{verbatim}
-mpirun -n 2 ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
-		 threads=<n>
+mpirun -n <n> \
+  ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
+  threads=<t>
 \end{verbatim}
 	}
 	
 	\vfill
-	(à la place de {\tt <n>} taper 3 pour exécuter sur 3 threads (par exemple)
+	Exemple: à la place de {\tt <n>}, taper 2 pour exécuter avec 2 processus MPI, et à la place de {\tt <t>}, taper 3 pour exécuter dans chaque processus MPI, 3 threads.
 	\vfill
 	
 \end{itemize}
@@ -280,55 +281,33 @@ mpirun -n 2 ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
 
 
 \begin{frame}[fragile]
-	On fournit aussi un script pour comparer les speedups pour différents nombres de threads:
+	On fournit aussi un script \texttt{submit\_hybrid.py} pour lancer les calculs sur la machine Gin (ce script devrait être facilement utilisable sur une machine parallèle gérée par SGE):
 	
 	{\color{blue}\begin{verbatim}
-		./run.py <nthreads>
+		./submit_hybrid.py -n <n> -t <t>
 		\end{verbatim}
 	}
-	qui lance plusieurs exécutions:
-	\begin{itemize}
-		\item version séquentielle
-		\item version OpenMP sur 1 thread
-		\item version OpenMP sur 2 threads
-		
-		...
-		\item version OpenMP sur \verb|<nthreads>| threads
-	\end{itemize}
 	
-	et à la fin affiche un graphe: nombre de threads .vs. temps CPU/speedup.
-	
-	\vfill
-	Remarque:
-	\medskip
-	
-	\hspace{1cm}\begin{minipage}{0.9\textwidth}
-		Pour pouvoir utiliser le script {\tt run.py},
-		il faut que le paquet {\tt matplotlib} (pour la version de python utilisée) soit installé
-	\end{minipage}
-	
+	où \texttt{<n>} est le nombre de processus MPI, et \texttt{<t>} le nombre de threads/processus MPI.
+
+\vfill
+    Exécuter le code sur 
+    \begin{itemize}
+    	\item 1 processus MPI $\times$ 8 threads
+    	\item 2 processus MPI $\times$ 4 threads
+    	\item 4 processus MPI $\times$ 2 threads
+    	\item 8 processus MPI $\times$ 1 thread
+    \end{itemize}
+ 	
+ 	Et comparer les résultats et les temps de calcul.
+ 	
 \end{frame}
 
 \begin{frame}
-	Première partie:
-\bigskip
-
-\framebox{\color{blue}%
-\begin{minipage}{\textwidth}
-		Dans le répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain}, paral\-léliser avec OpenMP grain fin:
-		
-		\begin{enumerate}
-			\item \color{blue}Chercher les parties du code à paralléliser
-			\item \color{blue}Ajouter ou adapter les {\tt pragmas}
-			\item \color{blue}Identifier les variables partagées et privées
-			\item \color{blue}Compiler, lancer le code avec différents nombres de threads
-			\item \color{blue}Comparer avec la version séquentielle
-			\item \color{blue}Si différent, revenir en (2)
-		\end{enumerate}
-	
-	\end{minipage}
-}
-
+ 	Remarque
+ 	\begin{quote}
+ 		On rappelle que le nombre de processus MPI et de threads OpenMP est trop petit ici pour que la programmation hybride apporte un avantage par rapport au ``tout MPI''
+ 	\end{quote}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -336,10 +315,10 @@ mpirun -n 2 ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
 	
 	Récupérer et décompresser un des fichiers \bigskip
 	
-	\href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP1\_OpenMP\_CoarseGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.zip}{\tt TP1\_OpenMP\_CoarseGrain\_incomplet.zip}
+	\href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP2\_MPI\_OpenMP\_CoarseGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.zip}{\tt TP2\_MPI\_OpenMP\_CoarseGrain\_incomplet.zip}
 	\bigskip
 	
-	Un répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
+	Un répertoire {\tt TP2/PoissonMPI\_OpenMP\_CoarseGrain} est créé et contient le code source incomplet de la version OpenMP grain grossier.
 	
 	\vfill
 	Pour compiler et exécuter on utilisera la même procédure que dans le cas OpenMP grain fin.
@@ -351,13 +330,13 @@ mpirun -n 2 ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
 	Dans le parallélisme OpenMP gros grain, on découpe explicitement le domaine de calcul en plusieurs parties, chaque partie est calculée par un thread.
 	\vfill
 	
-	Le type {\tt Parameters} possède 2 fonctions supplémentaires utiles pour le // gros grain :
+	Pour cela, le type {\tt Parameters} possède 2 fonctions supplémentaires utiles pour le // gros grain :
 	\bigskip
 	
 	\begin{tabular}{ll}
-		{\tt imin\_local(i,iThread)}&indice des premiers points intérieurs \\ &  dans la direction $i$, pour la partie \\ 
+		{\tt imin\_thread(i,iThread)}&indice des premiers points intérieurs \\ &  dans la direction $i$, pour la partie \\ 
 		&calculée par le thread {\tt iThread}\\ \\
-		{\tt imax\_local(i,iThread)}& indice des derniers points sur la \\
+		{\tt imax\_thread(i,iThread)}& indice des derniers points sur la \\
 		& frontière dans la direction $i$, pour la \\
 		& partie calculée par le thread {\tt iThread}
 	\end{tabular}
@@ -365,25 +344,13 @@ mpirun -n 2 ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
 \end{frame}
 
 \begin{frame}
-	Seconde partie:
-	\bigskip
-	
-	\framebox{\color{blue}%
-		\begin{minipage}{\textwidth}
-			Dans le répertoire {\tt TP2/PoissonMPI\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
-			
-			\begin{enumerate}
-				\item \color{blue}Ajouter une région parallèle OpenMP dans le programme principal autour de la boucle en temps
-				\item \color{blue}Identifier les instructions dans la région parallèle OpenMP qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
-				\item \color{blue}Identifier les variables partagées et privées
-				\item \color{blue}Ajouter ou adapter les pragmas correspondantes
-				\item \color{blue}Dans chaque thread, faire une partie des boucles internes
-				\item \color{blue}Compiler, lancer le code avec différents nombres de threads
-				\item \color{blue}Comparer avec la version séquentielle
-				\item \color{blue}Si différent, revenir en (2)
-			\end{enumerate}
-		\end{minipage}
-	}
+
+Ajouter une parallélisation OpenMP gros grain, et tester avec les mêmes nombres de processus MPI et threads OpenMP que dans le cas grain fin.
+\bigskip
+
+Le découpage de chaque domaine MPI en sous-domaines traités chacun par un thread est fait dans \texttt{parameters.cxx} lignes 143-169. Examiner et expliquer l'algorithme.
+
+
 	
 \end{frame}
 
@@ -395,12 +362,16 @@ Envoyez par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
 	\item une description du travail réalisé (1-2 pages maximum)
 	\item le code source, avec vos modifications, dans une archive
 	(n'envoyez pas les répertoires \textcolor{blue}{\tt build} et  \textcolor{blue}{\tt install} qui contiennent des binaires) 
-	\item les fichiers run***.log et speedups***.pdf que vous avez obtenus
+	\item autant que possible, les fichiers qui contiennent les sorties écran:
+	\begin{itemize}
+		\item si vous avez lancé les calculs sur Gin, les fichiers output\_***
+	    \item si vous avez lancé sur une autre machine, les fichiers similaires ou une copie des affichages  écran
+	\end{itemize}
 \end{itemize}
 
 \bigskip
 
-{\bf avant le 20/12/2020, au plus tard le 23/12/2020.}
+{\bf avant le 22/01/2021.}
 
 \bigskip
 \textcolor{red}{\bf Envoyez vos fichiers source même s'ils contiennent des erreurs.}
