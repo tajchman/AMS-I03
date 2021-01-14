@@ -1,0 +1,27 @@
+Remplace mes commentaires précédents.
+Désolé.
+
+Quelques commentaires 
+
+1. Sur la partie fine grain, rien à dire.
+
+2. Sur la partie coarse grain, les résultats sont corrects.
+
+Il y a une erreur dans main.cxx (mais qui ne change pas les résultats) :
+
+    du_sum_partial = 0.0;    <----- la valeur de cette variable est toujours 0.0 
+    du_sum_total = 0.0;
+    ...
+    du_sum_total = C.variation();
+    ...
+    #pragma omp critical
+    du_sum_total += du_sum_partial;   <----- a quoi ca sert ?
+
+du_sum_partial vaut 0.0 donc vous ajoutez 0 a du_sum_total
+
+De toute facon, vous faites la reduction dans scheme.cxx
+
+
+3. En général, on utilise plutot "omp atomic" que "omp critical" parce que "omp atomic" est plus rapide (mais omp atomic est seulement valable pour les operations simples comme a += b)
+
+4. Dans scheme.cxx, vous pouvez fusionner les 2 sections single (lignes 72-75) et economiser une barriere

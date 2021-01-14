@@ -1,23 +1,37 @@
 #include "matrice.hxx"
+#include "timer.hxx"
 #include <cstring>
 #include <cstdlib>
 #include <stdexcept>
 
 Matrice::Matrice(int n, int m, const char * name) 
     : m_n(n), m_m(m), m_nm(n*m), 
-      m_c(new double[n*m]),
+      m_c(nullptr),
       m_name(name)
 {
+    Timer T = GetTimer(0);
+    T.start();
+    m_c = new double[n*m];
+    T.stop();
+    std::cerr << T.elapsed() << std::endl;
 }
 
 Matrice::Matrice(const Matrice &other) 
     : m_n(other.m_n), 
       m_m(other.m_m), 
       m_nm(other.m_nm), 
-      m_c(new double[other.m_nm]),
+      m_c(nullptr),
       m_name(other.m_name)
 {
+    Timer T0 = GetTimer(0);
+    T0.start();
+    m_c = new double[other.m_nm];
+    T0.stop();
+
+    Timer T1 = GetTimer(1);
+    T1.start();
     std::memcpy(m_c, other.m_c, m_nm * sizeof(double));
+    T1.stop();
 }
 
 void Matrice::operator=(const Matrice &other)
@@ -28,12 +42,18 @@ void Matrice::operator=(const Matrice &other)
     m_n = other.m_n;
     m_m = other.m_m;
     if (m_nm != other.m_nm) {
+        Timer T = GetTimer(0);
+        T.start();
         delete [] m_c;
         m_c = new double[other.m_nm];
+        T.stop();
     }
+    Timer T = GetTimer(1);
+    T.start();
     m_n = other.m_n;
     m_m = other.m_m;
     std::memcpy(m_c, other.m_c, m_nm*sizeof(double));
+    T.stop();
 }
 
 void Matrice::Init(double v) {
@@ -56,6 +76,7 @@ void Matrice::Identite() {
 
 void Matrice::Random(double cmax) {
 
+    std::srand(0);
     int i,j;
     for (i=0; i<m_n;i++)
         for (j=0; j<m_m; j++) {

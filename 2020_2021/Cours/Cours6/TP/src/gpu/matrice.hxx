@@ -15,8 +15,8 @@ public:
 
     int n() const { return m_n; }
     int m() const { return m_m; }
-    double & operator()(int i, int j) { return h_c[i+j*m_n]; }
-    double operator()(int i, int j) const { return h_c[i+j*m_n]; }
+    double & operator()(int i, int j) { return h_c[j + i*m_m]; }
+    double operator()(int i, int j) const { return h_c[j+i*m_m]; }
 
     std::string & name() { return m_name; }
     std::string name() const { return m_name; }
@@ -30,6 +30,9 @@ public:
     bool & syncronized() { return m_synchronized; }
     void synchronize();
 
+    double * device() { return d_c; }
+    double * host() { return h_c; }
+
 private:
     std::string m_name;
     double *h_c;
@@ -37,12 +40,12 @@ private:
     int m_n, m_m, m_nm;
     size_t bytes;
     bool m_synchronized;
+
     void copyToDevice();
     void copyToHost();
-
-    friend void multiply(Matrice & , const Matrice &, const Matrice &);
+    friend void multiply(Matrice & , Matrice &, Matrice &);
 
 };
 
-void multiply(Matrice & M1, const Matrice &M2, const Matrice &M3);
+void multiply(Matrice & M1, Matrice &M2, Matrice &M3);
 std::ostream & operator<<(std::ostream & f, Matrice & M);

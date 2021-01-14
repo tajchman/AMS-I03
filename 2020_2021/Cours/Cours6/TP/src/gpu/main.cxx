@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-  int kmax = 100;
+  int kmax = 200;
   int n = argc > 1 ? strtol(argv[1], NULL, 10) : 10;
 
   Matrice Id(n, n, "Id");
@@ -14,14 +14,11 @@ int main(int argc, char **argv)
   Matrice Temp(n, n,"Temp");
 
   Id.Identite();
-  std::cout << Id << std::endl;
   
   A.Random(1.0/n);
-  std::cout << A << std::endl;
   
   Am = Id;
   Am -= A;
-  std::cout << Am << std::endl;
  
   B = Id;
   Ap = Id;
@@ -29,11 +26,11 @@ int main(int argc, char **argv)
   for (int k=0; k<kmax; k++) {
     multiply(Temp, Ap, Am);
     Ap = Temp;
-    std::cout << Temp << std::endl;
-    return 0;
-
+   
     B += Ap;
-
+  
+    multiply(Temp, A, B);
+  
     double delta = Ap.norm2();
     std::cout << k << " " << delta << std::endl;
     if (delta < 1e-7)

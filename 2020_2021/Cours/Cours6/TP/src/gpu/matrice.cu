@@ -29,6 +29,7 @@ Matrice::Matrice(const Matrice &other)
     cudaMemcpy (d_c, other.d_c, bytes, cudaMemcpyDeviceToDevice);
     m_synchronized = other.m_synchronized;
 }
+
 void Matrice::copyToDevice()
 {
   cudaMemcpy (d_c, h_c, bytes, cudaMemcpyHostToDevice);
@@ -102,10 +103,12 @@ void Matrice::Identite() {
                   (m_m + blockSize.y)/blockSize.y); 
       
     identiteGPU<<<gridSize, blockSize>>>(d_c, m_n);
+    m_synchronized = false;
 }
 
 void Matrice::Random(double cmax) {
 
+    std::srand(0);
     int i,j;
     for (i=0; i<m_n;i++)
         for (j=0; j<m_m; j++) {
@@ -129,23 +132,39 @@ double Matrice::norm2() {
         for (j=0; j<m_m; j++)
             s += sqr((*this)(i,j));
 
-    copyToDevice();
-
     return sqrt(s);
 }
 
+__global__ void raddGPU(double *v, double *u, int n) {
+    int i;
+    i = blockIdx.x*blockDim.x+threadIdx.x;
+    if (i < n) {
+      v[i] += u[i];
+    }
+  }
+    
 void Matrice::operator+=(const Matrice &M)
 {
-    int i;
-    for (i=0;i<m_nm;i++)
-      h_c[i] += M.h_c[i];       
+    int blockSize = 256;
+    int gridSize = (m_nm + blockSize)/blockSize;
+    raddGPU<<<gridSize, blockSize>>>(d_c, M.d_c, m_nm);
+    m_synchronized = false;
 }
 
+__global__ void rsubGPU(double *v, double *u, int n) {
+    int i;
+    i = blockIdx.x*blockDim.x+threadIdx.x;
+    if (i < n) {
+      v[i] -= u[i];
+    }
+  }
+    
 void Matrice::operator-=(const Matrice &M)
 {
-    int i;
-    for (i=0;i<m_nm;i++)
-      h_c[i] -= M.h_c[i];       
+    int blockSize = 256;
+    int gridSize = (m_nm + blockSize)/blockSize;
+    rsubGPU<<<gridSize, blockSize>>>(d_c, M.d_c, m_nm);
+    m_synchronized = false;
 }
 
 __global__ void multiplyGPU(double *w, double *u, double *v,
@@ -160,20 +179,19 @@ __global__ void multiplyGPU(double *w, double *u, double *v,
     double s = 0.0;
     for (k=0; k<p; k++)
        s += u[k + i*p] * v[j + k*m];
-    w[i+j*n] = s;
+    w[j+i*m] = s;
 }
 
-void multiply(Matrice & M1, const Matrice &M2, const Matrice &M3)
+void multiply(Matrice & M1, Matrice &M2, Matrice &M3)
 {
     int n = M2.n(), p = M2.m(), q = M3.n(), m = M3.m();
     if (p != q || n != M1.n() || m != M1.m())
         throw std::runtime_error("erreur de dimensions");
 
-
     dim3 blockSize(16, 16);
     dim3 gridSize((n + blockSize.x)/blockSize.x,
                   (m + blockSize.y)/blockSize.y); 
-          
+    
     multiplyGPU<<<gridSize, blockSize>>>(M1.d_c, M2.d_c, M3.d_c, n, p, m);
     M1.m_synchronized = false;
 }

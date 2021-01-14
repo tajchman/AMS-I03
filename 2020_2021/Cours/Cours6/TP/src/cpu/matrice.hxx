@@ -15,8 +15,8 @@ public:
 
     int n() const { return m_n; }
     int m() const { return m_m; }
-    double & operator()(int i, int j) { return m_c[i+j*m_n]; }
-    double operator()(int i, int j) const { return m_c[i+j*m_n]; }
+    double & operator()(int i, int j) { return m_c[j+i*m_m]; }
+    double operator()(int i, int j) const { return m_c[j+i*m_m]; }
 
     std::string & name() { return m_name; }
     std::string name() const { return m_name; }
