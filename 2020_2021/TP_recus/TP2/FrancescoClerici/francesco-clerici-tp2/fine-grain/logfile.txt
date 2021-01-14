@@ -1,0 +1,157 @@
+D:\Workspace\AMS_I03\2020_2021\TP_recus\TP2\FrancescoClerici\francesco-clerici-tp2\fine-grain> python .\run.py -n 1
+Taper control-C pour arreter ...
+OPENMP_ defined
+1 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 1] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init    2.08179 s
+
+iter.   0  variation  2.441e+05  temps calcul     4.84 s  comm.  0.00223 s
+iter.   1  variation  2.016e+05  temps calcul     9.59 s  comm.  0.00439 s
+iter.   2  variation  1.785e+05  temps calcul     14.3 s  comm.  0.00647 s
+iter.   3  variation  1.618e+05  temps calcul     19.1 s  comm.  0.00851 s
+iter.   4  variation   1.49e+05  temps calcul     23.9 s  comm.   0.0106 s
+iter.   5  variation  1.387e+05  temps calcul     29.7 s  comm.   0.0124 s
+iter.   6  variation  1.302e+05  temps calcul     35.6 s  comm.   0.0147 s
+iter.   7  variation   1.23e+05  temps calcul     41.4 s  comm.   0.0167 s
+iter.   8  variation  1.168e+05  temps calcul       47 s  comm.   0.0188 s
+iter.   9  variation  1.114e+05  temps calcul     52.6 s  comm.   0.0207 s
+
+               temps total      54.8 s
+
+D:\Workspace\AMS_I03\2020_2021\TP_recus\TP2\FrancescoClerici\francesco-clerici-tp2\fine-grain> python .\run.py -n 2
+Windows
+Taper control-C pour arreter ...
+OPENMP_ defined
+OPENMP_ defined
+1 thread(s)
+It. max :  10
+Results in .
+
+Process 0
+  Domain :   [0, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 201] x [0 ... 400] x [0 ... 400]
+
+Process 1
+  Domain :   [0.5, 1] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+
+  temps init   0.899365 s
+
+iter.   0  variation  2.441e+05  temps calcul     2.88 s  comm.  0.00743 s
+iter.   1  variation  2.016e+05  temps calcul     5.72 s  comm.   0.0135 s
+iter.   2  variation  1.785e+05  temps calcul     8.53 s  comm.   0.0198 s
+iter.   3  variation  1.618e+05  temps calcul     11.4 s  comm.   0.0259 s
+iter.   4  variation   1.49e+05  temps calcul     14.2 s  comm.   0.0325 s
+iter.   5  variation  1.387e+05  temps calcul     17.1 s  comm.   0.0387 s
+iter.   6  variation  1.302e+05  temps calcul     20.1 s  comm.   0.0453 s
+iter.   7  variation   1.23e+05  temps calcul     23.1 s  comm.   0.0515 s
+iter.   8  variation  1.168e+05  temps calcul     26.1 s  comm.   0.0578 s
+iter.   9  variation  1.114e+05  temps calcul       29 s  comm.   0.0651 s
+
+               temps total      30.2 s
+
+D:\Workspace\AMS_I03\2020_2021\TP_recus\TP2\FrancescoClerici\francesco-clerici-tp2\fine-grain> python .\run.py -n 1 threads=2
+Taper control-C pour arreter ...
+OPENMP_ defined
+2 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 1] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init     1.4558 s
+
+iter.   0  variation  2.022e+05  temps calcul     3.18 s  comm.   0.0021 s
+iter.   1  variation  1.674e+05  temps calcul     6.39 s  comm.  0.00395 s
+iter.   2  variation  1.493e+05  temps calcul     9.58 s  comm.  0.00576 s
+iter.   3  variation  1.349e+05  temps calcul     12.8 s  comm.  0.00775 s
+iter.   4  variation  1.233e+05  temps calcul     16.2 s  comm.  0.00966 s
+iter.   5  variation  1.152e+05  temps calcul     19.5 s  comm.   0.0115 s
+iter.   6  variation  1.078e+05  temps calcul     22.9 s  comm.   0.0132 s
+iter.   7  variation  1.025e+05  temps calcul     26.3 s  comm.   0.0149 s
+iter.   8  variation  9.715e+04  temps calcul     29.7 s  comm.   0.0166 s
+iter.   9  variation  9.154e+04  temps calcul     33.1 s  comm.   0.0185 s
+
+               temps total      34.7 s
+
+D:\Workspace\AMS_I03\2020_2021\TP_recus\TP2\FrancescoClerici\francesco-clerici-tp2\fine-grain> python .\run.py -n 1 threads=4
+OPENMP_ defined
+4 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 1] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init    1.16664 s
+
+iter.   0  variation  1.312e+05  temps calcul     1.98 s  comm.  0.00221 s
+iter.   1  variation   1.08e+05  temps calcul     3.94 s  comm.  0.00423 s
+iter.   2  variation  9.598e+04  temps calcul     5.93 s  comm.   0.0061 s
+iter.   3  variation  8.803e+04  temps calcul     7.98 s  comm.  0.00791 s
+iter.   5  variation  7.337e+04  temps calcul       12 s  comm.   0.0117 s
+iter.   6  variation  7.369e+04  temps calcul       14 s  comm.   0.0136 s
+iter.   7  variation  6.787e+04  temps calcul     16.1 s  comm.   0.0155 s
+iter.   8  variation  6.518e+04  temps calcul     18.1 s  comm.   0.0175 s
+iter.   9  variation  5.966e+04  temps calcul     20.1 s  comm.   0.0194 s
+
+               temps total      21.4 s
+
+D:\Workspace\AMS_I03\2020_2021\TP_recus\TP2\FrancescoClerici\francesco-clerici-tp2\fine-grain> python .\run.py -n 2 threads=4
+Windows
+Taper control-C pour arreter ...
+OPENMP_ defined
+OPENMP_ defined
+4 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+
+Process 0
+  Domain :   [0, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 201] x [0 ... 400] x [0 ... 400]
+
+Process 1
+  Domain :   [0.5, 1] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init    1.15098 s
+
+iter.   0  variation  1.225e+05  temps calcul     1.04 s  comm.  0.00682 s
+iter.   1  variation  9.702e+04  temps calcul     2.07 s  comm.   0.0125 s
+iter.   2  variation  8.923e+04  temps calcul     3.12 s  comm.   0.0183 s
+iter.   3  variation  8.356e+04  temps calcul     4.19 s  comm.    0.024 s
+iter.   4  variation  6.596e+04  temps calcul     5.23 s  comm.   0.0297 s
+iter.   5  variation  6.876e+04  temps calcul     6.27 s  comm.   0.0354 s
+iter.   6  variation  6.198e+04  temps calcul     7.32 s  comm.   0.0433 s
+iter.   7  variation  5.814e+04  temps calcul     8.37 s  comm.   0.0489 s
+iter.   8  variation  5.793e+04  temps calcul      9.4 s  comm.   0.0544 s
+iter.   9  variation  5.392e+04  temps calcul     10.4 s  comm.   0.0603 s
+
+               temps total      11.8 s
+
+D:\Workspace\AMS_I03\2020_2021\TP_recus\TP2\FrancescoClerici\francesco-clerici-tp2\fine-grain>
