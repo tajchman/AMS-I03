@@ -15,8 +15,8 @@ public:
 
     int n() const { return m_n; }
     int m() const { return m_m; }
-    double & operator()(int i, int j) { return m_c[j+i*m_m]; }
-    double operator()(int i, int j) const { return m_c[j+i*m_m]; }
+    double & operator()(int i, int j) { return h_c[j + i*m_m]; }
+    double operator()(int i, int j) const { return h_c[j + i*m_m]; }
 
     std::string & name() { return m_name; }
     std::string name() const { return m_name; }
@@ -28,9 +28,9 @@ public:
 
 private:
     std::string m_name;
-    double *m_c;
+    double *h_c;
     int m_n, m_m, m_nm;
 };
 
 void multiply(Matrice & M1, const Matrice &M2, const Matrice &M3);
-std::ostream & operator<<(std::ostream & f, const Matrice & M);
+std::ostream & operator<<(std::ostream & f, Matrice & M);

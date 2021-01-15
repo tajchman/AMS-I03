@@ -1,15 +1,17 @@
 #include <iostream>
+#include <iomanip>
 #include "matrice.hxx"
 #include "timer.hxx"
 
 int main(int argc, char **argv)
 {
-  int kmax = 200;
+  int kmax = 10;
   int n = argc > 1 ? strtol(argv[1], NULL, 10) : 10;
 
   AddTimer("allocation");
   AddTimer("copie memoire");
   AddTimer("identite");
+  AddTimer("norme2");
   AddTimer("random");
   AddTimer("addition");
   AddTimer("multiplication");
@@ -34,6 +36,9 @@ int main(int argc, char **argv)
   B = Id;
   Ap = Id;
   
+  std::cout << "Iteration" << std::setw(8) << " "
+            << "variation" << std::endl;
+
   for (int k=0; k<kmax; k++) {
     multiply(Temp, Ap, Am);
     Ap = Temp;
@@ -41,10 +46,14 @@ int main(int argc, char **argv)
     B += Ap;
   
     double delta = Ap.norm2();
-    std::cout << k << " " << delta << std::endl;
-    if (delta < 1e-7)
+    std::cout<< std::setw(9) << k 
+             << "    " << std::setw(13) << std::scientific << delta
+             << '\r';
+    
+    if (delta < 1e-5)
       break;
   }
+  std::cout << std::endl << std::endl;
 
   Temp.name() = "Verification";
   multiply(Temp, A, B);
@@ -56,7 +65,7 @@ int main(int argc, char **argv)
 
   Temp -= Id;
 
-  std::cout << "\nErreur sur l'inverse " << Temp.norm2() << std::endl;
+  std::cout << "\nErreur sur l'inverse = " << Temp.norm2() << std::endl;
 
   T_total.stop();
   PrintTimers(std::cout);
