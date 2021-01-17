@@ -1,5 +1,5 @@
 project(Ex_6_1 C CXX CUDA)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 

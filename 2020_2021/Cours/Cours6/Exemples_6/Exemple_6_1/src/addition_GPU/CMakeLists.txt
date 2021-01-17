@@ -1,7 +1,7 @@
 get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
 find_package(CUDA REQUIRED)
-set(CMAKE_CUDA_ARCHITECTURES 75)
+set(CMAKE_CUDA_ARCHITECTURES 35 50 75)
 
 include_directories(${CUDA_TOOLKIT_INCLUDE})
 

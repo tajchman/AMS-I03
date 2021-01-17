@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include "timer.hxx"
 
 double Calcul_Pi(std::size_t n);

@@ -3,20 +3,21 @@
 #include "timer.hxx"
 #include <time.h>
 #include <ctime>
+#include <cstdlib>
 
 const long ITERATIONS = 10000L;
 
 
 double urand()
 {
-  int r = std::rand();
+  int r = rand();
   return double(r)/(RAND_MAX);
 }
 
 
 double Calcul_Pi(std::size_t n)
 {
-  std::srand(std::time(NULL)); 
+  srand(std::time(NULL)); 
 
   unsigned long p = 0;
   double u, v;
