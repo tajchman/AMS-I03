@@ -20,8 +20,8 @@ public:
   
   void start() {
     if (m_running == false) {
-      m_start = std::chrono::high_resolution_clock::now();
       m_running = true;
+      m_start = std::chrono::high_resolution_clock::now();
     }
   }
 

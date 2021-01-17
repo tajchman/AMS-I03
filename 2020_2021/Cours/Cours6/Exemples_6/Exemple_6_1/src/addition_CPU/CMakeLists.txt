@@ -6,5 +6,4 @@ add_executable(${CODE}
   ${CMAKE_SOURCE_DIR}/util/timer.cxx
   )
 
-
 install(TARGETS ${CODE} DESTINATION .)

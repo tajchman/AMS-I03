@@ -1,7 +1,29 @@
 #include <iostream>
 #include "calcul.hxx"
-#include "timerGPU.hxx"
+#include "timer.hxx"
 #include "cuda_check.cuh"
+
+Calcul_GPU::Calcul_GPU(int m) : n(m)
+{
+  Timer & T = GetTimer(T_AllocId); T.start();
+  
+  int bytes = n*sizeof(double);
+  CUDA_CHECK_OP(cudaMalloc(&d_u, bytes));
+  CUDA_CHECK_OP(cudaMalloc(&d_v, bytes));
+  CUDA_CHECK_OP(cudaMalloc(&d_w, bytes));
+    
+  T.stop();
+
+}
+
+Calcul_GPU::~Calcul_GPU()
+{
+  Timer & T = GetTimer(T_FreeId); T.start();
+  cudaFree(d_u);
+  cudaFree(d_v);
+  cudaFree(d_w);
+  T.stop();
+}
 
 __global__ void vecInit(double *a, double *b, int n)
 {
@@ -15,6 +37,20 @@ __global__ void vecInit(double *a, double *b, int n)
   b[id] = cos(x)*cos(x);
 }
 
+void Calcul_GPU::init()
+{
+  Timer & T = GetTimer(T_InitId); T.start();
+
+  blockSize = 512;
+  gridSize = (unsigned int) ceil((double)n/blockSize);
+  
+  vecInit<<<gridSize, blockSize>>>(d_u, d_v, n);
+  cudaDeviceSynchronize();
+  CUDA_CHECK_KERNEL();
+
+  T.stop();
+}
+
 __global__ void vecAdd(double *c, double *a, double *b, int n)
 {
   int id = blockIdx.x*blockDim.x+threadIdx.x;
@@ -23,69 +59,38 @@ __global__ void vecAdd(double *c, double *a, double *b, int n)
     c[id] = a[id] + b[id];
 }
 
-
-Calcul_GPU::Calcul_GPU(std::size_t n) : m_n(n)
-{
-  TimerGPU T1; T1.start();
-  
-  std::size_t bytes = m_n*sizeof(double);
-  CUDA_CHECK_OP(cudaMalloc(&d_u, bytes));
-  CUDA_CHECK_OP(cudaMalloc(&d_v, bytes));
-  CUDA_CHECK_OP(cudaMalloc(&d_w, bytes));
-    
-  T1.stop();
-  std::cerr << "\t\ttemps init 1 : " << T1.elapsed() << std::endl;
-  TimerGPU T2; T2.start();
-  
-  blockSize = 512;
-  gridSize = (unsigned int) ceil((double)n/blockSize);
-  
-  vecInit<<<gridSize, blockSize>>>(d_u, d_v, n);
-  CUDA_CHECK_KERNEL();
-
-  T2.stop();
-  std::cerr << "\t\ttemps init 2 : " << T2.elapsed() << std::endl;
-}
-
-Calcul_GPU::~Calcul_GPU()
-{
-  cudaFree(d_u);
-  cudaFree(d_v);
-  cudaFree(d_w);
-}
-
 void Calcul_GPU::addition()
 {
-  TimerGPU T; T.start();
+  Timer & T = GetTimer(T_AddId); T.start();
   
-  vecAdd<<<gridSize, blockSize>>>(d_w, d_u, d_v, m_n);
+  vecAdd<<<gridSize, blockSize>>>(d_w, d_u, d_v, n);
   cudaDeviceSynchronize();
+  CUDA_CHECK_KERNEL();
+
   T.stop();
-  std::cerr << "\t\ttemps add.   : " << T.elapsed() << std::endl;
 }
 
 double Calcul_GPU::verification()
 {
-  TimerGPU T1, T2;
-
+  Timer & T1 = GetTimer(T_CopyId);
   T1.start();
   
-  std::size_t bytes = m_n*sizeof(double);
-  std::vector<double> w(m_n);
+  int bytes = n*sizeof(double);
+  std::vector<double> w(n);
   cudaMemcpy(w.data(), d_w, bytes, cudaMemcpyDeviceToHost);
 
   T1.stop();
-  T2.start();
+
+  Timer & T = GetTimer(T_VerifId);
+  T.start();
+
   double s = 0;
-  std::size_t i;
-  for (i=0; i<m_n; i++)
+  for (int i=0; i<n; i++)
     s = s + w[i];
   
-  s = s/m_n - 1.0;
+  s = s/n - 1.0;
   
-  T2.stop();
-  std::cerr << "\t\ttemps verif1 : " << T1.elapsed() << std::endl;
-  std::cerr << "\t\ttemps verif2 : " << T2.elapsed() << std::endl;
+  T.stop();
 
   return s;
 }

@@ -23,13 +23,13 @@ namespace cg = cooperative_groups;
 #include "cuda_check.cuh"
 
 __global__ void
-reduce(double *g_idata, double *g_odata, size_t n)
+reduce(double *g_idata, double *g_odata, int n)
 {
   cg::thread_block cta = cg::this_thread_block();
   extern __shared__ double sdata[];
   
-  size_t tid = threadIdx.x;
-  size_t i = blockIdx.x*blockDim.x + threadIdx.x;
+  int tid = threadIdx.x;
+  int i = blockIdx.x*blockDim.x + threadIdx.x;
   
   sdata[tid] = (i < n) ? g_idata[i] : 0;
 
@@ -45,7 +45,7 @@ reduce(double *g_idata, double *g_odata, size_t n)
   if (tid == 0) g_odata[blockIdx.x] = sdata[0];
 }
 
-double reduce(size_t n,
+double reduce(int n,
               double *d_idata,
               double *d_odata,
 	      int threads, int blocks)

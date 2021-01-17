@@ -14,7 +14,6 @@
 }
 
 #define CUDA_CHECK_KERNEL() { \
-  cudaDeviceSynchronize(); \
   CUDA_CHECK_OP(cudaGetLastError()); \
 }
 

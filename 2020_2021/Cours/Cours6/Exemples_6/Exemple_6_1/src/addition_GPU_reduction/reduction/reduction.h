@@ -12,7 +12,7 @@
 #ifndef __REDUCTION_H__
 #define __REDUCTION_H__
 
-double reduce(size_t n,
+double reduce(int n,
 	      double *d_idata,
 	      double *d_odata,
 	      int threads,

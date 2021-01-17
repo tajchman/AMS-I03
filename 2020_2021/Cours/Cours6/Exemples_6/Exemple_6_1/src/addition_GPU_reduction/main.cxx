@@ -1,3 +1,5 @@
+#define IN_MAIN
+
 #include <cstdlib>
 #include <iostream>
 #include "calcul.hxx"
@@ -5,7 +7,7 @@
 
 int main(int argc, char **argv)
 {
-  size_t i, n = argc > 1 ? strtol(argv[1], NULL, 10) : 20000000;
+  int i, n = argc > 1 ? strtol(argv[1], NULL, 10) : 20000000;
   
   Timer T_GPU;
 

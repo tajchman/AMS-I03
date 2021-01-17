@@ -5,6 +5,7 @@ set(CMAKE_CUDA_ARCHITECTURES OFF)
 add_executable(${CODE}
   main.cxx
   calcul_Pi.cu
-  timerGPU.cu)
+  ${CMAKE_SOURCE_DIR}/util/timer.cxx
+  )
 
 install(TARGETS ${CODE} DESTINATION .)

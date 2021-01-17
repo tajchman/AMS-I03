@@ -4,13 +4,16 @@ include_directories(
   reduction
   )
 
-set(CMAKE_CUDA_ARCHITECTURES OFF)
+find_package(CUDA REQUIRED)
+set(CMAKE_CUDA_ARCHITECTURES 75)
+
+include_directories(${CUDA_TOOLKIT_INCLUDE})
 
 add_executable(${CODE}
   main.cxx
   calcul_GPU.cu
   reduction/reduction_kernel.cu
-  timerGPU.cu)
-
+  ${CMAKE_SOURCE_DIR}/util/timer.cxx
+  )
 
 install(TARGETS ${CODE} DESTINATION .)

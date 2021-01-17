@@ -1,11 +1,14 @@
 get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-set(CMAKE_CUDA_ARCHITECTURES OFF)
+find_package(CUDA REQUIRED)
+set(CMAKE_CUDA_ARCHITECTURES 75)
+
+include_directories(${CUDA_TOOLKIT_INCLUDE})
 
 add_executable(${CODE}
   main.cxx
   calcul_GPU.cu
-  timerGPU.cu)
-
+  ${CMAKE_SOURCE_DIR}/util/timer.cxx
+  )
 
 install(TARGETS ${CODE} DESTINATION .)

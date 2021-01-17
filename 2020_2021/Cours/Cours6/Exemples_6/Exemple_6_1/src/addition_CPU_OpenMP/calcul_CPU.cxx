@@ -3,60 +3,69 @@
 #include "calcul.hxx"
 #include "timer.hxx"
 
-Calcul_CPU::Calcul_CPU(std::size_t n)
+Calcul_CPU::Calcul_CPU(int m)
 {
-  Timer T1; T1.start();
+  Timer & T = GetTimer(T_AllocId); T.start();
   
-  h_u.resize(n);
-  h_v.resize(n);
-  h_w.resize(n);
+  n = m;
+  h_u = new double[n];
+  h_v = new double[n];
+  h_w = new double[n];
   
-  T1.stop();
-  std::cerr << "\t\ttemps init 1 : " << T1.elapsed() << std::endl;
-  Timer T2; T2.start();
+  T.stop();
 
-  std::size_t i;
+ }
+
+Calcul_CPU::~Calcul_CPU()
+{
+  Timer & T = GetTimer(T_FreeId); T.start();
+
+  delete [] h_w;
+  delete [] h_v;
+  delete [] h_u;
+
+  T.stop();
+}
+
+
+void Calcul_CPU::init()
+{
+  Timer & T = GetTimer(T_InitId); T.start();
+
   double x;
 
 #pragma omp parallel for private(x)
-  for( i = 0; i < n; i++ ) {
+  for(int i = 0; i < n; i++ ) {
     x = double(i);
     h_u[i] = sin(x)*sin(x);
     h_v[i] = cos(x)*cos(x);
   }
 
-  T2.stop();
-  std::cerr << "\t\ttemps init 2 : " << T2.elapsed() << std::endl;
+  T.stop();
 }
 
 void Calcul_CPU::addition()
 {
-  Timer T; T.start();
-  
-  std::size_t i, n = h_u.size();
+  Timer & T = GetTimer(T_AddId); T.start();
   
 #pragma omp parallel for
-  for (i=0; i<n; i++)
+  for (int i=0; i<n; i++)
     h_w[i] = h_u[i] + h_v[i];
   
   T.stop();
-  std::cerr << "\t\ttemps add.   : " << T.elapsed() << std::endl;
 }
 
 double Calcul_CPU::verification()
 {
-  Timer T; T.start();
+  Timer & T = GetTimer(T_VerifId); T.start();
   
-  std::size_t i, n = h_u.size();
-
   double s = 0;
 #pragma omp parallel for reduction(+:s)
-  for (i=0; i<n; i++)
+  for (int i=0; i<n; i++)
     s += h_w[i];
   s = s/n - 1.0;
   
   T.stop();
-  std::cerr << "\t\ttemps verif. : " << T.elapsed() << std::endl;
 
   return s;
 }

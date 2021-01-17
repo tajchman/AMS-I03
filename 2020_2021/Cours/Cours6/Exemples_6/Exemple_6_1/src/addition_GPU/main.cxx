@@ -1,28 +1,40 @@
+#define IN_MAIN
+
 #include <cstdlib>
 #include <iostream>
 #include "calcul.hxx"
 #include "timer.hxx"
 
 int main(int argc, char **argv)
-{
-  size_t i, n = argc > 1 ? strtol(argv[1], NULL, 10) : 20000000;
-  
-  Timer T_GPU;
+{  
+  T_AllocId = AddTimer("alloc");
+  T_CopyId = AddTimer("copy");
+  T_InitId = AddTimer("init");
+  T_AddId = AddTimer("add");
+  T_VerifId = AddTimer("verif");
+  T_FreeId = AddTimer("free");
+  AddTimer("total");
 
-  T_GPU.start();
+  int i, n = argc > 1 ? strtol(argv[1], NULL, 10) : 20000000;
   
-  Calcul_GPU C(n);
-  C.addition();
-  double v = C.verification();
+  Timer & T_total = GetTimer(-1);
+  T_total.start();
   
-  T_GPU.stop();
-  std::cout << "temps calcul GPU : " << T_GPU.elapsed() << std::endl;
+  double v;
+  {
+    Calcul_GPU C(n);
+    C.init();
+    C.addition();
+    v = C.verification();
+  }
+
+  T_total.stop();
+
   
-  std::cerr << "erreurs GPU " << v << "\n"
-    //	    << "\n\terreurs (u) : " << diff_u
-    //	    << "\n\terreurs (v) : " << diff_v
-    //	    << "\n\terreurs (w) : " << diff_w
-	    << std::endl;
-  
+  std::cout << "erreur " << v << "\n" 
+       << std::endl;
+
+  PrintTimers(std::cout);
+
   return 0;
 }
