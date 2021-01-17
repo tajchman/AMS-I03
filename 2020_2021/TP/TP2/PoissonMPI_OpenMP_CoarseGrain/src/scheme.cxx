@@ -2,6 +2,7 @@
 #include "parameters.hxx"
 #include "version.hxx"
 #include <cmath>
+#include <mpi.h>
 
 #include <sstream>
 #include <iomanip>

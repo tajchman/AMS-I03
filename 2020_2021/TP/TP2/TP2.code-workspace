@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "PoissonMPI_OpenMP_FineGrain"
+		},
+		{
+			"path": "PoissonMPI_OpenMP_CoarseGrain"
 		}
 	],
 	"settings": {

@@ -23,12 +23,14 @@ elif p == 'Linux':
   compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()
-
 srcDir = os.path.join(base, 'src')
-buildDir = os.path.join(base, 'build')
-installDir = os.path.join(base, 'install')
 
-cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
+t = args.type
+print ('\nbuild ', t, '\n')
+buildDir = os.path.join(base, 'build', t)
+installDir = os.path.join(base, 'install', t)
+
+cmake_params = ['-DCMAKE_BUILD_TYPE=' + t]
 cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
 cmake_params.append(gen)
 

@@ -17,6 +17,8 @@ if not os.path.exists(resultsDir):
 
 command = ['mpiexec', '-n', str(args.nprocs), code]
 
+if args.nthreads > 1:
+    command += ['threads=' + str(args.nthreads)]
 
 def get_pid(name):
     try:
