@@ -11,17 +11,18 @@ Calcul_GPU::Calcul_GPU(int m) : n(m)
   CUDA_CHECK_OP(cudaMalloc(&d_u, bytes));
   CUDA_CHECK_OP(cudaMalloc(&d_v, bytes));
   CUDA_CHECK_OP(cudaMalloc(&d_w, bytes));
-    
-  T.stop();
 
+  T.stop();
 }
 
 Calcul_GPU::~Calcul_GPU()
 {
   Timer & T = GetTimer(T_FreeId); T.start();
+
   cudaFree(d_u);
   cudaFree(d_v);
   cudaFree(d_w);
+
   T.stop();
 }
 
