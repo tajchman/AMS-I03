@@ -1,6 +1,6 @@
 project(EX_6_2 CUDA C CXX)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 find_package(PNG)
 include_directories(

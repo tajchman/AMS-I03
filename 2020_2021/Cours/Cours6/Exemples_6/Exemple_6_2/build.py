@@ -17,6 +17,7 @@ if p == 'Windows':
   myenv['CXX'] = 'icl.exe'
   compileCmd = ['ninja', 'install']
 elif p == 'Linux':
+  gen = '-GUnix Makefiles'
   myenv['CC'] = 'gcc'
   myenv['CXX'] = 'g++'
   compileCmd = ['make', '--no-print-directory', 'install']

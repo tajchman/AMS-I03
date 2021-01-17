@@ -2,8 +2,8 @@ set(CODE image_gpu_cuda)
 
 set(CUDA_NVCC_FLAGS
   "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-ccbin=${CMAKE_C_COMPILER}")
-enable_language(CUDA)
 
+set(CMAKE_CUDA_ARCHITECTURES 37 50 75)
 
 add_executable(${CODE}
   ${CMAKE_SOURCE_DIR}/main.cxx
