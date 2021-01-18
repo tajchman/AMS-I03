@@ -1,5 +1,7 @@
 get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
+if (ENABLE_CUDA)
+
 set(CMAKE_CUDA_ARCHITECTURES OFF)
 
 add_executable(${CODE}
@@ -9,3 +11,6 @@ add_executable(${CODE}
   )
 
 install(TARGETS ${CODE} DESTINATION .)
+
+endif()
+

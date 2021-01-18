@@ -21,8 +21,14 @@ elif p == 'Linux':
   myenv['CC'] = 'gcc'
   myenv['CXX'] = 'g++'
   compileCmd = ['make', '--no-print-directory', 'install']
+elif p == 'Darwin':
+  gen = '-GUnix Makefiles'
+  myenv['CC'] = 'gcc-10'
+  myenv['CXX'] = 'g++-10'
+  compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()
+
 srcDir = os.path.join(base, 'src')
 
 t = args.type

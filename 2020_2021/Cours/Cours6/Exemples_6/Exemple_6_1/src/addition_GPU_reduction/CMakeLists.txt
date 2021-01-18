@@ -4,7 +4,8 @@ include_directories(
   reduction
   )
 
-find_package(CUDA REQUIRED)
+if (ENABLE_CUDA)
+
 set(CMAKE_CUDA_ARCHITECTURES 35 50 75)
 
 include_directories(${CUDA_TOOLKIT_INCLUDE})
@@ -17,3 +18,6 @@ add_executable(${CODE}
   )
 
 install(TARGETS ${CODE} DESTINATION .)
+
+endif()
+

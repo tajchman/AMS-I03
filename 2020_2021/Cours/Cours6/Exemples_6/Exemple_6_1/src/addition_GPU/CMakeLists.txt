@@ -1,14 +1,19 @@
 get_filename_component(CODE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 
-find_package(CUDA REQUIRED)
-set(CMAKE_CUDA_ARCHITECTURES 35 50 75)
+find_package(CUDA)
 
-include_directories(${CUDA_TOOLKIT_INCLUDE})
+if (CUDA_FOUND)
 
-add_executable(${CODE}
-  main.cxx
-  calcul_GPU.cu
-  ${CMAKE_SOURCE_DIR}/util/timer.cxx
-  )
+  set(CMAKE_CUDA_ARCHITECTURES 37 50 75)
 
-install(TARGETS ${CODE} DESTINATION .)
+  include_directories(${CUDA_TOOLKIT_INCLUDE})
+
+  add_executable(${CODE}
+    main.cxx
+    calcul_GPU.cu
+    ${CMAKE_SOURCE_DIR}/util/timer.cxx
+    )
+
+  install(TARGETS ${CODE} DESTINATION .)
+
+endif()
