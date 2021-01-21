@@ -7,13 +7,18 @@ if (OpenCL_FOUND)
   include_directories(
     ${OpenCL_INCLUDE_DIRS}
   )
-  
+
+  add_definitions(-DCL_TARGET_OPENCL_VERSION=${OpenCL_VERSION})
+  add_definitions(-DINSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
+
   add_executable(${CODE}
     main.cxx
-    calcul_OpenCL.cxx
+    Calcul_OpenCL.cxx
+    OpenCL.cxx
     ${CMAKE_SOURCE_DIR}/util/timer.cxx
     )
 
+  target_link_libraries(${CODE} ${OpenCL_LIBRARIES})
   install(TARGETS ${CODE} DESTINATION .)
-
+  install(FILES init.cl add.cl DESTINATION .)
 endif()

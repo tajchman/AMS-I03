@@ -16,7 +16,7 @@ private:
   OpenCL CL;
   cl_kernel initKernel, addKernel;
   int n;
-  cl_mem *d_u, *d_v, *d_w;
+  cl_mem d_u, d_v, d_w;
   unsigned int blockSize, gridSize;
 };
 

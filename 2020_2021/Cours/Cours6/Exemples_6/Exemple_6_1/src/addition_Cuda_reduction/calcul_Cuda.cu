@@ -1,5 +1,5 @@
 #include <iostream>
-#include "calcul.hxx"
+#include "Calcul_Cuda.hxx"
 #include "timer.hxx"
 #include "reduction.h"
 #include "cuda_check.cuh"
@@ -13,18 +13,19 @@ Calcul_Cuda::Calcul_Cuda(int m) : n(m)
   CUDA_CHECK_OP(cudaMalloc(&d_v, bytes));
   CUDA_CHECK_OP(cudaMalloc(&d_w, bytes));
   CUDA_CHECK_OP(cudaMalloc(&d_tmp, bytes));
-    
-  T.stop();
 
+  T.stop();
 }
 
 Calcul_Cuda::~Calcul_Cuda()
 {
   Timer & T = GetTimer(T_FreeId); T.start();
+
   cudaFree(d_u);
   cudaFree(d_v);
   cudaFree(d_w);
   cudaFree(d_tmp);
+
   T.stop();
 }
 

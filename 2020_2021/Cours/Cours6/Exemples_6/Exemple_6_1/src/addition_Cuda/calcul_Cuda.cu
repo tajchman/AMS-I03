@@ -1,5 +1,5 @@
 #include <iostream>
-#include "calcul.hxx"
+#include "Calcul_Cuda.hxx"
 #include "timer.hxx"
 #include "cuda_check.cuh"
 
