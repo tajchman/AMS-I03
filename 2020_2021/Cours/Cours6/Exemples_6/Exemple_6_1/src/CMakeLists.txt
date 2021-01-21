@@ -14,10 +14,9 @@ include_directories(util)
 foreach(d
     addition_CPU
     addition_CPU_OpenMP
-    addition_GPU
-    addition_GPU_reduction
-    Pi_CPU
-    Pi_GPU)
+    addition_Cuda
+    addition_Cuda_reduction
+    addition_OpenCL)
    add_subdirectory(${d})
 endforeach()
 

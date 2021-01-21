@@ -1,30 +1,40 @@
 #include <iostream>
-#include "calcul.hxx"
+#include "calcul_OpenCL.hxx"
 #include "timer.hxx"
-#include "reduction.h"
-#include "cuda_check.cuh"
+
+inline cl_mem * reserve(int w, int h, int nc, cl_context context)
+{
+  cl_mem * d = (cl_mem *) malloc(sizeof(cl_mem) * nc);
+  size_t bytes = w*h*sizeof(double);
+  cl_int errcode;
+  
+  for (int c=0; c<nc; c++) {
+    d[c] = clCreateBuffer (context, CL_MEM_READ_WRITE,
+			   bytes, NULL, &errcode);
+    CheckOpenCL("clCreateBuffer");
+  }
+
+  return d;
+}
 
 Calcul_GPU::Calcul_GPU(int m) : n(m)
 {
   Timer & T = GetTimer(T_AllocId); T.start();
   
   int bytes = n*sizeof(double);
-  CUDA_CHECK_OP(cudaMalloc(&d_u, bytes));
-  CUDA_CHECK_OP(cudaMalloc(&d_v, bytes));
-  CUDA_CHECK_OP(cudaMalloc(&d_w, bytes));
-  CUDA_CHECK_OP(cudaMalloc(&d_tmp, bytes));
-    
-  T.stop();
 
+
+  T.stop();
 }
 
 Calcul_GPU::~Calcul_GPU()
 {
   Timer & T = GetTimer(T_FreeId); T.start();
+
   cudaFree(d_u);
   cudaFree(d_v);
   cudaFree(d_w);
-  cudaFree(d_tmp);
+
   T.stop();
 }
 
@@ -75,11 +85,22 @@ void Calcul_GPU::addition()
 
 double Calcul_GPU::verification()
 {
+  Timer & T1 = GetTimer(T_CopyId);
+  T1.start();
+  
+  int bytes = n*sizeof(double);
+  std::vector<double> w(n);
+  cudaMemcpy(w.data(), d_w, bytes, cudaMemcpyDeviceToHost);
+
+  T1.stop();
+
   Timer & T = GetTimer(T_VerifId);
   T.start();
+
+  double s = 0;
+  for (int i=0; i<n; i++)
+    s = s + w[i];
   
-  double s;
-  s = reduce(n, d_w, d_tmp, blockSize, gridSize);  
   s = s/n - 1.0;
   
   T.stop();

@@ -44,6 +44,7 @@ if not os.path.exists(buildDir):
   os.makedirs(buildDir)
 
 configureCmd = ['cmake'] + cmake_params + [srcDir]
+
 err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
 if not err == 0:
   sys.exit(-1)

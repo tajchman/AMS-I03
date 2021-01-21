@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "calcul.hxx"
+#include "calcul_Cuda.hxx"
 #include "timer.hxx"
 
 int main(int argc, char **argv)
@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
   T_GPU.start();
   
-  Calcul_GPU C(n);
+  Calcul_Cuda C(n);
   C.addition();
   double v = C.verification();
   

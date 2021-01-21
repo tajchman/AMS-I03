@@ -1,10 +1,10 @@
 #ifndef _CALCUL_HXX
 #define _CALCUL_HXX
 
-class Calcul_GPU {
+class Calcul_Cuda {
 public:
-  Calcul_GPU(int n);
-  ~Calcul_GPU();
+  Calcul_Cuda(int n);
+  ~Calcul_Cuda();
 
   void init();
   void addition();

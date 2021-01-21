@@ -3,7 +3,7 @@
 #include "timer.hxx"
 #include "cuda_check.cuh"
 
-Calcul_GPU::Calcul_GPU(int m) : n(m)
+Calcul_Cuda::Calcul_Cuda(int m) : n(m)
 {
   Timer & T = GetTimer(T_AllocId); T.start();
   
@@ -15,7 +15,7 @@ Calcul_GPU::Calcul_GPU(int m) : n(m)
   T.stop();
 }
 
-Calcul_GPU::~Calcul_GPU()
+Calcul_Cuda::~Calcul_Cuda()
 {
   Timer & T = GetTimer(T_FreeId); T.start();
 
@@ -38,7 +38,7 @@ __global__ void vecInit(double *a, double *b, int n)
   b[id] = cos(x)*cos(x);
 }
 
-void Calcul_GPU::init()
+void Calcul_Cuda::init()
 {
   Timer & T = GetTimer(T_InitId); T.start();
 
@@ -60,7 +60,7 @@ __global__ void vecAdd(double *c, double *a, double *b, int n)
     c[id] = a[id] + b[id];
 }
 
-void Calcul_GPU::addition()
+void Calcul_Cuda::addition()
 {
   Timer & T = GetTimer(T_AddId); T.start();
   
@@ -71,7 +71,7 @@ void Calcul_GPU::addition()
   T.stop();
 }
 
-double Calcul_GPU::verification()
+double Calcul_Cuda::verification()
 {
   Timer & T1 = GetTimer(T_CopyId);
   T1.start();

@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "calcul.hxx"
+#include "calcul_Cuda.hxx"
 #include "timer.hxx"
 
 int main(int argc, char **argv)
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   
   double v;
   {
-    Calcul_GPU C(n);
+    Calcul_Cuda C(n);
     C.init();
     C.addition();
     v = C.verification();
