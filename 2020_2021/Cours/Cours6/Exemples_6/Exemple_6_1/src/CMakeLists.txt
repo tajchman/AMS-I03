@@ -11,7 +11,8 @@ foreach(d
     addition_CPU_OpenMP
     addition_Cuda
     addition_Cuda_reduction
-    addition_OpenCL)
+    addition_OpenCL
+    addition_OpenCL_reduction)
    add_subdirectory(${d})
 endforeach()
 

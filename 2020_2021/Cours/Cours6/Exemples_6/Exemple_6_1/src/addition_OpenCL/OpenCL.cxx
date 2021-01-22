@@ -1,6 +1,7 @@
 #define CL_SILENCE_DEPRECATION
 
 #include "OpenCL.hxx"
+#include "timer.hxx"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -8,6 +9,7 @@
 
 OpenCL::OpenCL()
 {
+  Timer & T = GetTimer(T_AllocId); T.start();
   platform_id = NULL;
   device_id = NULL;
   
@@ -39,14 +41,17 @@ OpenCL::OpenCL()
 #endif
 
   CheckOpenCL("clCreateCommandQueueWithProperties");
+  T.stop();
 }
 
 OpenCL::~OpenCL()
 {
+  Timer & T = GetTimer(T_FreeId); T.start();
   clFlush(command_queue);
   clFinish(command_queue);
   clReleaseCommandQueue(command_queue);
   clReleaseContext(context);
+  T.stop();
 }
 
 
@@ -54,6 +59,8 @@ cl_kernel OpenCL::new_kernel(const char *kernelName,
                              const char *fileName,
                              const char * header)
 {
+  Timer & T = GetTimer(T_CompileId); T.start();
+
   cl_int errcode;
 
   std::string kernel_source = "";
@@ -96,13 +103,17 @@ cl_kernel OpenCL::new_kernel(const char *kernelName,
   // Create the OpenCL kernel
   cl_kernel k =  clCreateKernel(program, kernelName, &errcode);
   CheckOpenCL("clCreateKernel");
+
+  T.stop();
   return k;
   
 }
 
 void OpenCL::free_kernel(cl_kernel & k) {
-    clReleaseKernel(k);
-    k = NULL;
+  Timer & T = GetTimer(T_FreeId); T.start();
+  clReleaseKernel(k);
+  k = NULL;
+  T.stop();
 }
 
 void OpenCL::info()
@@ -130,4 +141,42 @@ void OpenCL::info()
 			  param_value,
 			  &param_value_size_ret);
   std::cerr << "\tPlatform name  : " << param_value << std::endl;
+}
+
+cl_mem OpenCL::allocate(int n)
+{
+  Timer & T = GetTimer(T_AllocId); T.start();
+  cl_mem p;
+  size_t bytes = n*sizeof(double);
+  cl_int errcode;
+  p = clCreateBuffer (context, CL_MEM_READ_WRITE, bytes, NULL, &errcode);
+  CheckOpenCL("clCreateBuffer");
+  T.stop();
+
+  return p;
+}
+
+void OpenCL::deallocate(cl_mem &p)
+{
+  Timer & T = GetTimer(T_FreeId); T.start();
+  clReleaseMemObject(p);
+  T.stop();
+}
+
+void OpenCL::memcpyHostToDevice(double *h, cl_mem d, int n)
+{
+  Timer & T = GetTimer(T_CopyId); T.start();
+  cl_int errcode = clEnqueueWriteBuffer(command_queue, d, CL_TRUE, 0, 
+                                          n*sizeof(double), h, 0, NULL, NULL);
+  CheckOpenCL("clEnqueueReadBuffer");
+  T.stop();
+}
+
+void OpenCL::memcpyDeviceToHost(cl_mem d, double *h, int n)
+{
+  Timer & T = GetTimer(T_CopyId); T.start();
+  cl_int errcode = clEnqueueReadBuffer(command_queue, d, CL_TRUE, 0, 
+                                         n*sizeof(double), h, 0, NULL, NULL);
+  CheckOpenCL("clEnqueueReadBuffer");
+  T.stop();
 }

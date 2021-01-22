@@ -10,6 +10,7 @@ int main(int argc, char **argv)
 {  
   T_AllocId = AddTimer("alloc");
   T_CopyId = AddTimer("copy");
+  T_CompileId = AddTimer("compile");
   T_InitId = AddTimer("init");
   T_AddId = AddTimer("add");
   T_VerifId = AddTimer("verif");

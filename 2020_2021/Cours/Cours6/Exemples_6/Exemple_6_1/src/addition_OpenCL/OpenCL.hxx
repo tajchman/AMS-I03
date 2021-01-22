@@ -9,6 +9,8 @@
 #include <CL/cl.hpp>
 #endif
 
+#include <iostream>
+
 #define CheckOpenCL(function)                   \
   if (errcode != CL_SUCCESS) {			\
     std::cerr << __FILE__                       \
@@ -25,14 +27,17 @@ public:
   ~OpenCL();
   
   cl_kernel new_kernel (const char * kernelName,
-			const char * fileName,
+			                  const char * fileName,
                         const char * header = NULL);
+
   void free_kernel(cl_kernel &k);
   
-  cl_mem    new_memobj(size_t s);
+  cl_mem allocate(int s);
+  void deallocate(cl_mem & p);
 
-  void      free_memobj(cl_mem);
-
+  void memcpyHostToDevice(double *h, cl_mem d, int n);
+  void memcpyDeviceToHost(cl_mem d, double *h, int n);
+  
   void info();
   
   cl_platform_id platform_id;
@@ -41,5 +46,10 @@ public:
   cl_command_queue command_queue;
 
 };
+
+#ifndef IN_MAIN
+extern 
+#endif
+int T_AllocId, T_CopyId, T_CompileId, T_InitId, T_AddId, T_VerifId, T_FreeId;
 
 #endif
