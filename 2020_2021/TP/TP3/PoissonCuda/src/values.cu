@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cuda.h>
 #include "cuda_check.cuh"
+#include "dim.cuh"
 
 Values::Values(Parameters & prm) : m_p(prm)
 {
@@ -29,11 +30,7 @@ Values::Values(Parameters & prm) : m_p(prm)
   h_u = new double[nn];
   h_synchronized = false;
 
-  std::ofstream f1("avant_zero");
-  print(f1);
   zero();
-  std::ofstream f2("apres_zero");
-  print(f2);
 }
 
 Values::~Values()
@@ -53,7 +50,6 @@ void zeroValue(int n, double *u)
 
 void Values::zero()
 {
-  return;
   int dimBlock = 256;
   int dimGrid = (nn + dimBlock - 1)/dimBlock;
 
@@ -79,9 +75,7 @@ double cond_lim(double x, double y, double z)
 }
 
 __global__
-void initValue(int n[3], 
-               double xmin[3], double dx[3],
-               double *u)
+void initValue(double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -90,7 +84,9 @@ void initValue(int n[3],
 
   if (i<n[0] && j<n[1] && k<n[2]) {
     p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_ini(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
+    u[p] = cond_ini(xmin[0] + i*dx[0],
+                    xmin[1] + j*dx[1], 
+                    xmin[2] + k*dx[2]);
   }
 }
 
@@ -101,14 +97,12 @@ void Values::init()
                ceil(m_n_local[1]/double(dimBlock.y)),
                ceil(m_n_local[2]/double(dimBlock.z)));
 
-  initValue<<<dimGrid, dimBlock>>>(m_n_local, m_xmin, m_dx, m_u);
+  initValue<<<dimGrid, dimBlock>>>(m_u);
   CUDA_CHECK_KERNEL();
 }
 
 __global__
-void boundZValue(int *n, int k, 
-               double *xmin, double *dx,
-               double *u)
+void boundZValue(int k, double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -116,14 +110,14 @@ void boundZValue(int *n, int k,
 
   if (i<n[0] && j<n[1]) {
     p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_lim(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
+    u[p] = cond_lim(xmin[0] + i*dx[0], 
+                    xmin[1] + j*dx[1], 
+                    xmin[2] + k*dx[2]);
   }
 }
 
 __global__
-void boundYValue(int *n, int j,
-               double *xmin, double *dx,
-               double *u)
+void boundYValue(int j, double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   int k = threadIdx.y + blockIdx.y * blockDim.y;
@@ -131,14 +125,14 @@ void boundYValue(int *n, int j,
 
   if (i<n[0] && k<n[2]) {
     p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_lim(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
+    u[p] = cond_lim(xmin[0] + i*dx[0], 
+                    xmin[1] + j*dx[1], 
+                    xmin[2] + k*dx[2]);
   }
 }
 
 __global__
-void boundXValue(int *n, int i, 
-               double *xmin, double *dx,
-               double *u)
+void boundXValue(int i, double *u)
 {
   int j = threadIdx.x + blockIdx.x * blockDim.x;
   int k = threadIdx.y + blockIdx.y * blockDim.y;
@@ -146,7 +140,9 @@ void boundXValue(int *n, int i,
 
   if (j<n[1] && k<n[2]) {
     p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_lim(xmin[0] + i*dx[0], xmin[1] + j*dx[1], xmin[2] + k*dx[2]);
+    u[p] = cond_lim(xmin[0] + i*dx[0], 
+                    xmin[1] + j*dx[1], 
+                    xmin[2] + k*dx[2]);
   }
 }
 
@@ -155,16 +151,16 @@ void Values::boundaries()
   dim3 dimBlock(16,16);
 
   dim3 dimGrid2(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[1]/double(dimBlock.y)));
-  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imin[2], m_xmin, m_dx, m_u);
-  boundZValue<<<dimGrid2, dimBlock>>>(m_n_local, m_imax[2], m_xmin, m_dx, m_u);
+  boundZValue<<<dimGrid2, dimBlock>>>(m_imin[2], m_u);
+  boundZValue<<<dimGrid2, dimBlock>>>(m_imax[2], m_u);
 
   dim3 dimGrid1(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
-  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imin[1], m_xmin, m_dx, m_u);
-  boundYValue<<<dimGrid1, dimBlock>>>(m_n_local, m_imax[1], m_xmin, m_dx, m_u);
+  boundYValue<<<dimGrid1, dimBlock>>>(m_imin[1], m_u);
+  boundYValue<<<dimGrid1, dimBlock>>>(m_imax[1], m_u);
 
   dim3 dimGrid0(ceil(m_n_local[1]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
-  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imin[0], m_xmin, m_dx, m_u);
-  boundZValue<<<dimGrid0, dimBlock>>>(m_n_local, m_imax[0], m_xmin, m_dx, m_u);
+  boundZValue<<<dimGrid0, dimBlock>>>(m_imin[0], m_u);
+  boundZValue<<<dimGrid0, dimBlock>>>(m_imax[0], m_u);
   CUDA_CHECK_KERNEL();
 
   h_synchronized = false;

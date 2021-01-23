@@ -29,6 +29,9 @@ public:
   int size(int i) const { return m_imax[i] - m_imin[i] + 1; }
   void print(std::ostream &f) const;
 
+  double * dataCPU() { return m_u; }
+  double * dataGPU() { return h_u; }
+  
 private:
 
   Values(const Values &);

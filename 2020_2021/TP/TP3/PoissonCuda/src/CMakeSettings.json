@@ -36,7 +36,7 @@
       ]
     },
     {
-      "configurationType": "MSVCDebug",
+      "configurationType": "Release",
       "name": "{configurationType}",
       "generator": "Ninja",
       "buildRoot": "${projectDir}/../build/${configurationType}",

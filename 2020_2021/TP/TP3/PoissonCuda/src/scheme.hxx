@@ -20,7 +20,7 @@ public:
 
   double present();
 
-  bool iteration();
+  void iteration();
   double variation() { return m_duv; }
 
   const Values & getOutput();
@@ -29,6 +29,7 @@ public:
   std::string codeName;
 
 protected:
+  int m_n[3];
   double m_t, m_dt;
   double m_dx[3];
   double m_xmin[3];
@@ -39,6 +40,7 @@ protected:
 
   Values m_u, m_v;
   double m_duv;
+  double *diff;
   Parameters &m_P;
   callback_t m_f;
 };

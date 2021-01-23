@@ -37,10 +37,8 @@ int main(int argc, char *argv[])
   Scheme C(Prm);
  
   Values u_0(Prm);
-  u_0.boundaries();
   u_0.init();
-
-  u_0.print(std::cout);
+  u_0.boundaries();
   
   C.setInput(u_0);
   T_init.stop();

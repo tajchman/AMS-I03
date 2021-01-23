@@ -44,9 +44,9 @@ set(SRCS
     parameters.cxx
     values.cu
     scheme.cu
+    variation.cu
     util/arguments.cxx
     util/os.cxx
-    util/pause.cxx
     util/timer.cxx
   )
 
