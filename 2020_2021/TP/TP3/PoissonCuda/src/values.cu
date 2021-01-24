@@ -61,7 +61,6 @@ void Values::zero()
 __device__
 double cond_ini(double x, double y, double z)
 {
-  return 1.0;
   double xc = x - 0.5;
   double yc = y - 0.5;
   double zc = z - 0.5;
@@ -104,7 +103,7 @@ void Values::init()
 __device__
 double cond_lim(double x, double y, double z)
 {
-  return (x < 0.5) ? 3.0 : 4.0;
+  return 1.0;
 }
 
 __global__
