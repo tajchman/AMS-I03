@@ -8,6 +8,7 @@
 namespace cg = cooperative_groups;
 
 #include "cuda_check.cuh"
+#include "timer_id.hxx"
 
 __global__ void
 reduce(const double *u, const double *v, double *partialDiff, int n)
@@ -33,28 +34,38 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
 }
 
 double variationCuda(double *u, double *v, double * &d_partialSums, int n)
-{  
+{
   int dimBlock = 512;
   int dimGrid = ceil(n/double(dimBlock));
   int nbytes = dimBlock * sizeof(double);
 
   int smemSize = nbytes;
-  if (d_partialSums == NULL)
-     CUDA_CHECK_OP(cudaMalloc(&d_partialSums, nbytes));
+  if (d_partialSums == NULL) {
+    Timer & T = GetTimer(T_AllocId); T.start();
+    CUDA_CHECK_OP(cudaMalloc(&d_partialSums, nbytes));
+    T.stop();
+  }
+
+  Timer & Tv = GetTimer(T_VariationId); Tv.start();
 
   reduce<<< dimGrid, dimBlock, smemSize >>>(u, v, d_partialSums, n);
   cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
-  
+
+  Tv.stop();
+
+  Timer Ta = GetTimer(T_AllocId); Ta.start();
   std::vector<double> h_partialSums(dimBlock);
-  for (int i=0; i<dimBlock; i++)
-    h_partialSums[i] = 0.0;
 
   CUDA_CHECK_OP(cudaMemcpy(h_partialSums.data(), d_partialSums,
                            nbytes, cudaMemcpyDeviceToHost));
-  
+  Ta.stop();
+
+  Tv.start();
   double s = 0.0;
   for (int i=0; i<dimBlock; i++)
     s += h_partialSums[i];
+  Tv.stop();
+
   return s;
 }

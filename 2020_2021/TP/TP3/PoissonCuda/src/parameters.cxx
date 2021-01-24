@@ -57,9 +57,8 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
 
-  m_path = Get("path", ".");
-  if (m_path != ".")
-     mkdir_p(m_path.c_str());
+  m_path = Get("path", "results");
+  mkdir_p(m_path.c_str());
 
   if (m_dt > dt_max)
     std::cerr << "Warning : provided dt (" << m_dt
@@ -100,7 +99,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << p.xmin(1) << ", " << p.xmax(1) << "] x "
     << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
 
-  f << "Point indices :   "
+  f << "Interior point indices :   "
     << "[" << p.imin(0) << " ... " << p.imax(0) << "] x "
     << "[" << p.imin(1) << " ... " << p.imax(1) << "] x "
     << "[" << p.imin(2) << " ... " << p.imax(2) << "]\n\n";

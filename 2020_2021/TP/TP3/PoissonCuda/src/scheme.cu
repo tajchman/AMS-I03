@@ -8,6 +8,7 @@
 #include "cuda_check.cuh"
 #include "dim.cuh"
 #include "variation.cuh"
+#include "timer_id.hxx"
 
 __constant__ int n[3];
 __constant__ double xmin[3];
@@ -38,10 +39,12 @@ Scheme::Scheme(Parameters &P) :
 
   m_dt = m_P.dt();
 
+  Timer & T = GetTimer(T_CopyId); T.start();
   cudaMemcpyToSymbol(n, &m_n, 3 * sizeof(int));
   cudaMemcpyToSymbol(xmin, &m_xmin, 3 * sizeof(double));
   cudaMemcpyToSymbol(dx, &m_dx, 3 * sizeof(double));
   cudaMemcpyToSymbol(lambda, &lx, 3 * sizeof(double));
+  T.stop();
 
   //  symbol<<<1,1>>>();
 
@@ -50,6 +53,11 @@ Scheme::Scheme(Parameters &P) :
 
 Scheme::~Scheme()
 {
+  if (diff) {
+    Timer & T = GetTimer(T_FreeId); T.start();
+    cudaFree(diff);
+    T.stop();
+  }
 }
 
 double Scheme::present()
@@ -67,15 +75,13 @@ void Scheme::iteration()
 
   m_t += m_dt;
   m_u.swap(m_v);
+  m_u.synchronized(false);
 }
 
 __device__
 double f(double x, double y, double z)
 {
-  if (x < 0.3)
-    return 0.0;
-  else
-    return sin(x-0.5) * cos(y-0.5) * exp(- z*z);
+  return (x < 0.3) ? 0.0 : sin(x-0.5) * exp(- y*y);
 }
 
 __global__
@@ -87,7 +93,7 @@ void iterCuda(double *u, double *v, double dt)
   int p;
   double du, x, y, z;
 
-   if (i<n[0] && j<n[1] && k<n[2]) {
+  if (i>0 && i<n[0]-1 && j>0 && j<n[1]-1 && k>0 && k<n[2]-1) {
      p = i + n[0] * (j + k*n[1]);
      du = (- 2*u[p] + u[p + 1]         + u[p - 1])*lambda[0]
         + (- 2*u[p] + u[p + n[0]]      + u[p - n[0]])*lambda[1]
@@ -98,7 +104,7 @@ void iterCuda(double *u, double *v, double dt)
      z = xmin[2] + k*dx[2];
 
      du += f(x,y,z);
-        
+    
      v[p] = u[p] + dt * du;
   }
 }
@@ -113,9 +119,13 @@ double Scheme::iteration_domaine(int imin, int imax,
                ceil(m_n[1]/double(dimBlock.y)),
                ceil(m_n[2]/double(dimBlock.z)));
   
+  Timer & T = GetTimer(T_IterationId); T.start();
+
   iterCuda<<<dimGrid, dimBlock>>>(m_u.dataGPU(), m_v.dataGPU(), m_dt);
   cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
+
+  T.stop();
 
   return variationCuda(m_u.dataGPU(), m_v.dataGPU(), 
                        diff, m_n[0]*m_n[1]*m_n[2]);

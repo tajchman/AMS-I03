@@ -31,10 +31,11 @@ public:
 
   double * dataCPU() { return h_u; }
   double * dataGPU() { return d_u; }
-
+  void synchronized(bool b) { h_synchronized = b; }
+  
 private:
 
-  Values(const Values &);
+  Values(const Values &) = delete;
   int n1, n2, nn;
   double * d_u, * h_u;
   mutable bool h_synchronized;
