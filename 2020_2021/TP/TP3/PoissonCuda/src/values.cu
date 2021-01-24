@@ -66,7 +66,7 @@ double cond_ini(double x, double y, double z)
   double zc = z - 0.5;
 
   double c = xc*xc+yc*yc+zc*zc;
-  return (c < 0.25) ? 1.0 : 0.0;
+  return (c < 0.15) ? 1.0 : 0.0;
 }
 
 __global__
