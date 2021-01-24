@@ -71,7 +71,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
     m_xmax[i] = 1.0;
     m_dx[i] = m_n[i]>1 ? 1.0/(m_n[i]-1) : 0.0;
     m_imin[i] = 1;
-    m_imax[i] = m_n[i]-1;
+    m_imax[i] = m_n[i]-2;
   }
 }
 

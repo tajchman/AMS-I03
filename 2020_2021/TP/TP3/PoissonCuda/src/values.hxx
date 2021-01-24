@@ -29,14 +29,14 @@ public:
   int size(int i) const { return m_imax[i] - m_imin[i] + 1; }
   void print(std::ostream &f) const;
 
-  double * dataCPU() { return m_u; }
-  double * dataGPU() { return h_u; }
-  
+  double * dataCPU() { return h_u; }
+  double * dataGPU() { return d_u; }
+
 private:
 
   Values(const Values &);
   int n1, n2, nn;
-  double * m_u, * h_u;
+  double * d_u, * h_u;
   mutable bool h_synchronized;
 
   Parameters & m_p;

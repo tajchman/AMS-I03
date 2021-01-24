@@ -39,7 +39,9 @@ int main(int argc, char *argv[])
   Values u_0(Prm);
   u_0.init();
   u_0.boundaries();
-  
+  u_0.print(std::cerr);
+  return 0;
+ 
   C.setInput(u_0);
   T_init.stop();
   std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 

@@ -10,7 +10,7 @@ namespace cg = cooperative_groups;
 #include "cuda_check.cuh"
 
 __global__ void
-reduce(double *u, double *v, double *partialDiff, int n)
+reduce(const double *u, const double *v, double *partialDiff, int n)
 {
   cg::thread_block cta = cg::this_thread_block();
   extern __shared__ double sdata[];
@@ -25,33 +25,33 @@ reduce(double *u, double *v, double *partialDiff, int n)
   for (unsigned int s=blockDim.x/2; s>0; s>>=1)
     {
       if (tid < s)
-	  sdata[tid] += sdata[tid + s];
+        sdata[tid] += sdata[tid + s];
 
       cg::sync(cta);
     }
   if (tid == 0) partialDiff[blockIdx.x] = sdata[0];
 }
 
-double variationCuda(double *u, double *v, double *& d_partialSums, int n)
+double variationCuda(double *u, double *v, double * &d_partialSums, int n)
 {  
   int dimBlock = 512;
   int dimGrid = ceil(n/double(dimBlock));
   int nbytes = dimBlock * sizeof(double);
 
   int smemSize = nbytes;
-  
   if (d_partialSums == NULL)
      CUDA_CHECK_OP(cudaMalloc(&d_partialSums, nbytes));
 
-  reduce<<< dimGrid, dimBlock, smemSize >>>
-       (u, v, d_partialSums, n);
+  reduce<<< dimGrid, dimBlock, smemSize >>>(u, v, d_partialSums, n);
+  cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
   
   std::vector<double> h_partialSums(dimBlock);
+  for (int i=0; i<dimBlock; i++)
+    h_partialSums[i] = 0.0;
 
   CUDA_CHECK_OP(cudaMemcpy(h_partialSums.data(), d_partialSums,
-                nbytes,
-  			       cudaMemcpyDeviceToHost));
+                           nbytes, cudaMemcpyDeviceToHost));
   
   double s = 0.0;
   for (int i=0; i<dimBlock; i++)

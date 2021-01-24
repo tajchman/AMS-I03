@@ -25,8 +25,7 @@ Values::Values(Parameters & prm) : m_p(prm)
   n1 = m_n_local[0];      // nombre de points dans la premiere direction
   n2 = m_n_local[1] * n1; // nombre de points dans le plan des 2 premieres directions
   nn = n2 * m_n_local[2];
-  std::cerr << "nn = " << nn << std::endl;
-  CUDA_CHECK_OP(cudaMalloc(&m_u, nn*sizeof(double)));
+  CUDA_CHECK_OP(cudaMalloc(&d_u, nn*sizeof(double)));
   h_u = new double[nn];
   h_synchronized = false;
 
@@ -36,7 +35,7 @@ Values::Values(Parameters & prm) : m_p(prm)
 Values::~Values()
 {
   delete [] h_u;
-  cudaFree(m_u);
+  cudaFree(d_u);
 }
 
 __global__
@@ -53,8 +52,7 @@ void Values::zero()
   int dimBlock = 256;
   int dimGrid = (nn + dimBlock - 1)/dimBlock;
 
-  std::cerr << "dimGrid " << dimGrid << std::endl;
-  zeroValue<<<dimGrid, dimBlock>>>(nn, m_u);
+  zeroValue<<<dimGrid, dimBlock>>>(nn, d_u);
   CUDA_CHECK_KERNEL();
   h_synchronized = false;
 }
@@ -63,15 +61,13 @@ void Values::zero()
 __device__
 double cond_ini(double x, double y, double z)
 {
-  return floor(((x-0.5)*(x-0.5) 
-              + (y-0.5)*(y-0.5)
-              + (z-0.5)*(z-0.5))/0.1);
-}
-
-__device__
-double cond_lim(double x, double y, double z)
-{
   return 1.0;
+  double xc = x - 0.5;
+  double yc = y - 0.5;
+  double zc = z - 0.5;
+
+  double c = xc*xc+yc*yc+zc*zc;
+  return (c < 0.25) ? 1.0 : 0.0;
 }
 
 __global__
@@ -82,8 +78,9 @@ void initValue(double *u)
   int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (i<n[0] && j<n[1] && k<n[2]) {
-    p = i + j*n[0] + k*n[0]*n[1];
+  if (i>0 && i<n[0]-1 && j>0 && j<n[1]-1 && k>0 && k<n[2]-1)
+  {
+    p = i + n[0] * (j + k*n[1]);
     u[p] = cond_ini(xmin[0] + i*dx[0],
                     xmin[1] + j*dx[1], 
                     xmin[2] + k*dx[2]);
@@ -97,8 +94,17 @@ void Values::init()
                ceil(m_n_local[1]/double(dimBlock.y)),
                ceil(m_n_local[2]/double(dimBlock.z)));
 
-  initValue<<<dimGrid, dimBlock>>>(m_u);
+  initValue<<<dimGrid, dimBlock>>>(d_u);
+  cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
+  
+  h_synchronized = false;
+}
+
+__device__
+double cond_lim(double x, double y, double z)
+{
+  return (x < 0.5) ? 3.0 : 4.0;
 }
 
 __global__
@@ -108,7 +114,7 @@ void boundZValue(int k, double *u)
   int j = threadIdx.y + blockIdx.y * blockDim.y;
   int p;
 
-  if (i<n[0] && j<n[1]) {
+  if (i>0 && i<n[0]-1 && j>0 && j<n[1]-1) {
     p = i + j*n[0] + k*n[0]*n[1];
     u[p] = cond_lim(xmin[0] + i*dx[0], 
                     xmin[1] + j*dx[1], 
@@ -116,14 +122,15 @@ void boundZValue(int k, double *u)
   }
 }
 
+
 __global__
 void boundYValue(int j, double *u)
 {
   int i = threadIdx.x + blockIdx.x * blockDim.x;
-  int k = threadIdx.y + blockIdx.y * blockDim.y;
+  int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (i<n[0] && k<n[2]) {
+  if (i> 0 && i<n[0]-1 && k>0 && k<n[2]-1) {
     p = i + j*n[0] + k*n[0]*n[1];
     u[p] = cond_lim(xmin[0] + i*dx[0], 
                     xmin[1] + j*dx[1], 
@@ -134,11 +141,11 @@ void boundYValue(int j, double *u)
 __global__
 void boundXValue(int i, double *u)
 {
-  int j = threadIdx.x + blockIdx.x * blockDim.x;
-  int k = threadIdx.y + blockIdx.y * blockDim.y;
+  int j = threadIdx.y + blockIdx.y * blockDim.y;
+  int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (j<n[1] && k<n[2]) {
+  if (j>0 && j<n[1]-1 && k>0 && k<n[2]-1) {
     p = i + j*n[0] + k*n[0]*n[1];
     u[p] = cond_lim(xmin[0] + i*dx[0], 
                     xmin[1] + j*dx[1], 
@@ -148,19 +155,22 @@ void boundXValue(int i, double *u)
 
 void Values::boundaries()
 {
-  dim3 dimBlock(16,16);
+  dim3 dimBlock2(16,16,1);
+  dim3 dimGrid2(ceil(m_n_local[0]/double(dimBlock2.x)), ceil(m_n_local[1]/double(dimBlock2.y)), 1);
+  boundZValue<<<dimGrid2, dimBlock2>>>(m_imin[2]-1, d_u);
+  boundZValue<<<dimGrid2, dimBlock2>>>(m_imax[2]+1, d_u);
 
-  dim3 dimGrid2(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[1]/double(dimBlock.y)));
-  boundZValue<<<dimGrid2, dimBlock>>>(m_imin[2], m_u);
-  boundZValue<<<dimGrid2, dimBlock>>>(m_imax[2], m_u);
+  dim3 dimBlock1(16,1,16);
+  dim3 dimGrid1(ceil(m_n_local[0]/double(dimBlock1.x)), 1, ceil(m_n_local[2]/double(dimBlock1.z)));
+  boundYValue<<<dimGrid1, dimBlock1>>>(m_imin[1]-1, d_u);
+  boundYValue<<<dimGrid1, dimBlock1>>>(m_imax[1]+1, d_u);
 
-  dim3 dimGrid1(ceil(m_n_local[0]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
-  boundYValue<<<dimGrid1, dimBlock>>>(m_imin[1], m_u);
-  boundYValue<<<dimGrid1, dimBlock>>>(m_imax[1], m_u);
+  dim3 dimBlock0(1,16,16);
+  dim3 dimGrid0(1, ceil(m_n_local[1]/double(dimBlock0.y)), ceil(m_n_local[2]/double(dimBlock0.z)));
+  boundXValue<<<dimGrid0, dimBlock0>>>(m_imin[0]-1, d_u);
+  boundXValue<<<dimGrid0, dimBlock0>>>(m_imax[0]+1, d_u);
 
-  dim3 dimGrid0(ceil(m_n_local[1]/double(dimBlock.x)), ceil(m_n_local[2]/double(dimBlock.y)));
-  boundZValue<<<dimGrid0, dimBlock>>>(m_imin[0], m_u);
-  boundZValue<<<dimGrid0, dimBlock>>>(m_imax[0], m_u);
+  cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
 
   h_synchronized = false;
@@ -178,18 +188,18 @@ void Values::print(std::ostream & f) const
     int i, j, k;
     
     if (!h_synchronized) {
-      cudaMemcpy(h_u, m_u, nn, cudaMemcpyDeviceToHost);
+      cudaMemcpy(h_u, d_u, nn * sizeof(double), cudaMemcpyDeviceToHost);
       h_synchronized = true;
     }
 
-    for (i=m_imin[0]; i<=m_imax[0]; i++) {
-      for (j=m_imin[1]; j<=m_imax[1]; j++) {
-        for (k=m_imin[2]; k<=m_imax[2]; k++) {
-          f << " " << operator()(i,j,k);
+    for (i=0; i<m_n_local[0]; i++) {
+      for (j=0; j<m_n_local[1]; j++) {
+        for (k=0; k<m_n_local[2]; k++) {
+          f << " " << h_u[n2*k + n1*j + i];
         }
         f << std::endl;
       }
-        f << std::endl;
+      f << std::endl;
     }
 }
 
@@ -203,7 +213,7 @@ void swap(T & a, T & b)
 
 void Values::swap(Values & other)
 {
-  ::swap(m_u, other.m_u);
+  ::swap(d_u, other.d_u);
   int i;
   for (i=0; i<3; i++) {
     ::swap(m_imin[i], other.m_imin[i]);
@@ -291,5 +301,5 @@ void Values::operator= (const Values &other)
     m_xmax[i] = other.m_xmax[i];
     m_dx[i] = other.m_dx[i];
   }
-  m_u = other.m_u;
+  d_u = other.d_u;
 }

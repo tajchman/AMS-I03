@@ -5,14 +5,25 @@
 #include <sstream>
 #include <iomanip>
 
+#include "cuda_check.cuh"
 #include "dim.cuh"
 #include "variation.cuh"
+
+__constant__ int n[3];
+__constant__ double xmin[3];
+__constant__ double dx[3];
+__constant__ double lambda[3];
+
+__global__
+void symbol()
+{
+  printf("symbol : dx = %f %f %f\n", dx[0], dx[1], dx[2]);
+  printf("symbol : n  = %d %d %d\n", n[0], n[1], n[2]);
+}
 
 Scheme::Scheme(Parameters &P) :
     codeName(version), m_P(P), m_u(P), m_v(P)  {
 
-  m_u.init();
-  m_v.init();
   m_t = 0.0;
   m_duv = 0.0;
 
@@ -31,6 +42,8 @@ Scheme::Scheme(Parameters &P) :
   cudaMemcpyToSymbol(xmin, &m_xmin, 3 * sizeof(double));
   cudaMemcpyToSymbol(dx, &m_dx, 3 * sizeof(double));
   cudaMemcpyToSymbol(lambda, &lx, 3 * sizeof(double));
+
+  //  symbol<<<1,1>>>();
 
   diff = NULL;
 }
@@ -72,22 +85,21 @@ void iterCuda(double *u, double *v, double dt)
   int j = threadIdx.y + blockIdx.y * blockDim.y;
   int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
-  double du, du1, du2, x, y, z;
+  double du, x, y, z;
 
-  if (i<n[0] && j<n[1] && k<n[2]) {
-    p = i + n[0] * (j + k*n[1]);
-    du1 = (- 2*u[p] + u[p + 1]         + u[p - 1])*lambda[0]
+   if (i<n[0] && j<n[1] && k<n[2]) {
+     p = i + n[0] * (j + k*n[1]);
+     du = (- 2*u[p] + u[p + 1]         + u[p - 1])*lambda[0]
         + (- 2*u[p] + u[p + n[0]]      + u[p - n[0]])*lambda[1]
         + (- 2*u[p] + u[p + n[0]*n[1]] + u[p - n[0]*n[1]])*lambda[2];
-        
-    x = xmin[0] + i*dx[0];
-    y = xmin[1] + j*dx[1];
-    z = xmin[2] + k*dx[2];
 
-    du2 = f(x,y,z);
+     x = xmin[0] + i*dx[0];
+     y = xmin[1] + j*dx[1];
+     z = xmin[2] + k*dx[2];
+
+     du += f(x,y,z);
         
-    du = dt * (du1 + du2);
-    v[p] = u[p] + du;
+     v[p] = u[p] + dt * du;
   }
 }
 
@@ -100,8 +112,10 @@ double Scheme::iteration_domaine(int imin, int imax,
   dim3 dimGrid(ceil(m_n[0]/double(dimBlock.x)), 
                ceil(m_n[1]/double(dimBlock.y)),
                ceil(m_n[2]/double(dimBlock.z)));
-
+  
   iterCuda<<<dimGrid, dimBlock>>>(m_u.dataGPU(), m_v.dataGPU(), m_dt);
+  cudaDeviceSynchronize();
+  CUDA_CHECK_KERNEL();
 
   return variationCuda(m_u.dataGPU(), m_v.dataGPU(), 
                        diff, m_n[0]*m_n[1]*m_n[2]);
