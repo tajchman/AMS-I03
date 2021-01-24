@@ -39,8 +39,6 @@ int main(int argc, char *argv[])
   Values u_0(Prm);
   u_0.init();
   u_0.boundaries();
-  u_0.print(std::cerr);
-  return 0;
  
   C.setInput(u_0);
   T_init.stop();
@@ -50,7 +48,7 @@ int main(int argc, char *argv[])
   for (int it=0; it < itMax; it++) {
     if (freq > 0 && it % freq == 0) {
       T_other.start();
-      //C.getOutput().plot(it);
+      C.getOutput().plot(it);
       T_other.stop();
     }
 
@@ -67,7 +65,7 @@ int main(int argc, char *argv[])
 
   if (freq > 0 && itMax % freq == 0) {
     T_other.start();
-    //C.getOutput().plot(itMax);
+    C.getOutput().plot(itMax);
     T_other.stop();
   }
 

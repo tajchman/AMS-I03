@@ -22,10 +22,10 @@ void PrintTimers(std::ostream &f)
   double T_total = GetTimer(-1).elapsed();
 
   f << "\nTemps de calcul:\n\n";
-  for (auto & t : Timers) {
-
+  for (int i=0; i<Timers.size(); i++) {
+    Timer & t = Timers[i];
     if (t.name() == "total")
-       f << "        ________________________________________\n";
+       f << "        _______________________________________\n";
     f << std::setw(15) << t.name() << ": " << std::setw(13);
     if (t.elapsed() > 0.0 && t.elapsed() < 1e-3)
       f << std::scientific; 

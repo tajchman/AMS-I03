@@ -213,6 +213,8 @@ void swap(T & a, T & b)
 void Values::swap(Values & other)
 {
   ::swap(d_u, other.d_u);
+  ::swap(h_u, other.h_u);
+  ::swap(h_synchronized, other.h_synchronized);
   int i;
   for (i=0; i<3; i++) {
     ::swap(m_imin[i], other.m_imin[i]);
@@ -301,4 +303,7 @@ void Values::operator= (const Values &other)
     m_dx[i] = other.m_dx[i];
   }
   d_u = other.d_u;
+  h_synchronized = other.h_synchronized;
+  cudaMemcpy(d_u, other.d_u, nn * sizeof(double), cudaMemcpyDeviceToDevice);
+
 }
