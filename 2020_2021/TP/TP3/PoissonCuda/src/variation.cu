@@ -1,4 +1,6 @@
 
+#include "cuda_check.cuh"
+#include "variation.hxx"
 
 #include <stdio.h>
 #include <iostream>
@@ -33,7 +35,8 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
   if (tid == 0) partialDiff[blockIdx.x] = sdata[0];
 }
 
-double variationCuda(double *u, double *v, double * &d_partialSums, int n)
+double variationWrapper(Values & u, Values & v, 
+                        double * &d_partialSums, int n)
 {
   int dimBlock = 512;
   int dimGrid = ceil(n/double(dimBlock));
@@ -48,7 +51,9 @@ double variationCuda(double *u, double *v, double * &d_partialSums, int n)
 
   Timer & Tv = GetTimer(T_VariationId); Tv.start();
 
-  reduce<<< dimGrid, dimBlock, smemSize >>>(u, v, d_partialSums, n);
+  reduce<<< dimGrid, dimBlock, smemSize >>>(u.dataGPU(), 
+                                            v.dataGPU(), 
+                                            d_partialSums, n);
   cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
 
@@ -68,4 +73,14 @@ double variationCuda(double *u, double *v, double * &d_partialSums, int n)
   Tv.stop();
 
   return s;
+}
+
+void freeVariationData(double *& d_partialSum)
+{
+  if (d_partialSum) {
+    Timer & T = GetTimer(T_FreeId); T.start();
+    cudaFree(d_partialSum);
+    d_partialSum = NULL;
+    T.stop();
+  }
 }

@@ -45,8 +45,10 @@ set(SRCS
     main.cxx
     parameters.cxx
     values.cu
-    scheme.cu
+    scheme.cxx
     variation.cu
+    iteration.cu
+    dim.cu
     util/arguments.cxx
     util/os.cxx
     util/timer.cxx

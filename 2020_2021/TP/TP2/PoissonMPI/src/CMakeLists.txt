@@ -53,5 +53,8 @@ add_executable(
   ${SRCS}
   )
 
+target_link_libraries(${VERSION}
+  ${MPI_impi_LIBRARY}
+  )
 install(TARGETS ${VERSION} DESTINATION .)
 

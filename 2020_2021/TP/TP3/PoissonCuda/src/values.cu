@@ -80,7 +80,7 @@ double cond_ini(double x, double y, double z)
   double zc = z - 0.5;
 
   double c = xc*xc+yc*yc+zc*zc;
-  return (c < 0.1) ? 1.0 : 0.0;
+  return (c < 0.09) ? 1.0 : 0.0;
 }
 
 __global__
@@ -120,7 +120,7 @@ void Values::init()
 __device__
 double cond_lim(double x, double y, double z)
 {
-  return 0.0;
+  return 2.0;
 }
 
 __global__
@@ -290,12 +290,14 @@ void Values::plot(int order) const {
   f << "<PointData Scalars=\"values\">\n";
   f << "  <DataArray type=\"Float64\" Name=\"values\" format=\"ascii\">\n";
   
-  for (k=kmin; k<=kmax; k++)
+  for (k=kmin; k<=kmax; k++) {
     for (j=jmin; j<=jmax; j++) {
       for (i=imin; i<=imax; i++)
-        f << " " << operator()(i,j,k);
+        f << " " << std::setw(9) << operator()(i,j,k);
       f << "\n";
     }
+    f << "\n";
+  }
   f << " </DataArray>\n";
    
   f << "</PointData>\n";

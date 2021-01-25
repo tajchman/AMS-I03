@@ -99,10 +99,10 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << p.xmin(1) << ", " << p.xmax(1) << "] x "
     << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
 
-  f << "Interior point indices :   "
-    << "[" << p.imin(0) << " ... " << p.imax(0) << "] x "
-    << "[" << p.imin(1) << " ... " << p.imax(1) << "] x "
-    << "[" << p.imin(2) << " ... " << p.imax(2) << "]\n\n";
+  f << "Point indices :   "
+    << "[" << p.imin(0)-1 << " ... " << p.imax(0)+1 << "] x "
+    << "[" << p.imin(1)-1 << " ... " << p.imax(1)+1 << "] x "
+    << "[" << p.imin(2)-1 << " ... " << p.imax(2)+1 << "]\n\n";
 
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
