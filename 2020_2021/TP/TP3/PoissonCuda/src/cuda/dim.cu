@@ -26,5 +26,5 @@ void setDims(const int *h_n,
     cudaMemcpyToSymbol(lambda, h_lambda, 3 * sizeof(double));
     T.stop();
   
-    //symbol<<<1,1>>>();  
+//    symbol<<<1,1>>>();  
 }

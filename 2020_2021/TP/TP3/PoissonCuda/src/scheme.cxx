@@ -64,7 +64,6 @@ double Scheme::iteration_domaine(int imin, int imax,
                    imin, imax, jmin, jmax, kmin, kmax);
 
   m_v.synchronized(false);
-
   return variationWrapper(m_u, m_v, diff, m_n[0]*m_n[1]*m_n[2]);
 }
 

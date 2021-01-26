@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
 
     C.iteration();
 
-    std::cout << "iteration " << std::setw(5) << it + 1
-              << "  variation " << std::setw(12) << C.variation()
-              << "\n"; 
+    std::cout << "iter. " << std::setw(5) << it+1
+        << "  variation " << std::setw(12) << std::setprecision(4) << C.variation()
+        << std::endl;
   }
 
   std::cout << std::endl;

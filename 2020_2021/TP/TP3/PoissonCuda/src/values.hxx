@@ -53,4 +53,14 @@ private:
 
 std::ostream & operator<< (std::ostream & f, const Values & v);
 
+void zeroWrapper(double *d, int n);
+void initWrapper(double *d, int n[3]);
+void boundariesWrapper(double *d, int n[3], int imin[3], int imax[3]);
+
+double * allocate(int n);
+void deallocate(double *&d);
+void copyDeviceToHost(double *h, double *d, int n);
+void copyHostToDevice(double *d, double *h, int n);
+void copyDeviceToDevice(double *d_out, double *d_in, int n);
+
 #endif

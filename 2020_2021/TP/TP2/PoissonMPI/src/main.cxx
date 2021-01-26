@@ -99,8 +99,8 @@ int main(int argc, char *argv[])
     T_calcul.stop();
 
     if (Prm.rank() == 0) {
-      std::cout << "iter. " << std::setw(3) << it
-        << "  variation " << std::setw(10) << std::setprecision(4) << C.variation()
+      std::cout << "iter. " << std::setw(5) << it+1
+        << "  variation " << std::setw(12) << std::setprecision(4) << C.variation()
         << "  temps calcul " << std::setw(8) << std::setprecision(3)
         << T_calcul.elapsed() << " s"
         << "  comm. " << std::setw(8) << std::setprecision(3)

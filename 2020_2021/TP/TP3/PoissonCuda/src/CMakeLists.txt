@@ -35,6 +35,7 @@ endif()
 
 include_directories(
   util
+  cuda
   ${CMAKE_BUILD_DIR}
   ${CUDAToolkit_INCLUDE_DIRS}
 )
@@ -44,11 +45,12 @@ configure_file(version.hxx.in version.hxx @ONLY)
 set(SRCS
     main.cxx
     parameters.cxx
-    values.cu
     scheme.cxx
-    variation.cu
-    iteration.cu
-    dim.cu
+    values.cxx
+    cuda/variation.cu
+    cuda/iteration.cu
+    cuda/dim.cu
+    cuda/values.cu
     util/arguments.cxx
     util/os.cxx
     util/timer.cxx
