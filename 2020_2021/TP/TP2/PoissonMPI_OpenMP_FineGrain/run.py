@@ -4,15 +4,9 @@ import os, sys, subprocess, argparse, signal, platform
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-n', '--nprocs', type=int, default=1)
+parser.add_argument('-t', '--nthreads', type=int, default=1)
 parser.add_argument('rest', nargs=argparse.REMAINDER)
 args = parser.parse_args()
-
-p = platform.system()
-print(p)
-if p == 'Windows':
-    compiler = 'Intel'
-elif p == 'Linux':
-    compiler = 'Gnu'
 
 base = os.path.join(os.getcwd(), 'build', 'Release')
 code = os.path.join(base, 'PoissonMPI_FineGrain')
@@ -23,6 +17,8 @@ if not os.path.exists(resultsDir):
 
 command = ['mpiexec', '-n', str(args.nprocs), code]
 
+if args.nthreads > 1:
+    command += ['threads=' + str(args.nthreads)]
 
 def get_pid(name):
     try:

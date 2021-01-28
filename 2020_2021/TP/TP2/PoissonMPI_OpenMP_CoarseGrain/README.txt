@@ -11,3 +11,7 @@ _____________________
 Pour exécuter sur 3 processus MPI, chacun avec 2 threads
 
 mpirun -n 3 ./build/Gnu/Release/PoissonMPI_CoarseGrain threads=2
+
+ou :
+
+python run.py -n 3 -t 2

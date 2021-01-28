@@ -49,10 +49,10 @@ Parameters::Parameters(int argc, char ** argv, int size, int rank)
   m_command = argv[0];
   m_help = options_contains("h") || options_contains("help");
 
-  if (m_help) return;
-
   m_size = size;
   m_rank = rank;
+
+  if (m_help) return;
 
   Timer& T_comm = GetTimer(3);
   T_comm.start();

@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
               << T_init.elapsed() << " s\n" << std::endl;
   }
 
-  for (int it=0; it < itMax; it++) {
+  for (int it = 0; it < itMax; it++) {
 
     if (freq > 0 && it % freq == 0) {
       T_other.start();
@@ -134,11 +134,10 @@ int main(int argc, char *argv[])
   if (Prm.rank() == 0) {
     std::string s = Prm.resultPath();
     mkdir_p(s.c_str());
-    s += "/temps";
-    s += "_n_";
-    s += std::to_string(Prm.size());
-    s += "_t_";
+    s += "/temps_t_";
     s += std::to_string(id);
+    s += "_p_";
+    s += std::to_string(Prm.size());
     s += ".dat";
     std::ofstream f(s.c_str());
     f << id << " " << Prm.size() << " " 

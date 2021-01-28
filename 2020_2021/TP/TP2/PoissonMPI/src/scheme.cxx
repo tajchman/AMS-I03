@@ -77,7 +77,6 @@ double Scheme::iteration_domaine(int imin, int imax,
         du2 = m_f({x,y,z});
 
         du = m_dt * (du1 + du2);
-        printf("%d %f\n", i+(imax-imin+3)*(j+k*(jmax-jmin+3)));
         m_v(i, j, k) = m_u(i, j, k) + du;
         du_sum_local += du > 0 ? du : -du;
       }

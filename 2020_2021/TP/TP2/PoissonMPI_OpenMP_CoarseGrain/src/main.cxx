@@ -138,11 +138,7 @@ int main(int argc, char *argv[])
     std::cout << "\n" << std::setw(26) << "temps total"
               << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-  #ifdef _OPENMP
-    int id = Prm.nthreads();
-  #else
-    int id = 0;
-  #endif
+  int id = Prm.nthreads();
 
   if (Prm.rank() == 0) {
     std::string s = Prm.resultPath();

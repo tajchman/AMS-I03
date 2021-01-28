@@ -59,7 +59,8 @@ add_executable(
 target_link_libraries(
   ${VERSION} 
   ${OpenMP_CXX_LIBRARIES}
-)
+  ${MPI_impi_LIBRARY}
+  )
 
 install(TARGETS ${VERSION} DESTINATION .)
  
