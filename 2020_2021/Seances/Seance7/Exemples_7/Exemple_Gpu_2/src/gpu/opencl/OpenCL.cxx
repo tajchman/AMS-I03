@@ -131,3 +131,33 @@ void OpenCL::info()
 			  &param_value_size_ret);
   std::cerr << "\tPlatform name  : " << param_value << std::endl;
 }
+
+cl_mem OpenCL::allocate(int n)
+{
+  cl_mem p;
+  size_t bytes = n*sizeof(double);
+  cl_int errcode;
+  p = clCreateBuffer (context, CL_MEM_READ_WRITE, bytes, NULL, &errcode);
+  CheckOpenCL("clCreateBuffer");
+
+  return p;
+}
+
+void OpenCL::deallocate(cl_mem &p)
+{
+  clReleaseMemObject(p);
+}
+
+void OpenCL::memcpyHostToDevice(double *h, cl_mem d, int n)
+{
+  cl_int errcode = clEnqueueWriteBuffer(command_queue, d, CL_TRUE, 0, 
+                                          n*sizeof(double), h, 0, NULL, NULL);
+  CheckOpenCL("clEnqueueReadBuffer");
+}
+
+void OpenCL::memcpyDeviceToHost(cl_mem d, double *h, int n)
+{
+  cl_int errcode = clEnqueueReadBuffer(command_queue, d, CL_TRUE, 0, 
+                                         n*sizeof(double), h, 0, NULL, NULL);
+  CheckOpenCL("clEnqueueReadBuffer");
+}

@@ -1,7 +1,8 @@
 set(CODE image_gpu_cuda)
 
+add_definitions("-Wno-deprecated-gpu-targets")
 set(CUDA_NVCC_FLAGS
-  "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets;-ccbin=${CMAKE_C_COMPILER}")
+  "${CUDA_NVCC_FLAGS};-ccbin=${CMAKE_C_COMPILER}")
 
 set(CMAKE_CUDA_ARCHITECTURES 37 50 75)
 

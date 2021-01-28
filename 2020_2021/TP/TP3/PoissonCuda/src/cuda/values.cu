@@ -47,6 +47,24 @@ void copyDeviceToDevice(double *d_out, double *d_in, int n)
   T.stop();
 }
 
+
+__global__ void dprint(double *u)
+{
+  int i, j, k;
+  int p;
+
+  for (k=0; k<d_n[2]; k++) {
+    for (j=0; j<d_n[1]; j++) {
+      for (i=0; i<d_n[0]; i++) {
+        p = i + d_n[0] * (j + d_n[1]*k);
+        printf(" %f", u[p]);
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+}
+
 __global__
 void zeroValue(double *u, int n)
 {
@@ -74,12 +92,12 @@ void initValue(double *u)
   int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (i>0 && i<n[0]-1 && j>0 && j<n[1]-1 && k>0 && k<n[2]-1)
+  if (i>0 && i<d_n[0]-1 && j>0 && j<d_n[1]-1 && k>0 && k<d_n[2]-1)
   {
-    p = i + n[0] * (j + k*n[1]);
-    u[p] = cond_ini(xmin[0] + i*dx[0],
-                    xmin[1] + j*dx[1], 
-                    xmin[2] + k*dx[2]);
+    p = i + d_n[0] * (j + k*d_n[1]);
+    u[p] = cond_ini(d_xmin[0] + i*d_dx[0],
+                    d_xmin[1] + j*d_dx[1], 
+                    d_xmin[2] + k*d_dx[2]);
   }
 }
 
@@ -95,10 +113,9 @@ void initWrapper(double *d, int n[3])
   initValue<<<dimGrid, dimBlock>>>(d);
   cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
-  
+ 
   T.stop();
 }
-
 
 __global__
 void boundZValue(int k, double *u)
@@ -107,11 +124,11 @@ void boundZValue(int k, double *u)
   int j = threadIdx.y + blockIdx.y * blockDim.y;
   int p;
 
-  if (i<n[0] && j<n[1]) {
-    p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_lim(xmin[0] + i*dx[0], 
-                    xmin[1] + j*dx[1], 
-                    xmin[2] + k*dx[2]);
+  if (i<d_n[0] && j<d_n[1]) {
+    p = i + j*d_n[0] + k*d_n[0]*d_n[1];
+    u[p] = cond_lim(d_xmin[0] + i*d_dx[0], 
+                    d_xmin[1] + j*d_dx[1], 
+                    d_xmin[2] + k*d_dx[2]);    
   }
 }
 
@@ -123,11 +140,11 @@ void boundYValue(int j, double *u)
   int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (i<n[0] && k<n[2]) {
-    p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_lim(xmin[0] + i*dx[0], 
-                    xmin[1] + j*dx[1], 
-                    xmin[2] + k*dx[2]);
+  if (i<d_n[0] && k<d_n[2]) {
+    p = i + j*d_n[0] + k*d_n[0]*d_n[1];
+    u[p] = cond_lim(d_xmin[0] + i*d_dx[0], 
+                    d_xmin[1] + j*d_dx[1], 
+                    d_xmin[2] + k*d_dx[2]);
   }
 }
 
@@ -138,11 +155,11 @@ void boundXValue(int i, double *u)
   int k = threadIdx.z + blockIdx.z * blockDim.z;
   int p;
 
-  if (j<n[1] && k<n[2]) {
-    p = i + j*n[0] + k*n[0]*n[1];
-    u[p] = cond_lim(xmin[0] + i*dx[0], 
-                    xmin[1] + j*dx[1], 
-                    xmin[2] + k*dx[2]);
+  if (j<d_n[1] && k<d_n[2]) {
+    p = i + j*d_n[0] + k*d_n[0]*d_n[1];
+    u[p] = cond_lim(d_xmin[0] + i*d_dx[0], 
+                    d_xmin[1] + j*d_dx[1], 
+                    d_xmin[2] + k*d_dx[2]);
   }
 }
 
@@ -155,6 +172,7 @@ void boundariesWrapper(double *d, int n[3], int imin[3], int imax[3])
                 int(ceil(n[1]/double(dimBlock2.y))), 
                 1);
   boundZValue<<<dimGrid2, dimBlock2>>>(imin[2]-1, d);
+
   boundZValue<<<dimGrid2, dimBlock2>>>(imax[2]+1, d);
 
   dim3 dimBlock1(16,1,16);

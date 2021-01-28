@@ -10,7 +10,18 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn,
+/*
+setGray : transforme une image couleur en une image niveaux de gris
+
+input: imageIn (3 matrices :
+         imageOut.d_coef[0] : composante rouge)
+         imageOut.d_coef[1] : composante verte)
+         imageOut.d_coef[2] : composante bleue)
+
+output: imageOut (1 matrice : niveaux de gris)
+*/
+
+void setGray(cImageGPU &imageOut, const cImageGPU &imageIn,
 	     cl_kernel kern, OpenCL & CL)
 {
   TimerCL T(CL.command_queue);
@@ -19,26 +30,9 @@ void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn,
   int n = imageIn.width * imageIn.height;
   int errcode;
   
-  errcode = clSetKernelArg(kern, 0, sizeof(cl_mem), &imageOut.d_coef[0]);
-  CheckOpenCL("clSetKernelArg");
-  errcode = clSetKernelArg(kern, 1, sizeof(cl_mem), &imageIn.d_coef[0]);
-  CheckOpenCL("clSetKernelArg");
-  errcode = clSetKernelArg(kern, 2, sizeof(cl_mem), &imageIn.d_coef[1]);
-  CheckOpenCL("clSetKernelArg");
-  errcode = clSetKernelArg(kern, 3, sizeof(cl_mem), &imageIn.d_coef[2]);
-  CheckOpenCL("clSetKernelArg");
-  errcode = clSetKernelArg(kern, 4, sizeof(int), &n);
-  CheckOpenCL("clSetKernelArg");
+  size_t local_size = 1;  // A modifier
+  size_t global_size = 1; // A modifier
   
-  size_t local_size = 256; 
-  size_t global_size = ((n + local_size)/local_size)*local_size;
-  
-  errcode = clEnqueueNDRangeKernel(CL.command_queue,
-                         kern, 1, NULL,
-			 &global_size,
-			 &local_size,
-			 0, NULL, NULL);
-  CheckOpenCL("clEnqueueNDRangeKernel");
   T.stop();
   std::cerr << "\t\tTime Gray image generation  "
 	    << T.elapsed() << " s" << std::endl;  
@@ -194,7 +188,7 @@ void process(cImage &imageOut, const cImage &imageIn)
   TimerCL T_compute(CL.command_queue);
   T_compute.start();
 
-  setGrey(imageTemp1, imageTemp0, grayKernel,   CL);
+  setGray(imageTemp1, imageTemp0, grayKernel,   CL);
   smooth (imageTemp2, imageTemp1, smoothKernel, CL);
   sobel  (imageTemp3, imageTemp2, sobelKernel,  CL);
 
@@ -213,7 +207,4 @@ void process(cImage &imageOut, const cImage &imageIn)
   CL.free_kernel(grayKernel);
   CL.free_kernel(smoothKernel);
 
-  
-  // cl_kernel smoothKernel = CL.new_kernel("smooth", "smooth.cl");
-  // cl_kernel sobelKernel = CL.new_kernel("sobel", "sobel.cl");
-}
+ }

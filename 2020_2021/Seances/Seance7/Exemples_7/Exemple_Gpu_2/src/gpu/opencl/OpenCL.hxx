@@ -25,14 +25,17 @@ public:
   ~OpenCL();
   
   cl_kernel new_kernel (const char * kernelName,
-			const char * fileName,
+			                  const char * fileName,
                         const char * header = NULL);
+
   void free_kernel(cl_kernel &k);
   
-  cl_mem    new_memobj(size_t s);
+  cl_mem allocate(int s);
+  void deallocate(cl_mem & p);
 
-  void      free_memobj(cl_mem);
-
+  void memcpyHostToDevice(double *h, cl_mem d, int n);
+  void memcpyDeviceToHost(cl_mem d, double *h, int n);
+  
   void info();
   
   cl_platform_id platform_id;

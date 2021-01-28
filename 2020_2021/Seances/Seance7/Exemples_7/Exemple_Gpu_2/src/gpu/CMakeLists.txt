@@ -1,5 +1,6 @@
 if (ENABLE_CUDA)
 
+  enable_language(CUDA)
   find_package(CUDA)
 
   if (CUDA_FOUND)
@@ -23,12 +24,12 @@ if (ENABLE_OPENCL)
        "/usr/local/cuda-9.0/targets/x86_64-linux/lib/libOpenCL.so.1.0.0")
     set(OpenCL_LIBRARIES ${OpenCL_LIBRARY})
     set(OpenCL_VERSION 120)
+  else()
+    find_package(OpenCL)
   endif()
-else()
-
-  find_package(OpenCL)
+  
   if (OpenCL_FOUND)
-    add_subdirectory(opencl)
+      add_subdirectory(opencl)
   endif()
 
 endif()

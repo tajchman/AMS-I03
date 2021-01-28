@@ -5,9 +5,7 @@ cmake_minimum_required(VERSION 3.1)
 set(BUILD_SHARE_LIBS false)
 
 option(ENABLE_CUDA "Enable Cuda" OFF)
-if (ENABLE_CUDA)
-  enable_language(CUDA)
-endif()
+option(ENABLE_OPENCL "Enable OpenCL" OFF)
 
 find_package(PNG)
 include_directories(

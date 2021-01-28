@@ -11,23 +11,23 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-int  blockSize = 512;
-
-/* A completer : noyau cuda de setGreyGPU */
+/* A ajouter : noyau cuda de setGreyGPU */
 
 void setGrey(cImageGPU &imageOut, const cImageGPU &imageIn)
 {
   Timer T;
   T.start();
 
-  int n = imageIn.width * imageOut.height;
-  int gridSize = /* A completer */ ;
+  /* Taille de l'image imageIn.width x imageOut.height */
+  int gridSize = 1 /* A modifier */ ;
+  int blockSize = 1 /* A modifier */ ;
+
   setGreyGPU<<<gridSize, blockSize>>>
              (imageOut.d_coef[0],
 				      imageIn.d_coef[0],
 				      imageIn.d_coef[1],
 				      imageIn.d_coef[2],
-				      imageIn.imageSize);
+				      imageIn.width, imageIn.height);
   CUDA_CHECK_KERNEL();
 
   T.stop();

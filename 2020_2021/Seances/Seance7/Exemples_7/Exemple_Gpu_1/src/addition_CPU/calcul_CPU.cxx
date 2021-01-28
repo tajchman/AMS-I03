@@ -11,11 +11,6 @@ Calcul_CPU::Calcul_CPU(int m)
   h_u = new double[n];
   h_v = new double[n];
   h_w = new double[n];
-  for(int i = 0; i < n; i++ ) {
-    h_u[i] = 0.0;
-    h_v[i] = 0.0;
-    h_w[i] = 0.0;
-  }
   
   T.stop();
 

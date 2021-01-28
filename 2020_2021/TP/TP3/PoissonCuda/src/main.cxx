@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     C.iteration();
 
     std::cout << "iter. " << std::setw(5) << it+1
-        << "  variation " << std::setw(12) << std::setprecision(4) << C.variation()
+        << "  variation " << std::setw(15) << std::setprecision(9) << C.variation()
         << std::endl;
   }
 

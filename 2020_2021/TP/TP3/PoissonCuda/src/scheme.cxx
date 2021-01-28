@@ -15,8 +15,6 @@
 Scheme::Scheme(Parameters &P) :
     codeName(version), m_P(P), m_u(P), m_v(P)  {
 
-  m_u.init();
-  m_v.init();
   m_t = 0.0;
   m_duv = 0.0;
 
@@ -27,7 +25,6 @@ Scheme::Scheme(Parameters &P) :
     m_dx[i] = m_P.dx(i);
     m_xmin[i] = m_P.xmin(i);
     lx[i] = 1.0/(m_dx[i]*m_dx[i]);
-  std::cerr << "n " << i << " = " << m_n[i] << std::endl;
   }
 
   m_dt = m_P.dt();

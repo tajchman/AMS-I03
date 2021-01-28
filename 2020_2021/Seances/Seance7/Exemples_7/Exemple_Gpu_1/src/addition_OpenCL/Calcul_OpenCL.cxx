@@ -85,10 +85,9 @@ void Calcul_OpenCL::addition()
 			                    0, NULL, NULL);
   CheckOpenCL("clEnqueueNDRangeKernel");
 
-
-  CL.free_kernel(addKernel);
   T.stop();
 
+  CL.free_kernel(addKernel);
 
 }
 

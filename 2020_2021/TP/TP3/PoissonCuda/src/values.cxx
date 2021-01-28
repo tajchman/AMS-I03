@@ -17,8 +17,9 @@ const char kPathSeparator =
 
 Values::Values(Parameters & prm) : m_p(prm)
 {
-  int i, nn = 1;
+  int i;
 
+  nn= 1;
   for (i=0; i<3; i++) {
     m_imin[i] = m_p.imin(i);
     m_imax[i] = m_p.imax(i);
@@ -79,18 +80,19 @@ std::ostream & operator<< (std::ostream & f, const Values & v)
 void Values::print(std::ostream & f) const
 {
   int i, j, k;
-  int imin = m_imin[0], jmin = m_imin[1], kmin = m_imin[2];
-  int imax = m_imax[0], jmax = m_imax[1], kmax = m_imax[2];
+  int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
+  int imax = m_imax[0]+1, jmax = m_imax[1]+1, kmax = m_imax[2]+1;
     
-    if (!h_synchronized) {
-      copyDeviceToHost(h_u, d_u, nn);
-      h_synchronized = true;
-    }
+  if (!h_synchronized) {
+    copyDeviceToHost(h_u, d_u, nn);
+    h_synchronized = true;
+  }
 
-  for (i=imin; i<=imax; i++) {
+  for (k=kmin; k<=kmax; k++) {
     for (j=jmin; j<=jmax; j++) {
-      for (k=kmin; k<=kmax; k++)
+      for (i=imin; i<=imax; i++) {
         f << " " << operator()(i,j,k);
+      }
       f << std::endl;
     }
     f << std::endl;
@@ -131,6 +133,7 @@ void Values::plot(int order) const {
   }
 
   Timer & T = GetTimer(T_OtherId); T.start();
+
   std::ostringstream s;
   int i, j, k;
   int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
@@ -161,7 +164,7 @@ void Values::plot(int order) const {
   for (k=kmin; k<=kmax; k++) {
     for (j=jmin; j<=jmax; j++) {
       for (i=imin; i<=imax; i++)
-        f << " " << std::setw(9) << operator()(i,j,k);
+        f << " " << std::setw(7) << operator()(i,j,k);
       f << "\n";
     }
     f << "\n";
