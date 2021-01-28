@@ -1,28 +1,20 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 2.8)
 
 set(VERSION PoissonCuda)
 project(${VERSION} LANGUAGES CXX CUDA)
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(CUDAToolkit)
-set(CMAKE_CUDA_ARCHITECTURES 37 50 75)
+set(CMAKE_CUDA_ARCHITECTURES 75)
 set(CMAKE_CUDA_STANDARD 11)
 set(CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-if (CMAKE_VERSION VERSION_LESS "3.1")
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-  endif ()
-else()
-  set(CMAKE_CXX_STANDARD 11)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif ()
+add_definitions("-Wno-deprecated-gpu-targets")
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_compile_options(-DDEBUG)
 endif()
-
-add_definitions("-Wno-deprecated-gpu-targets")
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   if (WIN32)
@@ -32,13 +24,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   endif()
 endif()
 
-
 include_directories(
   util
-  cuda
   ${CMAKE_BUILD_DIR}
+  cuda
   ${CUDAToolkit_INCLUDE_DIRS}
-)
+  )
 
 configure_file(version.hxx.in version.hxx @ONLY)
 
@@ -47,17 +38,18 @@ set(SRCS
     parameters.cxx
     scheme.cxx
     values.cxx
+    util/arguments.cxx
+    util/os.cxx
+    util/timer.cxx
     cuda/variation.cu
     cuda/iteration.cu
     cuda/dim.cu
     cuda/values.cu
-    util/arguments.cxx
-    util/os.cxx
-    util/timer.cxx
+    cuda/user.cu
   )
 
 add_executable(
-  ${VERSION} 
+  ${VERSION}
   ${SRCS}
   )
 

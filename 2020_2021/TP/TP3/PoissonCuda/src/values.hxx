@@ -26,7 +26,7 @@ public:
   
   void plot(int order) const;
   void swap(Values & other);
-  int size(int i) const { return m_imax[i] - m_imin[i] + 1; }
+  int size(int i) const { return m_n[i]; }
   void print(std::ostream &f) const;
 
   double * dataCPU() { return h_u; }
@@ -43,7 +43,7 @@ private:
   Parameters & m_p;
   int m_imin[3];
   int m_imax[3];
-  int m_n_local[3];
+  int m_n[3];
 
   double m_dx[3];
   double m_xmin[3];

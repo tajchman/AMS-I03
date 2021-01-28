@@ -1,13 +1,16 @@
-#include "values.hxx"
-#include "os.hxx"
 #include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <cstdlib>
 #include <cstring>
 #include <cuda.h>
+
 #include "cuda_check.cuh"
 #include "dim.cuh"
+#include "user.cuh"
+
+#include "values.hxx"
+#include "os.hxx"
 #include "timer_id.hxx"
 
 double * allocate(int n) {
@@ -63,17 +66,6 @@ void zeroWrapper(double *d, int n)
 }
 
 
-__device__
-double cond_ini(double x, double y, double z)
-{
-  double xc = x - 0.5;
-  double yc = y - 0.5;
-  double zc = z - 0.5;
-
-  double c = xc*xc+yc*yc+zc*zc;
-  return (c < 0.09) ? 1.0 : 0.0;
-}
-
 __global__
 void initValue(double *u)
 {
@@ -96,9 +88,9 @@ void initWrapper(double *d, int n[3])
   Timer & T = GetTimer(T_InitId); T.start();
 
   dim3 dimBlock(8,8,8);
-  dim3 dimGrid(ceil(n[0]/double(dimBlock.x)),
-               ceil(n[1]/double(dimBlock.y)),
-               ceil(n[2]/double(dimBlock.z)));
+  dim3 dimGrid(int(ceil(n[0]/double(dimBlock.x))),
+               int(ceil(n[1]/double(dimBlock.y))),
+               int(ceil(n[2]/double(dimBlock.z))));
 
   initValue<<<dimGrid, dimBlock>>>(d);
   cudaDeviceSynchronize();
@@ -107,11 +99,6 @@ void initWrapper(double *d, int n[3])
   T.stop();
 }
 
-__device__
-double cond_lim(double x, double y, double z)
-{
-  return 2.0;
-}
 
 __global__
 void boundZValue(int k, double *u)
@@ -164,17 +151,25 @@ void boundariesWrapper(double *d, int n[3], int imin[3], int imax[3])
   Timer & T = GetTimer(T_InitId); T.start();
 
   dim3 dimBlock2(16,16,1);
-  dim3 dimGrid2(ceil(n[0]/double(dimBlock2.x)), ceil(n[1]/double(dimBlock2.y)), 1);
+  dim3 dimGrid2(int(ceil(n[0]/double(dimBlock2.x))),
+                int(ceil(n[1]/double(dimBlock2.y))), 
+                1);
   boundZValue<<<dimGrid2, dimBlock2>>>(imin[2]-1, d);
   boundZValue<<<dimGrid2, dimBlock2>>>(imax[2]+1, d);
 
   dim3 dimBlock1(16,1,16);
-  dim3 dimGrid1(ceil(n[0]/double(dimBlock1.x)), 1, ceil(n[2]/double(dimBlock1.z)));
+  dim3 dimGrid1(int(ceil(n[0]/double(dimBlock1.x))), 
+                1,
+                int(ceil(n[2]/double(dimBlock1.z))));
+
   boundYValue<<<dimGrid1, dimBlock1>>>(imin[1]-1, d);
   boundYValue<<<dimGrid1, dimBlock1>>>(imax[1]+1, d);
 
   dim3 dimBlock0(1,16,16);
-  dim3 dimGrid0(1, ceil(n[1]/double(dimBlock0.y)), ceil(n[2]/double(dimBlock0.z)));
+  dim3 dimGrid0(1, 
+                int(ceil(n[1]/double(dimBlock0.y))),
+                int(ceil(n[2]/double(dimBlock0.z))));
+
   boundXValue<<<dimGrid0, dimBlock0>>>(imin[0]-1, d);
   boundXValue<<<dimGrid0, dimBlock0>>>(imax[0]+1, d);
 

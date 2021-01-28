@@ -1,17 +1,29 @@
 ﻿{
-  "environments": [ { "baseDir": "${workspaceFolder}" } ],
+  "environments": [
+    {
+      "baseDir": "${workspaceFolder}"
+    }
+   ],
   "configurations": [
     {
       "configurationType": "Debug",
-      "name": "{configurationType}",
+      "name": "MSVC_${configurationType}",
       "generator": "Ninja",
-      "buildRoot": "${projectDir}/../build/${configurationType}",
-      "installRoot": "${projectDir}/../install/{configurationType}",
+      "buildRoot": "${projectDir}/../build/msvc/${configurationType}",
+      "installRoot": "${projectDir}/../install/msvc/${configurationType}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "cl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "cl.exe"
+        },
         {
           "name": "CMAKE_CUDA_COMPILER",
           "value": "nvcc.exe",
@@ -19,33 +31,92 @@
         },
         {
           "name": "CUDAHOSTCXX",
-          "value": "icl.exe",
+          "value": "cl.exe",
           "type": "STRING"
-        },
-
+        }      
+      ]
+    },
+    {
+      "configurationType": "Release",
+      "name": "MSVC_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${projectDir}/../build/Seq/msvc/${configurationType}",
+      "installRoot": "${projectDir}/../install/intel/${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "icl.exe",
-          "type": "STRING"
+          "value": "cl.exe"
         },
         {
           "name": "CMAKE_C_COMPILER",
-          "value": "icl.exe",
+          "value": "cl.exe"
+        },
+        {
+          "name": "CMAKE_CUDA_COMPILER",
+          "value": "nvcc.exe",
+          "type": "STRING"
+        },
+        {
+          "name": "CUDAHOSTCXX",
+          "value": "cl.exe",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "configurationType": "Debug",
+      "name": "Intel_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${projectDir}/../build/Seq/intel/${configurationType}",
+      "installRoot": "${projectDir}/../install/intel/${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "icl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "icl.exe"
+        },
+        {
+          "name": "CMAKE_CUDA_COMPILER",
+          "value": "nvcc.exe",
+          "type": "STRING"
+        },
+        {
+          "name": "CUDAHOSTCXX",
+          "value": "cl.exe",
           "type": "STRING"
         }
       ]
     },
     {
       "configurationType": "Release",
-      "name": "{configurationType}",
+      "name": "Intel_${configurationType}",
       "generator": "Ninja",
-      "buildRoot": "${projectDir}/../build/${configurationType}",
-      "installRoot": "${projectDir}/../install/{configurationType}",
+      "buildRoot": "${projectDir}/../build/Seq/intel/${configurationType}",
+      "installRoot": "${projectDir}/../install/intel/${configurationType}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "icl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "icl.exe"
+        },
         {
           "name": "CMAKE_CUDA_COMPILER",
           "value": "nvcc.exe",
@@ -53,18 +124,7 @@
         },
         {
           "name": "CUDAHOSTCXX",
-          "value": "icl.exe",
-          "type": "STRING"
-        },
-
-        {
-          "name": "CMAKE_CXX_COMPILER",
-          "value": "icl.exe",
-          "type": "STRING"
-        },
-        {
-          "name": "CMAKE_C_COMPILER",
-          "value": "icl.exe",
+          "value": "cl.exe",
           "type": "STRING"
         }
       ]

@@ -35,11 +35,11 @@ int main(int argc, char *argv[])
   int freq = Prm.freq();
 
   Scheme C(Prm);
- 
+
   Values u_0(Prm);
   u_0.init();
   u_0.boundaries();
- 
+
   C.setInput(u_0);
 
   for (int it=0; it < itMax; it++) {

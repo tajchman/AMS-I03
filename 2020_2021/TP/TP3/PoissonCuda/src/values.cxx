@@ -1,3 +1,10 @@
+const char kPathSeparator =
+#ifdef _WIN32
+'\\';
+#else
+'/';
+#endif
+
 #include "values.hxx"
 #include "os.hxx"
 #include <fstream>
@@ -10,21 +17,20 @@
 
 Values::Values(Parameters & prm) : m_p(prm)
 {
-  int i;
+  int i, nn = 1;
 
   for (i=0; i<3; i++) {
     m_imin[i] = m_p.imin(i);
     m_imax[i] = m_p.imax(i);
-    m_n_local[i] = m_imax[i] - m_imin[i] + 3;
+    m_n[i] = m_imax[i] - m_imin[i] + 3;
     m_dx[i] = m_p.dx(i);
     m_xmin[i] = m_p.xmin(i);
     m_xmax[i] = m_p.xmax(i);
-    nn *= m_n_local[i];
+    nn *= m_n[i];
   }
 
-  n1 = m_n_local[0];      // nombre de points dans la premiere direction
-  n2 = m_n_local[1] * n1; // nombre de points dans le plan des 2 premieres directions
-  nn = n2 * m_n_local[2];
+  n1 = m_n[0];      // nombre de points dans la premiere direction
+  n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
 
   Timer & T = GetTimer(T_AllocId); T.start();
 
@@ -34,12 +40,6 @@ Values::Values(Parameters & prm) : m_p(prm)
   T.stop();
 
   h_synchronized = false;
-
-  Timer & Ti = GetTimer(T_InitId); Ti.start();
-
-  zero();
-
-  Ti.stop();
 }
 
 
@@ -59,17 +59,16 @@ void Values::zero()
 
 void Values::init()
 {
-  initWrapper(d_u, m_n_local);
+  initWrapper(d_u, m_n);
   h_synchronized = false;
 }
 
 
 void Values::boundaries()
 {
-  boundariesWrapper(d_u, m_n_local, m_imin, m_imax);
+  boundariesWrapper(d_u, m_n, m_imin, m_imax);
   h_synchronized = false;
 }
-
 
 std::ostream & operator<< (std::ostream & f, const Values & v)
 {
@@ -79,22 +78,23 @@ std::ostream & operator<< (std::ostream & f, const Values & v)
 
 void Values::print(std::ostream & f) const
 {
-    int i, j, k;
+  int i, j, k;
+  int imin = m_imin[0], jmin = m_imin[1], kmin = m_imin[2];
+  int imax = m_imax[0], jmax = m_imax[1], kmax = m_imax[2];
     
     if (!h_synchronized) {
       copyDeviceToHost(h_u, d_u, nn);
       h_synchronized = true;
     }
 
-    for (i=0; i<m_n_local[0]; i++) {
-      for (j=0; j<m_n_local[1]; j++) {
-        for (k=0; k<m_n_local[2]; k++) {
-          f << " " << h_u[n2*k + n1*j + i];
-        }
-        f << std::endl;
-      }
+  for (i=imin; i<=imax; i++) {
+    for (j=jmin; j<=jmax; j++) {
+      for (k=kmin; k<=kmax; k++)
+        f << " " << operator()(i,j,k);
       f << std::endl;
     }
+    f << std::endl;
+  }
 }
 
 template<typename T>
@@ -114,11 +114,13 @@ void Values::swap(Values & other)
   for (i=0; i<3; i++) {
     ::swap(m_imin[i], other.m_imin[i]);
     ::swap(m_imax[i], other.m_imax[i]);
-    ::swap(m_n_local[i], other.m_n_local[i]);
+    ::swap(m_n[i], other.m_n[i]);
     ::swap(m_dx[i], other.m_dx[i]);
     ::swap(m_xmin[i], other.m_xmin[i]);
     ::swap(m_xmax[i], other.m_xmax[i]);
   }
+  ::swap(n1, other.n1);
+  ::swap(n2, other.n2);
 }
 
 void Values::plot(int order) const {
@@ -131,18 +133,13 @@ void Values::plot(int order) const {
   Timer & T = GetTimer(T_OtherId); T.start();
   std::ostringstream s;
   int i, j, k;
-  int imin = m_p.imin(0)-1;
-  int jmin = m_p.imin(1)-1;
-  int kmin = m_p.imin(2)-1;
-
-  int imax = m_p.imax(0)+1;
-  int jmax = m_p.imax(1)+1;
-  int kmax = m_p.imax(2)+1;
+  int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
+  int imax = m_imax[0]+1, jmax = m_imax[1]+1, kmax = m_imax[2]+1;
 
   s << m_p.resultPath();
   mkdir_p(s.str().c_str());
   
-  s << "/plot_" << std::setw(5) << std::setfill('0') << order << ".vtr";
+  s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";
@@ -196,22 +193,24 @@ void Values::plot(int order) const {
 
 void Values::operator= (const Values &other)
 {
-  int i;
+  Timer & T = GetTimer(T_CopyId); T.start();
 
+  int i;
+  
   for (i=0; i<3; i++) {
     m_imin[i] = other.m_imin[i];
     m_imax[i] = other.m_imax[i];
-    m_n_local[i] = other.m_n_local[i];
+    m_n[i] = other.m_n[i];
     m_xmin[i] = other.m_xmin[i];
     m_xmax[i] = other.m_xmax[i];
     m_dx[i] = other.m_dx[i];
   }
   h_synchronized = other.h_synchronized;
 
-  Timer & T = GetTimer(T_CopyId); T.start();
   if (other.h_synchronized)
      memcpy(h_u, other.h_u, nn*sizeof(double));
 
   copyDeviceToDevice(d_u, other.d_u, nn);
+
   T.stop();
 }

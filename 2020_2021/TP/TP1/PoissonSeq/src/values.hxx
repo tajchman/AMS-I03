@@ -36,12 +36,11 @@ private:
   std::vector<double> m_u;
   int m_n[3];
   Parameters & m_p;
-  int imin, jmin, kmin;
-  int imax, jmax, kmax;
+  int m_imin[3];
+  int m_imax[3];
 
-  double dx, dy, dz;
-  double xmin, ymin, zmin;
-  double xmax, ymax, zmax;
+  double m_dx[3];
+  double m_xmin[3], m_xmax[3];
 
 };
 				   

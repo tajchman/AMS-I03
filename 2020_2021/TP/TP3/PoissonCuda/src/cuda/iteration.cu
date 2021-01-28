@@ -1,13 +1,9 @@
-#include "timer_id.hxx"
-#include "iteration.hxx"
 #include "dim.cuh"
 #include "cuda_check.cuh"
+#include "user.cuh"
 
-__device__
-double f(double x, double y, double z)
-{
-  return (x < 0.3) ? 0.0 : sin(x-0.5) * cos(y-0.5) * exp(- z*z);
-}
+#include "timer_id.hxx"
+#include "iteration.hxx"
 
 __global__
 void iterKernel(double *v, double *u, double dt)
@@ -41,12 +37,13 @@ void iterationWrapper(
     int kmin, int kmax)
 {
   dim3 dimBlock(8,8,8);
-  dim3 dimGrid(ceil(n[0]/double(dimBlock.x)), 
-  ceil(n[1]/double(dimBlock.y)),
-  ceil(n[2]/double(dimBlock.z)));
+  dim3 dimGrid(int(ceil(n[0]/double(dimBlock.x))), 
+               int(ceil(n[1]/double(dimBlock.y))),
+               int(ceil(n[2]/double(dimBlock.z))));
 
   Timer & T = GetTimer(T_IterationId); T.start();
 
+  std::cout << v.dataGPU() << " "  << u.dataGPU() << " " << dt << std::endl;
   iterKernel<<<dimGrid, dimBlock>>>(v.dataGPU(), u.dataGPU(), dt);
   cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();

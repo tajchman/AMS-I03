@@ -19,7 +19,8 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
   extern __shared__ double sdata[];
   
   int tid = threadIdx.x;
-  int i = blockIdx.x*blockDim.x + threadIdx.x;
+  int bid = blockIdx.x;
+  int i = bid*blockDim.x + tid;
   
   if (i < n) {
      double duv = u[i] - v[i];
@@ -27,7 +28,6 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
   }
   else
      sdata[tid] = 0.0;
-  printf("%d %f\n", i, sdata[tid]);
 
   cg::sync(cta);
 
@@ -38,8 +38,9 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
 
       cg::sync(cta);
     }
+  cg::sync(cta);
   if (tid == 0) {
-    partialDiff[blockIdx.x] = sdata[0];
+  partialDiff[blockIdx.x] = sdata[0];
   }
 }
 
@@ -47,7 +48,7 @@ double variationWrapper(Values & u, Values & v,
                         double * &d_partialSums, int n)
 {
   int dimBlock = 512;
-  int dimGrid = ceil(n/double(dimBlock));
+  int dimGrid = int(ceil(n/double(dimBlock)));
   int nbytes = dimBlock * sizeof(double);
 
   int smemSize = nbytes;

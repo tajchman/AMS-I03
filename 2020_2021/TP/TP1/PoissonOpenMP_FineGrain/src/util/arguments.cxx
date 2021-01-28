@@ -10,7 +10,7 @@ Arguments::Arguments(int argc, char **argv)
     if (strlen(s) > 1) {
       if (s[0] == '-') {
         s++;
-        if (s[0] == '-')
+        if (s[0] == '-') s++;
            _options.push_back(s + 1);
       }
       else {

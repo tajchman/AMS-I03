@@ -10,12 +10,8 @@ args = parser.parse_args()
 
 base = os.path.join('.', 'install', args.type)
 
-resultsDir = os.path.join('.', 'results', args.type)
-if not os.path.exists(resultsDir):
-   os.makedirs(resultsDir)
-
 code = os.path.join(base, 'PoissonCuda.exe')
 
-subprocess.call([code, "path=" + resultsDir] + args.rest)
+subprocess.call([code] + args.rest)
 
 

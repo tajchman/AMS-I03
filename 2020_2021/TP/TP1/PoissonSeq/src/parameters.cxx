@@ -60,6 +60,8 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
 
+  if (!m_help) {
+ 
   m_path = Get("path", ".");
   if (m_path != ".")
      mkdir_p(m_path.c_str());
@@ -104,9 +106,9 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << p.xmin(2) << ", " << p.xmax(2) << "]\n";
 
   f << "  Point indices :   "
-    << "[" << p.imin_global(0) << " ... " << p.imax_global(0) << "] x "
-    << "[" << p.imin_global(1) << " ... " << p.imax_global(1) << "] x "
-    << "[" << p.imin_global(2) << " ... " << p.imax_global(2) << "]\n\n";
+    << "[" << p.imin(0) << " ... " << p.imax(0) << "] x "
+    << "[" << p.imin(1) << " ... " << p.imax(1) << "] x "
+    << "[" << p.imin(2) << " ... " << p.imax(2) << "]\n\n";
 
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"

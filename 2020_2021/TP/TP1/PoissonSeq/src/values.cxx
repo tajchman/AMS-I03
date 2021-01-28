@@ -33,29 +33,28 @@ void Values::init()
   for (i=m_imin[0]; i<=m_imax[0]; i++)
     for (j=m_imin[1]; j<=m_imax[1]; j++)
       for (k=m_imin[1]; k<=m_imax[2]; k++)
-        operator()({i,j,k}) = 0;
+        operator()(i,j,k) = 0;
 }
 
 void Values::init(callback_t f)
 {
   int i, j, k;
-  std::array<int, 3> p;
-  std::array<double, 3> x;
+  double x, y, z;
 
   for (i=m_imin[0]; i<=m_imax[0]; i++)
     for (j=m_imin[1]; j<=m_imax[1]; j++)
       for (k=m_imin[2]; k<=m_imax[2]; k++) {
-        p = {i,j,k};
-        x = { m_xmin[0] + i*m_dx[0], 
-              m_xmin[1] + j*m_dx[1], 
-              m_xmin[2] + k*m_dx[2]
-              };
-        operator()(p) = f(x);
+        x = m_xmin[0] + i*m_dx[0];
+        y = m_xmin[1] + j*m_dx[1]; 
+        z = m_xmin[2] + k*m_dx[2];
+        operator()(i,j,k) = f(x, y, z);
       }
 }
 
 void Values::boundaries(callback_t f)
 {
+  int i[3];
+  double x[3];
   for (int idim=0; idim<3; idim++) {
 
     int jdim = (idim+1)%3;
@@ -67,32 +66,15 @@ void Values::boundaries(callback_t f)
 
     int p, q;
 
-    std::array<int, 3> i;
-    std::array<double, 3> x;
-
-    if (m_p.neighbour(2*idim) < 0) {
-      i[idim] = omin-1;
-      x[idim] = m_xmin[idim];
-      for (p=pmin-1; p<=pmax+1; p++)
-        for (q=qmin-1; q<=qmax+1; q++) {
-          i[jdim] = p; i[kdim] = q;
-          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
-          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
-          operator()(i) = f(x);
-        }
-    }
-
-    if (m_p.neighbour(2*idim+1) < 0) {
-      i[idim] = omax+1;
-      x[idim] = m_xmax[idim];
-      for (p=pmin-1; p<=pmax+1; p++)
-        for (q=qmin-1; q<=qmax+1; q++) {
-          i[jdim] = p; i[kdim] = q;
-          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
-          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
-          operator()(i) = f(x);
-        }
-    }
+    i[idim] = omin-1;
+    x[idim] = m_xmin[idim];
+    for (p=pmin-1; p<=pmax+1; p++)
+      for (q=qmin-1; q<=qmax+1; q++) {
+        i[jdim] = p; i[kdim] = q;
+        x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+        x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+        operator()(i[0], i[1], i[2]) = f(x[0], x[1], x[2]);
+      }
   }
 }
 

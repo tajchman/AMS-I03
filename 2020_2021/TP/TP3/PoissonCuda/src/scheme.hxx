@@ -42,7 +42,6 @@ protected:
   double m_duv;
   double *diff;
   Parameters &m_P;
-  callback_t m_f;
 };
 
 #endif /* SCHEME_HXX_ */
