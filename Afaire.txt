@@ -1,0 +1,3 @@
+Corriger Exemple_Gpu_1 et le mettre sur la page web
+
+Ecrire un comparateur de fichiers images
