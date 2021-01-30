@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 
-import os, sys, subprocess, argparse, platform
+import os, sys, subprocess, platform, argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--type', default='Release', 
+parser.add_argument('-t', '--type', default='Release',
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
+parser.add_argument('--gpu', nargs='*', default=['cuda', 'opencl'],
+                    choices=['cuda', 'opencl'])
 args = parser.parse_args()
 
 myenv = os.environ.copy()
@@ -30,20 +32,26 @@ elif p == 'Darwin':
 base = os.getcwd()
 
 srcDir = os.path.join(base, 'src')
+buildDir = os.path.join(base, 'build', args.type)
+installDir = os.path.join(base, 'install', args.type)
 
-t = args.type
-print ('\nbuild ', t, '\n')
-buildDir = os.path.join(base, 'build', t)
-installDir = os.path.join(base, 'install', t)
-
-cmake_params = ['-DCMAKE_BUILD_TYPE=' + t]
+cmake_params = []
+if 'CUDA_BIN_DIR' in myenv:
+   cmake_params.append('-DCUDA_TOOLKIT_ROOT_DIR=' + myenv['CUDA_BIN_DIR'])
 cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
+
+if 'cuda' in args.gpu:
+  cmake_params.append('-DENABLE_CUDA=ON')
+if 'opencl' in args.gpu:
+  cmake_params.append('-DENABLE_OPENCL=ON')
+
 cmake_params.append(gen)
 
 if not os.path.exists(buildDir):
   os.makedirs(buildDir)
 
 configureCmd = ['cmake'] + cmake_params + [srcDir]
+print(" ".join(configureCmd))
 err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
 if not err == 0:
   sys.exit(-1)

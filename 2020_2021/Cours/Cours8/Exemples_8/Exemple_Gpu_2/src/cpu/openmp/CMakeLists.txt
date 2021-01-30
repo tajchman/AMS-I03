@@ -11,10 +11,10 @@ set(CMAKE_EXE_LINKER_FLAGS
 add_executable(${CODE}
   ${CMAKE_SOURCE_DIR}/main.cxx
   process.cxx
-  ${CMAKE_SOURCE_DIR}/util/io_png.cxx
   )
 
 target_link_libraries(${CODE}
+  util
   ${PNG_LIBRARIES}
   )
 
