@@ -34,7 +34,7 @@ def get_pid(name):
 pid_before = get_pid('xterm')
 
 try:
-    print("Taper control-C pour arrêter ... ")
+    print("Taper control-C pour arreter ... ")
     subprocess.call(command + args.rest, cwd=resultsDir)
 except KeyboardInterrupt:
     pid_after = get_pid('xterm')
