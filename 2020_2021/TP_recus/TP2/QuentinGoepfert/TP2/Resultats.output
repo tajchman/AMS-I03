@@ -1,0 +1,243 @@
+Résultats lancement des codes sur ma machine : 
+
+--------------------------------------------------
+MPI_Fine_Grain:
+--------------------------------------------------
+
+---------- 1 processus MPI x 8 threads -----------
+Linux
+Taper control-C pour arreter ... 
+8 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 1] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init    2.20869 s
+
+iter.   0  variation  2.441e+05  temps calcul     3.64 s  comm.  0.00336 s
+iter.   1  variation  2.016e+05  temps calcul     7.29 s  comm.  0.00599 s
+iter.   2  variation  1.785e+05  temps calcul     11.2 s  comm.   0.0086 s
+iter.   3  variation  1.618e+05  temps calcul       15 s  comm.   0.0113 s
+iter.   4  variation   1.49e+05  temps calcul     18.9 s  comm.   0.0142 s
+iter.   5  variation  1.387e+05  temps calcul     22.7 s  comm.    0.017 s
+iter.   6  variation  1.302e+05  temps calcul     26.5 s  comm.   0.0198 s
+iter.   7  variation   1.23e+05  temps calcul     30.2 s  comm.   0.0224 s
+iter.   8  variation  1.168e+05  temps calcul     33.9 s  comm.    0.025 s
+iter.   9  variation  1.114e+05  temps calcul     37.5 s  comm.   0.0277 s
+
+               temps total      40.1 s
+---------- 2 processus MPI x 4 threads -----------
+Linux
+Taper control-C pour arreter ... 
+4 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 201] x [0 ... 400] x [0 ... 400]
+
+Process 1
+  Domain :   [0.5, 1] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+
+  temps init    1.60916 s
+
+iter.   0  variation  2.441e+05  temps calcul     2.16 s  comm.   0.0067 s
+iter.   1  variation  2.016e+05  temps calcul     4.25 s  comm.   0.0122 s
+iter.   2  variation  1.785e+05  temps calcul     6.33 s  comm.   0.0176 s
+iter.   3  variation  1.618e+05  temps calcul     8.44 s  comm.    0.023 s
+iter.   4  variation   1.49e+05  temps calcul     10.5 s  comm.   0.0285 s
+iter.   5  variation  1.387e+05  temps calcul     12.6 s  comm.    0.034 s
+iter.   6  variation  1.302e+05  temps calcul     14.7 s  comm.   0.0394 s
+iter.   7  variation   1.23e+05  temps calcul     16.8 s  comm.    0.045 s
+iter.   8  variation  1.168e+05  temps calcul     18.9 s  comm.   0.0505 s
+iter.   9  variation  1.114e+05  temps calcul       21 s  comm.   0.0561 s
+
+               temps total      22.9 s
+---------- 4 processus MPI x 2 threads -----------
+Linux
+Taper control-C pour arreter ... 
+2 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 0.2525] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 101] x [0 ... 400] x [0 ... 400]
+
+Process 1
+  Domain :   [0.25, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [100 ... 201] x [0 ... 400] x [0 ... 400]
+
+Process 2
+  Domain :   [0.5, 0.7525] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 301] x [0 ... 400] x [0 ... 400]
+
+Process 3
+  Domain :   [0.75, 1] x [0, 1] x [0, 1]
+  Point indices :   [300 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+
+
+
+  temps init    1.41103 s
+
+iter.   0  variation  2.441e+05  temps calcul     1.43 s  comm.   0.0137 s
+iter.   1  variation  2.016e+05  temps calcul     2.86 s  comm.     0.02 s
+iter.   2  variation  1.785e+05  temps calcul     4.28 s  comm.   0.0265 s
+iter.   3  variation  1.618e+05  temps calcul     5.69 s  comm.   0.0327 s
+iter.   4  variation   1.49e+05  temps calcul     7.12 s  comm.   0.0391 s
+iter.   5  variation  1.387e+05  temps calcul     8.57 s  comm.   0.0461 s
+iter.   6  variation  1.302e+05  temps calcul       10 s  comm.   0.0525 s
+iter.   7  variation   1.23e+05  temps calcul     11.5 s  comm.   0.0589 s
+iter.   8  variation  1.168e+05  temps calcul     12.9 s  comm.   0.0651 s
+iter.   9  variation  1.114e+05  temps calcul     14.3 s  comm.   0.0714 s
+
+               temps total      16.1 s
+---------- 8 processus MPI x 1 threads -----------
+Not enough slot tu use.
+
+______________
+Remarques: 
+______________
+L'augmentation du nombre de processus MPI est bien meilleurs que l'augmentation de threads seule. Cela est nom suprenant: ils ont chacun leur mémoire et fonctionnent réellement indépendamment les uns des autres. Il ne partagent rien si ce n'est les variables explicitement copié dans leur mémoire propre.
+Enfin, on obtient quand même des résultats meilleurs en augmentant le nombre de threads à nombre de processus fixé: on a bien parallélisé le code MPI en différents threads. 
+
+Mon ordinateur ayant 8 coeurs mais 4 "vrais coeurs", je ne peux pas lancer plus de 4 processus MPI. De plus, je pense que les performance maximum que j'obiendrai sont avec 4 processus MPI et 2 coeurs. . En pratique j'ai retrouvé ce résultats avec mes différents tests. 
+En définitive, on obtient une accélération par rapport au code MPI avec un processus: 59.9/16.1 = 3.72 (on peut atteindre un maximum inférieur et de l'ordre de 8).
+Cette accélération est déjà intéressante (d'autant plus que l'on a untiliser un petit nombre de processus MPI) mais on peut essayer de faire mieux avec un code MPI_Coarse_Grain.
+
+--------------------------------------------------
+MPI_Coarse_Grain:
+--------------------------------------------------
+
+---------- 1 processus MPI x 8 threads -----------
+Linux
+Taper control-C pour arreter ... 
+8 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 1] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init    2.39512 s
+
+iter.   0  variation  2.441e+05  temps calcul     3.91 s  comm.  0.00352 s
+iter.   1  variation  2.016e+05  temps calcul     7.77 s  comm.  0.00646 s
+iter.   2  variation  1.785e+05  temps calcul     11.5 s  comm.  0.00919 s
+iter.   3  variation  1.618e+05  temps calcul     15.3 s  comm.   0.0119 s
+iter.   4  variation   1.49e+05  temps calcul     19.1 s  comm.   0.0146 s
+iter.   5  variation  1.387e+05  temps calcul     22.9 s  comm.   0.0172 s
+iter.   6  variation  1.302e+05  temps calcul     26.6 s  comm.   0.0198 s
+iter.   7  variation   1.23e+05  temps calcul     30.4 s  comm.   0.0224 s
+iter.   8  variation  1.168e+05  temps calcul     34.2 s  comm.   0.0252 s
+iter.   9  variation  1.114e+05  temps calcul       38 s  comm.   0.0284 s
+
+               temps total      40.8 s
+---------- 2 processus MPI x 4 threads -----------
+Linux
+Taper control-C pour arreter ... 
+4 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 201] x [0 ... 400] x [0 ... 400]
+
+
+Process 1
+  Domain :   [0.5, 1] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init    1.76265 s
+
+iter.   0  variation  2.441e+05  temps calcul     2.16 s  comm.  0.00686 s
+iter.   1  variation  2.016e+05  temps calcul     4.33 s  comm.   0.0124 s
+iter.   2  variation  1.785e+05  temps calcul     6.48 s  comm.   0.0181 s
+iter.   3  variation  1.618e+05  temps calcul     8.59 s  comm.   0.0239 s
+iter.   4  variation   1.49e+05  temps calcul     10.8 s  comm.   0.0299 s
+iter.   5  variation  1.387e+05  temps calcul       13 s  comm.   0.0354 s
+iter.   6  variation  1.302e+05  temps calcul     15.2 s  comm.   0.0414 s
+iter.   7  variation   1.23e+05  temps calcul     17.4 s  comm.   0.0472 s
+iter.   8  variation  1.168e+05  temps calcul     19.6 s  comm.    0.053 s
+iter.   9  variation  1.114e+05  temps calcul     21.8 s  comm.   0.0589 s
+
+               temps total        24 s
+---------- 4 processus MPI x 2 threads -----------
+Linux
+Taper control-C pour arreter ... 
+
+2 thread(s)
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 0.2525] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 101] x [0 ... 400] x [0 ... 400]
+
+Process 1
+  Domain :   [0.25, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [100 ... 201] x [0 ... 400] x [0 ... 400]
+
+
+
+Process 2
+  Domain :   [0.5, 0.7525] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 301] x [0 ... 400] x [0 ... 400]
+
+Process 3
+  Domain :   [0.75, 1] x [0, 1] x [0, 1]
+  Point indices :   [300 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init     1.4602 s
+
+iter.   0  variation  2.441e+05  temps calcul     1.51 s  comm.  0.00797 s
+iter.   1  variation  2.016e+05  temps calcul     3.14 s  comm.   0.0159 s
+iter.   2  variation  1.785e+05  temps calcul      4.7 s  comm.   0.0231 s
+iter.   3  variation  1.618e+05  temps calcul     6.22 s  comm.   0.0426 s
+iter.   4  variation   1.49e+05  temps calcul     7.77 s  comm.   0.0499 s
+iter.   5  variation  1.387e+05  temps calcul     9.28 s  comm.   0.0569 s
+iter.   6  variation  1.302e+05  temps calcul     10.8 s  comm.   0.0642 s
+iter.   7  variation   1.23e+05  temps calcul     12.3 s  comm.   0.0717 s
+iter.   8  variation  1.168e+05  temps calcul     13.8 s  comm.   0.0792 s
+iter.   9  variation  1.114e+05  temps calcul     15.2 s  comm.   0.0867 s
+
+               temps total      17.1 s
+______________
+Remarques: 
+______________
+On obtient une accélération par rapport au code MPI avec un processus: 59.9/17.1 = 3.50 (on peut atteindre un maximum inférieur et de l'ordre de 8).
+
+On obtient une accélération un peu moins bonne, mais cela est probablement dû aux nombreuses barrières.  
+
+Le code est commenté là où il y a eu des modifications pour expliquer mon travail.
+
+                  
+
+

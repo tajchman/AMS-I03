@@ -1,0 +1,43 @@
+__________________________
+Fine Grain version:
+
+- mixing MPI and OpenMP is ok
+- but results are different between runs with different number of threads 
+
+There is an error with the list of private variables at line 67 of scheme.cxx
+du_sum is listed instead of du_sum_global
+
+__________________________
+Coarse Grain version:
+
+- speedup is very bad (e.g. between runs 2 processes/1 thread and 2 processes/3 threads)
+
+There is no indication that 2nd-level domain decomposition used for multithreads is done in the X direction
+(as in the 1st-level, used for MPI processes).
+
+If you print values of m_P.imin_thread(i, id_th) (i=0,1,2), you should see that 2nd-level decomposition is done for i=1
+(at least if number of points is equal in evary directions).
+
+Instead of (scheme.cxx)
+
+  imin_th = m_P.imin_thread(0, id_th); // divide the MPI-domain in nthreads-slices of dimension (dx/nthreads,dy,dz) <--- wrong comment
+  imax_th = m_P.imax_thread(0, id_th);
+	
+  m_duv = iteration_domaine(
+      imin_th,     imax_th,
+      m_P.imin(1), m_P.imax(1),
+      m_P.imin(2), m_P.imax(2));
+
+you should write:
+  
+  m_duv = iteration_domaine(
+      m_P.imin_thread(0, id_th), m_P.imax_thread(0, id_th),
+      m_P.imin_thread(1, id_th), m_P.imax_thread(1, id_th),
+      m_P.imin_thread(2, id_th), m_P.imax_thread(2, id_th));
+
+In your code, each thread runs on the same domain ([m_P.imin_thread(0, id_th), m_P.imax_thread(0, id_th)] is the same for all id_th)
+So, lots of cache collision between threads.
+
+- There a too many single sections in main.cxx
+
+If 2 single sections are consecutive, it should be possible to merge them (and avoid an OpenMP barrier) 

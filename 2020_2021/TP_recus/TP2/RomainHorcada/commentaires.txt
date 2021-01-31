@@ -1,0 +1,24 @@
+Fine Grain:
+
+1. Dans l'appel de MPI_Init_thread, vous demandez MPI_THREAD_MULTIPLE.
+   Ce qui est correct mais pas nécessaire. Il suffit de demander MPI_THREAD_FUNNELED
+   (qui peut être plus rapide).
+
+2. Dans scheme.cxx, ligne 66, vous faites la reduction OpenMP sur du_sum, alors qu'il faut la faire sur du_sum_local (c'est MPI qui fait la reduction sur du_sum à la ligne 85)
+
+Ceci explique que la variation entre la solution calculée aux différents pas de temps est fausse quand on a plusieurs threads (mais les valeurs de la solution dans le domaine sont correctes).
+
+Coarse Grain:
+
+1. Le code se bloque si vous l'exécutez sur plusieurs processus ET plusieurs threads.
+
+Si je comprend bien ce que vous essayez de faire, vous faites une reduction MPI 
+(scheme.cxx, ligne 103) avant la reduction OpenMP (lignes 58-59).
+
+C'est une idée a priori valable, mais ça coince parce que MPI_Allreduce ne peut pas etre appelé par plusieurs threads (voir (*) ci-dessous)
+
+Il vaut meiux faire la reduction OpenMP avant la reduction MPI.
+
+
+(*) En fait, il est possible d'appeler MPI_Allreduce par plusieurs threads en meme temps, si vous le faites dans des communicateurs différents. Ca pourrait marcher si vous créez nth communicateurs (un pour chaque thread à partir de MPI_COMM_WORLD) et que vous appelez MPI_Allreduce dans le communicateur associé à chaque thread.
+Ca me semble trop compliqué et moins efficace puisque vous faites plusieurs operations globales MPI (qui ne seront probablement pas faites en parallele) 

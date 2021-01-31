@@ -46,13 +46,10 @@ bool Scheme::iteration()
   int id_th = 0;
   #endif
   
-  imin_th = m_P.imin_thread(0, id_th); // divide the MPI-domain in nthreads-slices of dimension (dx/nthreads,dy,dz)
-  imax_th = m_P.imax_thread(0, id_th);
-	
   m_duv = iteration_domaine(
-      imin_th,     imax_th,
-      m_P.imin(1), m_P.imax(1),
-      m_P.imin(2), m_P.imax(2));
+      m_P.imin_thread(0, id_th), m_P.imax_thread(0, id_th),
+      m_P.imin_thread(1, id_th), m_P.imax_thread(1, id_th),
+      m_P.imin_thread(2, id_th), m_P.imax_thread(2, id_th));
 	  
   #pragma omp critical
   m_t += m_dt;

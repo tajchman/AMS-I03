@@ -1,0 +1,16 @@
+A refaire ....
+
+Coarse Grain:
+
+?. Pourquoi avez-vous mis en commentaire l'appel de MPI_Init_thread ?
+   Il y a eu un probleme ? Normalement, MPI_Init_thread est obligatoire.
+
+   En tout cas, si vous n'initialisez pas la variable mpi_thread, il ne faut pas l'afficher
+
+1. De toute facon, vous n'aviez pas choisi le bon niveau de compatibilité MPI - OpenMP.
+   Il y a une barriere MPI (main.cxx ligne 89) dans un pragma single et vous appelez C.synchronize() (qui fait des appels MPI) aussi dans un pragma omp single (scheme.cxx ligne 112) : donc on ne sait pas quel thread appellera MPI (mais on sait que 2 threads différents n'appeleront pas en meme temps MPI).
+
+   Donc il faut MPI_THREAD_SERIALIZED
+
+   Ou alors si vous gardez MPI_THREAD_FUNNELED, il faut mettre la barriere MPI et appeler synchronize dans un pragma master.
+

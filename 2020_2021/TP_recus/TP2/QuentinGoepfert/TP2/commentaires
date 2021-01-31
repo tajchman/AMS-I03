@@ -1,0 +1,48 @@
+- Fine Grain
+
+1. Les resultats sont ok et les speedups aussi
+
+2. Pourquoi ne pas utiliser MPI_Init_thread ? 
+
+  Il n'est pas vrai en general que MPI_Init() soit equivalent 
+  a MPI_Init_thread(..., MPI_THREAD_SINGLE, ...).
+  Votre commentaire est faux (dans le fichier main.cxx, lignes 57-58).
+
+  C'est peut-être vrai pour votre version de MPI, mais pas toujours.
+  Et donc, il FAUT utiliser MPI_Init_thread !
+
+- Coarse Grain
+
+1. Les resultats sont ok et les speedups aussi
+
+2. Dans cette version, vous avez utilisé MPI_Init_thread() (c'est bien)
+
+Mais vous demandez MPI_THREAD_MULTIPLE, ce qui me parait trop
+Ce n'est pas une erreur, mais vous perdrez peut-etre un peu de temps d'exécution.
+
+Pour rappel, MPI_THREAD_MULTIPLE permet à PLUSIEURS threads de faire des appels MPI en MEME TEMPS.
+Ce qui n'est pas le cas ici (MPI_Allreduce dans scheme.cxx est appelé par un seul thread)
+
+- Conclusions:
+
+Faites attention dans vos conclusions : vous comparez des calculs sur 8 threads 
+(1 x 8 threads, 2 x 4 threads, 4 x 2 threads) sur votre machine qui 
+possède seulement 4 coeurs physiques.
+
+Il faut donc se limiter à 1 x 4 threads, 2 x 2 threads, 4 x 1 threads pour comparer
+correctement.
+
+Les 8 "coeurs simulés" sur votre machine n'existent pas réellement (c'est l'hyper-threading,
+une optimisation d'Intel).
+
+C'est pour ca que MPI refuse de tourner sur plus de 4 processus.
+
+Il est possible d'obliger MPI a lancer plus de processus que de coeurs physiques mais ca n'a 
+aucun interet (autre que pour faire des tests)
+
+
+En résumé: votre code fournit des résultats corrent, mais on ne peut pas en tirer des conclusions 
+des temps calculs sur la comparaison MPI-OpenMP
+(sur ma machine, qui a 8 coeurs physiques, j'ai des conclusions différentes)
+Ou alors, faites tourner vos codes sur une "vraie" machine parallèle (par exemple gin à l'Ensta).
+
