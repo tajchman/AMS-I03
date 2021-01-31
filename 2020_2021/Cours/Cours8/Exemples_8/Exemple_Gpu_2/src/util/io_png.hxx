@@ -48,6 +48,7 @@ class cImage {
 
   void read_png(const char *filename);
   void write_png(const char *filename);
+  void write_txt(const char *filename);
  };
 
 #endif

@@ -1,4 +1,8 @@
-set(CODE image_cpu_openmp)
+set(VERSION cpu_openmp)
+set(CODE image_${VERSION})
+
+configure_file(../../version.hxx.in version.hxx @ONLY)
+
 
 set(CMAKE_C_FLAGS 
      "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")

@@ -1,4 +1,7 @@
-set(CODE image_gpu_cuda)
+set(VERSION gpu_cuda)
+set(CODE image_${VERSION})
+
+configure_file(../../version.hxx.in version.hxx @ONLY)
 
 find_package(CUDA)
 

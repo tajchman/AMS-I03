@@ -1,4 +1,7 @@
-set(CODE image_cpu)
+set(VERSION cpu)
+set(CODE image_${VERSION})
+
+configure_file(../../version.hxx.in version.hxx @ONLY)
 
 add_executable(${CODE}
   ${CMAKE_SOURCE_DIR}/main.cxx

@@ -168,4 +168,18 @@ void cImage::write_png(const char* file_name)
   fclose(fp);
 }
 
+void cImage::write_txt(const char *filename)
+{
+  FILE *f = fopen(filename, "w");
 
+  int c, x, y;
+  for (c = 0; c < ncolors; c++) {
+    for (y=0; y<height; y++) {
+      for (x = 0; x<width; x++)
+        fprintf(f, " %5d", (int) (*this)(x,y,c));
+      fprintf(f, "\n");
+    }
+    fprintf(f, "\n");
+  }
+  fclose(f);
+}
