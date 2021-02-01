@@ -23,7 +23,7 @@ int main(int argc, char **argv)
  
   std::string defaultIn = INSTALL_PREFIX;
   defaultIn += pathSeparator;
-  defaultIn += "/ecureuil.png";
+  defaultIn += "ecureuil.png";
 
   fileIn = argc > 1 ? argv[1] : defaultIn;
   if (argc > 2) {

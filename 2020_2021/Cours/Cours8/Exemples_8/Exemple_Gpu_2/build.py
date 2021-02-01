@@ -15,8 +15,9 @@ myenv['CUDACXX'] = 'nvcc'
 p = platform.system()
 if p == 'Windows':
   gen = '-GNinja'
-  myenv['CC'] = 'icl.exe'
-  myenv['CXX'] = 'icl.exe'
+  if 'CC' not in myenv:
+    myenv['CC'] = 'icl.exe'
+    myenv['CXX'] = 'icl.exe'
   compileCmd = ['ninja', 'install']
 elif p == 'Linux':
   gen = '-GUnix Makefiles'

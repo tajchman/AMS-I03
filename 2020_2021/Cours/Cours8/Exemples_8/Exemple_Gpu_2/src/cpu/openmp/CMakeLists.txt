@@ -11,6 +11,12 @@ set(CMAKE_CXX_FLAGS
 set(CMAKE_EXE_LINKER_FLAGS 
      "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND
+    CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+  if (WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /debug:full")
+  endif()  
+endif()
 
 add_executable(${CODE}
   ${CMAKE_SOURCE_DIR}/main.cxx
