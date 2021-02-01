@@ -11,8 +11,8 @@ myenv = os.environ.copy()
 p = platform.system()
 if p == 'Windows':
   gen = '-GNinja'
-  myenv['CC'] = 'mpicc.bat -cc=icl.exe'
-  myenv['CXX'] = 'mpicxx.bat -cc=icl.exe'
+  myenv['CC'] = 'mpiicc.bat'
+  myenv['CXX'] = 'mpiicpc.bat'
   compileCmd = ['ninja', 'install']
 elif p == 'Linux':
   gen = '-GUnix Makefiles'

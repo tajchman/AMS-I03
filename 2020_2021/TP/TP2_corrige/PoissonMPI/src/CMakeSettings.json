@@ -1,0 +1,46 @@
+﻿{
+  "configurations": [
+    {
+      "name": "Intel-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}/../build/Intel/${configurationType}",
+      "installRoot": "${projectDir}/../install/Intel/${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "icl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "icl.exe"
+        }
+      ]
+    },
+    {
+      "name": "Intel-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}/../build/Intel/${configurationType}",
+      "installRoot": "${projectDir}/../install/Intel/${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "icl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "icl.exe"
+        }
+      ]
+    }
+  ]
+}
