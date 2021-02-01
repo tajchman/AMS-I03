@@ -1,0 +1,2 @@
+cmake -GNinja -DPNG_BUILD_ZLIB=ON -DZLIB_LIBRARY=D:\Workspace\AMS_I03\util\intel\lib\zlibd.lib -DZLIB_INCLUDE_DIR=D:\Workspace\AMS_I03\util\intel\include -DCMAKE_INSTALL_PREFIX=D:\Workspace\AMS_I03\util\intel ..\..\src\lpng1637
+ cmake -GNinja -DCMAKE_INSTALL_PREFIX=D:\Workspace\AMS_I03\util\intel\install ..\..\src\zlib-1.2.11\
