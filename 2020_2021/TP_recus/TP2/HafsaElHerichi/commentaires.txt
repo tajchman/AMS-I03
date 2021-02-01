@@ -1,0 +1,23 @@
+Fine Grain:
+
+Très bien. Pas de commentaires
+
+Coarse Grain:
+
+L'exécution s'arrête sur une erreur. Cela illustre une des difficultés du calcul //: les erreurs ne se produisent pas à chaque exécution.
+
+Le probleme vient de l'appel de MPI_Allreduce (scheme.cxx ligne 103) qui est fait dans tous les threads.
+
+Si je comprend bien ce que vous essayez de faire, vous faites une reduction MPI 
+(scheme.cxx, ligne 103) avant la reduction OpenMP (lignes 58-59).
+
+C'est une idée a priori valable, mais ça coince parce que MPI_Allreduce ne peut pas etre appelé par plusieurs threads simultanement (voir (*) ci-dessous).
+Si cela marche parfois, c'est que dans certaines exécutions, vous avez la (mal)chance que les threads exécutent MPI_Allreduce à des instants légèrement différents.
+Dans d'autres exécutions, une erreur se produit quand un thread commence MPI_Allreduce alors qu'un autre est encore en train de l'exécuter.
+
+Il vaut mieux faire la reduction OpenMP avant la reduction MPI.
+C'est à dire, déplacer l'appel de MPI_Allreduce après la réduction OpenMP et mettre MPI_Allreduce dans un pragma OpenMP single ou master.
+
+
+(*) En fait, il est possible d'appeler MPI_Allreduce par plusieurs threads en meme temps, si vous le faites dans des communicateurs différents. Ca pourrait marcher si vous créez nth communicateurs (un pour chaque thread à partir de MPI_COMM_WORLD) et que vous appelez MPI_Allreduce dans le communicateur associé à chaque thread.
+Ca me semble trop compliqué, moins efficace puisque vous faites plusieurs operations globales MPI (qui ne seront probablement pas faites en parallele).

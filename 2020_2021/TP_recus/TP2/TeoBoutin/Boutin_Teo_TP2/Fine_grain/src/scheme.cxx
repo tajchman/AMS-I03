@@ -3,12 +3,9 @@
 #include "version.hxx"
 #include <cmath>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 #include <sstream>
 #include <iomanip>
+
 
 Scheme::Scheme(Parameters &P, callback_t f) :
     codeName(version), m_P(P), m_u(P), m_v(P)  {
@@ -39,38 +36,15 @@ double Scheme::present()
 
 bool Scheme::iteration()
 {
-  #ifdef _OPENMP
-  int iThread = omp_get_thread_num();
-  #else
-  int iThread = 0;
-  #endif
-  
-#pragma omp single
-  m_duv = 0.0;
-  
-  
-  double du_temp = iteration_domaine(
-      m_P.imin_thread(0, iThread), m_P.imax_thread(0, iThread),
-      m_P.imin_thread(1, iThread), m_P.imax_thread(1, iThread),
-      m_P.imin_thread(2, iThread), m_P.imax_thread(2, iThread));
-  
-  
- #pragma omp critical
- m_duv+=du_temp;
- 
- #pragma omp barrier
- #pragma omp master
- {
- du_temp=m_duv;
- MPI_Allreduce(&du_temp, &m_duv, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
- }
-  
-  #pragma omp single
-  {
+
+  m_duv = iteration_domaine(
+      m_P.imin(0), m_P.imax(0),
+      m_P.imin(1), m_P.imax(1),
+      m_P.imin(2), m_P.imax(2));
+
   m_t += m_dt;
   m_u.swap(m_v);
-  
-  }
+
   return true;
 }
 
@@ -88,7 +62,7 @@ double Scheme::iteration_domaine(int imin, int imax,
   double du, du1, du2, du_sum, du_sum_local = 0.0;
 
   double x, y, z;
-
+  #pragma omp parallel for default(shared) private(i,j,k,x,y,z,du,du1,du2) reduction(+:du_sum_local)
   for (i = imin; i <= imax; i++)
     for (j = jmin; j <= jmax; j++)
       for (k = kmin; k <= kmax; k++) {
@@ -105,13 +79,10 @@ double Scheme::iteration_domaine(int imin, int imax,
         du = m_dt * (du1 + du2);
         m_v(i, j, k) = m_u(i, j, k) + du;
         du_sum_local += du > 0 ? du : -du;
-		
-		
-		
       }
 
-    
-    return du_sum_local;
+    MPI_Allreduce(&du_sum_local, &du_sum, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+    return du_sum;
 }
 
 void Scheme::synchronize()

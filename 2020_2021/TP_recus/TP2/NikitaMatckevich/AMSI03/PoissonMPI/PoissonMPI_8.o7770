@@ -1,0 +1,75 @@
+ Data for JOB [37203,1] offset 0
+
+ ========================   JOB MAP   ========================
+
+ Data for node: compute-0-13	Num slots: 8	Max slots: 0	Num procs: 8
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 0 Bound: socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]], socket 0[core 2[hwt 0]], socket 0[core 3[hwt 0]], socket 0[core 4[hwt 0]], socket 0[core 5[hwt 0]], socket 0[core 6[hwt 0]], socket 0[core 7[hwt 0]]:[B/B/B/B/B/B/B/B][./././././././.]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 1 Bound: socket 1[core 8[hwt 0]], socket 1[core 9[hwt 0]], socket 1[core 10[hwt 0]], socket 1[core 11[hwt 0]], socket 1[core 12[hwt 0]], socket 1[core 13[hwt 0]], socket 1[core 14[hwt 0]], socket 1[core 15[hwt 0]]:[./././././././.][B/B/B/B/B/B/B/B]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 2 Bound: socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]], socket 0[core 2[hwt 0]], socket 0[core 3[hwt 0]], socket 0[core 4[hwt 0]], socket 0[core 5[hwt 0]], socket 0[core 6[hwt 0]], socket 0[core 7[hwt 0]]:[B/B/B/B/B/B/B/B][./././././././.]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 3 Bound: socket 1[core 8[hwt 0]], socket 1[core 9[hwt 0]], socket 1[core 10[hwt 0]], socket 1[core 11[hwt 0]], socket 1[core 12[hwt 0]], socket 1[core 13[hwt 0]], socket 1[core 14[hwt 0]], socket 1[core 15[hwt 0]]:[./././././././.][B/B/B/B/B/B/B/B]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 4 Bound: socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]], socket 0[core 2[hwt 0]], socket 0[core 3[hwt 0]], socket 0[core 4[hwt 0]], socket 0[core 5[hwt 0]], socket 0[core 6[hwt 0]], socket 0[core 7[hwt 0]]:[B/B/B/B/B/B/B/B][./././././././.]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 5 Bound: socket 1[core 8[hwt 0]], socket 1[core 9[hwt 0]], socket 1[core 10[hwt 0]], socket 1[core 11[hwt 0]], socket 1[core 12[hwt 0]], socket 1[core 13[hwt 0]], socket 1[core 14[hwt 0]], socket 1[core 15[hwt 0]]:[./././././././.][B/B/B/B/B/B/B/B]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 6 Bound: socket 0[core 0[hwt 0]], socket 0[core 1[hwt 0]], socket 0[core 2[hwt 0]], socket 0[core 3[hwt 0]], socket 0[core 4[hwt 0]], socket 0[core 5[hwt 0]], socket 0[core 6[hwt 0]], socket 0[core 7[hwt 0]]:[B/B/B/B/B/B/B/B][./././././././.]
+ 	Process OMPI jobid: [37203,1] App: 0 Process rank: 7 Bound: socket 1[core 8[hwt 0]], socket 1[core 9[hwt 0]], socket 1[core 10[hwt 0]], socket 1[core 11[hwt 0]], socket 1[core 12[hwt 0]], socket 1[core 13[hwt 0]], socket 1[core 14[hwt 0]], socket 1[core 15[hwt 0]]:[./././././././.][B/B/B/B/B/B/B/B]
+
+ =============================================================
+It. max :  10
+Dt :       6.21887e-07
+Results in .
+
+Process 0
+  Domain :   [0, 0.1275] x [0, 1] x [0, 1]
+  Point indices :   [0 ... 51] x [0 ... 400] x [0 ... 400]
+
+Process 1
+  Domain :   [0.125, 0.2525] x [0, 1] x [0, 1]
+  Point indices :   [50 ... 101] x [0 ... 400] x [0 ... 400]
+
+Process 2
+  Domain :   [0.25, 0.3775] x [0, 1] x [0, 1]
+  Point indices :   [100 ... 151] x [0 ... 400] x [0 ... 400]
+
+
+
+
+
+
+
+
+Process 3
+  Domain :   [0.375, 0.5025] x [0, 1] x [0, 1]
+  Point indices :   [150 ... 201] x [0 ... 400] x [0 ... 400]
+
+Process 4
+  Domain :   [0.5, 0.6275] x [0, 1] x [0, 1]
+  Point indices :   [200 ... 251] x [0 ... 400] x [0 ... 400]
+
+Process 5
+  Domain :   [0.625, 0.7525] x [0, 1] x [0, 1]
+  Point indices :   [250 ... 301] x [0 ... 400] x [0 ... 400]
+
+Process 6
+  Domain :   [0.75, 0.8775] x [0, 1] x [0, 1]
+  Point indices :   [300 ... 351] x [0 ... 400] x [0 ... 400]
+
+Process 7
+  Domain :   [0.875, 1] x [0, 1] x [0, 1]
+  Point indices :   [350 ... 400] x [0 ... 400] x [0 ... 400]
+
+
+
+  temps init   0.942022 s
+
+iter.   0  variation  2.441e+05  temps calcul     1.44 s  comm.   0.0108 s
+iter.   1  variation  2.016e+05  temps calcul     2.83 s  comm.   0.0205 s
+iter.   2  variation  1.785e+05  temps calcul     4.22 s  comm.   0.0305 s
+iter.   3  variation  1.618e+05  temps calcul     5.61 s  comm.   0.0401 s
+iter.   4  variation   1.49e+05  temps calcul        7 s  comm.   0.0496 s
+iter.   5  variation  1.387e+05  temps calcul     8.38 s  comm.   0.0593 s
+iter.   6  variation  1.302e+05  temps calcul     9.78 s  comm.   0.0719 s
+iter.   7  variation   1.23e+05  temps calcul     11.2 s  comm.   0.0816 s
+iter.   8  variation  1.168e+05  temps calcul     12.6 s  comm.   0.0911 s
+iter.   9  variation  1.114e+05  temps calcul     13.9 s  comm.    0.101 s
+
+               temps total      15.1 s
+

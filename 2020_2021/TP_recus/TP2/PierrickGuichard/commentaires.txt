@@ -1,0 +1,15 @@
+Rapport ok
+
+1 Fine Grain
+
+Les resultats sont ok
+
+Par securité, j'ajouterais une barrière OpenMP à la ligne 89 de scheme.cxx (pour que les autres threads que le thread 0 attendent que MPI_Allreduce soit fini avant d'utiliser du_sum).
+Dans mes tests, je n'ai pas eu de problème à cet endroit mais c'est plus prudent (vous le dites très bien dans le rapport d'ailleurs).
+
+2 Coarse Grain
+
+Tres bon travail.
+
+Seule remarque : remplacer omp critical par omp atomic dans scheme.cxx ligne 59, qui est plus rapide.
+

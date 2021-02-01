@@ -1,0 +1,36 @@
+Fine Grain
+
+Les resultats sont différents (colonne variation) quand on execute le code avec des nombres de threads differents.
+
+L'erreur de trouve dans l'initialisation (value.cxx, ligne 48) : vous avez oublié de mettre p et x comme variables privées
+
+Coarse Grain
+
+Tres bon travail sur cette partie.
+Seule remarque: beaucoup de barrières OpenMP et de regions // OpenMP.
+
+Par exemple (scheme.cxx, lignes 67-75), remplacer:
+
+  #pragma omp master
+  MPI_Allreduce(&m_duv_local, &m_duv, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+  #pragma omp barrier
+  
+  #pragma omp single
+  {
+  m_t += m_dt;
+  m_u.swap(m_v);
+  }
+
+(2 barrieres: omp single a une barrière implicite)
+
+par:
+
+  #pragma omp master
+  {
+  MPI_Allreduce(&m_duv_local, &m_duv, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+  m_t += m_dt;
+  m_u.swap(m_v);
+  }
+  #pragma omp barrier
+
+(1 seule barrière)

@@ -1,0 +1,18 @@
+Fine Grain:
+
+Pas de remarques. Tres bon travail
+
+Coarse Grain:
+
+1. Tres bonne idee de dimensionner les tampons d'échanges MPI (m_bufferIn/Out) au debut pour éviter de les allouer/desallouer à chaque fois.
+
+Simple curiosité : pourquoi avez-vous mis la fonction GetMPICapacity dans le namespace global (scheme.cxx, ligne 12) ? C'est une question pure C++.
+
+Une autre possibilité était d'en faire une fonction membre de la classe Parameters
+
+2. Vous avez parallélisé (en OpenMP), la copie vers/depuis les tampons MPI. 
+
+C'est une bonne idee en principe. Dans la pratique, c'est pas évident de savoir si on gagne du temps parce que les composantes concernées peuvent être assez éloignées en mémoire (suivant la direction considérée). 
+De toute façon, ce serait utile d'évaluer le temps de cette operation.
+
+ 

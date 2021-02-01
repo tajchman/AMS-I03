@@ -24,6 +24,7 @@ endif()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qdiag-disable:1786,3180")
+    set(MPI_LIBS ${MPI_impi_LIBRARY})
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -diag-disable=1786,3180")
   endif()
@@ -54,7 +55,7 @@ add_executable(
   )
 
 target_link_libraries(${VERSION}
-  ${MPI_impi_LIBRARY}
+  ${MPI_LIBS}
   )
 install(TARGETS ${VERSION} DESTINATION .)
 

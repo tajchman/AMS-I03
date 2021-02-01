@@ -32,17 +32,16 @@ possède seulement 4 coeurs physiques.
 Il faut donc se limiter à 1 x 4 threads, 2 x 2 threads, 4 x 1 threads pour comparer
 correctement.
 
-Les 8 "coeurs simulés" sur votre machine n'existent pas réellement (c'est l'hyper-threading,
-une optimisation d'Intel).
+Les 8 "coeurs simulés" sur votre machine n'existent pas réellement (c'est l'hyper-threading, une optimisation d'Intel, il y a des technos à peu près similaires chez AMD). 
 
 C'est pour ca que MPI refuse de tourner sur plus de 4 processus.
 
-Il est possible d'obliger MPI a lancer plus de processus que de coeurs physiques mais ca n'a 
-aucun interet (autre que pour faire des tests)
+Il est possible d'obliger MPI a lancer plus de processus que de coeurs physiques 
+mais ca n'a aucun interet (autre que pour faire des tests)
 
 
-En résumé: votre code fournit des résultats corrent, mais on ne peut pas en tirer des conclusions 
-des temps calculs sur la comparaison MPI-OpenMP
-(sur ma machine, qui a 8 coeurs physiques, j'ai des conclusions différentes)
+En résumé: votre code fournit des résultats corrects, mais on ne peut pas tirer des conclusions des temps calculs sur la comparaison MPI-OpenMP
+(sur ma machine, qui a 8 coeurs physiques, la comparison est différente)
+
 Ou alors, faites tourner vos codes sur une "vraie" machine parallèle (par exemple gin à l'Ensta).
 
