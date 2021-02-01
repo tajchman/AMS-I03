@@ -1,0 +1,30 @@
+Très bon travail
+
+
+Fine Grain
+
+1.  Pas grand chose à dire (resultats corrects, speedup ok)
+
+Seule remarque : vous demandez MPI_THREAD_SINGLE alors que seul le thread maitre utilise MPI, MPI_THREAD_FUNNELED aurait suffit. Mais c'est un détail.
+
+Coarse Grain
+
+1.  L'execution s'arrête sur une erreur sur ma machine.
+
+Cette erreur peut ou pas se produire suivant la version de MPI: à l'appel de MPI_Allreduce, vous envoyez un pointeur vers la même variable pour la somme locale et la somme globale :
+
+  MPI_Allreduce(&m_duv, &m_duv, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+                 ^^^^^   ^^^^^
+
+par sécurité, il faudrait écrire par exemple :
+
+  double duv_global;
+  
+  MPI_Allreduce(&m_duv, &duv_global, 1, MPI_DOUBLE, MPI_SUM, m_P.comm());
+
+  m_duv = duv_global;
+
+
+(c'est aussi un probleme C++ standard : il faut éviter de mettre un pointeur sur la meme variable pour 2 parametres de fonction dont un est double * et l'autre const double *, ca peut donner les erreurs tres difficiles à corriger)
+
+Ca marche bien sur rhum (si j'en crois les resultats sur le rapport), mais ce n'est pas portable (par exemple erreur d'exécution avec les compilateurs et le MPI d'intel chez moi)
