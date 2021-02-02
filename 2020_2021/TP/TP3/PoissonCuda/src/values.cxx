@@ -33,11 +33,10 @@ Values::Values(Parameters & prm) : m_p(prm)
   n1 = m_n[0];      // nombre de points dans la premiere direction
   n2 = m_n[1] * n1; // nombre de points dans le plan des 2 premieres directions
 
-  Timer & T = GetTimer(T_AllocId); T.start();
-
   d_u = allocate(nn);
-  h_u = new double[nn];
 
+  Timer & T = GetTimer(T_AllocId); T.start();
+  h_u = new double[nn];
   T.stop();
 
   h_synchronized = false;
@@ -48,8 +47,8 @@ Values::~Values()
 {
   Timer & T = GetTimer(T_FreeId); T.start();
   delete [] h_u;
-  deallocate(d_u);
   T.stop();
+  deallocate(d_u);
 }
 
 void Values::zero()

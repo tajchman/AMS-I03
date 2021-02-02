@@ -18,9 +18,6 @@ int main(int argc, char *argv[])
   T_CopyId = AddTimer("copy");
   T_InitId = AddTimer("init");
   T_IterationId = AddTimer("iteration");
-  T_VariationId = AddTimer("variation");
-  T_OtherId = AddTimer("other");
-  T_FreeId = AddTimer("free");
   AddTimer("total");
 
   Timer & T_total = GetTimer(-1);
@@ -37,10 +34,20 @@ int main(int argc, char *argv[])
   Scheme C(Prm);
 
   Values u_0(Prm);
+
+  Timer & T_init = GetTimer(T_InitId); T_init.start();
+
   u_0.init();
   u_0.boundaries();
 
+  T_init.stop();
+
+  std::cerr << "init  time  " << std::setw(10) << std::setprecision(3) << T_init.elapsed() << " s"
+      << std::endl;
+
   C.setInput(u_0);
+
+  Timer & T_iteration = GetTimer(T_IterationId);
 
   for (int it=0; it < itMax; it++) {
     if (freq > 0 && it % freq == 0) {
@@ -49,8 +56,9 @@ int main(int argc, char *argv[])
 
     C.iteration();
 
-    std::cerr << "iter. " << std::setw(5) << it+1
+    std::cout << "iter. " << std::setw(5) << it+1
         << "  variation " << std::setw(15) << std::setprecision(9) << C.variation()
+        << "  time  " << std::setw(10) << std::setprecision(3) << T_iteration.elapsed() << " s"
         << std::endl;
   }
 

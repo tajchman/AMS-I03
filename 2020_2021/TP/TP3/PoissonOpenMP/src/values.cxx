@@ -42,6 +42,8 @@ Values::Values(Parameters & prm) : m_p(prm)
 
 void Values::init()
 {
+  Timer & T = GetTimer(T_InitId); T.start();
+
   int i, j, k;
   double x, y, z;
 
@@ -54,10 +56,14 @@ void Values::init()
         z = m_xmin[2] + k*m_dx[2];
         operator()(i,j,k) = cond_ini(x, y, z);
       }
+
+  T.stop();
 }
 
 void Values::boundaries()
 {
+  Timer & T = GetTimer(T_InitId); T.start();
+
   int i[3];
   double x[3];
   for (int idim=0; idim<3; idim++) {
@@ -91,6 +97,7 @@ void Values::boundaries()
         operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
       }
   }
+  T.stop();
 }
 
 std::ostream & operator<< (std::ostream & f, const Values & v)

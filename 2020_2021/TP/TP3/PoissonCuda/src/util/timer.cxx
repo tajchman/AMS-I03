@@ -17,24 +17,36 @@ Timer & GetTimer(int n)
      return Timers[n];
 }
 
-void PrintTimers(std::ostream &f)
+void PrintTimer(std::ostream &f, const std::string &name, 
+                double t, double t_total)
 {
-  double T_total = GetTimer(-1).elapsed();
-
-  f << "\nTemps de calcul:\n\n";
-  for (int i=0; i<Timers.size(); i++) {
-    Timer & t = Timers[i];
-    if (t.name() == "total")
-       f << "        _______________________________________\n";
-    f << std::setw(15) << t.name() << ": " << std::setw(13);
-    if (t.elapsed() > 0.0 && t.elapsed() < 1e-3)
+  f << std::setw(15) << name << ": " << std::setw(13);
+  if (t > 0.0 && t < 1e-3)
       f << std::scientific; 
     else
       f << std::fixed;
     
-    f << std::setprecision(3) << t.elapsed() << " s"
-      << std::setw(13) << std::setprecision(2) << std::fixed
-      << t.elapsed() * 100.0/T_total << " %" << std::endl;
+  f << std::setprecision(3) << t << " s"
+    << std::setw(13) << std::setprecision(2) << std::fixed
+    << t * 100.0/t_total << " %" << std::endl;
+}
+
+void PrintTimers(std::ostream &f)
+{
+  double T_total = GetTimer(-1).elapsed();
+  double T_other = T_total;
+
+  f << "\nTemps de calcul:\n\n";
+  for (int i=0; i<Timers.size(); i++) {
+    Timer & t = Timers[i];
+    if (t.name() == "total") {
+      PrintTimer(f, "other", T_other, T_total); 
+      f << "        _______________________________________\n";
+    }
+    else
+       T_other -= t.elapsed();
+    
+    PrintTimer(f, t.name(), t.elapsed(), T_total);
   }
   f << std::endl;
 }

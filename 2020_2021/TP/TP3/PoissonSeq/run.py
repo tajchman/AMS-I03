@@ -12,8 +12,9 @@ base = os.path.join('.',
                     'install',
                     args.type)
 
-codeSeq = os.path.join(base, 'PoissonSeq')
-print(codeSeq)
-subprocess.call([codeSeq] + args.rest)
+code = os.path.join(base, 'PoissonSeq')
+print(code)
+
+subprocess.call([code] + args.rest)
 
 

@@ -1,112 +1,23 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
-try:
-    unicode('')
-except NameError:
-    unicode = str
-
-import os, sys, argparse
-from subprocess import *
+import os, sys, subprocess, argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('threadsMax', type=int)
+parser.add_argument('threads', type=int, default=1)
 parser.add_argument('-t', '--type', default='Release', 
                     choices=['Release', 'Debug'])
 parser.add_argument('rest', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
-version = 'OpenMP_FineGrain'
 base = os.path.join('.', 
-                    'install', 
+                    'install',
                     args.type)
 
-resultsDir = os.path.join('.', 'results', args.type)
-if not os.path.exists(resultsDir):
-   os.makedirs(resultsDir)
+code = [os.path.join(base, 'PoissonOpenMP')]
+print(code)
 
-codeSeq = os.path.join(base, 'PoissonSeq.exe')
-codePar = os.path.join(base, 'Poisson' + version + '.exe')
-
-t = []
-x = []
-last = []
-speedup = []
-
-def readTemps(n):
-    s = os.path.join(resultsDir, 'temps_' + str(n) + '.dat')
-    with open(s) as f:
-        l = f.readline().split()
-        return (int(l[0]), float(l[1]))
-    return (0.0, 0.0)
-
-with open('run_' + version + '.log', 'w') as log:
-    
-    proc = Popen([codeSeq, "path=" + resultsDir] + args.rest,
-                 stdout=PIPE, encoding='utf-8')
-    while proc.poll() is None:
-        text = proc.stdout.readline() 
-        log.write(text)
-        sys.stdout.write(text)
-        
-    u0,v0 = readTemps(0)
-
-    t = []
-    x = []
-    speedup = []
-
-    for i in range(1,args.threadsMax+1):
-       proc = Popen([codePar, 'threads=' + str(i), 'path=' + resultsDir]
-                   + args.rest, stdout=PIPE, encoding='utf-8')
-       while proc.poll() is None:
-           text = proc.stdout.readline() 
-           log.write(text)
-           sys.stdout.write(text)
-
-       (u,v) = readTemps(i)
-       t.append(u)
-       x.append(v)
-       speedup.append(v0/v)
-            
-print(t)
-print(x)
-print(speedup)
-   
-import matplotlib
-if os.environ.get('DISPLAY','') == '':
-    print('no display found. Using non-interactive Agg backend')
-    matplotlib.use('Agg')
-    display = False
-else:
-    display = True
-
-import matplotlib.pyplot as plt
-
-
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10,16))
-
-ax1.plot(t, x, 'o-')
-ax1.set_ylabel('Temps CPU (s)')
-ax1.xaxis.set_ticks(range(1,args.threadsMax+1))
-ax1.grid()
-
-ax2.plot(t, speedup, 'o-')
-ax2.plot(t, t, '-')
-plt.ylim(0, args.threadsMax)
-ax2.legend([unicode('mesure'), unicode('ideal')])
-ax2.set_xlabel('Threads')
-ax2.set_ylabel('Speedup')
-ax2.xaxis.set_ticks(range(1,args.threadsMax+1))
-ax2.grid()
-
-fig.set_size_inches(6, 7)
-plt.savefig("speedups_OpenMP_" + args.type + ".pdf")
-
-try:
-   if display:
-      plt.show()
-except:
-    pass
-
+if args.threads > 1:
+  code += "threads=" + args.threads
+subprocess.call([code] + args.rest)
 
 

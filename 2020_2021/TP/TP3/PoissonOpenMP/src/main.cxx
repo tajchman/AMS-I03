@@ -18,9 +18,6 @@ int main(int argc, char *argv[])
   T_CopyId = AddTimer("copy");
   T_InitId = AddTimer("init");
   T_IterationId = AddTimer("iteration");
-  T_VariationId = AddTimer("variation");
-  T_OtherId = AddTimer("other");
-  T_FreeId = AddTimer("free");
   AddTimer("total");
 
   Timer & T_total = GetTimer(-1);
@@ -29,7 +26,7 @@ int main(int argc, char *argv[])
   Parameters Prm(argc, argv);
   if (Prm.help()) return 0;
 
-  std::cout << Prm << std::endl;
+  std::cerr << Prm << std::endl;
 
   int itMax = Prm.itmax();
   int freq = Prm.freq();
@@ -37,10 +34,20 @@ int main(int argc, char *argv[])
   Scheme C(Prm);
 
   Values u_0(Prm);
+
+  Timer & T_init = GetTimer(T_InitId); T_init.start();
+
   u_0.init();
   u_0.boundaries();
 
+  T_init.stop();
+
+  std::cerr << "init  time  " << std::setw(10) << std::setprecision(3) << T_init.elapsed() << " s"
+      << std::endl;
+
   C.setInput(u_0);
+
+  Timer & T_iteration = GetTimer(T_IterationId);
 
   for (int it=0; it < itMax; it++) {
     if (freq > 0 && it % freq == 0) {
@@ -51,10 +58,11 @@ int main(int argc, char *argv[])
 
     std::cout << "iter. " << std::setw(5) << it+1
         << "  variation " << std::setw(15) << std::setprecision(9) << C.variation()
+        << "  time  " << std::setw(10) << std::setprecision(3) << T_iteration.elapsed() << " s"
         << std::endl;
   }
 
-  std::cout << std::endl;
+  std::cerr << std::endl;
 
   if (freq > 0 && itMax % freq == 0) {
     C.getOutput().plot(itMax);
@@ -62,20 +70,6 @@ int main(int argc, char *argv[])
 
   T_total.stop();
 
-  PrintTimers(std::cout);
-
-  #ifdef _OPENMP
-    int id = Prm.nthreads();
-  #else
-    int id = 0;
-  #endif
-
-  std::string s = Prm.resultPath();
-  mkdir_p(s.c_str());
-  s += "/temps_";
-  s += std::to_string(id) + ".dat";
-  std::ofstream f(s.c_str());
-  f << id << " " << T_total.elapsed() << std::endl;
-
+  PrintTimers(std::cerr);
   return 0;
 }

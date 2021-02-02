@@ -105,7 +105,7 @@ double variationWrapper(const Values &u,
 
   Tv.stop();
 
-  Timer Ta = GetTimer(T_AllocId); Ta.start();
+  Timer & Ta = GetTimer(T_AllocId); Ta.start();
   std::vector<double> h_partialSums(dimGrid);
   Ta.stop();
 

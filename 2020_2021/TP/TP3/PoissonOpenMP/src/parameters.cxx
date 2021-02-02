@@ -43,7 +43,8 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 {
   m_command = argv[0];
   m_help = options_contains("h") || options_contains("help");
-
+  std::cerr << m_help << std::endl;
+  
   if (m_help) return;
 
 #if defined(_OPENMP)

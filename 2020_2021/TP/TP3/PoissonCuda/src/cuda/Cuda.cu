@@ -3,13 +3,15 @@
 #include "timer_id.hxx"
 
 double * allocate(int n) {
-    double *d;
-    CUDA_CHECK_OP(cudaMalloc(&d, n*sizeof(double)));
-    return d;
-  }
+  Timer & T = GetTimer(T_AllocId); T.start();
+  double *d;
+  CUDA_CHECK_OP(cudaMalloc(&d, n*sizeof(double)));
+  T.stop();
+  return d;
+}
   
   void deallocate(double *&d) {
-    Timer & T = GetTimer(T_CopyId); T.start();
+    Timer & T = GetTimer(T_FreeId); T.start();
     CUDA_CHECK_OP(cudaFree(d));
     d = NULL;
     T.stop();

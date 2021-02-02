@@ -2,6 +2,7 @@
 #include "parameters.hxx"
 #include "version.hxx"
 #include "user.hxx"
+#include "timer_id.hxx"
 #include <cmath>
 
 #include <sstream>
@@ -36,6 +37,8 @@ double Scheme::present()
 void Scheme::iteration()
 {
 
+  Timer & T = GetTimer(T_IterationId); T.start();
+
   m_duv = iteration_domaine(
       m_P.imin(0), m_P.imax(0),
       m_P.imin(1), m_P.imax(1),
@@ -43,6 +46,8 @@ void Scheme::iteration()
 
   m_t += m_dt;
   m_u.swap(m_v);
+
+  T.stop();
 }
 
 double Scheme::iteration_domaine(int imin, int imax,
