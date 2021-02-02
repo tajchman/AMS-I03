@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   Parameters Prm(argc, argv);
   if (Prm.help()) return 0;
 
-  std::cout << Prm << std::endl;
+  std::cerr << Prm << std::endl;
 
   int itMax = Prm.itmax();
   int freq = Prm.freq();
@@ -49,12 +49,12 @@ int main(int argc, char *argv[])
 
     C.iteration();
 
-    std::cout << "iter. " << std::setw(5) << it+1
+    std::cerr << "iter. " << std::setw(5) << it+1
         << "  variation " << std::setw(15) << std::setprecision(9) << C.variation()
         << std::endl;
   }
 
-  std::cout << std::endl;
+  std::cerr << std::endl;
 
   if (freq > 0 && itMax % freq == 0) {
     C.getOutput().plot(itMax);
@@ -62,6 +62,6 @@ int main(int argc, char *argv[])
 
   T_total.stop();
 
-  PrintTimers(std::cout);
+  PrintTimers(std::cerr);
   return 0;
 }

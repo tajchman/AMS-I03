@@ -1,6 +1,11 @@
 #include "values.hxx"
 
-double variationWrapper(Values & u, Values & v, 
-                        double *& d_partialSum, int n);
+double variationWrapper
+ (const Values & u, const Values & v, 
+  double *& diff, double *&diffPartial, int n);
 
-void freeVariationData(double *& d_partialSum);
+void allocVariationData(double *& diff, int n,
+  double *& diffPartial, int nPartial);
+
+void freeVariationData(double *& diff, 
+  double *& diffPartial);

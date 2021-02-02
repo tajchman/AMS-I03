@@ -31,6 +31,8 @@ public:
 
   double * dataCPU() { return h_u; }
   double * dataGPU() { return d_u; }
+  const double * dataCPU() const { return h_u; }
+  const double * dataGPU() const { return d_u; }
   void synchronized(bool b) { h_synchronized = b; }
   
 private:

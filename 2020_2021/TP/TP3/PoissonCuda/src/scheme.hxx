@@ -40,7 +40,7 @@ protected:
 
   Values m_u, m_v;
   double m_duv;
-  double *diff;
+  double *partialDiff, *diff;
   Parameters &m_P;
 };
 

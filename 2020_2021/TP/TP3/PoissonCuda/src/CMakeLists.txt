@@ -46,6 +46,7 @@ set(SRCS
     cuda/dim.cu
     cuda/values.cu
     cuda/user.cu
+    cuda/Cuda.cu
   )
 
 add_executable(

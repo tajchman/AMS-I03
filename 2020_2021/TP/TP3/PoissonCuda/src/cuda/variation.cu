@@ -11,9 +11,38 @@ namespace cg = cooperative_groups;
 
 #include "cuda_check.cuh"
 #include "timer_id.hxx"
+#include "Cuda.hxx"
+#include "values.hxx"
+
+void allocVariationData(double *& diff, int n,
+  double *& diffPartial, int nPartial)
+{
+if (diff == NULL) 
+  diff = allocate(n);
+if (diffPartial == NULL)
+  diffPartial = allocate(nPartial);
+}
+
+void freeVariationData(double *& diff, 
+ double *& diffPartial)
+{
+deallocate(diff);
+deallocate(diffPartial);
+}
 
 __global__ void
-reduce(const double *u, const double *v, double *partialDiff, int n)
+difference (const double *u, 
+            const double *v, 
+            double * duv, int n)
+{
+  int i = threadIdx.x + blockIdx.x * blockDim.x;
+  if (i<n) {
+    duv[i] = fabs(u[i] - v[i]);
+  }   
+}
+
+__global__ void
+reduce(const double *u, double *partialDiff, int n)
 {
   cg::thread_block cta = cg::this_thread_block();
   extern __shared__ double sdata[];
@@ -21,14 +50,8 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
   int tid = threadIdx.x;
   int bid = blockIdx.x;
   int i = bid*blockDim.x + tid;
-  if (i < n) {
-     double duv = u[i] - v[i];
-     sdata[tid] = max(duv, -duv);
-  }
-  else
-     sdata[tid] = 0.0;
-  printf("%d %d %f\n", i, n, sdata[tid]);
 
+  sdata[tid] = (i<n) ? u[i] : 0.0 ;
   cg::sync(cta);
 
   for (unsigned int s=blockDim.x/2; s>0; s>>=1)
@@ -44,51 +67,57 @@ reduce(const double *u, const double *v, double *partialDiff, int n)
   }
 }
 
-double variationWrapper(Values & u, Values & v, 
-                        double * &d_partialSums, int n)
+__global__ void printU(const double *u, int n)
 {
-  int dimBlock = 512;
+  int i;
+  for (i=0; i<n; i++)
+    printf("u[%d] = %g\n", i, u[i]);
+}
+
+double variationWrapper(const Values &u, 
+                        const Values &v,
+                        double * &diff,
+                        double * &diffPartial, int n)
+{
+  int dimBlock = 64;
   int dimGrid = int(ceil(n/double(dimBlock)));
-  int nbytes = dimBlock * sizeof(double);
-  int smemSize = nbytes;
-  if (d_partialSums == NULL) {
-    Timer & T = GetTimer(T_AllocId); T.start();
-    CUDA_CHECK_OP(cudaMalloc(&d_partialSums, nbytes));
-    T.stop();
-  }
+  
+  int nbytesGrid = dimGrid * sizeof(double);
+  int nbytesBlock = dimBlock * sizeof(double);
+  int nbytes = n * sizeof(double);
+
+  allocVariationData(diff,        nbytes, 
+                     diffPartial, nbytesGrid);
 
   Timer & Tv = GetTimer(T_VariationId); Tv.start();
 
-  reduce<<< dimGrid, dimBlock, smemSize >>>(u.dataGPU(), 
-                                            v.dataGPU(), 
-                                            d_partialSums, n);
+  //printU<<<1,1>>> (u.dataGPU(), n);
+  
+  difference<<< dimGrid, dimBlock>>> 
+     (u.dataGPU(), v.dataGPU(), diff, n); 
+  cudaDeviceSynchronize();
+  CUDA_CHECK_KERNEL();
+
+  reduce<<< dimGrid, dimBlock, nbytesBlock >>>
+     (diff, diffPartial, n);
   cudaDeviceSynchronize();
   CUDA_CHECK_KERNEL();
 
   Tv.stop();
 
   Timer Ta = GetTimer(T_AllocId); Ta.start();
-  std::vector<double> h_partialSums(dimBlock);
-
-  CUDA_CHECK_OP(cudaMemcpy(h_partialSums.data(), d_partialSums,
-                           nbytes, cudaMemcpyDeviceToHost));
+  std::vector<double> h_partialSums(dimGrid);
   Ta.stop();
+
+  copyDeviceToHost(h_partialSums.data(), 
+                   diffPartial, dimGrid);
 
   Tv.start();
   double s = 0.0;
-  for (int i=0; i<dimBlock; i++)
+  for (int i=0; i<dimGrid; i++)
     s += h_partialSums[i];
   Tv.stop();
 
   return s;
 }
 
-void freeVariationData(double *& d_partialSum)
-{
-  if (d_partialSum) {
-    Timer & T = GetTimer(T_FreeId); T.start();
-    cudaFree(d_partialSum);
-    d_partialSum = NULL;
-    T.stop();
-  }
-}

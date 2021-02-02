@@ -32,11 +32,12 @@ Scheme::Scheme(Parameters &P) :
   setDims(m_n, m_xmin, m_dx, lx);
 
   diff = NULL;
+  partialDiff = NULL;
 }
 
 Scheme::~Scheme()
 {
-  freeVariationData(diff);
+  freeVariationData(diff, partialDiff);
 }
 
 double Scheme::present()
@@ -65,7 +66,9 @@ double Scheme::iteration_domaine(int imin, int imax,
                    imin, imax, jmin, jmax, kmin, kmax);
 
   m_v.synchronized(false);
-  return variationWrapper(m_u, m_v, diff, m_n[0]*m_n[1]*m_n[2]);
+  return variationWrapper(m_u, m_v, 
+                          diff, partialDiff, 
+                          m_n[0]*m_n[1]*m_n[2]);
 }
 
 const Values & Scheme::getOutput()
