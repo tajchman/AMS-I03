@@ -1,0 +1,136 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+	language=C++,
+	emptylines=1,
+	breaklines=true,
+	basicstyle=\ttfamily\color{black},
+	moredelim=**[is][\bf\color{red}]{@}{@},
+}
+
+\usetheme[]{boxes}
+\usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
+
+\newcommand\Frac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+
+%\usepackage{french}
+\title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
+\subtitle{Travail pratique 3}
+\author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
+\date{mise à jour le 10/01/2021}
+
+\begin{document}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\large
+\begin{frame}
+	\section{Travail pratique 2}
+	\frametitle{Travail pratique 2}
+
+On part de deux code qui calculent une solution approchée du problème suivant~:
+
+\medskip
+\begin{quote}
+Chercher $u$:  $(x, t) \mapsto u(x, t)$, où  $x \in \Omega = [0,1]^3$ et $t \geq 0$, qui vérifie :
+$$
+\begin{array}{lcll}
+\Frac{\partial u}{\partial t} & = & \Delta u + f(x, t) & \\[0.3cm]
+u(x, 0) &=& g(x) & x\in \Omega \\[0.3cm]
+u(x, t) & = & g(x) & x\in\partial \Omega, t > 0\\[0.3cm]
+\end{array}
+$$
+
+\vspace{-0.6cm}
+où $f$ et $g$ sont des fonctions données.
+\end{quote}
+
+Le code utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_0\times n_1\times n_2$ subdivisions.
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Codes de départ}
+	
+   \vfill
+	Le premier code utilise la parallélisation avec MPI et la décomposition de domaines
+    (ce code parallélisée est similaire au code MPI utilisé dans le TP2)
+	
+	\medskip
+	
+	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_MPI.tar.gz}{\tt TP3\_MPI.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_MPI.zip}{\tt TP3\_MPI.zip}.
+	
+   \vfill
+    
+    Le second code utilise la parallélisation avec Cuda sur carte graphique.
+    
+	\medskip
+	
+	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_Cuda.tar.gz}{\tt TP3\_Cuda.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_Cuda.zip}{\tt TP3\_Cuda.zip}.
+
+   \vfill
+\end{frame}
+
+\begin{frame}
+\medskip
+  
+\textbf{Le but du TP est d'obtenir une version hybride destinée à être utilisée sur une machine parallèle dont chaque n\oe ud contient une carte graphique.}
+  
+\medskip
+
+  On pourra utiliser la machine rhum.ensta.fr, qui n'a qu'un seul n\oe ud mais qui contient 2 cartes graphiques.
+  
+  On comparera les performances du code :
+  \begin{itemize}
+  	\item avec 1 processus MPI, en utilisant ou pas une carte graphique 
+  	\item avec 2 processus MPI, chacun utilisant une des 2 cartes graphiques 
+  \end{itemize}
+  
+   
+\vfill
+\end{frame}
+
+
+\begin{frame}
+
+\bigskip
+Envoyez par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
+
+\begin{itemize}
+	\item une description du travail réalisé (1-2 pages maximum)
+	\item le code source, avec vos modifications, dans une archive
+	(n'envoyez pas les répertoires \textcolor{blue}{\tt build} et  \textcolor{blue}{\tt install} qui contiennent des binaires) 
+	\item autant que possible, les fichiers qui contiennent les sorties écran.
+\end{itemize}
+
+\bigskip
+
+{\bf avant le 14/02/2021.}
+
+\bigskip
+\textcolor{red}{\bf Envoyez vos fichiers source même s'ils contiennent des erreurs.}
+\end{frame}
+
+
+\end{document}
