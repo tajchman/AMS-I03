@@ -14,8 +14,8 @@ base = os.path.join('.',
                     args.type)
 
 code = os.path.join(base, 'PoissonMPI')
-print(code)
+cmd = ['mpiexec', '-n', str(args.nprocs), code]
 
-subprocess.call([code] + args.rest)
+subprocess.call(cmd + args.rest)
 
 
