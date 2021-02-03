@@ -9,6 +9,7 @@
 #include "os.hxx"
 #include "arguments.hxx"
 #include "parameters.hxx"
+#include "version.hxx"
 #include <iostream>
 #include <sstream>
 #include <fstream>

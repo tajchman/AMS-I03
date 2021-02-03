@@ -156,11 +156,7 @@ void Values::plot(int order) const {
   int imax = m_imax[0]+1, jmax = m_imax[1]+1, kmax = m_imax[2]+1;
 
   s << m_p.resultPath();
-#ifdef _OPENMP
-  s << "/" << m_p.nthreads();
-#else
-  s << "/0";
-#endif
+  s << kPathSeparator << m_p.nthreads();
   mkdir_p(s.str().c_str());
   
   s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << ".vtr";
@@ -169,14 +165,14 @@ void Values::plot(int order) const {
   f << "<?xml version=\"1.0\"?>\n";
   f << "<VTKFile type=\"RectilinearGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
     << "<RectilinearGrid WholeExtent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax  << " "
+    << jmin << " " << jmax  << " "
+    << kmin << " " << kmax
     << "\">\n"
     << "<Piece Extent=\""
-    << imin << " " << imax  << " " 
-    << jmin << " " << jmax  << " " 
-    << kmin << " " << kmax 
+    << imin << " " << imax  << " "
+    << jmin << " " << jmax  << " "
+    << kmin << " " << kmax
     << "\">\n";
 
   f << "<PointData Scalars=\"values\">\n";

@@ -6,13 +6,11 @@
 #include <unistd.h>
 #endif
 
-#if defined(_OPENMP)
-   #include <omp.h>
-#endif
-
 #include "os.hxx"
 #include "arguments.hxx"
 #include "parameters.hxx"
+#include "version.hxx"
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -23,6 +21,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
+#include <omp.h>
 
 void stime(char * buffer, int size)
 {
@@ -39,15 +38,19 @@ void stime(char * buffer, int size)
 
 }
 
-Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
+Parameters::Parameters(int argc, char ** argv)
+  : Arguments(argc, argv)
 {
   m_command = argv[0];
   m_help = options_contains("h") || options_contains("help");
-  std::cerr << m_help << std::endl;
-  
+
   if (m_help) return;
 
-#if defined(_OPENMP)
+  m_n[0] = Get("n0", 401);
+  m_n[1] = Get("n1", 401);
+  m_n[2] = Get("n2", 401);
+  m_itmax = Get("it", 10);
+
   m_nthreads = Get("threads", 0);
 
   if (m_nthreads<1) {
@@ -60,12 +63,6 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
     m_nthreads=1;
 
   omp_set_num_threads(m_nthreads);
-#endif
-
-  m_n[0] = Get("n0", 401);
-  m_n[1] = Get("n1", 401);
-  m_n[2] = Get("n2", 401);
-  m_itmax = Get("it", 10);
 
   double d;
   double dt_max = 0.1/(m_n[0]*m_n[0]);
@@ -73,7 +70,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   if (dt_max > d) dt_max = d;
   d = 0.1/(m_n[2]*m_n[2]);
   if (dt_max > d) dt_max = d;
- 
+
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
 
@@ -97,12 +94,10 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 bool Parameters::help()
 {
   if (m_help) {
-    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
+    std::cerr << "Usage : ./" << version << " <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
-#ifdef _OPENMP
               << "threads=<int> : number of threads OpenMP"
-#endif
               << "n0=<int>       : number of points in the X direction (default: 401)\n"
               << "n1=<int>       : number of points in the Y direction (default: 401)\n"
               << "n2=<int>       : number of points in the Z direction (default: 401)\n"
@@ -127,9 +122,7 @@ std::ostream & operator<<(std::ostream &f, const Parameters & p)
     << "[" << p.imin(1)-1 << " ... " << p.imax(1)+1 << "] x "
     << "[" << p.imin(2)-1 << " ... " << p.imax(2)+1 << "]\n\n";
 
-#ifdef _OPENMP
   f << p.nthreads() << " thread(s)\n";
-#endif
   f << "It. max :  " << p.itmax() << "\n"
     << "Dt :       " << p.dt() << "\n"
     << "Results in " << p.resultPath() << "\n" << std::endl;

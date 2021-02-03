@@ -11,13 +11,13 @@ myenv = os.environ.copy()
 p = platform.system()
 if p == 'Windows':
   gen = '-GNinja'
-  myenv['CC'] = 'icl.exe'
-  myenv['CXX'] = 'icl.exe'
+  myenv['CC'] = 'mpiicc.bat'
+  myenv['CXX'] = 'mpiicpc.bat'
   compileCmd = ['ninja', 'install']
 elif p == 'Linux':
   gen = '-GUnix Makefiles'
-  myenv['CC'] = 'gcc'
-  myenv['CXX'] = 'c++'
+  myenv['CC'] = 'mpicc'
+  myenv['CXX'] = 'mpicxx'
   compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()

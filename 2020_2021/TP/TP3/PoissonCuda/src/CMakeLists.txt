@@ -24,6 +24,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   endif()
 endif()
 
+configure_file(version.hxx.in version.hxx @ONLY)
+
 include_directories(
   util
   ${CMAKE_BUILD_DIR}

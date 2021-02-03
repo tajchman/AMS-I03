@@ -76,25 +76,29 @@ void Values::boundaries()
 
     int p, q;
 
-    i[idim] = omin-1;
-    x[idim] = m_xmin[idim];
-    for (p=pmin-1; p<=pmax+1; p++)
-      for (q=qmin-1; q<=qmax+1; q++) {
-        i[jdim] = p; i[kdim] = q;
-        x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
-        x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
-        operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
-      }
+    if (m_p.neighbour(2*idim) < 0) {
+      i[idim] = omin-1;
+      x[idim] = m_xmin[idim];
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
+          i[jdim] = p; i[kdim] = q;
+          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+          operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
+        }
+    }
 
-    i[idim] = omax+1;
-    x[idim] = m_xmax[idim];
-    for (p=pmin-1; p<=pmax+1; p++)
-      for (q=qmin-1; q<=qmax+1; q++) {
-        i[jdim] = p; i[kdim] = q;
-        x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
-        x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
-        operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
-      }
+    if (m_p.neighbour(2*idim+1) < 0) {
+      i[idim] = omax+1;
+      x[idim] = m_xmax[idim];
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
+          i[jdim] = p; i[kdim] = q;
+          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+          operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
+        }
+    }
   }
   T.stop();
 }
@@ -154,10 +158,13 @@ void Values::plot(int order) const {
   int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
   int imax = m_imax[0]+1, jmax = m_imax[1]+1, kmax = m_imax[2]+1;
 
-  s << m_p.resultPath();
+  int rank = m_p.rank();
+  int size = m_p.size();
+
+  s << m_p.resultPath() << kPathSeparator << size ;
   mkdir_p(s.str().c_str());
-  
-  s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << ".vtr";
+
+  s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << "_" << rank << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";

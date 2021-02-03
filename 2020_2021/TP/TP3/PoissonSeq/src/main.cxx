@@ -35,28 +35,27 @@ int main(int argc, char *argv[])
 
   Values u_0(Prm);
 
-  Timer & T_init = GetTimer(T_InitId); T_init.start();
-
   u_0.init();
   u_0.boundaries();
 
-  T_init.stop();
-
-  std::cerr << "init  time  " << std::setw(10) << std::setprecision(3) << T_init.elapsed() << " s"
-      << std::endl;
+  Timer & T_init = GetTimer(T_InitId);
+  std::cerr << "\n  init time  "
+            << std::setw(10) << std::setprecision(3) << T_init.elapsed() << " s"
+            << std::endl;
 
   C.setInput(u_0);
 
   Timer & T_iteration = GetTimer(T_IterationId);
 
   for (int it=0; it < itMax; it++) {
+
     if (freq > 0 && it % freq == 0) {
       C.getOutput().plot(it);
     }
 
     C.iteration();
 
-    std::cout << "iter. " << std::setw(5) << it+1
+    std::cerr << "iter. " << std::setw(5) << it+1
         << "  variation " << std::setw(15) << std::setprecision(9) << C.variation()
         << "  time  " << std::setw(10) << std::setprecision(3) << T_iteration.elapsed() << " s"
         << std::endl;

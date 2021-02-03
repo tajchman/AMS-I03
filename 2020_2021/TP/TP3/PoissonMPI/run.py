@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
-import os, sys, subprocess, argparse
+import os, sys, subprocess, argparse, signal, platform
 
 parser = argparse.ArgumentParser()
-parser.add_argument('threads', type=int, default=1)
+parser.add_argument('-n', '--nprocs', type=int, default=1)
 parser.add_argument('-t', '--type', default='Release', 
                     choices=['Release', 'Debug'])
 parser.add_argument('rest', nargs=argparse.REMAINDER)
@@ -13,12 +13,9 @@ base = os.path.join('.',
                     'install',
                     args.type)
 
-code = [os.path.join(base, 'PoissonOpenMP')]
+code = os.path.join(base, 'PoissonMPI')
+print(code)
 
-if args.threads > 1:
-  code.append("threads=" + str(args.threads))
-code += args.rest
-
-subprocess.call(code)
+subprocess.call([code] + args.rest)
 
 

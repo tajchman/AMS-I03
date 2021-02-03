@@ -62,7 +62,7 @@ double Scheme::iteration_domaine(int imin, int imax,
   double zmin = m_xmin[2];
   int i,j,k;
   double du, du1, du2, du_sum = 0.0;
-  
+
   double x, y, z;
 
   for (i = imin; i <= imax; i++)
@@ -96,5 +96,4 @@ void Scheme::setInput(const Values & u)
   m_u = u;
   m_v = u;
 }
-
 
