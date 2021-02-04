@@ -48,8 +48,6 @@ include_directories(
   ${CUDAToolkit_INCLUDE_DIRS}
   )
 
-configure_file(version.hxx.in version.hxx @ONLY)
-
 set(SRCS
     main.cxx
     parameters.cxx
@@ -75,7 +73,7 @@ set_target_properties(${VERSION}
   PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 target_link_libraries(
-  ${VERSION} 
+  ${VERSION}
   ${CUDA_CUDART}
   )
 

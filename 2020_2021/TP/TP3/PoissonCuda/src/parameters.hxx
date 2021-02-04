@@ -14,11 +14,11 @@ public:
   Parameters(int argc, char **argv);
   void info();
 
-  int n(int i) const { return m_n[i]; }
   double dx(int i) const { return m_dx[i]; }
   double xmin(int i) const { return m_xmin[i]; }
   double xmax(int i) const { return m_xmax[i]; }
 
+  int n(int i) const { return m_n[i]; }
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
 

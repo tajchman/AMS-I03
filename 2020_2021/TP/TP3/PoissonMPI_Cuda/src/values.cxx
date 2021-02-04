@@ -56,17 +56,48 @@ void Values::zero()
   h_synchronized = false;
 }
 
-void Values::init()
-{
-  initWrapper(d_u, m_n);
-  h_synchronized = false;
-}
-
-
 void Values::boundaries()
 {
-  boundariesWrapper(d_u, m_n, m_imin, m_imax);
-  h_synchronized = false;
+  Timer & T = GetTimer(T_InitId); T.start();
+
+  int i[3];
+  double x[3];
+  for (int idim=0; idim<3; idim++) {
+
+    int jdim = (idim+1)%3;
+    int kdim = (idim+2)%3;
+
+    int omin = m_imin[idim], omax = m_imax[idim];
+    int pmin = m_imin[jdim], pmax = m_imax[jdim];
+    int qmin = m_imin[kdim], qmax = m_imax[kdim];
+
+    int p, q;
+
+    if (m_p.neighbour(2*idim) < 0) {
+      i[idim] = omin-1;
+      x[idim] = m_xmin[idim];
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
+          i[jdim] = p; i[kdim] = q;
+          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+          operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
+        }
+    }
+
+    if (m_p.neighbour(2*idim+1) < 0) {
+      i[idim] = omax+1;
+      x[idim] = m_xmax[idim];
+      for (p=pmin-1; p<=pmax+1; p++)
+        for (q=qmin-1; q<=qmax+1; q++) {
+          i[jdim] = p; i[kdim] = q;
+          x[jdim] = m_xmin[jdim] + p*m_dx[jdim];
+          x[kdim] = m_xmin[kdim] + q*m_dx[kdim];
+          operator()(i[0], i[1], i[2]) = cond_lim(x[0], x[1], x[2]);
+        }
+    }
+  }
+  T.stop();
 }
 
 std::ostream & operator<< (std::ostream & f, const Values & v)
@@ -135,10 +166,13 @@ void Values::plot(int order) const {
   int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
   int imax = m_imax[0]+1, jmax = m_imax[1]+1, kmax = m_imax[2]+1;
 
-  s << m_p.resultPath();
+  int rank = m_p.rank();
+  int size = m_p.size();
+
+  s << m_p.resultPath() << kPathSeparator << size ;
   mkdir_p(s.str().c_str());
-  
-  s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << ".vtr";
+
+  s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << "_" << rank << ".vtr";
   std::ofstream f(s.str().c_str());
 
   f << "<?xml version=\"1.0\"?>\n";

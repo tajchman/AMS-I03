@@ -46,8 +46,8 @@
 
 \large
 \begin{frame}
-	\section{Travail pratique 2}
-	\frametitle{Travail pratique 2}
+	\section{Travail pratique 3}
+	\frametitle{Travail pratique 3}
 
 On part de deux code qui calculent une solution approchée du problème suivant~:
 
@@ -75,11 +75,11 @@ Le code utilise des différences finies pour approcher les dérivées partielles
 	
    \vfill
 	Le premier code utilise la parallélisation avec MPI et la décomposition de domaines
-    (ce code parallélisée est similaire au code MPI utilisé dans le TP2)
+    (ce code est similaire au code MPI utilisé dans le TP2)
 	
 	\medskip
 	
-	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_MPI.tar.gz}{\tt TP3\_MPI.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_MPI.zip}{\tt TP3\_MPI.zip}.
+	Récupérer et décompresser le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_MPI.tar.gz}{\tt TP3\_MPI.tar.gz}.
 	
    \vfill
     
@@ -87,49 +87,30 @@ Le code utilise des différences finies pour approcher les dérivées partielles
     
 	\medskip
 	
-	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_Cuda.tar.gz}{\tt TP3\_Cuda.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_Cuda.zip}{\tt TP3\_Cuda.zip}.
+	Récupérer et décompresser le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_Cuda.tar.gz}{\tt TP3\_Cuda.tar.gz}.
 
    \vfill
 \end{frame}
 
 \begin{frame}
 \medskip
+ 
+Le but du TP est d'étudier la fusion entre ces deux versions, pour obtenir une version hybride destinée à être utilisée sur une machine parallèle dont chaque n\oe ud contient une carte graphique.
   
-\textbf{Le but du TP est d'obtenir une version hybride destinée à être utilisée sur une machine parallèle dont chaque n\oe ud contient une carte graphique.}
-  
-\medskip
+   \vfill
 
-  On pourra utiliser la machine rhum.ensta.fr, qui n'a qu'un seul n\oe ud mais qui contient 2 cartes graphiques.
-  
-  On comparera les performances du code :
-  \begin{itemize}
-  	\item avec 1 processus MPI, en utilisant ou pas une carte graphique 
-  	\item avec 2 processus MPI, chacun utilisant une des 2 cartes graphiques 
-  \end{itemize}
-  
+On demande un rapport de 1-2 pages pour décrire les modifications du code MPI pour faire les calculs internes dans chaque sous-domaine MPI par une carte graphique.
+Décrivez précisément ces modifications. 
+
+   \vfill
+
+
+On ne demande pas d'écrire effectivement le code de la version hybride (mais ceux qui veulent essayer sont les bienvenus et je pourrai les aider).
    
-\vfill
-\end{frame}
-
-
-\begin{frame}
-
-\bigskip
-Envoyez par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
-
-\begin{itemize}
-	\item une description du travail réalisé (1-2 pages maximum)
-	\item le code source, avec vos modifications, dans une archive
-	(n'envoyez pas les répertoires \textcolor{blue}{\tt build} et  \textcolor{blue}{\tt install} qui contiennent des binaires) 
-	\item autant que possible, les fichiers qui contiennent les sorties écran.
-\end{itemize}
-
-\bigskip
-
+   \vfill
+Envoyez votre rapport par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
 {\bf avant le 14/02/2021.}
 
-\bigskip
-\textcolor{red}{\bf Envoyez vos fichiers source même s'ils contiennent des erreurs.}
 \end{frame}
 
 

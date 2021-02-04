@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
-set(VERSION PoissonMPI)
-project(${VERSION})
+set(VERSION PoissonMPI_Cuda)
+project(${VERSION} LANGUAGES CXX CUDA)
 
 find_package(MPI REQUIRED)
 
@@ -16,6 +16,18 @@ else()
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif ()
+
+find_package(CUDA)
+enable_language(CUDA)
+
+set(CMAKE_CUDA_ARCHITECTURES OFF)
+cuda_select_nvcc_arch_flags(cuda_archs Auto)
+list(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
+set(CUDA_NVCC_FLAGS
+  "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets")
+
+set(CMAKE_CUDA_STANDARD 11)
+set(CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_compile_options(-DDEBUG)
@@ -36,6 +48,8 @@ include_directories(
   ${MPI_CXX_INCLUDE_DIRS}
   util
   ${CMAKE_BUILD_DIR}
+  cuda
+  ${CUDAToolkit_INCLUDE_DIRS}
   )
 
 set(SRCS
@@ -43,10 +57,15 @@ set(SRCS
     parameters.cxx
     scheme.cxx
     values.cxx
-    user.cxx
     util/arguments.cxx
     util/os.cxx
     util/timer.cxx
+    cuda/variation.cu
+    cuda/iteration.cu
+    cuda/dim.cu
+    cuda/values.cu
+    cuda/user.cu
+    cuda/Cuda.cu
   )
 
 add_executable(
@@ -54,8 +73,14 @@ add_executable(
   ${SRCS}
   )
 
-target_link_libraries(${VERSION}
+set_target_properties(${VERSION}
+  PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+target_link_libraries(
+  ${VERSION}
+  ${CUDA_CUDART}
   ${MPI_LIBS}
   )
+
 install(TARGETS ${VERSION} DESTINATION .)
 

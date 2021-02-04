@@ -11,9 +11,9 @@ args = parser.parse_args()
 
 base = os.path.join('.', 'install', args.type)
 
-code = os.path.join(base, 'PoissonMPI')
-cmd = ['mpiexec', '-n', str(args.nprocs), code]
+code = os.path.join(base, 'PoissonMPI_Cuda')
+cmd = ['mpiexec', '-n', str(args.nprocs), code] + args.rest
 
-subprocess.call(cmd + args.rest)
+subprocess.call(cmd)
 
 

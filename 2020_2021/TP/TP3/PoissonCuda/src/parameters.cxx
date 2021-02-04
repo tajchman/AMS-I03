@@ -54,7 +54,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   if (dt_max > d) dt_max = d;
   d = 0.1/(m_n[2]*m_n[2]);
   if (dt_max > d) dt_max = d;
- 
+
   m_dt = Get("dt", dt_max);
   m_freq = Get("out", -1);
 
@@ -78,7 +78,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
 bool Parameters::help()
 {
   if (m_help) {
-    std::cerr << "Usage : ./PoissonOpenMP <list of options>\n\n";
+    std::cerr << "Usage : ./" << version << " <list of options>\n\n";
     std::cerr << "Options:\n\n"
               << "-h|--help     : display this message\n"
               << "n0=<int>       : number of points in the X direction (default: 401)\n"

@@ -11,7 +11,8 @@ args = parser.parse_args()
 base = os.path.join('.', 'install', args.type)
 
 code = os.path.join(base, 'PoissonCuda')
+cmd = [code] + args.rest
 
-subprocess.call([code] + args.rest)
+subprocess.call(cmd)
 
 
