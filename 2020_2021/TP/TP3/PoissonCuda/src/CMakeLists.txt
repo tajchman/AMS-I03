@@ -16,8 +16,6 @@ else()
 endif ()
 
 find_package(CUDA)
-find_package(CUDAToolkit)
-
 enable_language(CUDA)
 
 set(CMAKE_CUDA_ARCHITECTURES OFF)
