@@ -37,7 +37,7 @@ public:
   
 private:
 
-  Values(const Values &) = delete;
+  Values(const Values &);
   int n1, n2, nn;
   double * d_u, * h_u;
   mutable bool h_synchronized;
