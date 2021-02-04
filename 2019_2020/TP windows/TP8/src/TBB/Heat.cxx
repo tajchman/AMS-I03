@@ -1,1 +1,0 @@
-../Sequentiel/Heat.cxx
