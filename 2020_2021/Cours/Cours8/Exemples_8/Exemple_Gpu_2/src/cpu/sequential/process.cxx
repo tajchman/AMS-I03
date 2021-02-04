@@ -121,6 +121,8 @@ void process(cImage &imageOut, const cImage &imageIn)
 
   std::cerr << std::endl;  
   setGrey(imageTemp1, imageIn);  
-  smooth (imageTemp2, imageTemp1);
+  sobel  (imageOut,   imageTemp1);
+  return;
+  setGrey(imageTemp1, imageIn);  
   sobel  (imageOut,   imageTemp2);
 }

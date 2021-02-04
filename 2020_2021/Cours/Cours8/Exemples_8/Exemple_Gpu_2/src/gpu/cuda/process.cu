@@ -240,6 +240,9 @@ void process(cImage &imageOut, const cImage &imageIn)
   Timer T_compute;
   T_compute.start();
   
+  setGrey(imageTemp1, imageTemp0);
+  sobel (imageTemp3, imageTemp1);
+/*
   if (imageTemp0.ncolors == 3)
     setGrey(imageTemp1, imageTemp0);
   else
@@ -248,7 +251,7 @@ void process(cImage &imageOut, const cImage &imageIn)
 
   smooth (imageTemp2, imageTemp1);
   sobel  (imageTemp3, imageTemp2);
-
+*/
   T_compute.stop();
   std::cerr << "\n\tTime compute on GPU        "
 	    << T_compute.elapsed() << " s" << std::endl;
