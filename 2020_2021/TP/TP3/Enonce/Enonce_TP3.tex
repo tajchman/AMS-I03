@@ -37,7 +37,7 @@
 \title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
 \subtitle{Travail pratique 3}
 \author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
-\date{mise à jour le 10/01/2021}
+\date{01/02/2021}
 
 \begin{document}
 \begin{frame}
@@ -49,7 +49,7 @@
 	\section{Travail pratique 3}
 	\frametitle{Travail pratique 3}
 
-On part de deux code qui calculent une solution approchée du problème suivant~:
+On part de deux codes qui calculent une solution approchée du problème suivant~:
 
 \medskip
 \begin{quote}
@@ -66,49 +66,65 @@ $$
 où $f$ et $g$ sont des fonctions données.
 \end{quote}
 
-Le code utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_0\times n_1\times n_2$ subdivisions.
+On utilise des différences finies pour approcher les dérivées partielles et on découpe $\Omega$ en $n_0\times n_1\times n_2$ subdivisions.
 
 \end{frame}
 
 \begin{frame}
 	\frametitle{Codes de départ}
-	
-   \vfill
-	Le premier code utilise la parallélisation avec MPI et la décomposition de domaines
-    (ce code est similaire au code MPI utilisé dans le TP2)
-	
-	\medskip
-	
-	Récupérer et décompresser le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_MPI.tar.gz}{\tt TP3\_MPI.tar.gz}.
-	
-   \vfill
-    
-    Le second code utilise la parallélisation avec Cuda sur carte graphique.
-    
-	\medskip
-	
-	Récupérer et décompresser le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3_Cuda.tar.gz}{\tt TP3\_Cuda.tar.gz}.
+		
+	Récupérer et décompresser le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance9/TP3.tar.gz}{\tt TP3.tar.gz}.
 
+	\medskip
+
+    Cette archive contient 4 sous-répertoires : 
+    \begin{itemize}
+    	\item la version séquentielle (\texttt{PoissonSeq}),
+    	\item la version parallélisée avec OpenMP (grain fin) (\texttt{PoissonOpenMP}),
+    	\item la version parallélisée avec MPI (\texttt{PoissonMPI}),
+    	\item la version parallélisée avec Cuda (\texttt{PoissonCuda}),
+    	
+    \end{itemize}
+
+	\medskip
+   Les deux premières versions servent de référence.
+   
+   La version MPI est similaire à celle utilisée dans le TP 2.
    \vfill
 \end{frame}
 
 \begin{frame}
 \medskip
  
-Le but du TP est d'étudier la fusion entre ces deux versions, pour obtenir une version hybride destinée à être utilisée sur une machine parallèle dont chaque n\oe ud contient une carte graphique.
+Le but du TP est d'étudier la fusion entre les deux versions Cuda et MPI, pour obtenir une version hybride destinée à être utilisée sur une machine parallèle dont chaque n\oe ud contient une carte graphique.
   
+ \vfill
+On propose de faire une copie du code MPI et d'y ajouter les fonctions Cuda (en les adaptant) de la version Cuda.
+
+\vfill
+On demande un rapport de 2-3 pages pour décrire les modifications du code MPI pour faire les calculs internes dans chaque sous-domaine MPI par une carte graphique.
+
    \vfill
 
-On demande un rapport de 1-2 pages pour décrire les modifications du code MPI pour faire les calculs internes dans chaque sous-domaine MPI par une carte graphique.
-Décrivez précisément ces modifications. 
+\end{frame}
 
-   \vfill
+\begin{frame}
 
+Décrivez ce que vous proposez de modifier:
+\begin{itemize}
+	\item fichiers et fonctions concernés
+	\item impact sur les structures de données
+	\item où sont faits les calculs : processeur CPU ou GPU
+	\item quelles sont les copies de données entre les CPU, entre un CPU et le GPU associé,
+	\item etc.
+\end{itemize}
+
+\vfill
 
 On ne demande pas d'écrire effectivement le code de la version hybride (mais ceux qui veulent essayer sont les bienvenus et je pourrai les aider).
    
    \vfill
-Envoyez votre rapport par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
+Envoyez votre rapport par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr}
 {\bf avant le 14/02/2021.}
 
 \end{frame}
