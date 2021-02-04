@@ -8,6 +8,8 @@ parser.add_argument('-t', '--type', default='Release',
 args = parser.parse_args()
 
 myenv = os.environ.copy()
+myenv['CUDACXX'] = 'nvcc'
+
 p = platform.system()
 if p == 'Windows':
   gen = '-GNinja'
@@ -28,6 +30,8 @@ buildDir = os.path.join(base, 'build', args.type)
 installDir = os.path.join(base, 'install', args.type)
 
 cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
+if 'CUDA_BIN_DIR' in myenv:
+   cmake_params.append('-DCUDA_TOOLKIT_ROOT_DIR=' + myenv['CUDA_BIN_DIR'])
 cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
 cmake_params.append(gen)
 
