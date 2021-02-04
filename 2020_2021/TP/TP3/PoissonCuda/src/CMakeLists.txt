@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 set(VERSION PoissonCuda)
 project(${VERSION} LANGUAGES CXX CUDA)
@@ -15,11 +15,19 @@ else()
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif ()
 
+find_package(CUDA)
 find_package(CUDAToolkit)
-set(CMAKE_CUDA_ARCHITECTURES 75)
+
+enable_language(CUDA)
+
+set(CMAKE_CUDA_ARCHITECTURES OFF)
+cuda_select_nvcc_arch_flags(cuda_archs Auto)
+list(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
+set(CUDA_NVCC_FLAGS
+  "${CUDA_NVCC_FLAGS};-Wno-deprecated-gpu-targets")
+
 set(CMAKE_CUDA_STANDARD 11)
 set(CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
-add_definitions("-Wno-deprecated-gpu-targets")
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   add_compile_options(-DDEBUG)

@@ -131,8 +131,6 @@ void Values::plot(int order) const {
     h_synchronized = true;
   }
 
-  Timer & T = GetTimer(T_OtherId); T.start();
-
   std::ostringstream s;
   int i, j, k;
   int imin = m_imin[0]-1, jmin = m_imin[1]-1, kmin = m_imin[2]-1;
@@ -189,8 +187,6 @@ void Values::plot(int order) const {
   f << "</Piece>\n"
     << "</RectilinearGrid>\n"
     << "</VTKFile>\n" <<std::endl;
-
-  T.stop();
 }
 
 void Values::operator= (const Values &other)
