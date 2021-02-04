@@ -44,7 +44,6 @@ configure_file(version.hxx.in version.hxx @ONLY)
 include_directories(
   util
   ${CMAKE_BUILD_DIR}
-  cuda
   ${CUDAToolkit_INCLUDE_DIRS}
   )
 
