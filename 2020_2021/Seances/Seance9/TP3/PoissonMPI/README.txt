@@ -1,4 +1,4 @@
-Code de resolution approchee de l'equation de la chaleur
+Code de resolution approchée de l'equation de la chaleur
 
 Version MPI
 
@@ -8,7 +8,7 @@ Pour compiler
 ./build.py
 
 _____________________
-Pour executer sur 3 processus MPI
+Pour exécuter sur 3 processus MPI
 
 mpirun -n 3 ./install/Release/PoissonMPI
 
