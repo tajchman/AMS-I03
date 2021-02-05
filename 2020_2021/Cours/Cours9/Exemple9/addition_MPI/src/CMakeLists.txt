@@ -11,12 +11,16 @@ endif()
 
 find_package(MPI)
 
+include_directories(
+  ${MPI_INCLUDE_PATH}
+)
+
 add_executable(${CODE}
   main.cxx
   Calcul_MPI.cxx
   timer.cxx
   )
 
-target_link_libraries(${CODE} ${MPI_CXX_LIB_NAMES})
+target_link_libraries(${CODE} ${MPI_LIBRARIES})
 
 install(TARGETS ${CODE} DESTINATION .)

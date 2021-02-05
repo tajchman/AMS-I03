@@ -11,7 +11,7 @@ endif()
 
 add_executable(${CODE}
   main.cxx
-  calcul_Seq.cxx
+  Calcul_Seq.cxx
   timer.cxx
   )
 

@@ -74,9 +74,9 @@ void Calcul_Cuda::addition()
   T.stop();
 }
 
-double Calcul_Cuda::verification()
+double Calcul_Cuda::somme()
 {
-  Timer & T = GetTimer(T_VerifId);
+  Timer & T = GetTimer(T_SommeId);
   T.start();
   
   double s;

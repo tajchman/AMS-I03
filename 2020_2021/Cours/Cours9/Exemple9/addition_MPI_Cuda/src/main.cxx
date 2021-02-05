@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   if (rank == size-1) n1 = n;
 
   double v, v_local;
-  Calcul_MPI_Cuda C(n0, n1);
+  Calcul_MPI_Cuda C(n0, n1, rank);
   C.init();
   C.addition();
   v_local = C.somme();

@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "calcul_Cuda.hxx"
+#include "Calcul_Cuda.hxx"
 #include "timer.hxx"
 
 int main(int argc, char **argv)

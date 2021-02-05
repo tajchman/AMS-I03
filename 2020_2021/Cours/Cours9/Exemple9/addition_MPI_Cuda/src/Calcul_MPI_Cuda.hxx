@@ -3,7 +3,7 @@
 
 class Calcul_MPI_Cuda {
 public:
-  Calcul_MPI_Cuda(int m0, int m1);
+  Calcul_MPI_Cuda(int m0, int m1, int rank);
   ~Calcul_MPI_Cuda();
 
   void init();

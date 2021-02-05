@@ -22,6 +22,7 @@ if (CUDA_FOUND)
 
   include_directories(
     ${CUDA_TOOLKIT_INCLUDE}
+    ${MPI_INCLUDE_PATH}
     )
 
   add_executable(${CODE}
@@ -31,7 +32,7 @@ if (CUDA_FOUND)
     timer.cxx
     )
 
-  target_link_libraries(${CODE} ${MPI_CXX_LIB_NAMES})
+  target_link_libraries(${CODE} ${MPI_LIBRARIES})
 
   install(TARGETS ${CODE} DESTINATION .)
 

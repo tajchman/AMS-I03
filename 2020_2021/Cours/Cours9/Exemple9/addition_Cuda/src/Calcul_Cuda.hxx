@@ -8,7 +8,7 @@ public:
 
   void init();
   void addition();
-  double verification();
+  double somme();
 
 private:
   int n;
@@ -19,7 +19,7 @@ private:
 #ifndef IN_MAIN
 extern 
 #endif
-int T_AllocId, T_CopyId, T_InitId, T_AddId, T_VerifId, T_FreeId;
+int T_AllocId, T_CopyId, T_InitId, T_AddId, T_SommeId, T_FreeId;
 
 #endif
 

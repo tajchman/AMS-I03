@@ -4,10 +4,15 @@
 #include "reduction.h"
 #include "cuda_check.cuh"
 
-Calcul_MPI_Cuda::Calcul_MPI_Cuda(int m0, int m1)
+Calcul_MPI_Cuda::Calcul_MPI_Cuda(int m0, int m1, int rank)
 {
   Timer & T = GetTimer(T_AllocId); T.start();
   
+  int nDevices;
+  CUDA_CHECK_OP(cudaGetDeviceCount(&nDevices));
+  CUDA_CHECK_OP(cudaSetDevice(rank%nDevices));
+  std::cerr << "Using device " << rank%nDevices << "/" << nDevices << std::endl;
+
   n0 = m0; n1 = m1;
   n_local = n1-n0;
   int bytes = n_local*sizeof(double);
