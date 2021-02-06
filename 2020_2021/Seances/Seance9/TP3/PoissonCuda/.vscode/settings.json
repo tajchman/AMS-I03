@@ -1,5 +1,0 @@
-{
-    "cmake.sourceDirectory": "${workspaceFolder}/src",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "python.pythonPath": "C:\\Program Files (x86)\\Intel\\oneAPI\\intelpython\\python3.7\\python.exe"
-}

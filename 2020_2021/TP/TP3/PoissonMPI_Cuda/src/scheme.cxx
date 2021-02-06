@@ -1,12 +1,11 @@
-#include "scheme.hxx"
-#include "parameters.hxx"
-#include "version.hxx"
-#include "timer_id.hxx"
 #include <cmath>
 
 #include <sstream>
 #include <iomanip>
 
+#include "scheme.hxx"
+#include "parameters.hxx"
+#include "version.hxx"
 #include "iteration.hxx"
 #include "variation.hxx"
 #include "timer_id.hxx"
@@ -61,6 +60,67 @@ void Scheme::iteration()
   m_u.synchronized(false);
 
   T.stop();
+}
+
+void Scheme::synchronize()
+{
+
+  for (int idim=0; idim<3; idim++) {
+
+    int jdim = (idim+1)%3;
+    int kdim = (jdim+1)%3;
+
+    int omin = m_P.imin(idim), omax = m_P.imax(idim);
+    int pmin = m_P.imin(jdim), pmax = m_P.imax(jdim);
+    int qmin = m_P.imin(kdim), qmax = m_P.imax(kdim);
+    int k, p, q, m = (pmax-pmin+1)*(qmax-qmin+1);
+
+    int i[3];
+    std::vector<double> bufferIn(m), bufferOut(m);
+    MPI_Status status;
+
+    int voisin = m_P.neighbour(2*idim);
+    if (voisin >=0) {
+      i[idim] = omin;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          bufferOut[k] = m_u(i[0], i[1], i[2]);
+        }
+
+      MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
+                   bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
+                   m_P.comm(), &status);
+
+      i[idim] = omin - 1;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          m_u(i[0], i[1], i[2]) = bufferIn[k];
+        }
+    }
+
+    voisin = m_P.neighbour(2*idim+1);
+    if (voisin >=0) {
+      i[idim] = omax;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          bufferOut[k] = m_u(i[0], i[1], i[2]);
+        }
+
+      MPI_Sendrecv(bufferOut.data(), m, MPI_DOUBLE, voisin, 0,
+                   bufferIn.data(),  m, MPI_DOUBLE, voisin, 0,
+                   m_P.comm(), &status);
+
+      i[idim] = omax + 1;
+      for (k=0, p=pmin; p<=pmax; p++)
+        for (q=qmin; q<=qmax; q++, k++) {
+          i[jdim] = p; i[kdim] = q;
+          m_u(i[0], i[1], i[2]) = bufferIn[k];
+        }
+    }
+  }
 }
 
 double Scheme::iteration_domaine(int imin, int imax,

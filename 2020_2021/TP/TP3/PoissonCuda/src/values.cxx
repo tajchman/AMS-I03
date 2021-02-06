@@ -62,7 +62,6 @@ void Values::init()
   h_synchronized = false;
 }
 
-
 void Values::boundaries()
 {
   boundariesWrapper(d_u, m_n, m_imin, m_imax);
@@ -137,7 +136,7 @@ void Values::plot(int order) const {
 
   s << m_p.resultPath();
   mkdir_p(s.str().c_str());
-  
+
   s << kPathSeparator << "plot_" << std::setw(5) << std::setfill('0') << order << ".vtr";
   std::ofstream f(s.str().c_str());
 
