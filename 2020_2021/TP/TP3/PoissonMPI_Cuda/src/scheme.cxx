@@ -64,6 +64,7 @@ void Scheme::iteration()
 
 void Scheme::synchronize()
 {
+  copyDeviceToHost(m_u.dataCPU(), m_u.dataGPU(), m_n[0]*m_n[1]*m_n[2]);
 
   for (int idim=0; idim<3; idim++) {
 
@@ -121,6 +122,8 @@ void Scheme::synchronize()
         }
     }
   }
+  copyHostToDevice(m_u.dataGPU(), m_u.dataCPU(), m_n[0]*m_n[1]*m_n[2]);
+
 }
 
 double Scheme::iteration_domaine(int imin, int imax,
