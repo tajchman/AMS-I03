@@ -25,19 +25,24 @@ elif p == 'Linux':
 base = os.getcwd()
 srcDir = os.path.join(base, 'src')
 
-print ('\nbuild ', args.type, '\n')
-buildDir = os.path.join(base, 'build', args.type)
-installDir = os.path.join(base, 'install', args.type)
 
-cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
-cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
-cmake_params.append(gen)
+for v in ["ON", "OFF"]:
+  print ('\nbuild ', args.type, ' OpenMP:', v, '\n')
+  buildDir = os.path.join(base, 'build', v, args.type)
+  installDir = os.path.join(base, 'install', args.type)
 
-if not os.path.exists(buildDir):
-  os.makedirs(buildDir)
+  cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
+  cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
+  cmake_params.append('-DENABLE_OPENMP=' + v)
+  cmake_params.append(gen)
 
-configureCmd = ['cmake'] + cmake_params + [srcDir]
-err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
-if err == 0:
-  err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+  if not os.path.exists(buildDir):
+    os.makedirs(buildDir)
+
+  configureCmd = ['cmake'] + cmake_params + [srcDir]
+  err = subprocess.call(configureCmd, cwd=buildDir, env=myenv)
+  if err == 0:
+    err = subprocess.call(compileCmd, cwd=buildDir, env=myenv)
+  if not err == 0:
+    break
 
