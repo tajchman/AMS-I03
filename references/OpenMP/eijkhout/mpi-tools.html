@@ -1,0 +1,660 @@
+<html>
+<head>
+<link href="ihpsc.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$']]}
+  });
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+  </script>
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//ace/ace.js" charset="utf-8"></script>
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-jsdeps.js"></script>
+<!-- include application -->
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-opt.js"></script>
+
+<script type="application/javascript">
+  // First we declare some metadata, primarily to describe
+  // the container environment.
+  var ccrsApiNamespace = "org.xsede.jobrunner.model.ModelApi";
+  var mpiExampleMetaJson = {
+    // CHANGE: for now, leave the appended string as .SysJobMetaData;
+    //         other options will be supported in the future
+    "$type": ccrsApiNamespace + ".SysJobMetaData",
+    // CHANGE: shell to use implicitly when running commands in the container
+    "shell": ["bash"],
+    // CHANGE: should currently be one of: .NixOS, .Singularity
+    "containerType": {
+      "$type":  ccrsApiNamespace + ".NixOS"
+    },
+    // CHANGE: Specify for NixOS for all jobs, or for Singularity when resuming existing jobs
+    "containerId": ["vicOpenMPI"],
+    // CHANGE: Specify the singularity image name
+    "image": [],
+    // Directories on the host to mount in the container, if any:
+    "binds": [],
+    // Only for singularity:
+    "overlay": [],
+    // CHANGE: should be filled in dynamically to contain the (student) user,
+    //         but this is a demo, so we use a static user name:
+    "user": "test0",
+    "address": [],
+    "hostname": [],
+    "url": window.location.href
+  };
+  var mpiExampleMeta = CCRS.sysJobMetaData(mpiExampleMetaJson);
+</script>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="pagehead">
+        <h1>MPI topic: Tools interface</h1>
+        <h5>Experimental html version of downloadable textbook, see http://www.tacc.utexas.edu/~eijkhout/istc/istc.html</h5>
+      </div>
+    </div>
+  </div>
+  <div>
+
+
+\[
+\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+\]
+
+
+13.1 : <a href="mpi-tools.html#Controlvariables">Control variables</a><br>
+13.2 : <a href="mpi-tools.html#Performancevariables">Performance variables</a><br>
+13.2.1 : <a href="mpi-tools.html#Performanceexperimentsessions">Performance experiment sessions</a><br>
+13.3 : <a href="mpi-tools.html#Categoriesofvariables">Categories of variables</a><br>
+<a href="index.html">Back to Table of Contents</a>
+<h1>13 MPI topic: Tools interface</h1>
+<!-- TranslatingLineGenerator file ['file'] -->
+<p name="switchToTextMode">
+
+<!-- environment: mpifour start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=mpifour ]] -->
+<remark>
+<b>MPI 4 Standard only</b>
+<p name="remark">
+<!-- TranslatingLineGenerator mpifour ['mpifour'] -->
+</p>
+
+<p name="switchToTextMode">
+The tools interface requires a different initialization routine
+<i>MPI_T_init_thread</i>
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_init_thread( int required,int *provided );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+Likewise, there is 
+<i>MPI_T_finalize</i>
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_finalize();
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+These matching calls can be made multiple times,
+after MPI has already been initialized with
+<i>MPI_Init</i>
+ or 
+<i>MPI_Init_thread</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Verbosity level is an integer parameter.
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+MPI_T_VERBOSITY_{USER,TUNER,MPIDEV}_{BASIC,DETAIL,ALL}
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Controlvariables">13.1</a> Control variables</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi-tools.html">mpi-tools</a> > <a href="mpi-tools.html#Controlvariables">Control variables</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+We query how many control variables are available
+with 
+<i>MPI_Cvar_get_num</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_Cvar_get_num( int *number_of_cvars );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+A description of the control variable can be obtained
+from 
+<i>MPI_T_cvar_get_info</i>
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_cvar_get_info( int cvar_num,
+  char *name, int *name_length,
+  int *verbosity, MPI_Datatype *type,MPI_T_enum *enumtype,
+  char *description,int *description_length,
+  int *bind,int *scope);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+An invalid index leads to a function result of 
+<i>MPI_T_ERR_INVALID_INDEX</i>
+.
+Any output parameter can be specified as 
+<tt>NULL</tt>
+and MPI will not set this.
+The 
+<tt>bind</tt>
+ variable is an object type or 
+<i>MPI_T_BIND_NO_OBJECT</i>
+.
+The 
+<tt>enumtype</tt>
+ variable is 
+<i>MPI_T_ENUM_NULL</i>
+ if the variable
+is not an enum type.
+</p>
+
+<p name="switchToTextMode">
+Conversely, given a variable name, its index can be retrieved with
+<i>MPI_T_cvar_get_index</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_cvar_get_index(const char *name, int *cvar_index)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+If the name can not be matched, the index is 
+<i>MPI_T_ERR_INVALID_NAME</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Accessing a control variable is done through a
+<i>control variable handle</i>
+.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_cvar_handle_alloc
+   (int cvar_index, void *obj_handle,
+    MPI_T_cvar_handle *handle, int *count)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+The handle is freed with 
+<i>MPI_T_cvar_handle_free</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_cvar_handle_free(MPI_T_cvar_handle *handle)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<i>Control variable access</i>
+<!-- index -->
+is done through 
+<i>MPI_T_cvar_read</i>
+ and 
+<i>MPI_T_cvar_write</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_cvar_read(MPI_T_cvar_handle handle, void* buf);
+int MPI_T_cvar_write(MPI_T_cvar_handle handle, const void* buf);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Performancevariables">13.2</a> Performance variables</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi-tools.html">mpi-tools</a> > <a href="mpi-tools.html#Performancevariables">Performance variables</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+\begin{raggedlist}
+  Performance variables come in classes:
+<i>MPI_T_PVAR_CLASS_STATE</i>
+<i>MPI_T_PVAR_CLASS_LEVEL</i>
+<i>MPI_T_PVAR_CLASS_SIZE</i>
+<i>MPI_T_PVAR_CLASS_PERCENTAGE</i>
+<i>MPI_T_PVAR_CLASS_HIGHWATERMARK</i>
+<i>MPI_T_PVAR_CLASS_LOWWATERMARK</i>
+<i>MPI_T_PVAR_CLASS_COUNTER</i>
+<i>MPI_T_PVAR_CLASS_AGGREGATE</i>
+<i>MPI_T_PVAR_CLASS_TIMER</i>
+<i>MPI_T_PVAR_CLASS_GENERIC</i>
+\end{raggedlist}
+</p>
+
+<p name="switchToTextMode">
+Query the number of performance variables with 
+<i>MPI_T_pvar_get_num</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_get_num(int *num_pvar);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+Get information about each variable, by index, with 
+<i>MPI_T_pvar_get_info</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_get_info
+   (int pvar_index, char *name, int *name_len,
+    int *verbosity, int *var_class, MPI_Datatype *datatype,
+    MPI_T_enum *enumtype, char *desc, int *desc_len, int *bind,
+    int *readonly, int *continuous, int *atomic)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+See general remarks about these in section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-tools.html#Controlvariables">13.1</a>
+.
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+The 
+<tt>readonly</tt>
+ variable indicates that the variable can not be written.
+<li>
+The 
+<tt>continuous</tt>
+ variable requires use of
+<i>MPI_T_pvar_start</i>
+ and 
+<i>MPI_T_pvar_stop</i>
+.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+Given a name, the index can be retried with 
+<i>MPI_T_pvar_get_index</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_get_index(const char *name, int var_class, int *pvar_index)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+Again, see section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-tools.html#Controlvariables">13.1</a>
+.
+</p>
+
+<h3><a id="Performanceexperimentsessions">13.2.1</a> Performance experiment sessions</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi-tools.html">mpi-tools</a> > <a href="mpi-tools.html#Performancevariables">Performance variables</a> > <a href="mpi-tools.html#Performanceexperimentsessions">Performance experiment sessions</a>
+</p>
+<p name="switchToTextMode">
+
+To prevent measurements from getting mixed up, they need to be done in
+<i>performance experiment session</i>
+s,
+to be called `sessions' in this chapter.
+However see section&nbsp;
+.
+</p>
+
+<p name="switchToTextMode">
+Create a session with 
+<i>MPI_T_pvar_session_create</i>
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_session_create(MPI_T_pvar_session *session)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+and release it with 
+<i>MPI_T_pvar_session_free</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_session_free(MPI_T_pvar_session *session)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+which sets the session variable to 
+<i>MPI_T_PVAR_SESSION_NULL</i>
+.
+</p>
+
+<p name="switchToTextMode">
+We access a variable through a handle, associated with a certain session.
+The handle is created with 
+<i>MPI_T_pvar_handle_alloc</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_handle_alloc
+   (MPI_T_pvar_session session, int pvar_index,
+    void *obj_handle, MPI_T_pvar_handle *handle, int *count)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+(If a routine takes both a session and handle argument, and
+the two are not associated, an error of 
+<i>MPI_T_ERR_INVALID_HANDLE</i>
+is returned.)
+</p>
+
+<p name="switchToTextMode">
+Free the handle with 
+<i>MPI_T_pvar_handle_free</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_handle_free
+   (MPI_T_pvar_session session,
+    MPI_T_pvar_handle *handle)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+which sets the variable to 
+<i>MPI_T_PVAR_HANDLE_NULL</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Continuous variables (see 
+<i>MPI_T_pvar_get_info</i>
+ above, which outputs this)
+can be started and stopped with
+<i>MPI_T_pvar_start</i>
+ and 
+<i>MPI_T_pvar_stop</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_start(MPI_T_pvar_session session, MPI_T_pvar_handle handle);
+int MPI_T_pvar_stop(MPI_T_pvar_session session, MPI_T_pvar_handle handle)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+Passing 
+<i>MPI_T_PVAR_ALL_HANDLES</i>
+ to the stop call
+attempts to stop all variables within the session.
+Failure to stop a variable returns 
+<i>MPI_T_ERR_PVAR_NO_STARTSTOP</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Variables can be read and written with
+<i>MPI_T_pvar_read</i>
+ and 
+<i>MPI_T_pvar_write</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_read
+   (MPI_T_pvar_session session, MPI_T_pvar_handle handle,
+    void* buf)
+int MPI_T_pvar_write
+   (MPI_T_pvar_session session, MPI_T_pvar_handle handle,
+    const void* buf)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+If the variable can not be written
+(see the 
+<tt>readonly</tt>
+ parameter of 
+<i>MPI_T_pvar_get_info</i>
+),
+<i>MPI_T_ERR_PVAR_NO_WRITE</i>
+ is returned.
+</p>
+
+<p name="switchToTextMode">
+A special case of writing the variable is to reset it with
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_reset(MPI_T_pvar_session session, MPI_T_pvar_handle handle)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+The handle value of 
+<i>MPI_T_PVAR_ALL_HANDLES</i>
+ is allowed.
+</p>
+
+<p name="switchToTextMode">
+A call to 
+<i>MPI_T_pvar_readreset</i>
+is an atomic combination of the read and reset calls:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_pvar_readreset
+   (MPI_T_pvar_session session,MPI_T_pvar_handle handle,
+    void* buf)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Categoriesofvariables">13.3</a> Categories of variables</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi-tools.html">mpi-tools</a> > <a href="mpi-tools.html#Categoriesofvariables">Categories of variables</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Variables, both the control and performance kind,
+can be grouped into categories by the MPI implementation.
+</p>
+
+<p name="switchToTextMode">
+The number of categories is queried with
+<i>MPI_T_category_get_num</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_category_get_num(int *num_cat)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+and for each category the information is retrieved with
+<i>MPI_T_category_get_info</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_category_get_info
+   (int cat_index,
+    char *name, int *name_len, char *desc, int *desc_len,
+    int *num_cvars, int *num_pvars, int *num_categories)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+For a given category name the index can be found with
+<i>MPI_T_category_get_index</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_category_get_index(const char *name, int *cat_index)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+The contents of a category are retrieved with
+<i>MPI_T_category_get_cvars</i>
+,
+<i>MPI_T_category_get_pvars</i>
+,
+<i>MPI_T_category_get_categories</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_category_get_cvars(int cat_index, int len, int indices[])
+int MPI_T_category_get_pvars(int cat_index, int len, int indices[])
+int MPI_T_category_get_categories(int cat_index, int len, int indices[])
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+\begin{raggedlist}
+  These indices can subsequently be used in the calls
+<i>MPI_T_cvar_get_info</i>
+,
+<i>MPI_T_pvar_get_info</i>
+,
+<i>MPI_T_category_get_info</i>
+.
+\end{raggedlist}
+</p>
+
+<p name="switchToTextMode">
+If categories change dynamically, this can be detected with
+<i>MPI_T_category_changed</i>
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_T_category_changed(int *stamp)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+</p name="remark">
+<i>End of MPI 4 note</i>
+</remark>
+<!-- environment: mpifour end embedded generator -->
+</div>
+<a href="index.html">Back to Table of Contents</a>

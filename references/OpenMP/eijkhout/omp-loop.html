@@ -1,0 +1,1099 @@
+<html>
+<head>
+<link href="ihpsc.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$']]}
+  });
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+  </script>
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//ace/ace.js" charset="utf-8"></script>
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-jsdeps.js"></script>
+<!-- include application -->
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-opt.js"></script>
+
+<script type="application/javascript">
+  // First we declare some metadata, primarily to describe
+  // the container environment.
+  var ccrsApiNamespace = "org.xsede.jobrunner.model.ModelApi";
+  var mpiExampleMetaJson = {
+    // CHANGE: for now, leave the appended string as .SysJobMetaData;
+    //         other options will be supported in the future
+    "$type": ccrsApiNamespace + ".SysJobMetaData",
+    // CHANGE: shell to use implicitly when running commands in the container
+    "shell": ["bash"],
+    // CHANGE: should currently be one of: .NixOS, .Singularity
+    "containerType": {
+      "$type":  ccrsApiNamespace + ".NixOS"
+    },
+    // CHANGE: Specify for NixOS for all jobs, or for Singularity when resuming existing jobs
+    "containerId": ["vicOpenMPI"],
+    // CHANGE: Specify the singularity image name
+    "image": [],
+    // Directories on the host to mount in the container, if any:
+    "binds": [],
+    // Only for singularity:
+    "overlay": [],
+    // CHANGE: should be filled in dynamically to contain the (student) user,
+    //         but this is a demo, so we use a static user name:
+    "user": "test0",
+    "address": [],
+    "hostname": [],
+    "url": window.location.href
+  };
+  var mpiExampleMeta = CCRS.sysJobMetaData(mpiExampleMetaJson);
+</script>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="pagehead">
+        <h1>OpenMP topic: Loop parallelism</h1>
+        <h5>Experimental html version of downloadable textbook, see http://www.tacc.utexas.edu/~eijkhout/istc/istc.html</h5>
+      </div>
+    </div>
+  </div>
+  <div>
+
+
+\[
+\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+\]
+
+
+17.1 : <a href="omp-loop.html#Loopparallelism">Loop parallelism</a><br>
+17.2 : <a href="omp-loop.html#Loopschedules">Loop schedules</a><br>
+17.3 : <a href="omp-loop.html#Reductions">Reductions</a><br>
+17.4 : <a href="omp-loop.html#Collapsingnestedloops">Collapsing nested loops</a><br>
+17.5 : <a href="omp-loop.html#Orderediterations">Ordered iterations</a><br>
+17.6 : <a href="omp-loop.html#\texttt{nowait}">\texttt{nowait}</a><br>
+17.7 : <a href="omp-loop.html#Whileloops">While loops</a><br>
+<a href="index.html">Back to Table of Contents</a>
+<h1>17 OpenMP topic: Loop parallelism</h1>
+<!-- TranslatingLineGenerator file ['file'] -->
+<p name="switchToTextMode">
+
+<h2><a id="Loopparallelism">17.1</a> Loop parallelism</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#Loopparallelism">Loop parallelism</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+Loop parallelism is a very common type of parallelism in scientific
+codes, so OpenMP has an easy mechanism for it.
+OpenMP parallel loops are a first example of OpenMP `worksharing'
+constructs (see section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/omp-loop.html#Whileloops">17.7</a>
+ for the full list):
+constructs that take an amount of work and distribute it over the
+available threads in a parallel region.
+</p>
+
+<p name="switchToTextMode">
+The parallel execution of a loop can be handled a number of different ways.
+For instance, you can create a parallel region around the loop, and
+adjust the loop bounds:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel
+{
+  int threadnum = omp_get_thread_num(),
+    numthreads = omp_get_num_threads();
+  int low = N*threadnum/numthreads,
+    high = N*(threadnum+1)/numthreads;
+  for (i=low; i&lt;high; i++)
+    // do something with i
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+A more natural option is to use the
+<tt>parallel for</tt>
+ pragma:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel
+#pragma omp for
+for (i=0; i&lt;N; i++) {
+  // do something with i
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+This has several advantages. For one, you don't have to calculate the loop bounds
+for the threads yourself, but you can also tell OpenMP to assign the loop
+iterations according to different schedules (section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/omp-loop.html#Loopschedules">17.2</a>
+).
+</p>
+
+<p name="switchToTextMode">
+Figure&nbsp;
+17.1
+ shows the execution on four threads of
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel
+{
+  code1();
+#pragma omp for
+  for (i=1; i&lt;=4*N; i++) {
+    code2();
+  }
+  code3();
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+The code before and after the loop is executed identically
+in each thread; the loop iterations are spread over the four threads.
+<!-- environment: figure start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=figure ]] -->
+<figure>
+<float mode=figure>
+<!-- TranslatingLineGenerator figure ['figure'] -->
+<img src="graphics/parallel-do.jpeg" width=800>
+<p name="caption">
+FIGURE 17.1: Execution of parallel code inside and outside a loop
+</p>
+
+</float>
+</figure>
+<!-- environment: figure end embedded generator -->
+<p name="switchToTextMode">
+
+Note that the 
+<tt>parallel do</tt>
+ and 
+<tt>parallel for</tt>
+
+pragmas do not create a team of threads: they
+take the team of threads that is active,
+and divide the loop iterations over them.
+</p>
+
+<p name="switchToTextMode">
+This means that the 
+<tt>omp for</tt>
+ or 
+<tt>omp do</tt>
+ directive needs to be
+inside a parallel region. It is also possible to have a combined
+
+<tt>omp parallel for</tt>
+ or 
+<tt>omp parallel do</tt>
+ directive.
+</p>
+
+<p name="switchToTextMode">
+If your parallel region only contains a loop, you can combine the
+pragmas for the parallel region and distribution of the loop iterations:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel for
+  for (i=0; .....
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: exercise start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+
+  Compute $\pi$ by 
+<i>numerical integration</i>
+. We use the fact that $\pi$
+  is the area of the unit circle, and we approximate this by computing
+  the area of a quarter circle using 
+<i>Riemann sums</i>
+.
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Let $f(x)=\sqrt{1-x^2}$ be the function that describes the
+    quarter circle for $x=0&hellip; 1$;
+<li>
+Then we compute 
+\[
+ \pi/4\approx\sum_{i=0}^{N-1} \Delta x
+    f(x_i) \qquad \hbox{where $x_i=i\Delta x$ and $\Delta x=1/N$} 
+\]
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+  Write a program for this, and parallelize it using OpenMP parallel
+  for directives.
+<!-- environment: enumerate start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=enumerate ]] -->
+<enumerate>
+<ol>
+<!-- TranslatingLineGenerator enumerate ['enumerate'] -->
+<li>
+Put a 
+<tt>parallel</tt>
+ directive around your loop. Does it still
+    compute the right result? Does the time go down with the number of
+    threads? (The answers should be no and no.)
+<li>
+Change the 
+<tt>parallel</tt>
+ to 
+<tt>parallel for</tt>
+ (or \n{parallel
+    do}). Now is the result correct? Does execution speed up? (The
+    answers should now be no and yes.)
+<li>
+Put a 
+<tt>critical</tt>
+ directive in front of the update. (Yes and
+    very much no.)
+<li>
+Remove the 
+<tt>critical</tt>
+ and add a clause
+    
+<tt>reduction(+:quarterpi)</tt>
+ to the 
+<tt>for</tt>
+ directive.
+    Now it should be correct and efficient.
+</ol>
+</enumerate>
+<!-- environment: enumerate end embedded generator -->
+<p name="switchToTextMode">
+  Use different numbers of cores and compute the
+  speedup you attain over the sequential computation. Is there a
+  performance difference between the OpenMP code with 1&nbsp;thread and the
+  sequential code?
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<!-- environment: answer start embedded generator -->
+<!-- environment block purpose: [[ environment=answer ]] -->
+<answer>
+
+
+</answer>
+<!-- environment: answer end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: remark start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=remark ]] -->
+<remark>
+<b>Remark</b>
+<p name="remark">
+<!-- TranslatingLineGenerator remark ['remark'] -->
+  In this exercise you may have seen the runtime go up a couple of times
+  where you weren't expecting it. The issue here is 
+    sharing}; see&nbsp;
+<i>Eijkhout:IntroHPC</i>
+ for more explanation.
+</p name="remark">
+</remark>
+<!-- environment: remark end embedded generator -->
+<p name="switchToTextMode">
+
+There are some restrictions on the loop: basically, OpenMP needs to be
+able to determine in advance how many iterations there will be.
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+The loop can not contains 
+<tt>break</tt>
+, 
+<tt>return</tt>
+, 
+<tt>exit</tt>
+ statements, or
+  
+<tt>goto</tt>
+ to a label outside the loop.
+<li>
+The 
+<tt>continue</tt>
+ (C) or 
+<tt>cycle</tt>
+ (F) statement is allowed.
+<li>
+The index update has to be an increment (or decrement) by a fixed amount.
+<li>
+The loop index variable is automatically private, and not changes to it
+  inside the loop are allowed.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Loopschedules">17.2</a> Loop schedules</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#Loopschedules">Loop schedules</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+Usually you will have many more iterations in a loop than there are threads.
+Thus, there are several ways you can assign your loop iterations to the threads.
+OpenMP lets you specify this with the 
+<i>schedule</i>
+ clause.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp for schedule(....)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+The first distinction we now have to make is between static and dynamic schedules.
+With static schedules, the iterations are assigned purely based on the number
+of iterations and the number of threads (and the 
+<tt>chunk</tt>
+ parameter; see later).
+In dynamic schedules, on the other hand, iterations are assigned to threads that
+are unoccupied. Dynamic schedules are a good idea if iterations take an unpredictable
+amount of time, so that 
+<i>load balancing</i>
+ is needed.
+</p>
+
+<!-- environment: figure start embedded generator -->
+<!-- environment block purpose: [[ environment=figure ]] -->
+<figure>
+<float mode=figure>
+<!-- TranslatingLineGenerator figure ['figure'] -->
+<img src="graphics/scheduling.jpeg" width=800>
+<p name="caption">
+FIGURE 17.2: Illustration static round-robin scheduling versus dynamic
+</p>
+
+</float>
+</figure>
+<!-- environment: figure end embedded generator -->
+<p name="switchToTextMode">
+Figure&nbsp;
+17.2
+ illustrates this: assume that each core
+gets assigned two (blocks of) iterations and these blocks take
+gradually less and less time. You see from the left picture that
+thread&nbsp;1 gets two fairly long blocks, where as thread&nbsp;4 gets two short
+blocks, thus finishing much earlier. (This phenomenon of threads
+having unequal amounts of work is known as 
+  imbalance}.) On the other hand, in the right figure thread&nbsp;4 gets
+block&nbsp;5, since it finishes the first set of blocks early. The effect
+is a perfect load balancing.
+</p>
+
+<!-- environment: figure start embedded generator -->
+<!-- environment block purpose: [[ environment=figure ]] -->
+<figure>
+<float mode=figure>
+<!-- TranslatingLineGenerator figure ['figure'] -->
+<img src="graphics/schedules.jpeg" width=800>
+<p name="caption">
+FIGURE 17.3: Illustration of the scheduling strategies of loop iterations
+</p>
+
+</float>
+</figure>
+<!-- environment: figure end embedded generator -->
+<p name="switchToTextMode">
+
+The default static schedule is to assign one consecutive block of
+iterations to each thread. If you want different sized blocks you can
+defined a 
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp for schedule(static[,chunk])
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+(where the square brackets indicate an optional argument).
+With static scheduling, the compiler will split up the loop iterations at compile time,
+so, provided the iterations take roughly the same amount of time, this is the most efficient at runtime.
+</p>
+
+<p name="switchToTextMode">
+The choice of a chunk size is often a balance between the low overhead of having
+only a few chunks, versus the load balancing effect of having smaller chunks.
+<!-- environment: exercise start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+  Why is a chunk size of&nbsp;1 typically a bad idea? (Hint: think about
+  cache lines, and read 
+<i>Eijkhout:IntroHPC</i>
+.)
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<p name="switchToTextMode">
+
+In dynamic scheduling OpenMP will put blocks of iterations
+(the default chunk size is&nbsp;1) in a task queue, and the threads take one of these
+tasks whenever they are finished with the previous.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp for schedule(static[,chunk])
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+While this schedule may give good load balancing if the iterations
+take very differing amounts of time to execute, it does carry runtime
+overhead for managing the queue of iteration tasks.
+</p>
+
+<p name="switchToTextMode">
+Finally, there is the 
+The thinking here is that large chunks carry the least overhead, but smaller chunks are better
+for load balancing.
+The various schedules are illustrated in figure&nbsp;
+17.3
+.
+</p>
+
+<p name="switchToTextMode">
+If you don't want to decide on a schedule in your code, you can
+specify the 
+schedule will then at runtime be read from the
+<i>OMP_SCHEDULE</i>
+ environment variable. You can even just
+leave it to the runtime library by specifying
+</p>
+
+<!-- environment: exercise start embedded generator -->
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+
+  We continue with exercise&nbsp;
+17.1
+.  We add `adaptive
+  integration': where needed, the program refines the step
+  size\footnote{It doesn't actually do this in a mathematically
+    sophisticated way, so this code is more for the sake of the
+    example.}.  This means that the iterations no longer take a
+  predictable amount of time.
+</p>
+
+<p name="switchToTextMode">
+\begin{multicols}
+{2}
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+for (i=0; i&lt;nsteps; i++) {
+    double
+    x = i*h,x2 = (i+1)*h,
+    y = sqrt(1-x*x),y2 = sqrt(1-x2*x2),
+    slope = (y-y2)/h;
+    if (slope&gt;15) slope = 15;
+    int
+    samples = 1+(int)slope, is;
+    for (is=0; is&lt;samples; is++) {
+        double
+        hs = h/samples,
+        xs = x+ is*hs,
+        ys = sqrt(1-xs*xs);
+        quarterpi += hs*ys;
+        nsamples++;
+    }
+}
+  pi = 4*quarterpi;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+\end{multicols}
+</p>
+
+<!-- environment: enumerate start embedded generator -->
+<!-- environment block purpose: [[ environment=enumerate ]] -->
+<enumerate>
+<ol>
+<!-- TranslatingLineGenerator enumerate ['enumerate'] -->
+<li>
+Use the 
+<tt>omp parallel for</tt>
+ construct to parallelize the loop.
+  As in the previous lab, you may at first see an incorrect result.
+  Use the 
+<tt>reduction</tt>
+ clause to fix this.
+<li>
+Your code should now see a decent speedup, using up to 8&nbsp;cores.
+  However, it is possible to get completely linear speedup. For this
+  you need to adjust the schedule.
+</p>
+
+<p name="switchToTextMode">
+  Start by using 
+<tt>schedule(static,$n$)</tt>
+. Experiment with values
+  for&nbsp;$n$.  When can you get a better speedup? Explain this.
+<li>
+Since this code is somewhat dynamic, try 
+<tt>schedule(dynamic)</tt>
+.
+  This will actually give a fairly bad result. Why?  Use
+  
+<tt>schedule(dynamic,$n$)</tt>
+ instead, and experiment with values
+  for&nbsp;$n$.
+<li>
+Finally, use 
+<tt>schedule(guided)</tt>
+, where OpenMP uses a
+  heuristic.  What results does that give?
+</ol>
+</enumerate>
+<!-- environment: enumerate end embedded generator -->
+<p name="switchToTextMode">
+
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: exercise start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+  Program the 
+<i>LU factorization</i>
+ algorithm without pivoting.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+for k=1,n:
+  A[k,k] = 1./A[k,k]
+  for i=k+1,n:
+    A[i,k] = A[i,k]/A[k,k]
+    for j=k+1,n:
+      A[i,j] = A[i,j] - A[i,k]*A[k,j]
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<!-- environment: enumerate start embedded generator -->
+<!-- environment block purpose: [[ environment=enumerate ]] -->
+<enumerate>
+<ol>
+<!-- TranslatingLineGenerator enumerate ['enumerate'] -->
+<li>
+Argue that it is not possible to parallelize the outer loop.
+<li>
+Argue that it is possible to parallelize both the $i$ and $j$ loops.
+<li>
+Parallelize the algorithm by focusing on the $i$ loop. Why is the algorithm as given here best
+  for a matrix on row-storage? What would you do if the matrix was on column storage?
+<li>
+Argue that with the default schedule, if a row is updated by one thread in one iteration,
+  it may very well be updated by another thread in another. Can you find a way to schedule
+  loop iterations so that this does not happen? What practical reason is there for doing so?
+</ol>
+</enumerate>
+<!-- environment: enumerate end embedded generator -->
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<p name="switchToTextMode">
+
+The schedule can be declared explicitly, set at runtime
+through the 
+<i>OMP_SCHEDULE</i>
+ environment variable, or left up to the runtime system
+by specifying 
+<tt>auto</tt>
+. Especially in the last two cases  you may want to enquire
+what schedule is currently being used with
+<i>omp_get_schedule</i>
+.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int omp_get_schedule(omp_sched_t * kind, int * modifier );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+Its mirror call is 
+<i>omp_set_schedule</i>
+, which sets the
+value that is used when schedule value 
+<tt>runtime</tt>
+ is used. It is in
+effect equivalent to setting the environment variable
+
+<tt>OMP_SCHEDULE</tt>
+.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+void omp_set_schedule (omp_sched_t kind, int modifier);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: tabular start embedded generator -->
+</p>
+<table>
+<tr>
+<td>
+<!-- TranslatingLineGenerator tabular ['tabular'] -->
+  </td></tr>
+<tr><td>
+  Type</td><td>environment variable</td><td>clause</td><td>modifier default</td></tr>
+<tr><td>
+        </td><td>{\tt OMP\_SCHEDULE\char`\=}</td><td>{\tt schedule( ... )}</td><td> </td></tr>
+<tr><td>
+  </td></tr>
+<tr><td>
+  static</td><td>{static[,n]}</td><td>{static[,n]}</td><td>$N/\mathit{nthreads}$</td></tr>
+<tr><td>
+  dynamic</td><td>{dynamic[,n]}</td><td>{dynamic[,n]}</td><td>$1$</td></tr>
+<tr><td>
+  guided</td><td>{guided[,n]}</td><td>{guided[,n]}</td></tr>
+<tr><td>
+  </td></tr>
+<tr><td>
+</td>
+</tr>
+</table>
+<!-- environment: tabular end embedded generator -->
+<p name="switchToTextMode">
+
+Here are the various schedules you can set with the
+
+<tt>schedule</tt>
+
+<!-- index -->
+ clause:
+<!-- environment: description start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=description ]] -->
+<description>
+<ul>
+<!-- TranslatingLineGenerator description ['description'] -->
+<li>
+[affinity] Set by using value  
+<i>omp_sched_affinity</i>
+<li>
+[auto] The schedule is left up to the implementation. Set by
+    using value 
+<i>omp_sched_auto</i>
+<li>
+[dynamic] value:&nbsp;2. The modifier parameter is the
+<i>chunk</i>
+ size; default&nbsp;1. Set by using value
+<i>omp_sched_dynamic</i>
+<li>
+[guided] Value:&nbsp;3. The modifier parameter is the
+<tt>chunk</tt>
+ size. Set by using value
+<i>omp_sched_guided</i>
+<li>
+[runtime] Use the value of the 
+<i>OMP_SCHEDULE</i>
+    environment variable. Set by using value
+<i>omp_sched_runtime</i>
+<li>
+[static] value:&nbsp;1. The modifier parameter is the 
+<i>chunk</i>
+ size. Set by using value  
+<i>omp_sched_static</i>
+</ul>
+</description>
+<!-- environment: description end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Reductions">17.3</a> Reductions</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#Reductions">Reductions</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+So far we have focused on loops with independent iterations.
+Reductions are a common type of loop with dependencies.
+There is an extended discussion of reductions in section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/omp-data.html#Threadprivateexample">19.8.2</a>
+.
+</p>
+
+<h2><a id="Collapsingnestedloops">17.4</a> Collapsing nested loops</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#Collapsingnestedloops">Collapsing nested loops</a>
+</p>
+<p name="switchToTextMode">
+
+In general, the more work there is to divide over a number of threads,
+the more efficient the parallelization will be. In the context of
+parallel loops, it is possible to increase the amount of work by
+parallelizing all levels of loops instead of just the outer one.
+</p>
+
+<p name="switchToTextMode">
+Example: in
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+for ( i=0; i&lt;N; i++ )
+  for ( j=0; j&lt;N; j++ )
+    A[i][j] = B[i][j] + C[i][j]
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+all $N^2$ iterations are independent, but a regular 
+<tt>omp for</tt>
+
+directive will only parallelize one level. The 
+clause will parallelize more than one level:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp for collapse(2)
+for ( i=0; i&lt;N; i++ )
+  for ( j=0; j&lt;N; j++ )
+    A[i][j] = B[i][j] + C[i][j]
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+It is only possible to collapse perfectly nested loops, that is, the
+loop body of the outer loop can consist only of the inner loop; there
+can be no statements before or after the inner loop in the loop body
+of the outer loop. That is, the two loops in
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+for (i=0; i&lt;N; i++) {
+  y[i] = 0.;
+  for (j=0; j&lt;N; j++)
+    y[i] += A[i][j] * x[j]
+  }
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+can not be collapsed.
+</p>
+
+<!-- environment: exercise start embedded generator -->
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+  Can you rewrite the preceding code example so that it can be
+  collapsed?
+  Do timing tests to see if you can notice the improvement from collapsing.
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Orderediterations">17.5</a> Ordered iterations</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#Orderediterations">Ordered iterations</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+Iterations in a parallel loop that are execution in parallel do not
+execute in lockstep. That means that in
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel for
+for ( ... i ... ) {
+  ... f(i) ...
+  printf("something with %d\n",i);
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+it is not true that all function evaluations happen more or less at
+the same time, followed by all print statements. The print statements
+can really happen in any order. The 
+coupled with the 
+<tt>ordered</tt>
+ directive can
+force execution in the right order:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel for ordered
+for ( ... i ... ) {
+  ... f(i) ...
+#pragma omp ordered
+  printf("something with %d\n",i);
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+Example code structure:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel for shared(y) ordered
+for ( ... i ... ) {
+  int x = f(i)
+#pragma omp ordered
+  y[i] += f(x)
+  z[i] = g(y[i])
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+There is a limitation:
+each iteration can encounter only one 
+<tt>ordered</tt>
+ directive.
+</p>
+
+<h2><a id="\texttt{nowait}">17.6</a> \texttt{nowait}</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#\texttt{nowait}">\texttt{nowait}</a>
+</p>
+
+<p name="switchToTextMode">
+
+The implicit barrier at the end of a work sharing construct
+can be cancelled with a 
+This has the effect that threads that are finished can continue
+with the next code in the parallel region:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel
+{
+#pragma omp for nowait
+  for (i=0; i&lt;N; i++) { ... }
+  // more parallel code
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+In the following example, threads that are finished with the first loop
+can start on the second. Note that this requires both loops to have
+the same schedule. We specify the static schedule here to have an
+identical scheduling of iterations over threads:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#pragma omp parallel
+{
+  x = local_computation()
+#pragma omp for schedule(static) nowait
+  for (i=0; i&lt;N; i++) {
+    x[i] = ...
+  }
+#pragma omp for schedule(static)
+  for (i=0; i&lt;N; i++) {
+    y[i] = ... x[i] ...
+  }
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Whileloops">17.7</a> While loops</h2>
+<p name=crumbs>
+crumb trail:  > <a href="omp-loop.html">omp-loop</a> > <a href="omp-loop.html#Whileloops">While loops</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+OpenMP can only handle `for' loops: 
+<i>while loops</i>
+ can not
+be parallelized. So you have to find a way around that. While loops
+are for instance used to search through data:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+while ( a[i]!=0 && i&lt;imax ) {
+ i++; }
+// now i is the first index for which 
+<tt>a[i]</tt>
+ is zero.
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+We replace the while loop by a for loop that examines all locations:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+result = -1;
+#pragma omp parallel for
+for (i=0; i&lt;imax; i++) {
+  if (a[i]!=0 && result&lt;0) result = i;
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<!-- environment: exercise start embedded generator -->
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+  Show that this code has a race condition.
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<!-- environment: answer start embedded generator -->
+<!-- environment block purpose: [[ environment=answer ]] -->
+<answer>
+
+
+</answer>
+<!-- environment: answer end embedded generator -->
+<p name="switchToTextMode">
+You can fix the race condition by making the condition into a critical section;
+section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/omp-sync.html#\texttt{critical}and\texttt{atomic}">21.2.1</a>
+. In this particular example, with a very small amount
+of work per iteration, that is likely to be inefficient
+in this case (why?).
+A&nbsp;more efficient solution uses the 
+<tt>lastprivate</tt>
+ pragma:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+result = -1;
+#pragma omp parallel for lastprivate(result)
+for (i=0; i&lt;imax; i++) {
+  if (a[i]!=0) result = i;
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+You have now solved a slightly different problem: the result variable
+contains the 
+<i>last</i>
+ location where 
+<tt>a[i]</tt>
+ is zero.
+</p>
+
+</div>
+<a href="index.html">Back to Table of Contents</a>

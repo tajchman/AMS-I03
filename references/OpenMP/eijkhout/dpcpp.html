@@ -1,0 +1,1153 @@
+<html>
+<head>
+<link href="ihpsc.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$']]}
+  });
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+  </script>
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//ace/ace.js" charset="utf-8"></script>
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-jsdeps.js"></script>
+<!-- include application -->
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-opt.js"></script>
+
+<script type="application/javascript">
+  // First we declare some metadata, primarily to describe
+  // the container environment.
+  var ccrsApiNamespace = "org.xsede.jobrunner.model.ModelApi";
+  var mpiExampleMetaJson = {
+    // CHANGE: for now, leave the appended string as .SysJobMetaData;
+    //         other options will be supported in the future
+    "$type": ccrsApiNamespace + ".SysJobMetaData",
+    // CHANGE: shell to use implicitly when running commands in the container
+    "shell": ["bash"],
+    // CHANGE: should currently be one of: .NixOS, .Singularity
+    "containerType": {
+      "$type":  ccrsApiNamespace + ".NixOS"
+    },
+    // CHANGE: Specify for NixOS for all jobs, or for Singularity when resuming existing jobs
+    "containerId": ["vicOpenMPI"],
+    // CHANGE: Specify the singularity image name
+    "image": [],
+    // Directories on the host to mount in the container, if any:
+    "binds": [],
+    // Only for singularity:
+    "overlay": [],
+    // CHANGE: should be filled in dynamically to contain the (student) user,
+    //         but this is a demo, so we use a static user name:
+    "user": "test0",
+    "address": [],
+    "hostname": [],
+    "url": window.location.href
+  };
+  var mpiExampleMeta = CCRS.sysJobMetaData(mpiExampleMetaJson);
+</script>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="pagehead">
+        <h1>Sycl, OneAPI, DPC++</h1>
+        <h5>Experimental html version of downloadable textbook, see http://www.tacc.utexas.edu/~eijkhout/istc/istc.html</h5>
+      </div>
+    </div>
+  </div>
+  <div>
+
+
+\[
+\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+\]
+
+
+37.1 : <a href="dpcpp.html#Logistics">Logistics</a><br>
+37.2 : <a href="dpcpp.html#Platformsanddevices">Platforms and devices</a><br>
+37.3 : <a href="dpcpp.html#Queues">Queues</a><br>
+37.3.1 : <a href="dpcpp.html#Deviceselectors">Device selectors</a><br>
+37.3.2 : <a href="dpcpp.html#Queueexecution">Queue execution</a><br>
+37.3.3 : <a href="dpcpp.html#Kernelordering">Kernel ordering</a><br>
+37.4 : <a href="dpcpp.html#Kernels">Kernels</a><br>
+37.5 : <a href="dpcpp.html#Paralleloperations">Parallel operations</a><br>
+37.5.1 : <a href="dpcpp.html#Loops">Loops</a><br>
+37.5.1.1 : <a href="dpcpp.html#Loopindices">Loop indices</a><br>
+37.5.2 : <a href="dpcpp.html#Taskdependencies">Task dependencies</a><br>
+37.5.3 : <a href="dpcpp.html#Raceconditions">Race conditions</a><br>
+37.6 : <a href="dpcpp.html#Memoryaccess">Memory access</a><br>
+37.6.1 : <a href="dpcpp.html#Unifiedsharedmemory">Unified shared memory</a><br>
+37.6.2 : <a href="dpcpp.html#Buffersandaccessors">Buffers and accessors</a><br>
+37.7 : <a href="dpcpp.html#Paralleloutput">Parallel output</a><br>
+37.8 : <a href="dpcpp.html#DPCPPextensions">DPCPP extensions</a><br>
+37.9 : <a href="dpcpp.html#Inteldevcloudnotes">Intel devcloud notes</a><br>
+<a href="index.html">Back to Table of Contents</a>
+<h1>37 Sycl, OneAPI, DPC++</h1>
+<!-- TranslatingLineGenerator file ['file'] -->
+</p>
+
+<p name="switchToTextMode">
+This chapter explains the basic concepts of Sycl/Dpc++,
+and helps you get
+started on running your first program.
+</p>
+
+<!-- environment: itemize start embedded generator -->
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>SYCL</i>
+ is a C++-based language for portable parallel programming.
+<li>
+<i>DPCPP</i>
+ is Intel's extension of Sycl.
+<li>
+<i>OneAPI</i>
+ is Intel's compiler suite,
+  which contains the 
+<span title="acronym" ><i>DPCPP</i></span>
+ compiler.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Logistics">37.1</a> Logistics</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Logistics">Logistics</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Headers:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#include &lt;CL/sycl.hpp&gt;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+You can now include namespace, but with care!
+If you use
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+using namespace cl;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+you have to prefix all SYCL class with  <tt>sycl::</tt> ,
+<p name="switchToTextMode">
+which is a bit of a bother.
+However, if you use
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+using namespace cl::sycl;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+you run into the fact that SYCL has its own versions of many 
+<span title="acronym" ><i>STL</i></span>
+commands, and so you will get name collisions.
+The most obvious example is that
+the  <tt>cl::sycl</tt>  name space has its own versions of \n{cout} and \n{endl}.
+Therefore you have to use explicitly \lstinline+std::cout+ and  <tt>std::end</tt> .
+Using the wrong I/O will cause tons of inscrutable error messages.
+Additionally, SYCL has its own version of 
+<tt>free</tt>
+,
+and of several math routines.
+</p>
+
+<p name="switchToTextMode">
+Intel extension:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+using namespace sycl;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Platformsanddevices">37.2</a> Platforms and devices</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Platformsanddevices">Platforms and devices</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Since 
+<span title="acronym" ><i>DPCPP</i></span>
+ is cross-platform, we first need to discovers
+the devices.
+</p>
+
+<p name="switchToTextMode">
+First we list the platforms:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#dpcppplatforms" aria-expanded="false" aria-controls="dpcppplatforms">
+        C++ Code: dpcppplatforms
+      </button>
+    </h5>
+  </div>
+  <div id="dpcppplatforms" class="collapse">
+  <pre>
+// devices.cxx
+std::vector<sycl::platform> platforms = sycl::platform::get_platforms();
+for (const auto &plat : platforms) {
+// get_info is a template. So we pass the type as an `arguments`.
+  std::cout << "Platform: "
+            << plat.get_info<sycl::info::platform::name>() << " "
+            << plat.get_info<sycl::info::platform::vendor>() << " "
+            << plat.get_info<sycl::info::platform::version>() << std::endl;
+</pre>
+</div>
+</div>
+</p>
+
+<p name="switchToTextMode">
+Then for each platform we list the devices:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#dpcppdevices" aria-expanded="false" aria-controls="dpcppdevices">
+        C++ Code: dpcppdevices
+      </button>
+    </h5>
+  </div>
+  <div id="dpcppdevices" class="collapse">
+  <pre>
+std::vector<sycl::device> devices = plat.get_devices();
+for (const auto &dev : devices) {
+  std::cout << "-- Device: "
+            << dev.get_info<sycl::info::device::name>() << " "
+            << (dev.is_gpu() ? "is a gpu" : " is not a gpu") << std::endl;
+</pre>
+</div>
+</div>
+</p>
+
+<h2><a id="Queues">37.3</a> Queues</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Queues">Queues</a>
+</p>
+<p name="switchToTextMode">
+
+The execution mechanism of SYCL is the
+<i>queue</i>
+<!-- index -->
+:
+a sequence of actions that will be executed on a selected device.
+The only user action is submitting actions to a queue;
+the queue is executed at the end of the scope where it is declared.
+</p>
+
+<p name="switchToTextMode">
+Queue execution is asynchronous with host code.
+</p>
+
+<h3><a id="Deviceselectors">37.3.1</a> Device selectors</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Queues">Queues</a> > <a href="dpcpp.html#Deviceselectors">Device selectors</a>
+</p>
+<p name="switchToTextMode">
+
+You need to select a device on which to execute the queue.
+A&nbsp;single queue can only dispatch to a single device.
+</p>
+
+<p name="switchToTextMode">
+A queue is coupled to one specific device,
+so it can not spread work over multiple devices.
+You can find a default device for the queue with
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+  sycl::queue myqueue;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+The following example explicitly assigns the queue to the CPU device
+using the  <tt>sycl::</tt> 
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#cpuclass" aria-expanded="false" aria-controls="cpuclass">
+        C++ Code: cpuclass
+      </button>
+    </h5>
+  </div>
+  <div id="cpuclass" class="collapse">
+  <pre>
+// cpuname.cxx
+sycl::queue myqueue( sycl::cpu_selector{} );
+</pre>
+</div>
+</div>
+</p>
+
+The  <tt>sycl::</tt> 
+<p name="switchToTextMode">
+make the code run on the host.
+</p>
+
+<p name="switchToTextMode">
+It is good for your sanity to print the name of the device
+you are running on:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#devname" aria-expanded="false" aria-controls="devname">
+        C++ Code: devname
+      </button>
+    </h5>
+  </div>
+  <div id="devname" class="collapse">
+  <pre>
+// devname.cxx
+std::cout << myqueue.get_device().get_info<sycl::info::device::name>()
+          << std::endl;
+</pre>
+</div>
+</div>
+</p>
+
+<p name="switchToTextMode">
+If you try to select a device that is not available,
+a  <tt>sycl::</tt> 
+</p>
+
+<p name="switchToTextMode">
+Intel extension:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+#include "CL/sycl/intel/fpga_extensions.hpp"
+fpga_selector
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Queueexecution">37.3.2</a> Queue execution</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Queues">Queues</a> > <a href="dpcpp.html#Queueexecution">Queue execution</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+It seems that queue kernels will also be executed when only they
+go out of scope, but not the queue:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+cpu_selector selector;
+queue q(selector);
+{
+  q.submit( /* some kernel */ );
+} // here the kernel executes
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Kernelordering">37.3.3</a> Kernel ordering</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Queues">Queues</a> > <a href="dpcpp.html#Kernelordering">Kernel ordering</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Kernels are not necessarily executed in the order in which they are submitted.
+You can enforce this by specifying an 
+<i>in-order queue</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+sycl::queue myqueue{property::queue::inorder()};
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Kernels">37.4</a> Kernels</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Kernels">Kernels</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+One kernel per submit.
+</p>
+
+<!-- environment: lstlisting start embedded generator -->
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+myqueue.submit( [&] ( handler &commandgroup ) {
+    commandgroup.parallel_for&lt;uniquename&gt;
+      ( range&lt;1&gt;{N},
+        [=] ( id&lt;1&gt; idx ) { ... idx }
+      )
+    } );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+cgh.single_task(
+  [=]() {
+    // kernel function is executed EXACTLY once on a SINGLE work-item
+});
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+The 
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+auto myevent = myqueue.submit( /* stuff */ );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+This can be used for two purposes:
+<!-- environment: enumerate start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=enumerate ]] -->
+<enumerate>
+<ol>
+<!-- TranslatingLineGenerator enumerate ['enumerate'] -->
+<li>
+It becomes possible to wait for this specific event:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+myevent.wait();
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<li>
+It can be used to indicate kernel dependencies:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+myqueue.submit( [=] (handler &h) {
+    h.depends_on(myevent);
+    /* stuff */
+    } );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+</ol>
+</enumerate>
+<!-- environment: enumerate end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Paralleloperations">37.5</a> Parallel operations</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Paralleloperations">Parallel operations</a>
+</p>
+</p>
+
+<h3><a id="Loops">37.5.1</a> Loops</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Paralleloperations">Parallel operations</a> > <a href="dpcpp.html#Loops">Loops</a>
+</p>
+<p name="switchToTextMode">
+
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+cgh.parallel_for(
+  range&lt;3&gt;(1024,1024,1024),
+  // using 3D in this example
+  [=](id&lt;3&gt; myID) {
+    // kernel function is executed on an n-dimensional range (NDrange)
+});
+
+
+cgh.parallel_for(
+  nd_range&lt;3&gt;( {1024,1024,1024},{16,16,16} ),
+  // using 3D in this example
+  [=](nd_item&lt;3&gt; myID) {
+    // kernel function is executed on an n-dimensional range (NDrange)
+});
+
+
+cgh.parallel_for_work_group(
+  range&lt;2&gt;(1024,1024),
+  // using 2D in this example
+  [=](group&lt;2&gt; myGroup) {
+    // kernel function is executed once per work-group
+});
+
+
+grp.parallel_for_work_item(
+  range&lt;1&gt;(1024),
+  // using 1D in this example
+  [=](h_item&lt;1&gt; myItem) {
+    // kernel function is executed once per work-item
+});
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h4><a id="Loopindices">37.5.1.1</a> Loop indices</h4>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Paralleloperations">Parallel operations</a> > <a href="dpcpp.html#Loops">Loops</a> > <a href="dpcpp.html#Loopindices">Loop indices</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Kernels such as 
+expects two arguments:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+a 
+<li>
+a lambda of one argument: an index.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+There are several ways of indexing.
+The 
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+myHandle.parallel_for&lt;class uniqueID&gt;
+   ( mySize,
+     [=]( id&lt;1&gt; index ) {
+       float x = index.get(0) * h;
+       deviceAccessorA[index] *= 2.;
+     }
+   )
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+cgh.parallel_for&lt;class foo&gt;(
+    range&lt;1&gt;{D*D*D},
+    [=](id&lt;1&gt; item) {
+        xx[ item[0] ] = 2 * item[0] + 1;
+    }
+)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+While the C++ vectors remain one-dimensional,
+<span title="acronym" ><i>DPCPP</i></span>
+ allows you to make multi-dimensional buffers:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+std::vector&lt;int&gt; y(D*D*D);
+buffer&lt;int,1&gt; y_buf(y.data(), range&lt;1&gt;(D*D*D));
+cgh.parallel_for&lt;class foo2D&gt;
+   (range&lt;2&gt;{D,D*D},
+    [=](id&lt;2&gt; item) {
+        yy[ item[0] + D*item[1] ] = 2;
+    }
+   );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+\begin{dpcppnote}
+  There is an implicit conversion from the one-dimensional
+   <tt>sycl::</tt> 
+  to  <tt>size_t</tt> , so
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+[=](sycl::id&lt;1&gt; i) {
+   data[i] = i;
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+is legal, which in SYCL requires
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+data[i[0]] = i[0];
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+\end{dpcppnote}
+</p>
+
+<h3><a id="Taskdependencies">37.5.2</a> Task dependencies</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Paralleloperations">Parallel operations</a> > <a href="dpcpp.html#Taskdependencies">Task dependencies</a>
+</p>
+<p name="switchToTextMode">
+
+Each 
+<i>submit</i>
+Since it returns a token, it becomes possible to specify
+task dependencies by refering to a token as a dependency
+in a later specified task.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+queue myQueue;
+auto myTokA = myQueue.submit
+   ( [&](handler& h) {
+       h.parallel_for&lt;class taskA&gt;(...);
+     }
+   );
+auto myTokB = myQueue.submit
+   ( [&](handler& h) {
+       h.depends_on(myTokA);
+       h.parallel_for&lt;class taskB&gt;(...);
+     }
+   );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Raceconditions">37.5.3</a> Race conditions</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Paralleloperations">Parallel operations</a> > <a href="dpcpp.html#Raceconditions">Race conditions</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Sycl has the same problems with race conditions that
+other shared memory system have:
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#dpcppsumreduct" aria-expanded="false" aria-controls="dpcppsumreduct">
+        C++ Code: dpcppsumreduct
+      </button>
+    </h5>
+  </div>
+  <div id="dpcppsumreduct" class="collapse">
+  <pre>
+// sum1d.cxx
+auto array_accessor =
+  array_buffer.get_access<sycl::access::mode::read>(h);
+auto scalar_accessor =
+  scalar_buffer.get_access<sycl::access::mode::read_write>(h);
+h.parallel_for<class uniqueID>
+  ( array_range,
+    [=](sycl::id<1> index)
+    {
+      scalar_accessor[0] += array_accessor[index];
+    }
+    ); // end of parallel for
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+To get this working correctly would need either
+a reduction primitive or atomics on the accumulator.
+The 2020 proposed standard has improved atomics.
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#dpcppsumreduction" aria-expanded="false" aria-controls="dpcppsumreduction">
+        C++ Code: dpcppsumreduction
+      </button>
+    </h5>
+  </div>
+  <div id="dpcppsumreduction" class="collapse">
+  <pre>
+// reduct1d.cxx
+auto array_accessor =
+  array_buffer.get_access<sycl::access::mode::read>(h);
+auto scalar_accessor = reducer
+ (scalar_buffer.get_access<sycl::access::mode::read_write>(cgh), sycl::plus<>());
+auto
+  scalar_accessor = scalar_buffer.get_access<sycl::access::mode::read_write>(h);
+h.parallel_for<class uniqueID>
+  ( array_range,
+    [=](sycl::id<1> index)
+    {
+      scalar_accessor += array_accessor[index];
+    }
+    ); // end of parallel for
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+<h2><a id="Memoryaccess">37.6</a> Memory access</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Memoryaccess">Memory access</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Memory treatment in SYCL is a little complicated, because is (at the very least)
+host memory and device memory, which are not necessarily coherent.
+</p>
+
+<p name="switchToTextMode">
+There are also three mechanisms:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Unified Shared Memory, based on ordinary C/C++ `star'-pointers.
+<li>
+Buffers, using the 
+  this needs the 
+<li>
+Images.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: table start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=table ]] -->
+<table>
+<table><tbody>
+<!-- TranslatingLineGenerator table ['table'] -->
+<p name="caption">
+TABLE: Memory types and treatments
+</p>
+
+<!-- environment: tabular start embedded generator -->
+<table>
+<tr>
+<td>
+<!-- TranslatingLineGenerator tabular ['tabular'] -->
+    </td></tr>
+<tr><td>
+    Location</td><td>allocation</td><td>copy </td></tr>
+<tr><td>
+    </td></tr>
+<tr><td>
+    Host</td><td>
+<tt>malloc</tt>
+</td><td>
+<tt>queue::memcpy</tt>
+</td></tr>
+<tr><td>
+    </td><td>
+<tt>malloc_host</tt>
+</td><td>coherent host/device</td></tr>
+<tr><td>
+    Device</td><td>
+    Shared</td><td>
+<tt>malloc_shared</tt>
+</td><td>coherent host/device</td></tr>
+<tr><td>
+    </td></tr>
+<tr><td>
+</td>
+</tr>
+</table>
+<!-- environment: tabular end embedded generator -->
+</tbody></table>
+</table>
+<!-- environment: table end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Unifiedsharedmemory">37.6.1</a> Unified shared memory</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Memoryaccess">Memory access</a> > <a href="dpcpp.html#Unifiedsharedmemory">Unified shared memory</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Memory allocated with 
+is visible on the host:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#syclsharealloc" aria-expanded="false" aria-controls="syclsharealloc">
+        C++ Code: syclsharealloc
+      </button>
+    </h5>
+  </div>
+  <div id="syclsharealloc" class="collapse">
+  <pre>
+// outshared.cxx
+floattype
+  *host_float = (floattype*)malloc_host( sizeof(floattype),ctx ),
+  *shar_float = (floattype*)malloc_shared( sizeof(floattype),dev,ctx );
+     cgh.single_task
+	 (
+	  [=] () {
+	    shar_float[0] = host_float[0];
+	    sout << "Number " << shar_float[0] << sycl::endl;
+	  }
+	  );
+</pre>
+</div>
+</div>
+</p>
+
+<p name="switchToTextMode">
+Device memory is allocated with 
+passing the queue as parameter:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#sycldevcalloc" aria-expanded="false" aria-controls="sycldevcalloc">
+        C++ Code: sycldevcalloc
+      </button>
+    </h5>
+  </div>
+  <div id="sycldevcalloc" class="collapse">
+  <pre>
+// reductimpl.cxx
+floattype
+  *host_float = (floattype*)malloc( sizeof(floattype) ),
+  *devc_float = (floattype*)malloc_device( sizeof(floattype),dev,ctx );
+   [&](sycl::handler &cgh) {
+     cgh.memcpy(devc_float,host_float,sizeof(floattype));
+   }
+</pre>
+</div>
+</div>
+Note the corresponding 
+that also has the queue as parameter.
+</p>
+
+<p name="switchToTextMode">
+Note that you need to be in a parallel task.
+The following gives a segmentation error:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+  [&](sycl::handler &cgh) {
+    shar_float[0] = host_float[0];
+  }
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+Ordinary memory, for instance from 
+has to be copied in a kernel:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#sycldevcmemcpy" aria-expanded="false" aria-controls="sycldevcmemcpy">
+        C++ Code: sycldevcmemcpy
+      </button>
+    </h5>
+  </div>
+  <div id="sycldevcmemcpy" class="collapse">
+  <pre>
+   [&](sycl::handler &cgh) {
+     cgh.memcpy(devc_float,host_float,sizeof(floattype));
+   }
+   [&](sycl::handler &cgh) {
+     sycl::stream sout(1024, 256, cgh);
+     cgh.single_task
+	 (
+	  [=] () {
+	    sout << "Number " << devc_float[0] << sycl::endl;
+	  }
+	  );
+   } // end of submitted lambda
+free(host_float);
+sycl::free(devc_float,myqueue);
+</pre>
+</div>
+</div>
+</p>
+
+<h3><a id="Buffersandaccessors">37.6.2</a> Buffers and accessors</h3>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Memoryaccess">Memory access</a> > <a href="dpcpp.html#Buffersandaccessors">Buffers and accessors</a>
+</p>
+<p name="switchToTextMode">
+
+Arrays need to be declared in a way such that they can be
+access from any device.
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#syclbufdef" aria-expanded="false" aria-controls="syclbufdef">
+        C++ Code: syclbufdef
+      </button>
+    </h5>
+  </div>
+  <div id="syclbufdef" class="collapse">
+  <pre>
+// forloop.cxx
+std::vector<int> myArray(SIZE);
+  range<1> mySize{myArray.size()};
+  buffer<int, 1> bufferA(myArray.data(), myArray.size());
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+Inside the kernel, the array is then unpacked from the buffer:
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#syclbufuse" aria-expanded="false" aria-controls="syclbufuse">
+        C++ Code: syclbufuse
+      </button>
+    </h5>
+  </div>
+  <div id="syclbufuse" class="collapse">
+  <pre>
+myqueue.submit( [&] (handler &h) {
+	auto deviceAccessorA =
+	  bufferA.get_access<access::mode::read_write>(h);
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+However, the 
+in a  <tt>sycl::</tt> 
+The precise type is templated and complicated, so this
+is a good place to use  <tt>auto</tt> .
+</p>
+
+<p name="switchToTextMode">
+Accessors can have a mode associated:
+ <tt>sycl::access::mode::</tt> 
+ <tt>sycl::access::mode::</tt> 
+</p>
+
+<p name="switchToTextMode">
+Intel extension:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+    array&lt;floattype,1&gt; leftsum{0.};
+#ifdef __INTEL_CLANG_COMPILER
+    sycl::buffer leftbuf(leftsum);
+#else
+    sycl::range&lt;1&gt; scalar{1};
+    sycl::buffer&lt;floattype,1&gt; leftbuf(leftsum.data(),scalar);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+Intel extension:
+there are modes
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+// standard
+sycl::accessor acc = buffer.get_access&lt;sycl::access::mode:write&gt;(h);
+// dpcpp extension
+sycl::accessor acc( buffer,h,sycl::read_only );
+sycl::accessor acc( buffer,h,sycl::write_only );
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Paralleloutput">37.7</a> Parallel output</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Paralleloutput">Parallel output</a>
+</p>
+</p>
+
+There is a  <tt>sycl::</tt> 
+<p name="switchToTextMode">
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#syclcout" aria-expanded="false" aria-controls="syclcout">
+        C++ Code: syclcout
+      </button>
+    </h5>
+  </div>
+  <div id="syclcout" class="collapse">
+  <pre>
+// hello.cxx
+[&](sycl::handler &cgh) {
+  sycl::stream sout(1024, 256, cgh);
+  cgh.parallel_for<class hello_world>
+	 (
+	  sycl::range<1>(global_range), [=](sycl::id<1> idx) {
+	    sout << "Hello, World: World rank " << idx << sycl::endl;
+	  }); // End of the kernel function
+}
+</pre>
+</div>
+</div>
+</p>
+
+<p name="switchToTextMode">
+Since the end of a queue does not flush stdout,
+it may be necessary to call
+ <tt>sycl::queue::</tt> 
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+myQueue.wait();
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="DPCPPextensions">37.8</a> DPCPP extensions</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#DPCPPextensions">DPCPP extensions</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Intel has made some extensions to SYCL:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Unified Shared Memory,
+<li>
+Ordered queues.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Inteldevcloudnotes">37.9</a> Intel devcloud notes</h2>
+<p name=crumbs>
+crumb trail:  > <a href="dpcpp.html">dpcpp</a> > <a href="dpcpp.html#Inteldevcloudnotes">Intel devcloud notes</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+
+<tt>qsub -I</tt>
+ for interactive session.
+</p>
+
+<p name="switchToTextMode">
+
+<tt>gdb-oneapi</tt>
+ for debugging.
+</p>
+
+<p name="switchToTextMode">
+
+<a href=https://community.intel.com/t5/Intel-oneAPI-Toolkits/ct-p/oneapi>https://community.intel.com/t5/Intel-oneAPI-Toolkits/ct-p/oneapi</a>
+
+for support.
+</div>
+<a href="index.html">Back to Table of Contents</a>

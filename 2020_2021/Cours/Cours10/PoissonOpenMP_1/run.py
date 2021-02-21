@@ -32,10 +32,12 @@ resultsDir = os.path.join('.', 'results', args.type)
 for o in ['places', 'proc_bind', 'schedule']:
     a = "OMP_" + o.upper()
     aa = getattr(args, o)
-    if not aa == "":
-      resultsDir = os.path.join(resultsDir, a + '_' + aa)
-      e[a] = aa
-
+    if aa == "":
+        aa = "default"
+    else:
+        e[a] = aa
+    resultsDir = os.path.join(resultsDir, a + '_' + aa)
+ 
 if not os.path.exists(resultsDir):
    os.makedirs(resultsDir)
 
@@ -73,6 +75,7 @@ with open(fileName, 'w') as log:
     speedup = []
 
     for i in range(1,args.threadsMax+1):
+
        proc = Popen([codePar, 'threads=' + str(i), 'path=' + resultsDir]
                    + args.rest, stdout=PIPE, encoding='utf-8', env=e)
        while proc.poll() is None:

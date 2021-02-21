@@ -1,0 +1,2833 @@
+<html>
+<head>
+<link href="ihpsc.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [['$','$']]}
+  });
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+  </script>
+
+  <link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//ace/ace.js" charset="utf-8"></script>
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-jsdeps.js"></script>
+<!-- include application -->
+<script type="application/javascript" src="http://ccrs.cac.cornell.edu:8080//target/web-client-opt.js"></script>
+
+<script type="application/javascript">
+  // First we declare some metadata, primarily to describe
+  // the container environment.
+  var ccrsApiNamespace = "org.xsede.jobrunner.model.ModelApi";
+  var mpiExampleMetaJson = {
+    // CHANGE: for now, leave the appended string as .SysJobMetaData;
+    //         other options will be supported in the future
+    "$type": ccrsApiNamespace + ".SysJobMetaData",
+    // CHANGE: shell to use implicitly when running commands in the container
+    "shell": ["bash"],
+    // CHANGE: should currently be one of: .NixOS, .Singularity
+    "containerType": {
+      "$type":  ccrsApiNamespace + ".NixOS"
+    },
+    // CHANGE: Specify for NixOS for all jobs, or for Singularity when resuming existing jobs
+    "containerId": ["vicOpenMPI"],
+    // CHANGE: Specify the singularity image name
+    "image": [],
+    // Directories on the host to mount in the container, if any:
+    "binds": [],
+    // Only for singularity:
+    "overlay": [],
+    // CHANGE: should be filled in dynamically to contain the (student) user,
+    //         but this is a demo, so we use a static user name:
+    "user": "test0",
+    "address": [],
+    "hostname": [],
+    "url": window.location.href
+  };
+  var mpiExampleMeta = CCRS.sysJobMetaData(mpiExampleMetaJson);
+</script>
+
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="pagehead">
+        <h1>MPI leftover topics</h1>
+        <h5>Experimental html version of downloadable textbook, see http://www.tacc.utexas.edu/~eijkhout/istc/istc.html</h5>
+      </div>
+    </div>
+  </div>
+  <div>
+
+
+\[
+\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+\]
+
+
+14.1 : <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a><br>
+14.1.1 : <a href="mpi.html#Infoobjects">Info objects</a><br>
+14.1.1.1 : <a href="mpi.html#Environmentinformation">Environment information</a><br>
+14.1.1.2 : <a href="mpi.html#Communicatorandwindowinformation">Communicator and window information</a><br>
+14.1.1.3 : <a href="mpi.html#Fileinformation">File information</a><br>
+14.1.2 : <a href="mpi.html#Attributes">Attributes</a><br>
+14.1.3 : <a href="mpi.html#Processorname">Processor name</a><br>
+14.1.4 : <a href="mpi.html#Versioninformation">Version information</a><br>
+14.2 : <a href="mpi.html#Errorhandling">Error handling</a><br>
+14.2.1 : <a href="mpi.html#Errorcodes">Error codes</a><br>
+14.2.2 : <a href="mpi.html#Errorhandling">Error handling</a><br>
+14.2.2.1 : <a href="mpi.html#Abort">Abort</a><br>
+14.2.2.2 : <a href="mpi.html#Return">Return</a><br>
+14.2.2.3 : <a href="mpi.html#Errorprinting">Error printing</a><br>
+14.2.3 : <a href="mpi.html#DefiningyourownMPIerrors">Defining your own MPI errors</a><br>
+14.3 : <a href="mpi.html#Fortranissues">Fortran issues</a><br>
+14.3.1 : <a href="mpi.html#Assumed-shapearrays">Assumed-shape arrays</a><br>
+14.4 : <a href="mpi.html#Faulttolerance">Fault tolerance</a><br>
+14.5 : <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a><br>
+14.5.1 : <a href="mpi.html#Timing">Timing</a><br>
+14.5.1.1 : <a href="mpi.html#Globaltiming">Global timing</a><br>
+14.5.1.2 : <a href="mpi.html#Localtiming">Local timing</a><br>
+14.5.2 : <a href="mpi.html#Simpleprofiling">Simple profiling</a><br>
+14.5.3 : <a href="mpi.html#Toolsinterface">Tools interface</a><br>
+14.5.4 : <a href="mpi.html#Programmingforperformance">Programming for performance</a><br>
+14.5.5 : <a href="mpi.html#MPIR">MPIR</a><br>
+14.6 : <a href="mpi.html#Determinism">Determinism</a><br>
+14.7 : <a href="mpi.html#Subtletieswithprocessorsynchronization">Subtleties with processor synchronization</a><br>
+14.8 : <a href="mpi.html#Shellinteraction">Shell interaction</a><br>
+14.8.1 : <a href="mpi.html#Standardinput">Standard input</a><br>
+14.8.2 : <a href="mpi.html#Standardoutanderror">Standard out and error</a><br>
+14.8.3 : <a href="mpi.html#Processstatus">Process status</a><br>
+14.8.4 : <a href="mpi.html#Multipleprogramstart">Multiple program start</a><br>
+14.9 : <a href="mpi.html#Theoriginofone-sidedcommunicationinShMem">The origin of one-sided communication in ShMem</a><br>
+14.10 : <a href="mpi.html#Leftovertopics">Leftover topics</a><br>
+14.10.1 : <a href="mpi.html#MPIconstants">MPI constants</a><br>
+14.10.2 : <a href="mpi.html#Cancellingmessages">Cancelling messages</a><br>
+14.10.3 : <a href="mpi.html#Constants">Constants</a><br>
+14.11 : <a href="mpi.html#Literature">Literature</a><br>
+<a href="index.html">Back to Table of Contents</a>
+<h1>14 MPI leftover topics</h1>
+<!-- TranslatingLineGenerator file ['file'] -->
+<p name="switchToTextMode">
+
+<h2><a id="Contextualinformation,attributes,etc.">14.1</a> Contextual information, attributes, etc.</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a>
+</p>
+
+</p>
+
+<h3><a id="Infoobjects">14.1.1</a> Info objects</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Infoobjects">Info objects</a>
+</p>
+
+<p name="switchToTextMode">
+
+Certain MPI routines can accept 
+<i>MPI_Info</i>
+ objects.
+These contain key-value pairs that can offer system or implementation
+dependent information.
+</p>
+
+<p name="switchToTextMode">
+Create an info object with 
+<i>MPI_Info_create</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_create" aria-expanded="false" aria-controls="MPI_Info_create">
+        Routine reference: MPI_Info_create
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_create" class="collapse">
+  <pre>
+MPI_INFO_CREATE(info)
+OUT info        info object created (handle)
+
+C:
+int MPI_Info_create(MPI_Info *info)
+
+Fortran legacy:
+MPI_INFO_CREATE(INFO, IERROR)
+INTEGER INFO, IERROR
+</pre>
+</div>
+</div>
+and delete it with 
+<i>MPI_Info_free</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_free" aria-expanded="false" aria-controls="MPI_Info_free">
+        Routine reference: MPI_Info_free
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_free" class="collapse">
+  <pre>
+  MPI_INFO_FREE(info)
+  INOUT infoinfo object (handle)
+  int MPI_Info_free(MPI_Info *info)
+  MPI_INFO_FREE(INFO, IERROR)
+  INTEGER INFO, IERROR
+</pre>
+</div>
+</div>
+.
+</p>
+
+<p name="switchToTextMode">
+Keys are then set with 
+<i>MPI_Info_set</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_set" aria-expanded="false" aria-controls="MPI_Info_set">
+        Routine reference: MPI_Info_set
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_set" class="collapse">
+  <pre>
+  MPI_INFO_SET(info, key, value)
+  INOUT infoinfo object (handle)
+  IN keykey (string)
+  IN valuevalue (string)
+  int MPI_Info_set(MPI_Info info, char *key, char *value)
+  MPI_INFO_SET(INFO, KEY, VALUE, IERROR)
+  INTEGER INFO, IERROR
+  CHARACTER*(*) KEY, VALUE
+</pre>
+</div>
+</div>
+,
+and they can be queried with 
+<i>MPI_Info_get</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_get" aria-expanded="false" aria-controls="MPI_Info_get">
+        Routine reference: MPI_Info_get
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_get" class="collapse">
+  <pre>
+  MPI_INFO_GET(info, key, valuelen, value, flag)
+  IN infoinfo object (handle)
+  IN keykey (string)
+  IN valuelenlength of value arg (integer)
+  OUT valuevalue (string)
+  OUT flagtrue if key defined, false if not (boolean)
+int MPI_Info_get(MPI_Info info, char *key, int valuelen, char *value,
+int *flag)
+MPI_INFO_GET(INFO, KEY, VALUELEN, VALUE, FLAG, IERROR)
+INTEGER INFO, VALUELEN, IERROR
+CHARACTER*(*) KEY, VALUE
+LOGICAL FLAG
+</pre>
+</div>
+</div>
+.
+Note that the output of the `get' routine is not allocated:
+it is a buffer that is passed.
+The maximum length of a key is given by the parameter
+<i>MPI_MAX_INFO_KEY</i>
+.
+You can delete a key from an info object with 
+<i>MPI_Info_delete</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_delete" aria-expanded="false" aria-controls="MPI_Info_delete">
+        Routine reference: MPI_Info_delete
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_delete" class="collapse">
+  <pre>
+  MPI_INFO_DELETE(info, key)
+  INOUT infoinfo object (handle)
+  IN keykey (string)
+  int MPI_Info_delete(MPI_Info info, char *key)
+  MPI_INFO_DELETE(INFO, KEY, IERROR)
+  INTEGER INFO, IERROR
+  CHARACTER*(*) KEY
+</pre>
+</div>
+</div>
+.
+</p>
+
+<p name="switchToTextMode">
+There is a straightforward duplication of info objects:
+<i>MPI_Info_dup</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_dup" aria-expanded="false" aria-controls="MPI_Info_dup">
+        Routine reference: MPI_Info_dup
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_dup" class="collapse">
+  <pre>
+  MPI_INFO_DUP(info, newinfo)
+  IN infoinfo object (handle)
+  OUT newinfoinfo object (handle)
+  int MPI_Info_dup(MPI_Info info, MPI_Info *newinfo)
+  MPI_INFO_DUP(INFO, NEWINFO, IERROR)
+  INTEGER INFO, NEWINFO, IERROR
+</pre>
+</div>
+</div>
+.
+</p>
+
+<p name="switchToTextMode">
+You can also query the number of keys in an info object with
+<i>MPI_Info_get_nkeys</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Info_get_nkeys" aria-expanded="false" aria-controls="MPI_Info_get_nkeys">
+        Routine reference: MPI_Info_get_nkeys
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Info_get_nkeys" class="collapse">
+  <pre>
+  MPI_INFO_GET_NKEYS(info, nkeys)
+  IN infoinfo object (handle)
+  OUT nkeysnumber of defined keys (integer)
+  int MPI_Info_get_nkeys(MPI_Info info, int *nkeys)
+  MPI_INFO_GET_NKEYS(INFO, NKEYS, IERROR)
+  INTEGER INFO, NKEYS, IERROR
+</pre>
+</div>
+</div>
+,
+after which the keys can be queried in succession with
+<i>MPI_Info_get_nthkey</i>
+</p>
+
+<p name="switchToTextMode">
+Info objects that are marked as `In' or `Inout' arguments
+are parsed before that routine returns.
+This means that in non-blocking routines they can be freed immediately,
+unlike, for instance, send buffers.
+</p>
+
+<!-- environment: mpifour start embedded generator -->
+<!-- environment block purpose: [[ environment=mpifour ]] -->
+<remark>
+<b>MPI 4 Standard only</b>
+<p name="remark">
+<!-- TranslatingLineGenerator mpifour ['mpifour'] -->
+  The routines 
+  are not robust with respect to the C language 
+<i>null terminator</i>
+.
+  Therefore, they are deprecated, and should be replaced with
+<i>MPI_Info_get_string</i>
+, which always returns a null-terminated string.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int MPI_Info_get_string
+   (MPI_Info info, const char *key,
+    int *buflen, char *value, int *flag)
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<i>End of MPI 4 note</i>
+</remark>
+<!-- environment: mpifour end embedded generator -->
+<p name="switchToTextMode">
+
+<h4><a id="Environmentinformation">14.1.1.1</a> Environment information</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Infoobjects">Info objects</a> > <a href="mpi.html#Environmentinformation">Environment information</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+The object 
+<i>MPI_INFO_ENV</i>
+ is predefined, containing:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+
+<tt>command</tt>
+
+  Name of program executed.
+<li>
+
+<tt>argv</tt>
+
+  Space separated arguments to command.
+<li>
+
+<tt>maxprocs</tt>
+
+  Maximum number of MPI processes to start.
+<li>
+
+<tt>soft</tt>
+
+  Allowed values for number of processors.
+<li>
+
+<tt>host</tt>
+
+  Hostname.
+<li>
+
+<tt>arch</tt>
+
+  Architecture name.
+<li>
+
+<tt>wdir</tt>
+
+  Working directory of the MPI process.
+<li>
+
+<tt>file</tt>
+
+  Value is the name of a file in which additional information is specified.
+<li>
+
+<tt>thread_level</tt>
+
+  Requested level of thread support, if requested before the program started execution.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+Note that these are the requested values; the running program can for instance
+have lower thread support.
+</p>
+
+<h4><a id="Communicatorandwindowinformation">14.1.1.2</a> Communicator and window information</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Infoobjects">Info objects</a> > <a href="mpi.html#Communicatorandwindowinformation">Communicator and window information</a>
+</p>
+
+<p name="switchToTextMode">
+
+MPI has a built-in possibility of attaching information to
+<i>communicators</i>
+<!-- index -->
+and
+<i>windows</i>
+<!-- index -->
+using the calls
+<i>MPI_Comm_get_info</i>
+<i>MPI_Comm_set_info</i>
+,
+<i>MPI_Win_get_info</i>
+,
+<i>MPI_Win_set_info</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Copying a communicator with 
+<i>MPI_Comm_dup</i>
+ does not cause
+the info to be copied; to propagate information to the copy there is
+<i>MPI_Comm_dup_with_info</i>
+.
+</p>
+
+<h4><a id="Fileinformation">14.1.1.3</a> File information</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Infoobjects">Info objects</a> > <a href="mpi.html#Fileinformation">File information</a>
+</p>
+
+<p name="switchToTextMode">
+
+An 
+<i>MPI_Info</i>
+ object can be passed to the following file routines:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_File_open</i>
+<li>
+<i>MPI_File_set_view</i>
+<li>
+<i>MPI_File_set_info</i>
+; collective.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+The following keys are defined in the \mpistandard{2} standard:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>access_style</i>
+: A comma separated list of one or
+  more of: 
+<tt>read_once</tt>
+, 
+<tt>write_once</tt>
+, 
+<tt>read_mostly</tt>
+,
+  
+<tt>write_mostly</tt>
+, 
+<tt>sequential</tt>
+, 
+<tt>reverse_sequential</tt>
+, 
+<tt>random</tt>
+
+<li>
+<i>collective_buffering</i>
+: true or false; enables or disables buffering on collective I/O operations
+<li>
+<i>cb_block_size</i>
+: integer block size for collective buffering, in bytes
+<li>
+<i>cb_buffer_size</i>
+: integer buffer size for collective buffering, in bytes
+<li>
+<i>cb_nodes</i>
+: integer number of MPI processes used in collective buffering
+<li>
+<i>chunked</i>
+: a comma separated list of integers describing the dimensions of a multidimensional array to be accessed using subarrays, starting with the most significant dimension (1st in C, last in Fortran)
+<li>
+<i>chunked_item</i>
+: a comma separated list specifying the size of each array entry, in bytes
+<li>
+<i>chunked_size</i>
+: a comma separated list specifying the size of the subarrays used in chunking
+<li>
+<i>file_perm</i>
+: UNIX file permissions at time of creation, in octal
+<li>
+<i>io_node_list</i>
+: a comma separated list of I/O nodes to use
+<!-- environment: mpifour start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=mpifour ]] -->
+<remark>
+<b>MPI 4 Standard only</b>
+<p name="remark">
+<!-- TranslatingLineGenerator mpifour ['mpifour'] -->
+<li>
+<i>mpi_minimum_memory_alignment</i>
+: aligment of allocated memory.
+</p name="remark">
+<i>End of MPI 4 note</i>
+</remark>
+<!-- environment: mpifour end embedded generator -->
+<li>
+<i>nb_proc</i>
+: integer number of processes expected to access a file simultaneously
+<li>
+<i>num_io_nodes</i>
+: integer number of I/O nodes to use
+<li>
+<i>striping_factor</i>
+: integer number of I/O nodes/devices a file should be striped across
+<li>
+<i>striping_unit</i>
+: integer stripe size, in bytes
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+Additionally, file system-specific keys can exist.
+</p>
+
+<h3><a id="Attributes">14.1.2</a> Attributes</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Attributes">Attributes</a>
+</p>
+
+<p name="switchToTextMode">
+
+Some runtime (or installation dependendent) values are available as
+attributes through
+<i>MPI_Comm_get_attr</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Comm_get_attr" aria-expanded="false" aria-controls="MPI_Comm_get_attr">
+        Routine reference: MPI_Comm_get_attr
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Comm_get_attr" class="collapse">
+  <pre>
+int MPI_Comm_get_attr(
+    MPI_Comm comm, int keyval, void *attribute_val, int *flag)
+
+Python:
+MPI.Comm.Get_attr(self, int keyval)
+
+return codes:
+MPI_SUCCESS : No error; MPI routine completed successfully.
+MPI_ERR_COMM : Invalid communicator.
+MPI_ERR_KEYVAL : Invalid keyval
+</pre>
+</div>
+</div>
+.
+(The \mpistandard{2} routine 
+<i>MPI_Attr_get</i>
+ is deprecated).
+The flag parameter has two functions:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+it returns whether the attributed was found;
+<li>
+if on entry it was set to false, the value parameter is ignored
+  and the routines only tests whether the key is present.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+The return value parameter is subtle: while it is declared 
+<tt>void*</tt>
+,
+it is actually the address of a 
+<tt>void*</tt>
+ pointer.
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#gettagub" aria-expanded="false" aria-controls="gettagub">
+        C Code: gettagub
+      </button>
+    </h5>
+  </div>
+  <div id="gettagub" class="collapse">
+  <pre>
+// tags.c
+int tag_upperbound;
+void *v; int flag=1;
+ierr = MPI_Comm_get_attr(comm,MPI_TAG_UB,&v,&flag);
+tag_upperbound = *(int*)v;
+</pre>
+</div>
+</div>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#gettagubp" aria-expanded="false" aria-controls="gettagubp">
+        Python Code: gettagubp
+      </button>
+    </h5>
+  </div>
+  <div id="gettagubp" class="collapse">
+  <pre>
+## tags.py
+tag_upperbound = comm.Get_attr(MPI.TAG_UB)
+if procid==0:
+    print("Determined tag upperbound: {}".format(tag_upperbound))
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+Attributes are:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_TAG_UB</i>
+  Upper bound for 
+<i>tag value</i>
+
+<!-- index -->
+.
+  (The lower bound is zero.)
+  Note that 
+<i>MPI_TAG_UB</i>
+ is the key, not the actual upper bound!
+  This value has to be at least 32767.
+<li>
+<i>MPI_HOST</i>
+  Host process rank, if such exists, 
+<i>MPI_PROC_NULL</i>
+, otherwise.
+<li>
+<i>MPI_IO</i>
+rank of a node that has regular I/O facilities (possibly
+myrank). Nodes in the same communicator may return different values
+for this parameter.
+<li>
+<i>MPI_WTIME_IS_GLOBAL</i>
+Boolean variable that indicates whether clocks are synchronized.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+Also:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_UNIVERSE_SIZE</i>
+: the total number of processes
+  that can be created. This can be more than the size of
+<i>MPI_COMM_WORLD</i>
+ if the host list is larger than the number of
+  initially started processes. See section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-proc.html#Processspawning">8.1</a>
+.
+</p>
+
+<p name="switchToTextMode">
+  Python: 
+<tt>mpi4py.MPI.UNIVERSE_SIZE</tt>
+.
+<li>
+<i>MPI_APPNUM</i>
+: if MPI is used in 
+<span title="acronym" ><i>MPMD</i></span>
+ mode, or
+  if 
+<i>MPI_Comm_spawn_multiple</i>
+ is used, this attribute
+  reports the how-manieth program we are in.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Processorname">14.1.3</a> Processor name</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Processorname">Processor name</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+You can query the 
+<i>hostname</i>
+ of a processor with
+<i>MPI_Get_processor_name</i>
+.
+This name need not be unique between different processor ranks.
+</p>
+
+<p name="switchToTextMode">
+You have to pass in the character storage:
+the character array must be at least 
+<i>MPI_MAX_PROCESSOR_NAME</i>
+ characters long.
+The actual length of the name is returned in the 
+<tt>resultlen</tt>
+ parameter.
+</p>
+
+<h3><a id="Versioninformation">14.1.4</a> Version information</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Contextualinformation,attributes,etc.">Contextual information, attributes, etc.</a> > <a href="mpi.html#Versioninformation">Version information</a>
+</p>
+<p name="switchToTextMode">
+
+For runtime determination,
+The 
+<i>MPI version</i>
+ is available through two parameters
+<i>MPI_VERSION</i>
+ and 
+<i>MPI_SUBVERSION</i>
+or the function 
+<i>MPI_Get_version</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Get_version" aria-expanded="false" aria-controls="MPI_Get_version">
+        Routine reference: MPI_Get_version
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Get_version" class="collapse">
+  <pre>
+Semantics:
+  MPI_GET_VERSION( version, subversion )
+  OUT version version number (integer)
+  OUT subversion subversion number (integer)
+
+C:
+  int MPI_Get_version(int *version, int *subversion)
+
+Fortran:
+  MPI_GET_VERSION(VERSION, SUBVERSION, IERROR)
+  INTEGER VERSION, SUBVERSION, IERROR
+
+</pre>
+</div>
+</div>
+.
+</p>
+
+<h2><a id="Errorhandling">14.2</a> Error handling</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a>
+</p>
+
+<p name="switchToTextMode">
+
+Errors in normal programs can be tricky to deal with; errors in
+parallel programs can be even harder. This is because in addition to
+everything that can go wrong with a single executable (floating point
+errors, memory violation) you now get errors that come from faulty
+interaction between multiple executables.
+</p>
+
+<p name="switchToTextMode">
+A few examples of what can go wrong:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+MPI errors: an MPI routine can abort for various reasons, such
+  as receiving much more data than its buffer can accomodate. Such
+  errors, as well as the more common type mentioned above, typically
+  cause your whole execution to abort. That is, if one incarnation of
+  your executable aborts, the MPI runtime will kill all others.
+<li>
+Deadlocks and other hanging executions: there are various
+  scenarios where your processes individually do not abort, but are all
+  waiting for each other. This can happen if two processes are both
+  waiting for a message from each other, and this can be helped by
+  using non-blocking calls. In another scenario, through an error in
+  program logic, one process will be waiting for more messages
+  (including non-blocking ones) than are sent to it.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Errorcodes">14.2.1</a> Error codes</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Errorcodes">Error codes</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+There are a bunch of error codes. These are all positive 
+<tt>int</tt>
+ values,
+while 
+<i>MPI_SUCCESS</i>
+ is zero.
+The maximum value of any built-in error code is 
+<i>MPI_ERR_LASTCODE</i>
+.
+User-defined error codes are all larger than this.
+</p>
+
+<!-- environment: itemize start embedded generator -->
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_ERR_ARG</i>
+: an argument was invalid that is not
+  covered by another error code.
+<li>
+<i>MPI_ERR_BUFFER</i>
+ The buffer pointer is invalid;
+  this typically means that you have supplied a null pointer.
+<li>
+<i>MPI_ERR_COMM</i>
+:
+  invalid communicator. A common error is to use a null communicator in
+  a call.
+<li>
+<i>MPI_ERR_INTERN</i>
+ An internal error in MPI has been detected.
+<li>
+<i>MPI_ERR_IN_STATUS</i>
+ A functioning returning an array of statuses
+  has at least one status where the 
+<i>MPI_ERROR</i>
+ field is set
+  to other than 
+<i>MPI_SUCCESS</i>
+. See section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-ptp.html#Error">4.3.2.3</a>
+.
+<li>
+<i>MPI_ERR_INFO</i>
+:
+  invalid info object.
+<li>
+<i>MPI_ERR_NO_MEM</i>
+ is returned by 
+<i>MPI_Alloc_mem</i>
+  if memory is exhausted.
+<li>
+<i>MPI_ERR_OTHER</i>
+: an error occurred; use
+<i>MPI_Error_string</i>
+ to retrieve further information
+  about this error.
+<li>
+<i>MPI_ERR_PORT</i>
+: invalid port; this applies to
+<i>MPI_Comm_connect</i>
+ and such.
+<!-- environment: mpifour start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=mpifour ]] -->
+<remark>
+<b>MPI 4 Standard only</b>
+<p name="remark">
+<!-- TranslatingLineGenerator mpifour ['mpifour'] -->
+<li>
+<i>MPI_ERR_PROC_ABORTED</i>
+ is returned if a process tries to communicate
+    with a process that has aborted.
+</p name="remark">
+<i>End of MPI 4 note</i>
+</remark>
+<!-- environment: mpifour end embedded generator -->
+<li>
+<i>MPI_ERR_SERVICE</i>
+: invalid service in
+<i>MPI_Unpublish_name</i>
+.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Errorhandling">14.2.2</a> Error handling</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Errorhandling">Error handling</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+The MPI library has a general mechanism for dealing with errors that
+it detects:
+one can specify an error handler, specific to MPI objects.
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Most commonly, an error handler is associated with a communicator:
+<i>MPI_Comm_set_errhandler</i>
+  (and likewise it can be retrieved with 
+<i>MPI_Comm_get_errhandler</i>
+);
+<li>
+other possibilities are
+<i>MPI_File_set_errhandler</i>
+,
+<i>MPI_File_call_errhandler</i>
+,
+<!-- environment: mpifour start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=mpifour ]] -->
+<remark>
+<b>MPI 4 Standard only</b>
+<p name="remark">
+<!-- TranslatingLineGenerator mpifour ['mpifour'] -->
+<i>MPI_Session_set_errhandler</i>
+,
+<i>MPI_Session_call_errhandler</i>
+,
+</p name="remark">
+<i>End of MPI 4 note</i>
+</remark>
+<!-- environment: mpifour end embedded generator -->
+<i>MPI_Win_set_errhandler</i>
+<p name="switchToTextMode">
+,
+<i>MPI_Win_call_errhandler</i>
+.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: remark start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=remark ]] -->
+<remark>
+<b>Remark</b>
+<p name="remark">
+<!-- TranslatingLineGenerator remark ['remark'] -->
+  The routine
+  
+<tt>MPI_Errhandler_set</tt>
+ is deprecated,
+  replaced by its \mpistandard{2} variant  
+<i>MPI_Comm_set_errhandler</i>
+.
+</p name="remark">
+</remark>
+<!-- environment: remark end embedded generator -->
+<p name="switchToTextMode">
+
+Some handlers of type 
+<i>MPI_Errhandler</i>
+ are predefined,
+but you can define your own with
+<i>MPI_Errhandler_create</i>
+,
+to be freed later with
+<i>MPI_Errhandler_free</i>
+.
+</p>
+
+<h4><a id="Abort">14.2.2.1</a> Abort</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Abort">Abort</a>
+</p>
+<p name="switchToTextMode">
+
+The default behaviour, where the full run is aborted, is
+equivalent to your code having the following
+call to
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+MPI_Comm_set_errhandler(MPI_COMM_WORLD,MPI_ERRORS_ARE_FATAL);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+The handler 
+<i>MPI_ERRORS_ARE_FATAL</i>
+, even though it is
+associated with a communicator, causes the whole application to abort.
+</p>
+
+<!-- environment: mpifour start embedded generator -->
+<!-- environment block purpose: [[ environment=mpifour ]] -->
+<remark>
+<b>MPI 4 Standard only</b>
+<p name="remark">
+<!-- TranslatingLineGenerator mpifour ['mpifour'] -->
+  The handler 
+<i>MPI_ERRORS_ABORT</i>
+ (\mpistandard{4})
+  aborts on the processes in the communicator for which it is specified.
+</p name="remark">
+<i>End of MPI 4 note</i>
+</remark>
+<!-- environment: mpifour end embedded generator -->
+<p name="switchToTextMode">
+
+<h4><a id="Return">14.2.2.2</a> Return</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Return">Return</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+Another simple possibility is to specify
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+MPI_Comm_set_errhandler(MPI_COMM_WORLD,MPI_ERRORS_RETURN);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+which causes the error code to be returned to the user.
+This gives you the opportunity to write code that handles the error
+return value.
+</p>
+
+<h4><a id="Errorprinting">14.2.2.3</a> Error printing</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#Errorprinting">Error printing</a>
+</p>
+<p name="switchToTextMode">
+
+If the 
+<i>MPI_Errhandler</i>
+ value 
+<i>MPI_ERRORS_RETURN</i>
+ is used,
+you can compare the return code to 
+<i>MPI_SUCCESS</i>
+and  print out debugging information:
+</p>
+
+<!-- environment: lstlisting start embedded generator -->
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int ierr;
+ierr = MPI_Something();
+if (ierr!=MPI_SUCCESS) {
+    // print out information about what your programming is doing
+    MPI_Abort();
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+For instance,
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+Fatal error in MPI_Waitall:
+See the MPI_ERROR field in MPI_Status for the error code
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+You could then retrieve the 
+<i>MPI_ERROR</i>
+ field of the
+status, and print out an error string with
+<i>MPI_Error_string</i>
+or maximal size 
+<i>MPI_MAX_ERROR_STRING</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+MPI_Comm_set_errhandler(MPI_COMM_WORLD,MPI_ERRORS_RETURN);
+ierr = MPI_Waitall(2*ntids-2,requests,status);
+if (ierr!=0) {
+   char errtxt[MPI_MAX_ERROR_STRING];
+   for (int i=0; i&lt;2*ntids-2; i++) {
+     int err = status[i].MPI_ERROR;
+     int len=MPI_MAX_ERROR_STRING;
+     MPI_Error_string(err,errtxt,&len);
+     printf("Waitall error: %d %s\n",err,errtxt);
+   }
+   MPI_Abort(MPI_COMM_WORLD,0);
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+One cases where errors can be handled is that of 
+<i>MPI file   I/O</i>
+
+<!-- index -->
+: if an output file has the wrong
+permissions, code can possibly progress without writing data, or
+writing to a temporary file.
+</p>
+
+<p name="switchToTextMode">
+MPI operators (
+<i>MPI_Op</i>
+) do not return an error code. In case of
+an error they call 
+<i>MPI_Abort</i>
+; if 
+<i>MPI_ERRORS_RETURN</i>
+is the error handler, error codes may be silently ignored.
+</p>
+
+<p name="switchToTextMode">
+You can create your own error handler with
+<i>MPI_Comm_create_errhandler</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Comm_create_errhandler" aria-expanded="false" aria-controls="MPI_Comm_create_errhandler">
+        Routine reference: MPI_Comm_create_errhandler
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Comm_create_errhandler" class="collapse">
+  <pre>
+Synopsis
+MPI_Comm_create_errhandler( errhandler_fn, err_handler )
+Input argument:
+errhandler_fn
+
+Output argument:
+err_handler
+
+C:
+int MPI_Comm_create_errhandler
+   ( MPI_Comm_errhandler_function *errhandler_fn,
+     MPI_Errhandler *err_handler )
+typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...)
+
+Fortran:
+Subroutine MPI_Comm_errhandler_function(comm, error_code) BIND(C)
+TYPE(MPI_Comm) ::  comm
+INTEGER ::  error_code
+</pre>
+</div>
+</div>
+, which is then installed with
+<i>MPI_Comm_set_errhandler</i>
+. You can retrieve the error
+handler with 
+<i>MPI_Comm_get_errhandler</i>
+.
+</p>
+
+<!-- environment: mplnote start embedded generator -->
+<!-- environment block purpose: [[ environment=mplnote ]] -->
+<remark>
+<b>MPL note</b>
+<!-- TranslatingLineGenerator mplnote ['mplnote'] -->
+<span title="acronym" ><i>MPL</i></span>
+<p name="switchToTextMode">
+ does not allow for access to the wrapped communicators.
+  However, for 
+<i>MPI_COMM_WORLD</i>
+, the routine
+<i>MPI_Comm_set_errhandler</i>
+  can be called directly.
+<i>End of MPL note</i>
+</remark>
+<!-- environment: mplnote end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="DefiningyourownMPIerrors">14.2.3</a> Defining your own MPI errors</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Errorhandling">Error handling</a> > <a href="mpi.html#DefiningyourownMPIerrors">Defining your own MPI errors</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+You can define your own errors that behave like MPI errors.
+As an example, let's write a send routine that refuses to send
+zero-sized data.
+</p>
+
+<p name="switchToTextMode">
+The first step to defining a new error is
+to define an error class with 
+<i>MPI_Add_error_class</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int nonzero_class;
+MPI_Add_error_class(&nonzero_class);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+This error number is larger than 
+<i>MPI_ERR_LASTCODE</i>
+,
+the upper bound on built-in error codes.
+The attribute 
+<i>MPI_LASTUSEDCODE</i>
+ records the last issued value.
+</p>
+
+<p name="switchToTextMode">
+Your new error code is then defined in this class
+with 
+<i>MPI_Add_error_code</i>
+,
+and an error string can be added with 
+<i>MPI_Add_error_string</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int nonzero_code;
+MPI_Add_error_code(nonzero_class,&nonzero_code);
+MPI_Add_error_string(nonzero_code,"Attempting to send zero buffer");
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+You can then call an error handler with this code.
+For instance to have a wrapped send routine that will not send zero-sized messages:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#nonzerosendwrap" aria-expanded="false" aria-controls="nonzerosendwrap">
+        C Code: nonzerosendwrap
+      </button>
+    </h5>
+  </div>
+  <div id="nonzerosendwrap" class="collapse">
+  <pre>
+// errorclass.c
+int MyPI_Send( void *buffer,int n,MPI_Datatype type, int target,int tag,MPI_Comm comm) {
+  if (n==0)
+    MPI_Comm_call_errhandler( comm,nonzero_code );
+   MPI_Ssend(buffer,n,type,target,tag,comm);
+  return MPI_SUCCESS;
+};
+</pre>
+</div>
+</div>
+Here we used the default error handler associated with the communicator,
+but one can set a different one with 
+<i>MPI_Comm_create_errhandler</i>
+.
+</p>
+
+<p name="switchToTextMode">
+We test our example:
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#zerosendwrapmain" aria-expanded="false" aria-controls="zerosendwrapmain">
+        C Code: zerosendwrapmain
+      </button>
+    </h5>
+  </div>
+  <div id="zerosendwrapmain" class="collapse">
+  <pre>
+for (int msgsize=1; msgsize>=0; msgsize--) {
+  double buffer;
+  if (procno==0) {
+    printf("Trying to send buffer of length %d\n",msgsize);
+    MyPI_Send(&buffer,msgsize,MPI_DOUBLE, 1,0,comm);
+    printf(".. success\n");
+  } else if (procno==1) {
+    MPI_Recv (&buffer,msgsize,MPI_DOUBLE, 0,0,comm,MPI_STATUS_IGNORE);
+  }
+}
+</pre>
+</div>
+</div>
+which gives:
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+Trying to send buffer of length 1
+.. success
+Trying to send buffer of length 0
+Abort(1073742081) on node 0 (rank 0 in comm 0):
+Fatal error in MPI_Comm_call_errhandler: Attempting to send zero buffer
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Fortranissues">14.3</a> Fortran issues</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Fortranissues">Fortran issues</a>
+</p>
+
+<!-- index -->
+<!-- index -->
+</p>
+
+<p name="switchToTextMode">
+MPI is typically written in C, what if you program 
+<i>Fortran</i>
+?
+</p>
+
+<p name="switchToTextMode">
+See section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-data.html#Fortran90kind-definedtypes">6.2.2.1</a>
+ for MPI types corresponding to
+<i>Fortran90 types</i>
+<!-- index -->
+.
+</p>
+
+<h3><a id="Assumed-shapearrays">14.3.1</a> Assumed-shape arrays</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Fortranissues">Fortran issues</a> > <a href="mpi.html#Assumed-shapearrays">Assumed-shape arrays</a>
+</p>
+<!-- index -->
+
+<p name="switchToTextMode">
+
+Use of other than contiguous data, for instance 
+<tt>A(1:N:2)</tt>
+, was a
+problem in MPI calls, especially non-blocking ones. In that case it
+was best to copy the data to a contiguous array. This has been fixed
+in \mpistandard{3}.
+</p>
+
+<!-- environment: itemize start embedded generator -->
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Fortran routines have the same prototype as C&nbsp;routines except for the addition
+  of an integer error parameter.
+<li>
+The call for
+<i>MPI_Init in Fortran</i>
+  does not have the commandline arguments;
+  they need to be handled separately.
+<li>
+The routine 
+<i>MPI_Sizeof</i>
+ is only available in
+  Fortran, it provides the functionality of the C/C++ operator
+<tt>sizeof</tt>
+.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- index -->
+</p>
+
+<h2><a id="Faulttolerance">14.4</a> Fault tolerance</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Faulttolerance">Fault tolerance</a>
+</p>
+
+<p name="switchToTextMode">
+
+Processors are not completely reliable, so it may happen that one
+`breaks': for software or hardware reasons it becomes
+unresponsive. For an MPI program this means that it becomes impossible
+to send data to it, and any collective operation involving it will
+hang. Can we deal with this case? Yes, but it involves some
+programming.
+</p>
+
+<p name="switchToTextMode">
+First of all, one of the possible MPI error return codes
+(section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi.html#Errorhandling">14.2</a>
+) is 
+<i>MPI_ERR_COMM</i>
+, which can be returned
+if a processor in the communicator is unavailable. You may want to
+catch this error, and add a `replacement processor' to the
+program. For this, the 
+<i>MPI_Comm_spawn</i>
+ can be used
+(see&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-proc.html#Processspawning">8.1</a>
+ for details).
+But this requires a change of program design: the communicator
+containing the new process(es) is not part of the
+old 
+<i>MPI_COMM_WORLD</i>
+, so it is better to set up your code as a
+collection of inter-communicators to begin with.
+</p>
+
+<h2><a id="Performance,tools,andprofiling">14.5</a> Performance, tools, and profiling</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a>
+</p>
+
+<p name="switchToTextMode">
+
+In most of this book we talk about functionality of the MPI
+library. There are cases where a problem can be solved in more than
+one way, and then we wonder which one is the most efficient. In this
+section we will explicitly address performance. We start with two
+sections on the mere act of measuring performance.
+</p>
+
+<h3><a id="Timing">14.5.1</a> Timing</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#Timing">Timing</a>
+</p>
+
+<!-- index -->
+<p name="switchToTextMode">
+
+MPI has a 
+<i>wall clock</i>
+ timer: 
+<i>MPI_Wtime</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Wtime" aria-expanded="false" aria-controls="MPI_Wtime">
+        Routine reference: MPI_Wtime
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Wtime" class="collapse">
+  <pre>
+ C:
+double MPI_Wtime(void);
+
+Fortran:
+DOUBLE PRECISION MPI_WTIME()
+
+Python:
+MPI.Wtime()
+</pre>
+</div>
+</div>
+which gives the number of seconds from a certain point in the past.
+(Note the absence of the error parameter in the fortran call.)
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+double t;
+t = MPI_Wtime();
+for (int n=0; n&lt;NEXPERIMENTS; n++) {
+  // do something;
+}
+t = MPI_Wtime()-t; t /= NEXPERIMENTS;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+The timer has a resolution of 
+<i>MPI_Wtick</i>
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#MPI_Wtick" aria-expanded="false" aria-controls="MPI_Wtick">
+        Routine reference: MPI_Wtick
+      </button>
+    </h5>
+  </div>
+  <div id="MPI_Wtick" class="collapse">
+  <pre>
+C:
+double MPI_Wtick(void);
+
+Fortran:
+DOUBLE PRECISION MPI_WTICK()
+
+Python
+MPI.Wtick()
+
+</pre>
+</div>
+</div>
+.
+</p>
+
+<!-- environment: mplnote start embedded generator -->
+<!-- environment block purpose: [[ environment=mplnote ]] -->
+<remark>
+<b>MPL note</b>
+<!-- TranslatingLineGenerator mplnote ['mplnote'] -->
+<p name="switchToTextMode">
+  The timing routines 
+<i>wtime</i>
+ and 
+<i>wtick</i>
+  and 
+<i>wtime_is_global</i>
+  are environment methods:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+double 	mpl::environment::wtime ();
+double 	mpl::environment::wtick ();
+bool mpl::environment::wtime_is_global ();
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<i>End of MPL note</i>
+</remark>
+<!-- environment: mplnote end embedded generator -->
+<p name="switchToTextMode">
+
+Timing in parallel is a tricky issue. For instance, most clusters do
+not have a central clock, so you can not relate start and stop times
+on one process to those on another. You can test for a global clock as
+follows
+<i>MPI_WTIME_IS_GLOBAL</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+int *v,flag;
+MPI_Attr_get( comm, MPI_WTIME_IS_GLOBAL, &v, &flag );
+if (mytid==0) printf("Time synchronized? %d-&gt;%d\n",flag,*v);
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+Normally you don't worry about the starting point for this timer:
+you call it before and after an event and subtract the values.
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+t = MPI_Wtime();
+// something happens here
+t = MPI_Wtime()-t;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+If you execute this on a single processor you get fairly reliable
+timings, except that you would need to subtract the overhead for the
+timer. This is the usual way to measure timer overhead:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+t = MPI_Wtime();
+// absolutely nothing here
+t = MPI_Wtime()-t;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<h4><a id="Globaltiming">14.5.1.1</a> Global timing</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#Timing">Timing</a> > <a href="mpi.html#Globaltiming">Global timing</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+However, if you try to time a parallel application you will most likely
+get different times for each process, so you would have to take the
+average or maximum.  Another solution is to synchronize the processors
+by using a 
+<i>barrier</i>
+<i>MPI_Barrier</i>
+:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+MPI_Barrier(comm)
+t = MPI_Wtime();
+// something happens here
+MPI_Barrier(comm)
+t = MPI_Wtime()-t;
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+<!-- environment: exercise start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+  This scheme also has some overhead associated with it. How would you measure that?
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<!-- environment: answer start embedded generator -->
+<!-- environment block purpose: [[ environment=answer ]] -->
+<answer>
+
+
+</answer>
+<!-- environment: answer end embedded generator -->
+<p name="switchToTextMode">
+
+<h4><a id="Localtiming">14.5.1.2</a> Local timing</h4>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#Timing">Timing</a> > <a href="mpi.html#Localtiming">Local timing</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+Now suppose you want to measure the time for a single send. It is not possible
+to start a clock on the sender and do the second measurement on the receiver,
+because the two clocks need not be synchronized. Usually a 
+<i>ping-pong</i>
+ is
+done:
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+if ( proc_source ) {
+  MPI_Send( /* to target */ );
+  MPI_Recv( /* from target */ );
+else if ( proc_target ) {
+  MPI_Recv( /* from source */ );
+  MPI_Send( /* to source */ );
+}
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+
+No matter what sort of timing you are doing, it is good to know the accuracy of your timer.
+The routine 
+<i>MPI_Wtick</i>
+ gives the smallest possible timer increment.
+If you find that your timing result is too close to this `tick', you need to find a better timer
+(for CPU measurements there are cycle-accurate timers), or you need to increase
+your running time, for instance by increasing the amount of data.
+</p>
+
+<!-- index -->
+<p name="switchToTextMode">
+
+<h3><a id="Simpleprofiling">14.5.2</a> Simple profiling</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#Simpleprofiling">Simple profiling</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+MPI allows you to write your own profiling interface. To make this possible,
+every routine 
+<tt>MPI_Something</tt>
+ calls a routine 
+<tt>PMPI_Something</tt>
+ that
+does the actual work. You can now write your 
+<tt>MPI_...</tt>
+ routine
+which calls 
+<i>PMPI_...</i>
+, and inserting your own profiling calls.
+<!-- environment: figure start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=figure ]] -->
+<figure>
+<float mode=figure>
+<!-- TranslatingLineGenerator figure ['figure'] -->
+<img src="graphics/pmpi.png" width=800>
+<p name="caption">
+FIGURE 14.1: Calling hierarchy of MPI and PMPI routines
+</p>
+
+</float>
+</figure>
+<!-- environment: figure end embedded generator -->
+<p name="switchToTextMode">
+See figure&nbsp;
+14.1
+.
+</p>
+
+<p name="switchToTextMode">
+By default, the MPI routines are defined
+as
+<i>weak linker symbols</i>
+<!-- index -->
+<!-- index -->
+as a synonym of the PMPI ones. In the gcc case:
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+#pragma weak MPI_Send = PMPI_Send
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<!-- environment: figure start embedded generator -->
+<!-- environment block purpose: [[ environment=figure ]] -->
+<figure>
+<float mode=figure>
+<!-- TranslatingLineGenerator figure ['figure'] -->
+<img src="graphics/pmpi-trace.jpg" width=800>
+<p name="caption">
+FIGURE 14.2: A stack trace, showing the \texttt{PMPI} calls.
+</p>
+
+</float>
+</figure>
+<!-- environment: figure end embedded generator -->
+<p name="switchToTextMode">
+As you can see in figure&nbsp;
+14.2
+, normally only the 
+<tt>PMPI</tt>
+ routines
+show up in the stack trace.
+</p>
+
+<p name="switchToTextMode">
+
+<h3><a id="Toolsinterface">14.5.3</a> Tools interface</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#Toolsinterface">Tools interface</a>
+</p>
+<!-- index -->
+</p>
+
+<p name="switchToTextMode">
+Recent versions of MPI have a standardized way of reading out
+performance variables: the 
+<i>tools interface</i>
+
+which improves on the old interface described in section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi.html#Simpleprofiling">14.5.2</a>
+.
+</p>
+
+<p name="switchToTextMode">
+The realization of the tools interface is installation-dependent,
+you first need to query how much of the tools interface is provided.
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#mpit_init_q" aria-expanded="false" aria-controls="mpit_init_q">
+        C Code: mpit_init_q
+      </button>
+    </h5>
+  </div>
+  <div id="mpit_init_q" class="collapse">
+  <pre>
+// mpit.c
+MPI_Init_thread(&argc,&argv,MPI_THREAD_SINGLE,&tlevel);
+MPI_T_init_thread(MPI_THREAD_SINGLE,&tlevel);
+int npvar;
+MPI_T_pvar_get_num(&npvar);
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#mpit_list" aria-expanded="false" aria-controls="mpit_list">
+        C Code: mpit_list
+      </button>
+    </h5>
+  </div>
+  <div id="mpit_list" class="collapse">
+  <pre>
+int name_len=256,desc_len=256,
+  verbosity,var_class,binding,isreadonly,iscontiguous,isatomic;
+char var_name[256],description[256];
+MPI_Datatype datatype; MPI_T_enum enumtype;
+for (int pvar=0; pvar<npvar; pvar++) {
+  MPI_T_pvar_get_info(pvar,var_name,&name_len,
+                      &verbosity,&var_class,
+                      &datatype,&enumtype,
+                      description,&desc_len,
+                      &binding,&isreadonly,&iscontiguous,&isatomic);
+  if (procid==0)
+    printf("pvar %d: %d/%s = %s\n",pvar,var_class,var_name,description);
+}
+</pre>
+</div>
+</div>
+</p>
+
+<!-- index -->
+<p name="switchToTextMode">
+
+<h3><a id="Programmingforperformance">14.5.4</a> Programming for performance</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#Programmingforperformance">Programming for performance</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+We outline some issues pertaining to performance.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Eager limit</b><br>
+
+</p>
+
+<p name="switchToTextMode">
+Short blocking messages are handled by a simpler mechanism than
+longer. The limit on what is considered `short' is known as the
+<i>eager limit</i>
+ (section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-ptp.html#Eagerlimit">4.1.2.2</a>
+), and you could
+tune your code by increasing its value. However, note that a process
+may likely have a buffer accomodating eager sends for every single
+other process. This may eat into your available memory.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Blocking versus non-blocking</b><br>
+
+The issue of 
+<i>blocking versus   non-blocking</i>
+
+<!-- index -->
+communication is something of a red herring. While non-blocking
+communication allows 
+<i>latency hiding</i>
+, we can not
+consider it an alternative to blocking sends, since replacing
+non-blocking by blocking calls will usually give 
+<i>deadlock</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Still, even if you use non-blocking communication for the mere
+avoidance of deadlock or serialization
+(section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-ptp.html#Serialization">4.1.2.3</a>
+), bear in mind the possibility of
+overlap of communication and computation. This also brings us to our
+next point.
+</p>
+
+<p name="switchToTextMode">
+Looking at it the other way around, in a code with blocking sends you
+may get better performance from non-blocking, even if that is not
+structurally necessary.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Progress</b><br>
+
+</p>
+
+<p name="switchToTextMode">
+MPI is not magically active in the background, especially if the user
+code is doing scalar work that does not involve MPI. As sketched in
+section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-persist.html#Asynchronousprogress">5.4.1</a>
+, there are various ways of ensuring that
+latency hiding actually happens.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Persistent sends</b><br>
+
+</p>
+
+<p name="switchToTextMode">
+If a communication between the same pair of processes, involving the
+same buffer, happens regularly, it is possible to set up a
+<i>persistent communication</i>
+. See section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-persist.html#Persistentcommunicationrequests">5.1</a>
+.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Buffering</b><br>
+
+</p>
+
+<p name="switchToTextMode">
+MPI uses internal buffers, and the copying from user data to these
+buffers may affect performance. For instance, derived types
+(section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-data.html#Deriveddatatypes">6.3</a>
+) can typically not be streamed
+straight through the network (this requires special hardware
+support&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/bibliography.html#LI:MpiDataUMR">[LI:MpiDataUMR]</a>
+) so they are first copied. Somewhat
+surprisingly, we find that 
+<i>buffered communication</i>
+(section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-persist.html#Bufferedcommunication">5.5</a>
+) does not help. Perhaps MPI implementors
+have not optimized this mode since it is so rarely used.
+</p>
+
+<p name="switchToTextMode">
+This is issue is extensively investigated in&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/bibliography.html#Eijkhout:MPItype-arxiv">[Eijkhout:MPItype-arxiv]</a>
+.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Graph topology and neighborhood collectives</b><br>
+
+</p>
+
+<p name="switchToTextMode">
+Load balancing and communication minimization are important in
+irregular applications. There are dedicated programs for this
+(
+<i>ParMetis</i>
+, 
+<i>Zoltan</i>
+), and libraries such as
+<i>PETSc</i>
+ may offer convenient access to such capabilities.
+</p>
+
+<p name="switchToTextMode">
+In the declaration of a 
+<i>graph topology</i>
+  (section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-topo.html#Distributedgraphtopology">11.2</a>
+) MPI is allowed to
+reorder processes, which could be used to support such activities.
+It can also serve for better message sequencing when
+<i>neighbourhood collectives</i>
+ are used.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Network issues</b><br>
+
+</p>
+
+<p name="switchToTextMode">
+In the discussion so far we have assumed that the network is a perfect
+conduit for data. However, there are issues of port design, in
+particular caused by
+<i>oversubscription</i>
+<!-- index -->
+ that
+adversely affect performance. While in an ideal world it may be
+possible to set up routine to avoid this, in the actual practice of a
+supercomputer cluster, 
+<i>network contention</i>
+ or
+<i>message collision</i>
+ from
+different user jobs is hard to avoid.
+</p>
+
+<p name="switchToTextMode">
+
+<b>Offloading and onloading</b><br>
+
+<!-- index -->
+<!-- index -->
+</p>
+
+<p name="switchToTextMode">
+There are different philosophies of 
+<i>network card</i>
+<i>design</i>
+<i>Mellanox</i>
+, being a network card manufacturer,
+believes in off-loading network activity to the 
+<span title="acronym" ><i>NIC</i></span>
+, while
+<i>Intel</i>
+, being a processor manufacturer, believes in
+`on-loading' activity to the process. There are argument either way.
+</p>
+
+<p name="switchToTextMode">
+Either way, investigate the capabilities of your network.
+</p>
+
+<h3><a id="MPIR">14.5.5</a> MPIR</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Performance,tools,andprofiling">Performance, tools, and profiling</a> > <a href="mpi.html#MPIR">MPIR</a>
+</p>
+<p name="switchToTextMode">
+
+<i>MPIR</i>
+ is the informally specified debugging interface
+for processes acquisition and message queue extraction.
+</p>
+
+<h2><a id="Determinism">14.6</a> Determinism</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Determinism">Determinism</a>
+</p>
+
+<!-- index -->
+<p name="switchToTextMode">
+
+MPI processes are only synchronized to a certain extent, so you may
+wonder what guarantees there are that running a code twice will give
+the same result.  You need to consider two cases: first of all, if the
+two runs are on different numbers of processors there are already
+numerical problems; see&nbsp;
+<i>Eijkhout:IntroHPC</i>
+.
+</p>
+
+<p name="switchToTextMode">
+Let us then limit ourselves to two runs on the same set of processors.
+In that case, MPI is deterministic as long as you do not use
+wildcards such as 
+<i>MPI_ANY_SOURCE</i>
+. Formally,
+MPI messages are `non-overtaking': two messages between the same
+sender-receiver pair will arrive in sequence.
+Actually, they may not arrive in sequence: they are 
+<i>matched</i>
+
+<!-- index -->
+in sequence in the user program. If the second message is much smaller than the first,
+it may actually arrive earlier in the lower transport layer.
+</p>
+
+<!-- index -->
+<p name="switchToTextMode">
+
+<h2><a id="Subtletieswithprocessorsynchronization">14.7</a> Subtleties with processor synchronization</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Subtletieswithprocessorsynchronization">Subtleties with processor synchronization</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+Blocking communication involves a complicated dialog between the two
+processors involved. Processor one says `I&nbsp;have this much data to
+send; do you have space for that?', to which processor two replies
+`yes, I&nbsp;do; go ahead and send', upon which processor one does the
+actual send. This back-and-forth (technically known as
+a 
+<i>handshake</i>
+) takes a certain amount of communication
+overhead. For this reason, network hardware will sometimes forgo the
+handshake for small messages, and just send them regardless, knowing
+that the other process has a small buffer for such occasions.
+</p>
+
+<p name="switchToTextMode">
+
+One strange side-effect of this strategy is that a code that
+should 
+<i>deadlock</i>
+ according to the MPI specification does
+not do so. In effect, you may be shielded from you own programming
+mistake! Of course, if you then run a larger problem, and the small
+message becomes larger than the threshold, the deadlock will suddenly
+occur. So you find yourself in the situation that a bug only manifests
+itself on large problems, which are usually harder to debug.
+In this case,
+replacing every 
+<i>MPI_Send</i>
+ with a 
+<i>MPI_Ssend</i>
+will force the handshake, even for small messages.
+</p>
+
+<p name="switchToTextMode">
+Conversely, you may sometimes wish to avoid the handshake on large
+messages. MPI as a solution for this: the 
+<i>MPI_Rsend</i>
+ (`ready
+send') routine sends its data immediately, but it needs the receiver
+to be ready for this. How can you guarantee that the receiving process
+is ready? You could for instance do the following (this uses
+non-blocking routines, which are explained below in
+section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi-ptp.html#Non-blockingsendandreceivecalls">4.2.1</a>
+):
+<!-- environment: lstlisting start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=lstlisting ]] -->
+<lstlisting>
+<pre>
+if ( receiving ) {
+  MPI_Irecv()   // post non-blocking receive
+  MPI_Barrier() // synchronize
+else if ( sending ) {
+  MPI_Barrier() // synchronize
+  MPI_Rsend()   // send data fast
+</pre>
+</lstlisting>
+<!-- environment: lstlisting end embedded generator -->
+<p name="switchToTextMode">
+When the barrier is reached, the receive has been posted, so it is safe
+to do a ready send. However, global barriers are not a good idea.
+Instead you would just synchronize the two processes involved.
+<!-- environment: exercise start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=exercise ]] -->
+<exercise>
+<b>Exercise</b>
+<p name="exercise">
+<!-- TranslatingLineGenerator exercise ['exercise'] -->
+  Give pseudo-code for a scheme where you synchronize the two
+  processes through the exchange of a blocking zero-size message.
+</p name="exercise">
+</exercise>
+<!-- environment: exercise end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Shellinteraction">14.8</a> Shell interaction</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Shellinteraction">Shell interaction</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+MPI programs are not run directly from the shell, but are started
+through an 
+<i>ssh tunnel</i>
+. We briefly discuss
+ramifications of this.
+</p>
+
+<h3><a id="Standardinput">14.8.1</a> Standard input</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Shellinteraction">Shell interaction</a> > <a href="mpi.html#Standardinput">Standard input</a>
+</p>
+
+<p name="switchToTextMode">
+
+Letting MPI processes interact with the environment is not entirely
+straightforward.
+For instance,
+<!-- index -->
+<i>shell input redirection</i>
+as in
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+mpirun -np 2 mpiprogram &lt; someinput
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+may not work.
+</p>
+
+<p name="switchToTextMode">
+Instead, use a script 
+<tt>programscript</tt>
+ that has one parameter:
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+#!/bin/bash
+mpirunprogram &lt; $1
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+and run this in parallel:
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+mpirun -np 2 programscript someinput
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Standardoutanderror">14.8.2</a> Standard out and error</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Shellinteraction">Shell interaction</a> > <a href="mpi.html#Standardoutanderror">Standard out and error</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+The 
+<i>stdout</i>
+ and 
+<i>stderr</i>
+ streams of an MPI
+process are returned through the ssh tunnel. Thus they can be caught
+as the 
+<i>stdout/err of</i>
+{mpirun}.
+</p>
+
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#mpiouterr" aria-expanded="false" aria-controls="mpiouterr">
+        C Code: mpiouterr
+      </button>
+    </h5>
+  </div>
+  <div id="mpiouterr" class="collapse">
+  <pre>
+// outerr.c
+fprintf(stdout,"This goes to std out\n");
+fprintf(stderr,"This goes to std err\n");
+</pre>
+</div>
+</div>
+<p name="switchToTextMode">
+
+<h3><a id="Processstatus">14.8.3</a> Process status</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Shellinteraction">Shell interaction</a> > <a href="mpi.html#Processstatus">Process status</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+The return code of 
+<i>MPI_Abort</i>
+ is returned as the
+<i>processes status of</i>
+{mpirun}.
+Running
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#mpiabort37" aria-expanded="false" aria-controls="mpiabort37">
+        C Code: mpiabort37
+      </button>
+    </h5>
+  </div>
+  <div id="mpiabort37" class="collapse">
+  <pre>
+// abort.c
+if (procno==nprocs-1)
+  MPI_Abort(comm,37);
+</pre>
+</div>
+</div>
+as
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+mpirun -np 4 ./abort ; \
+echo "Return code from ${MPIRUN} is &lt;&lt;$$?&gt;&gt;"
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+gives
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+TACC:  Starting up job 3760534
+TACC:  Starting parallel tasks...
+application called MPI_Abort(MPI_COMM_WORLD, 37) - process 3
+TACC:  MPI job exited with code: 37
+TACC:  Shutdown complete. Exiting.
+Return code from ibrun is &lt;&lt;37&gt;&gt;
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Multipleprogramstart">14.8.4</a> Multiple program start</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Shellinteraction">Shell interaction</a> > <a href="mpi.html#Multipleprogramstart">Multiple program start</a>
+</p>
+
+</p>
+
+<p name="switchToTextMode">
+The sort of script of section&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/mpi.html#Standardinput">14.8.1</a>
+can also be used to implement 
+<i>MPMD</i>
+ runs:
+we let the script start one of a number of programs. For this, we use
+the fact that the MPI rank is known in the environment as
+<tt>PMI_RANK</tt>
+. Use a script 
+<tt>mpmdscript</tt>
+:
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+#!/bin/bash
+if [ ${PMI_RANK} -eq 0 ] ; then
+  ./programmaster
+else
+  ./programworker
+fi
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+which is then run in parallel:
+<!-- environment: verbatim start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=verbatim ]] -->
+<verbatim>
+<pre>
+mpirun -np 25 mpmdscript
+</pre>
+</verbatim>
+<!-- environment: verbatim end embedded generator -->
+<p name="switchToTextMode">
+
+<h2><a id="Theoriginofone-sidedcommunicationinShMem">14.9</a> The origin of one-sided communication in ShMem</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Theoriginofone-sidedcommunicationinShMem">The origin of one-sided communication in ShMem</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+The 
+<i>Cray T3E</i>
+ had a library called 
+<i>shmem</i>
+which offered a type of shared memory. Rather than having a true
+global address space it worked by supporting variables that were
+guaranteed to be identical between processors, and indeed, were
+guaranteed to occupy the same location in memory. Variables could be
+declared to be shared a `symmetric' pragma or directive; their values
+could be retrieved or set by 
+<tt>shmem_get</tt>
+ and 
+<tt>shmem_put</tt>
+ calls.
+</p>
+
+<h2><a id="Leftovertopics">14.10</a> Leftover topics</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Leftovertopics">Leftover topics</a>
+</p>
+<p name="switchToTextMode">
+
+<h3><a id="MPIconstants">14.10.1</a> MPI constants</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Leftovertopics">Leftover topics</a> > <a href="mpi.html#MPIconstants">MPI constants</a>
+</p>
+<!-- index -->
+</p>
+
+<p name="switchToTextMode">
+MPI has a number of built-in 
+<i>constants</i>
+. These do not all behave
+the same.
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Some are 
+<i>compile-time</i>
+
+<!-- index -->
+  constants. Examples are 
+<i>MPI_VERSION</i>
+ and
+<i>MPI_MAX_PROCESSOR_NAME</i>
+. Thus, they can be used in
+  array size declarations, even before 
+<i>MPI_Init</i>
+.
+<li>
+Some 
+<i>link-time</i>
+
+<!-- index -->
+  constants get their value by MPI initialization, such as
+<i>MPI_COMM_WORLD</i>
+. Such symbols, which include all
+  predefined handles, can be used in initialization expressions.
+<li>
+Some link-time symbols can not be used in initialization
+  expressions, such as 
+<i>MPI_BOTTOM</i>
+ and 
+<i>MPI_STATUS_IGNORE</i>
+.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+For symbols, the binary realization is not defined. For instance,
+<i>MPI_COMM_WORLD</i>
+ is of type 
+<i>MPI_Comm</i>
+, but
+the implementation of that type is not specified.
+</p>
+
+<p name="switchToTextMode">
+See Annex&nbsp;A of the \mpistandard{3.1} standard for full lists.
+</p>
+
+<p name="switchToTextMode">
+The following are the compile-time constants:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_MAX_PROCESSOR_NAME</i>
+<li>
+<i>MPI_MAX_LIBRARY_VERSION_STRING</i>
+<li>
+<i>MPI_MAX_ERROR_STRING</i>
+<li>
+<i>MPI_MAX_DATAREP_STRING</i>
+<li>
+<i>MPI_MAX_INFO_KEY</i>
+<li>
+<i>MPI_MAX_INFO_VAL</i>
+<li>
+<i>MPI_MAX_OBJECT_NAME</i>
+<li>
+<i>MPI_MAX_PORT_NAME</i>
+<li>
+<i>MPI_VERSION</i>
+<li>
+<i>MPI_SUBVERSION</i>
+<li>
+<i>MPI_STATUS_SIZE</i>
+ (Fortran only)
+<li>
+<i>MPI_ADDRESS_KIND</i>
+ (Fortran only)
+<li>
+<i>MPI_COUNT_KIND</i>
+ (Fortran only)
+<li>
+<i>MPI_INTEGER_KIND</i>
+ (Fortran only)
+<li>
+<i>MPI_OFFSET_KIND</i>
+ (Fortran only)
+<li>
+<i>MPI_SUBARRAYS_SUPPORTED</i>
+ (Fortran only)
+<li>
+<i>MPI_ASYNC_PROTECTS_NONBLOCKING</i>
+  (Fortran only)
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+The following are the link-time constants:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_BOTTOM</i>
+<li>
+<i>MPI_STATUS_IGNORE</i>
+<li>
+<i>MPI_STATUSES_IGNORE</i>
+<li>
+<i>MPI_ERRCODES_IGNORE</i>
+<li>
+<i>MPI_IN_PLACE</i>
+<li>
+<i>MPI_ARGV_NULL</i>
+<li>
+<i>MPI_ARGVS_NULL</i>
+<li>
+<i>MPI_UNWEIGHTED</i>
+<li>
+<i>MPI_WEIGHTS_EMPTY</i>
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+Assorted constants:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+<i>MPI_PROC_NULL</i>
+<li>
+<i>MPI_ANY_SOURCE</i>
+<li>
+<i>MPI_ANY_TAG</i>
+<li>
+<i>MPI_UNDEFINED</i>
+<li>
+<i>MPI_BSEND_OVERHEAD</i>
+<li>
+<i>MPI_KEYVAL_INVALID                </i>
+<li>
+<i>MPI_LOCK_EXCLUSIVE</i>
+<li>
+<i>MPI_LOCK_SHARED</i>
+<li>
+<i>MPI_ROOT</i>
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+(This section was inspired by
+
+<a href=http://blogs.cisco.com/performance/mpi-outside-of-c-and-fortran>http://blogs.cisco.com/performance/mpi-outside-of-c-and-fortran</a>
+.)
+</p>
+
+<!-- index -->
+<p name="switchToTextMode">
+
+<h3><a id="Cancellingmessages">14.10.2</a> Cancelling messages</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Leftovertopics">Leftover topics</a> > <a href="mpi.html#Cancellingmessages">Cancelling messages</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+In section&nbsp;
+ we showed a master-worker example where the
+master accepts in arbitrary order the messages from the workers.
+Here we will show a slightly
+more complicated example, where only the result of the first task to
+complete is needed. Thus, we issue an 
+<i>MPI_Recv</i>
+with 
+<i>MPI_ANY_SOURCE</i>
+ as source.  When a result comes, we
+broadcast its source to all processes.  All the other workers then use
+this information to cancel their message with
+an 
+<i>MPI_Cancel</i>
+ operation.
+<div class="card">
+  <div class="card-header" id="headingOne">
+    <h5 class="mb-0">
+      <button class="btn btn-link" data-toggle="collapse" data-target="#cancel" aria-expanded="false" aria-controls="cancel">
+        C Code: cancel
+      </button>
+    </h5>
+  </div>
+  <div id="cancel" class="collapse">
+  <pre>
+// cancel.c
+fprintf(stderr,"get set, go!\n");
+if (procno==nprocs-1) {
+  MPI_Status status;
+  MPI_Recv(dummy,0,MPI_INT, MPI_ANY_SOURCE,0,comm,
+                  &status);
+  first_tid = status.MPI_SOURCE;
+  MPI_Bcast(&first_tid,1,MPI_INT, nprocs-1,comm);
+  fprintf(stderr,"[%d] first msg came from %d\n",procno,first_tid);
+} else {
+  float randomfraction = (rand() / (double)RAND_MAX);
+  int randomwait = (int) ( nprocs * randomfraction );
+  MPI_Request request;
+  fprintf(stderr,"[%d] waits for %e/%d=%d\n",
+	   procno,randomfraction,nprocs,randomwait);
+  sleep(randomwait);
+  MPI_Isend(dummy,0,MPI_INT, nprocs-1,0,comm,
+                   &request);
+  MPI_Bcast(&first_tid,1,MPI_INT, nprocs-1,comm
+                  );
+  if (procno!=first_tid) {
+    MPI_Cancel(&request);
+    fprintf(stderr,"[%d] canceled\n",procno);
+  }
+}
+</pre>
+</div>
+</div>
+</p>
+
+<p name="switchToTextMode">
+After the cancelling operation it is still necessary to call
+<i>MPI_Request_free</i>
+, 
+<i>MPI_Wait</i>
+, or
+<i>MPI_Test</i>
+ in order to free the request object.
+</p>
+
+<p name="switchToTextMode">
+The 
+<i>MPI_Cancel</i>
+ operation is local, so it can not be
+used for 
+<i>non-blocking   collectives</i>
+
+<!-- index -->
+ or one-sided transfers.
+</p>
+
+<!-- environment: remark start embedded generator -->
+<!-- environment block purpose: [[ environment=remark ]] -->
+<remark>
+<b>Remark</b>
+<p name="remark">
+<!-- TranslatingLineGenerator remark ['remark'] -->
+  As of \mpistandard{3.2}, cancelling a send is deprecated.
+</p name="remark">
+</remark>
+<!-- environment: remark end embedded generator -->
+<p name="switchToTextMode">
+
+<h3><a id="Constants">14.10.3</a> Constants</h3>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Leftovertopics">Leftover topics</a> > <a href="mpi.html#Constants">Constants</a>
+</p>
+</p>
+
+<p name="switchToTextMode">
+MPI constants such as 
+<i>MPI_COMM_WORLD</i>
+ or 
+<i>MPI_INT</i>
+ are not
+necessarily statitally defined, such as by a 
+<tt>#define</tt>
+ statement:
+the best you can say is that they have a value after
+<i>MPI_Init</i>
+ or 
+<i>MPI_Init_thread</i>
+.
+That means you can not transfer a compiled MPI file between
+platforms, or even between compilers on one platform.
+However, a working MPI source on one MPI implementation
+will also work on another.
+</p>
+
+<h2><a id="Literature">14.11</a> Literature</h2>
+<p name=crumbs>
+crumb trail:  > <a href="mpi.html">mpi</a> > <a href="mpi.html#Literature">Literature</a>
+</p>
+<p name="switchToTextMode">
+
+Online resources:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+MPI 1 Complete reference:\\ 
+<a href=http://www.netlib.org/utk/papers/mpi-book/mpi-book.html>http://www.netlib.org/utk/papers/mpi-book/mpi-book.html</a>
+
+<li>
+Official MPI documents:\\ 
+<a href=http://www.mpi-forum.org/docs/>http://www.mpi-forum.org/docs/</a>
+
+<li>
+List of all MPI routines:\\ 
+<a href=http://www.mcs.anl.gov/research/projects/mpi/www/www3/>http://www.mcs.anl.gov/research/projects/mpi/www/www3/</a>
+
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+Tutorial books on MPI:
+<!-- environment: itemize start embedded generator -->
+</p>
+<!-- environment block purpose: [[ environment=itemize ]] -->
+<itemize>
+<ul>
+<!-- TranslatingLineGenerator itemize ['itemize'] -->
+<li>
+Using MPI&nbsp;
+<a href="http://pages.tacc.utexas.edu/~eijkhout/pcse/html/bibliography.html#Gropp:UsingMPI1">[Gropp:UsingMPI1]</a>
+ by some of the original authors.
+</ul>
+</itemize>
+<!-- environment: itemize end embedded generator -->
+<p name="switchToTextMode">
+
+</div>
+<a href="index.html">Back to Table of Contents</a>
