@@ -47,13 +47,14 @@ void Values::init()
   int i, j, k;
   double x, y, z;
 
+#pragma omp parallel private(i,j,k,x,y,z), default(none)
   for (k=m_imin[2]; k<=m_imax[2]; k++)
     for (j=m_imin[1]; j<=m_imax[1]; j++)
       for (i=m_imin[0]; i<=m_imax[0]; i++) 
       {
-         x = m_xmin[0] + i*m_dx[0];
-         y = m_xmin[1] + j*m_dx[1]; 
-         z = m_xmin[2] + k*m_dx[2];
+        x = m_xmin[0] + i*m_dx[0];
+        y = m_xmin[1] + j*m_dx[1]; 
+        z = m_xmin[2] + k*m_dx[2];
         operator()(i,j,k) = cond_ini(x, y, z);
       }
 

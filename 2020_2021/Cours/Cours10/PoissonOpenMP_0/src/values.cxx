@@ -35,7 +35,7 @@ Values::Values(Parameters & prm) : m_p(prm)
 
   Timer & T = GetTimer(T_AllocId); T.start();
 
-  m_u = new double[nn];
+  m_u.resize(nn);
 
   T.stop();
 }
@@ -132,7 +132,7 @@ void swap(T & a, T & b)
 
 void Values::swap(Values & other)
 {
-  ::swap(m_u, other.m_u);
+  m_u.swap(other.m_u);
   int i;
   for (i=0; i<3; i++) {
     ::swap(m_imin[i], other.m_imin[i]);
@@ -226,7 +226,7 @@ void Values::operator= (const Values &other)
     m_dx[i] = other.m_dx[i];
   }
   
-  memcpy(m_u, other.m_u, nn * sizeof(double));
+  m_u = other.m_u;
 
   T.stop();
 }
