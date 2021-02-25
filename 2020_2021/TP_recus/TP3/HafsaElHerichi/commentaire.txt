@@ -1,0 +1,1 @@
+Pas de description des étapes sur GPU et CPU : calcul sur GPU, transferts CGP <-> GPU, echanges MPI

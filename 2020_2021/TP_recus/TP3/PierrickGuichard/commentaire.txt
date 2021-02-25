@@ -1,0 +1,3 @@
+Bonne comprehension
+
+Inconvenient : la solution complete est transférée entre le CPU et le GPU dans les 2 sens à chaque itération.

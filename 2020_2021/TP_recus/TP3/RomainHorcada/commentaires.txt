@@ -1,0 +1,4 @@
+Le CPU tranfere des valeurs, mais ne calcule rien (si ce n'est la réduction MPI)
+
+Dans la liste des étapes : erreur
+
