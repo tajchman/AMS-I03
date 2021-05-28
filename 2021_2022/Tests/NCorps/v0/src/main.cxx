@@ -1,22 +1,22 @@
 #include "timer.hxx"
 #include "particules.hxx"
-#include <papi.h> 
+#include <cstdio>
 
 int main(const int argc, const char** argv) {
 
   const int nParticles = (argc > 1 ? atoi(argv[1]) : 16384);
-  const int nSteps = 10;  // Duration of test
-  const reel dt = 0.01; // Particle propagation time step
+  const int nSteps = 10;
+  const reel dt = 0.01;
 
   Particules p(nParticles);
 
-  double rate = 0, dRate = 0; // Benchmarking data
-  const int skipSteps = 3; // Skip first iteration is warm-up on Xeon Phi coprocessor
+  Timer t_total;
+  t_total.start();
 
-  Timer t;
-
+  printf("%10s %10s  \n", "Iteration", "Temps");
   for (int step = 1; step <= nSteps; step++) {
 
+    Timer t;
     t.start();
 
     p.move(dt);
@@ -24,7 +24,13 @@ int main(const int argc, const char** argv) {
     t.stop();
 
     double elapsed = t.elapsed();
+    printf("%10d %10.3f s\n", step, t.elapsed());
   }
+
+  t_total.stop();
+  double elapsed = t_total.elapsed();
+  printf("T total %10.3f s T/iteration moyen %10.3f s\n", elapsed, elapsed/nSteps);
+  return 0;
 }
 
 

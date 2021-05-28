@@ -21,7 +21,7 @@ endif ()
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-add_executable(nbody0 main.cxx particules.cxx)
+add_executable(nbody0 main.cxx particules.cxx timer.cxx)
 
 install(TARGETS nbody0)
 

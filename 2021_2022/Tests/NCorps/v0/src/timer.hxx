@@ -11,9 +11,7 @@
 #include <chrono>
 #endif
 
-#ifdef USE_PAPI
-#include <papi.h>
-#endif
+#include "reel.h"
 
 class Timer {
 public:
@@ -21,13 +19,16 @@ public:
     m_name = s ? s : "";
   }
   
+  ~Timer()
+  {
+  }
+
   inline void reinit() { m_elapsed = 0.0; m_running = false; }
  
   std::string & name() { return m_name; }
   
   void start() {
-#ifdef USE_PAPI
-#else
+
     if (not m_running) {
 #ifdef _OPENMP
       m_start = omp_get_wtime();
@@ -38,12 +39,9 @@ public:
 #endif
       m_running = true;
     }
-#endif
   }
   
   void stop() {
-#ifdef USE_PAPI
-#else
     if (m_running) {
 #ifdef _OPENMP
       m_end = omp_get_wtime();
@@ -59,15 +57,13 @@ public:
 #endif
       m_running = false;
     }
-#endif
   }
   
-  inline double elapsed() { return m_elapsed; }
+  inline double elapsed() { 
+    return m_elapsed;
+  }
   
 protected:
-
-#ifdef USE_PAPI
-#else
 
 #ifdef _OPENMP
   double m_start, m_end;
@@ -76,12 +72,10 @@ protected:
 #else
   std::chrono::time_point<std::chrono::high_resolution_clock> m_start, m_end;
 #endif
-  bool m_running;
   
-#endif
-
   double m_elapsed;
   std::string m_name;
+  bool m_running;
 };
 
 #endif

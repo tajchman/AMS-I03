@@ -1,7 +1,7 @@
 #ifndef __PARTICULES__
 #define __PARTICULES__
 
-#define reel double
+#include "reel.h"
 #include <stdlib.h>
 #include <vector>
 
