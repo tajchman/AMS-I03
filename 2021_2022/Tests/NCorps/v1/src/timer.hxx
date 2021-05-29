@@ -11,8 +11,6 @@
 #include <chrono>
 #endif
 
-#include "reel.h"
-
 class Timer {
 public:
   Timer(const char * s = 0L) : m_elapsed(0.0), m_running(false) {

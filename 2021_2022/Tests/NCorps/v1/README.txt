@@ -1,0 +1,2 @@
+- diminuer les operations / 
+- remplacer pow(., 3/2) par sqrt + 2 multiplications

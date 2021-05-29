@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(nbody0 CXX)
+project(nbody CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
 
@@ -21,8 +21,8 @@ endif ()
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-add_executable(nbody0 main.cxx particules.cxx timer.cxx)
+add_executable(nbody main.cxx particules.cxx timer.cxx)
 
-install(TARGETS nbody0)
+install(TARGETS nbody)
 
 
