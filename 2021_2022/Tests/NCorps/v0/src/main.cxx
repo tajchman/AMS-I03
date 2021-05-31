@@ -13,6 +13,7 @@ int main(const int argc, const char** argv) {
   Timer t_total;
   t_total.start();
 
+  printf("\nVersion d'origine\n\n");
   printf("%10s %10s  \n", "Iteration", "Temps");
   for (int step = 1; step <= nSteps; step++) {
 
