@@ -16,8 +16,6 @@ if p == 'Windows':
   compileCmd = ['ninja', 'install']
 elif p == 'Linux':
   gen = '-GUnix Makefiles'
-  myenv['CC'] = 'icc'
-  myenv['CXX'] = 'icpc'
   compileCmd = ['make', '--no-print-directory', 'install']
 
 base = os.getcwd()
