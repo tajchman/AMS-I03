@@ -20,6 +20,7 @@ public:
   int n(int i) const { return m_n[i]; }
   double dx(int i) const { return m_dx[i]; }
   double xmin(int i) const { return m_xmin[i]; }
+  double xmax(int i) const { return m_xmax[i]; }
 
   int imin(int i) const { return m_imin[i]; }
   int imax(int i) const { return m_imax[i]; }
@@ -53,7 +54,7 @@ private:
 #endif
 
   int m_n[3];
-  double m_xmin[3], m_dx[3];
+  double m_xmin[3], m_xmax[3], m_dx[3];
   int m_imin[3], m_imax[3];
   std::vector<int> m_imin_local[3], m_imax_local[3];
   

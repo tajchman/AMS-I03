@@ -38,25 +38,6 @@ double Scheme::present()
   return m_t;
 }
 
-size_t Scheme::getDomainSize(int dim) const
-{
-  size_t d;
-  switch (dim) {
-    case 0:
-      d = m_n[0];
-      break;
-    case 1:
-      d = m_n[1];
-      break;
-    case 2:
-      d = m_n[2];
-      break;
-    default:
-      d = 1;
-  }
-  return d;
-}
-
 bool Scheme::iteration()
 {
 #ifdef _OPENMP
@@ -87,7 +68,7 @@ bool Scheme::iteration()
   return true;
 }
 
-double Scheme::iteration_domaine(int imin, int imax, 
+double Scheme::iteration_domaine(int imin, int imax,
                                  int jmin, int jmax,
                                  int kmin, int kmax)
 {
@@ -102,10 +83,10 @@ double Scheme::iteration_domaine(int imin, int imax,
   
   double x, y, z;
 
-  for (i = imin; i < imax; i++)
-    for (j = jmin; j < jmax; j++)
-      for (k = kmin; k < kmax; k++) {
-           
+  for (i = imin; i <= imax; i++)
+    for (j = jmin; j <= jmax; j++)
+      for (k = kmin; k <= kmax; k++) {
+
         du1 = (-2*m_u(i,j,k) + m_u(i+1,j,k) + m_u(i-1,j,k))*lam_x
             + (-2*m_u(i,j,k) + m_u(i,j+1,k) + m_u(i,j-1,k))*lam_y
             + (-2*m_u(i,j,k) + m_u(i,j,k+1) + m_u(i,j,k-1))*lam_z;
