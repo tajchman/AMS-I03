@@ -13,7 +13,8 @@ int main(const int argc, const char** argv) {
   Timer t_total;
   t_total.start();
 
-  printf("%10s %10s  \n", "Iteration", "Temps");
+  printf("\nRemplacement des std::vector en pointeurs de doubles\n\n");
+  printf("%10s %10s    %17s \n", "Iteration", "Temps", "Energie cinetique");
   for (int step = 1; step <= nSteps; step++) {
 
     Timer t;
@@ -23,7 +24,7 @@ int main(const int argc, const char** argv) {
 
     t.stop();
 
-    printf("%10d %10.3f s\n", step, t.elapsed());
+    printf("%10d %10.3f s  %16.7g\n", step, t.elapsed(), p.K);
   }
 
   t_total.stop();

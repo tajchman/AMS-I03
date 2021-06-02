@@ -7,23 +7,24 @@
 struct Particule {
 
   Particule() {
-    x = 2*double(rand())/RAND_MAX - 1;
-    y = 2*double(rand())/RAND_MAX - 1;
-    z = 2*double(rand())/RAND_MAX - 1;
-    vx = 2*double(rand())/RAND_MAX - 1;
-    vy = 2*double(rand())/RAND_MAX - 1;
-    vz = 2*double(rand())/RAND_MAX - 1;
+    x = 2*float(rand())/RAND_MAX - 1;
+    y = 2*float(rand())/RAND_MAX - 1;
+    z = 2*float(rand())/RAND_MAX - 1;
+    vx = 2*float(rand())/RAND_MAX - 1;
+    vy = 2*float(rand())/RAND_MAX - 1;
+    vz = 2*float(rand())/RAND_MAX - 1;
   }
 
-  double x, y, z, vx, vy, vz;
+  float x, y, z, vx, vy, vz;
 };
 
 struct Particules {
 
   Particules(int n) : p(n) {}
-  void move(double dT);
+  void move(float dT);
 
   std::vector<Particule> p;
+  float K;
 
 };
 

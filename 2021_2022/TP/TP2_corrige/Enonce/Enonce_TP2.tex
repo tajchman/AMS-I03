@@ -1,0 +1,381 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+	language=C++,
+	emptylines=1,
+	breaklines=true,
+	basicstyle=\ttfamily\color{black},
+	moredelim=**[is][\bf\color{red}]{@}{@},
+}
+
+\usetheme[]{boxes}
+\usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
+
+\newcommand\Frac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+
+%\usepackage{french}
+\title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
+\subtitle{Travail pratique 2}
+\author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
+\date{mise à jour le 10/01/2021}
+
+\begin{document}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\large
+\begin{frame}
+	\section{Travail pratique 2}
+	\frametitle{Travail pratique 2}
+
+On part d'un code parallélisé avec MPI qui calcule une solution approchée du problème suivant~:
+
+\medskip
+\begin{quote}
+Chercher $u$:  $(x, t) \mapsto u(x, t)$, où  $x \in \Omega = [0,1]^3$ et $t \geq 0$, qui vérifie :
+$$
+\begin{array}{lcll}
+\Frac{\partial u}{\partial t} & = & \Delta u + f(x, t) & \\[0.3cm]
+u(x, 0) &=& g(x) & x\in \Omega \\[0.3cm]
+u(x, t) & = & g(x) & x\in\partial \Omega, t > 0\\[0.3cm]
+\end{array}
+$$
+
+\vspace{-0.6cm}
+où $f$ et $g$ sont des fonctions données.
+\end{quote}
+
+Le code utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_0\times n_1\times n_2$ subdivisions.
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Structure du code}
+	
+	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI.tar.gz}{\tt TP2\_MPI.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI.zip}{\tt TP2\_MPI.zip}.
+	
+    \medskip
+	 Se placer dans le répertoire {\tt TP2/PoissonMPI} créé. 
+	
+	Le code est réparti en plusieurs fichiers principaux dans le sous-répertoire {\tt src}:
+    \medskip
+    
+	\hfill\begin{minipage}{8cm}
+	\begin{itemize}
+		\item[\textcolor{blue}{main.cxx}:] programme principal: initialise, appelle le calcul des itérations en temps, affiche les résultats 
+		\item[\textcolor{blue}{scheme(.hxx/.cxx)}:] définit le type {\tt Scheme} qui calcule une itération en temps
+		\item[\textcolor{blue}{values(.hxx/.cxx)}:] définit le type {\tt Values} qui contient les valeurs approchées à un instant donné
+		\item[\textcolor{blue}{parameters(.hxx/.cxx)}:] définit le type {\tt Parameters} qui rassemble les informations sur la géométrie et le calcul
+	\end{itemize}
+    \end{minipage}
+\vfill
+\end{frame}
+
+\begin{frame}
+Fonctions du type {\tt Scheme} :
+\bigskip
+
+\begin{tabular}{ll}
+{\tt Scheme(P, f)} & construit une variable de type {\tt Scheme} \\
+& en lui donnant une variable de type {\tt Parameters} \\
+& et une fonction {\tt f} (second membre de l'équation) \\ \\
+{\tt iteration()} & calcule une itération (la valeur de la \\ 
+& solution à l'instant suivant)\\
+{\tt variation()} & retourne la variation entre 2 instants \\ 
+& de calcul successifs\\ \\
+{\tt synchronize()} & copie les valeurs sur le bord d'un domaine \\
+& vers les domaines voisins \\ \\
+{\tt getOutput()} & renvoie une variable de type {\tt Values} qui \\ & contient les dernières valeurs calculées \\
+{\tt setInput(u)} & rentre dans {\tt Scheme} les valeurs initiales \\
+\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+
+Sur chacun des $p$ sous-domaines de $\Omega$ (chaque sous-domaine est géré par un processus MPI)
+\bigskip
+
+	Fonctions du type {\tt Parameters} :
+	\bigskip
+	
+	\begin{tabular}{ll}
+		{\tt imin(i)}& indice des premiers points intérieurs dans la \\ &  direction $i$ pour le sous-domaine courant \\
+		{\tt imax(i)}& indice des derniers points intérieurs dans la \\ & direction $i$ pour le sous-domaine courant\\ \\
+		{\tt imin\_global(i)}& indice des premiers points intérieurs \\ &  dans la direction $i$ \\
+		{\tt imax\_global(i)}& indice des derniers points intérieurs \\ & dans la direction $i$ \\ \\
+		{\tt dx(i)} & dimension d'une subdivision dans la direction $i$\\
+		{\tt xmin(i)} & coordonnée minimale de $\Omega$ dans la direction $i$ \\
+		{\tt xmax(i)} & coordonnée maximale de $\Omega$ dans la direction $i$ \\
+	\end{tabular}
+	
+\end{frame}
+
+
+\begin{frame}
+	\begin{tabular}{ll}
+		{\tt itmax()} & nombre d'itérations en temps \\
+		{\tt dt()} & intervalle de temps entre 2 itérations \\ \\
+		{\tt neighbour(k)} & indice des sous-domaines voisins \\
+                 & (1-2 à gauche ou à droite suivant X) \\
+                 & (3-4 en arrière ou en avant suivant Y) \\
+                 & (5-6 en bas ou en haut suivant Z) \\ 
+                 & -1 si pas de voisin sur un côté du sous-domaine \\ \\
+		{\tt rank()} & indice du processus \\ & (= nombre de processus)\\
+		{\tt size()} & nombre du processus \\ & (= nombre de sous-domaines) \\ \\ 
+		{\tt freq()} & fréquence de sortie des résultats intermédiaires \\
+		& (nombre d'itérations entre 2 sorties)
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	
+\vfill
+{\bf Pour un processus MPI $P$} : les points de calcul à l'intérieur du sous-domaine $\Omega_p$ ont des indices $(i,j,k)$ tels que:
+\bigskip
+
+\begin{tabular}{lclcl}
+	{\tt imin(0)} & $\leq$ & {\tt i} & $\leq$ & {\tt imax(0)} \\
+	{\tt imin(1)} & $\leq$ & {\tt j} & $\leq$ & {\tt imax(1)} \\
+	{\tt imin(2)} & $\leq$ & {\tt k} & $\leq$ & {\tt imax(2)} \\
+\end{tabular}
+\vfill
+
+{\bf Pour un processus MPI $P$} : les points sur la frontière du sous-domaine $\partial\Omega$ ont des indices $(i,j,k)$ tels que:
+\bigskip
+
+\begin{tabular}{lcl}
+	{\tt i = imin(0)-1} & ou & {\tt i = imax(0)+1}  \\
+	{\tt j = imin(j)-1} & ou & {\tt j = imax(1)+1}  \\
+	{\tt k = imin(k)-1} & ou & {\tt k = imax(2)+1} 
+\end{tabular}
+
+\vfill
+Point frontière du sous domaine = point au bord du sous-domaine voisin ou point frontière du domaine global.
+\vfill
+	
+	
+\end{frame}
+
+\begin{frame}
+Fonctions du type {\tt Values} pour le sous-domaine courant :
+\bigskip
+
+\begin{tabular}{ll}
+	{\tt init()} & initialise les points du domaine à 0 \\
+	{\tt init(f)}& initialise les points du domaine \\ & avec la fonction $f : (x,y,z) \mapsto f(x,y,z)$\\
+	{\tt boundaries(g)} & initialise les points de la frontière \\ &  avec la fonction $g: (x,y,z) \mapsto g(x,y,z)$\\ \\
+	{\tt v(i,j,k)}& si {\tt v} est de type {Values}, la valeur au point \\ &  d'indice $(i,j,k)$ \\
+	{\tt v.swap(w)} & si {\tt v} et {\tt w} sont de type {\tt Values}, \\ & échange les valeurs de {\tt v} et {\tt w} \\ \\
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\vfill
+
+	
+\begin{itemize}
+\item 	Pour compiler, se placer dans le répertoire {\tt PoissonSeq} et taper:
+
+\hspace{2cm}{\color{blue}\begin{verbatim}
+./build.py
+\end{verbatim}
+}
+		
+\vfill
+		(si cela ne marche pas, taper \verb|python ./build.py|).
+		
+\vfill
+	\item Pour exécuter, rester dans le même répertoire et taper:
+
+\hspace{2cm}
+{\color{blue}\begin{verbatim}
+mpirun -n X ./install/Release/PoissonMPI.exe
+\end{verbatim}
+}
+
+\vfill
+Pour voir les options d'exécution possibles, taper \verb|./install/Release/PoissonMPI.exe --help|
+\end{itemize}
+
+\vfill
+Noter les valeurs obtenues et les temps de calcul affichés, ils serviront de référence pour évaluer les autres versions. 
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Version hybride MPI-OpenMP (grain fin)}
+	
+Récupérer et décompresser un des fichiers \bigskip
+
+\href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP2\_MPI\_OpenMP\_FineGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.zip}{\tt TP2\_MPI\_OpenMP\_FineGrain\_incomplet.zip}
+\bigskip
+
+Un répertoire {\tt TP2/Poisson\_MPI\_OpenMP\_FineGrain} est créé et contient le code source incomplet de la version MPI OpenMP grain fin.
+ 
+\vfill
+{\color{red}
+	Attention:
+	\bigskip
+	
+	\begin{minipage}{\textwidth}\color{red}
+Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont contenues, créez un autre répertoire ailleurs et travaillez dans ce nouveau répertoire, sinon vous écraserez les modifications déjà faites !
+	\end{minipage}
+}
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+
+\begin{itemize}
+	\item 	Pour compiler, se placer dans le répertoire {\tt TP2/PoissonMPI\_OpenMP\_FineGrain} et taper:
+	
+	\hspace{-2cm}{\color{blue}\begin{verbatim}
+./build.py
+\end{verbatim}
+	}
+	
+	\vfill
+	(si cela ne marche pas, taper \verb|python ./build.py|).
+	
+	\vfill
+	\item Pour exécuter, rester dans le même répertoire et taper (sur une seule ligne):
+	
+	\hspace{2cm}
+	{\color{blue}\begin{verbatim}
+mpirun -n <n> \
+  ./install/Release/MPIPoissonOpenMP_FineGrain.exe \
+  threads=<t>
+\end{verbatim}
+	}
+	
+	\vfill
+	Exemple: à la place de {\tt <n>}, taper 2 pour exécuter avec 2 processus MPI, et à la place de {\tt <t>}, taper 3 pour exécuter dans chaque processus MPI, 3 threads.
+	\vfill
+	
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	On fournit aussi un script \texttt{submit\_hybrid.py} pour lancer les calculs sur la machine Gin (ce script devrait être facilement utilisable sur une machine parallèle gérée par SGE):
+	
+	{\color{blue}\begin{verbatim}
+		./submit_hybrid.py -n <n> -t <t>
+		\end{verbatim}
+	}
+	
+	où \texttt{<n>} est le nombre de processus MPI, et \texttt{<t>} le nombre de threads/processus MPI.
+
+\vfill
+    Exécuter le code sur 
+    \begin{itemize}
+    	\item 1 processus MPI $\times$ 8 threads
+    	\item 2 processus MPI $\times$ 4 threads
+    	\item 4 processus MPI $\times$ 2 threads
+    	\item 8 processus MPI $\times$ 1 thread
+    \end{itemize}
+ 	
+ 	Et comparer les résultats et les temps de calcul.
+ 	
+\end{frame}
+
+\begin{frame}
+ 	Remarque
+ 	\begin{quote}
+ 		On rappelle que le nombre de processus MPI et de threads OpenMP est trop petit ici pour que la programmation hybride apporte un avantage par rapport au ``tout MPI''
+ 	\end{quote}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Version multithreads avec OpenMP (grain grossier)}
+	
+	Récupérer et décompresser un des fichiers \bigskip
+	
+	\href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP2\_MPI\_OpenMP\_CoarseGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance5/TP2_MPI_OpenMP_FineGrain_incomplet.zip}{\tt TP2\_MPI\_OpenMP\_CoarseGrain\_incomplet.zip}
+	\bigskip
+	
+	Un répertoire {\tt TP2/PoissonMPI\_OpenMP\_CoarseGrain} est créé et contient le code source incomplet de la version OpenMP grain grossier.
+	
+	\vfill
+	Pour compiler et exécuter on utilisera la même procédure que dans le cas OpenMP grain fin.
+	
+\end{frame}
+
+
+\begin{frame}
+	Dans le parallélisme OpenMP gros grain, on découpe explicitement le domaine de calcul en plusieurs parties, chaque partie est calculée par un thread.
+	\vfill
+	
+	Pour cela, le type {\tt Parameters} possède 2 fonctions supplémentaires utiles pour le // gros grain :
+	\bigskip
+	
+	\begin{tabular}{ll}
+		{\tt imin\_thread(i,iThread)}&indice des premiers points intérieurs \\ &  dans la direction $i$, pour la partie \\ 
+		&calculée par le thread {\tt iThread}\\ \\
+		{\tt imax\_thread(i,iThread)}& indice des derniers points sur la \\
+		& frontière dans la direction $i$, pour la \\
+		& partie calculée par le thread {\tt iThread}
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+
+Ajouter une parallélisation OpenMP gros grain, et tester avec les mêmes nombres de processus MPI et threads OpenMP que dans le cas grain fin.
+\bigskip
+
+Le découpage de chaque domaine MPI en sous-domaines traités chacun par un thread est fait dans \texttt{parameters.cxx} lignes 143-169. Examiner et expliquer l'algorithme.
+
+
+	
+\end{frame}
+
+\begin{frame}
+\bigskip
+Envoyez par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
+
+\begin{itemize}
+	\item une description du travail réalisé (1-2 pages maximum)
+	\item le code source, avec vos modifications, dans une archive
+	(n'envoyez pas les répertoires \textcolor{blue}{\tt build} et  \textcolor{blue}{\tt install} qui contiennent des binaires) 
+	\item autant que possible, les fichiers qui contiennent les sorties écran:
+	\begin{itemize}
+		\item si vous avez lancé les calculs sur Gin, les fichiers output\_***
+	    \item si vous avez lancé sur une autre machine, les fichiers similaires ou une copie des affichages  écran
+	\end{itemize}
+\end{itemize}
+
+\bigskip
+
+{\bf avant le 22/01/2021.}
+
+\bigskip
+\textcolor{red}{\bf Envoyez vos fichiers source même s'ils contiennent des erreurs.}
+\end{frame}
+
+
+\end{document}

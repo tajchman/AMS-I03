@@ -3,12 +3,12 @@
 
 void Particules::move(double dt)
 {
-    const double softening = 1e-20;
+  const double softening = 1e-20;
 
-    int nps = p.size();
-    for (int i = 0; i < nps; i++) { 
+  int nps = p.size();
+  for (int i = 0; i < nps; i++) { 
 
-      double Fx = 0, Fy = 0, Fz = 0; 
+    double Fx = 0, Fy = 0, Fz = 0; 
       
     for (int j = 0; j < nps; j++) { 
     
@@ -16,12 +16,11 @@ void Particules::move(double dt)
       const double dy = p[j].y - p[i].y;
       const double dz = p[j].z - p[i].z;
       const double drSquared  = dx*dx + dy*dy + dz*dz + softening;
-      const double drPower32  = pow(drSquared, 3.0/2.0);
+      const double dr3  = pow(drSquared, 3.0/2.0);
 	
-      // Calculate the net force
-      Fx += dx / drPower32;  
-      Fy += dy / drPower32;  
-      Fz += dz / drPower32;
+      Fx += dx / dr3;  
+      Fy += dy / dr3;  
+      Fz += dz / dr3;
 
     }
 
@@ -30,9 +29,11 @@ void Particules::move(double dt)
     p[i].vz += dt*Fz;
   }
 
+  K = 0.0;
   for (int i = 0 ; i < nps; i++) { 
     p[i].x  += p[i].vx*dt;
     p[i].y  += p[i].vy*dt;
     p[i].z  += p[i].vz*dt;
+    K += 0.5 * (p[i].vx*p[i].vx + p[i].vy*p[i].vy + p[i].vz*p[i].vz);
   }
 }

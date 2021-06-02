@@ -6,14 +6,15 @@ int main(const int argc, const char** argv) {
 
   const int nParticles = (argc > 1 ? atoi(argv[1]) : 50000);
   const int nSteps = 10;
-  const double dt = 0.01;
+  const float dt = 0.01;
 
   Particules p(nParticles);
 
   Timer t_total;
   t_total.start();
 
-  printf("%10s %10s  \n", "Iteration", "Temps");
+  printf("\nCalcul en simple precision\n\n");
+  printf("%10s %10s    %17s \n", "Iteration", "Temps", "Energie cinetique");
   for (int step = 1; step <= nSteps; step++) {
 
     Timer t;
@@ -23,7 +24,7 @@ int main(const int argc, const char** argv) {
 
     t.stop();
 
-    printf("%10d %10.3f s\n", step, t.elapsed());
+    printf("%10d %10.3f s  %16.7g\n", step, t.elapsed(), p.K);
   }
 
   t_total.stop();

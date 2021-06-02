@@ -4,10 +4,9 @@
 #include <stdlib.h>
 #include <vector>
 
-
 struct Particules {
 
-  Particules(int n) : x(n), y(n), z(n), vx(n), vy(n), vz(n) {
+  Particules(int m) : n(m), x(m), y(m), z(m), vx(m), vy(m), vz(m) {
 
     for (int i=0; i<n; i++) {
     x[i]  = 2*double(rand())/RAND_MAX - 1;
@@ -26,7 +25,8 @@ struct Particules {
   std::vector<double> vx;
   std::vector<double> vy;
   std::vector<double> vz;
-
+  int n;
+  double K;
 };
 
 #endif

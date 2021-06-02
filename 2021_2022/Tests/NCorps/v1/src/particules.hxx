@@ -24,6 +24,7 @@ struct Particules {
   void move(double dT);
 
   std::vector<Particule> p;
+  double K;
 
 };
 

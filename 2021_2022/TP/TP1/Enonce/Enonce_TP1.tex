@@ -1,0 +1,388 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+	language=C++,
+	emptylines=1,
+	breaklines=true,
+	basicstyle=\ttfamily\color{black},
+	moredelim=**[is][\bf\color{red}]{@}{@},
+}
+
+\usetheme[]{boxes}
+\usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
+
+\newcommand\Frac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+
+%\usepackage{french}
+\title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
+\subtitle{Travail pratique n°1}
+\author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
+\date{02/12/2020}
+
+\begin{document}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\large
+\begin{frame}
+	\section{Travail pratique n°1}
+	\frametitle{Travail pratique n°1}
+
+A partir d'un code séquentiel qui calcule une solution approchée du problème suivant~:
+
+\medskip
+\begin{quote}
+Chercher $u$:  $(x, t) \mapsto u(x, t)$, où  $x \in \Omega = [0,1]^3$ et $t \geq 0$, qui vérifie :
+$$
+\begin{array}{lcll}
+\Frac{\partial u}{\partial t} & = & \Delta u + f(x, t) & \\[0.3cm]
+u(x, 0) &=& g(x) & x\in \Omega \\[0.3cm]
+u(x, t) & = & g(x) & x\in\partial \Omega, t > 0\\[0.3cm]
+\end{array}
+$$
+
+\vspace{-0.6cm}
+où $f$ et $g$ sont des fonctions données.
+\end{quote}
+
+Le code séquentiel utilise des différences finies pour approcher les dérivées partielles et découpe $\Omega$ en $n_1\times n_2\times n_3$ subdivisions.
+
+Récupérer le fichier \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.tar.gz}{\tt TP1\_sequentiel.tar.gz}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Structure du code séquentiel}
+	
+	Récupérer et décompresser un des fichiers \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.tar.gz}{\tt TP1\_sequentiel.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_sequentiel.zip}{\tt TP1\_sequentiel.zip}.
+	
+    \medskip
+	 Se placer dans le répertoire {\tt TP1/PoissonSeq} créé. 
+	
+	Le code séquentiel est réparti en plusieurs fichiers principaux dans le sous-répertoire {\tt src}:
+    \medskip
+    
+	\hfill\begin{minipage}{8cm}
+	\begin{itemize}
+		\item[\textcolor{blue}{main.cxx}:] programme principal: initialise, appelle le calcul des itérations en temps, affiche les résultats 
+		\item[\textcolor{blue}{scheme(.hxx/.cxx)}:] définit le type {\tt Scheme} qui calcule une itération en temps
+		\item[\textcolor{blue}{values(.hxx/.cxx)}:] définit le type {\tt Values} qui contient les valeurs approchées à un instant donné
+		\item[\textcolor{blue}{parameters(.hxx/.cxx)}:] définit le type {\tt Parameters} qui rassemble les informations sur la géométrie et le calcul
+	\end{itemize}
+    \end{minipage}
+\vfill
+\end{frame}
+
+\begin{frame}
+Fonctions du type {\tt Scheme} :
+\bigskip
+
+\begin{tabular}{ll}
+{\tt Scheme(P, f)} & construit une variable de type {\tt Scheme} \\
+& en lui donnant une variable de type {\tt Parameters} \\
+& et une fonction {\tt f} (second membre de l'équation) \\ \\
+{\tt iteration()} & calcule une itération (la valeur de la \\ 
+& solution à l'instant suivant)\\
+{\tt variation()} & retourne la variation entre 2 instants \\ 
+& de calcul successifs\\ \\
+
+{\tt getOutput()} & renvoie une variable de type {\tt Values} qui \\ & contient les dernières valeurs calculées \\
+{\tt setInput(u)} & rentre dans {\tt Scheme} les valeurs initiales \\
+\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	Fonctions du type {\tt Parameters} :
+	\bigskip
+	
+	\begin{tabular}{ll}
+		{\tt n(i)} & nombre de points dans la direction $i$ \\
+		&  ($0=X$,$1=Y$, $2=Z$), y compris sur la frontière \\
+		{\tt imin(i)}& indice des premiers points intérieurs \\ &  dans la direction $i$\\
+		{\tt imax(i)}& indice des derniers points sur la frontière \\ & dans la direction $i$ \\ \\
+		{\tt dx(i)} & dimension d'une subdivision dans la direction $i$\\
+		{\tt xmin(i)} & coordonnée minimale de $\Omega$ dans la direction $i$ \\ \\
+		{\tt itmax()} & nombre d'itérations en temps \\
+		{\tt dt()} & intervalle de temps entre 2 itérations \\
+		{\tt freq()} & fréquence de sortie des résultats intermédiaires \\
+		& (nombre d'itérations entre 2 sorties)
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	
+\vfill
+Les points de calcul à l'intérieur du domaine $\Omega$ ont des indices $(i,j,k)$ tels que:
+\bigskip
+
+\begin{tabular}{lclcl}
+	{\tt imin(0)} & $\leq$ & {\tt i} & $<$ & {\tt imax(0)} \\
+	{\tt imin(1)} & $\leq$ & {\tt j} & $<$ & {\tt imax(1)} \\
+	{\tt imin(2)} & $\leq$ & {\tt k} & $<$ & {\tt imax(2)} \\
+\end{tabular}
+\vfill
+
+Les points sur la frontière du domaine $\partial\Omega$ ont des indices $(i,j,k)$ tels que:
+\bigskip
+
+\begin{tabular}{lcl}
+	{\tt i = imin(0)-1} & ou & {\tt i = imax(0)}  \\
+	{\tt j = imin(j)-1} & ou & {\tt j = imax(1)}  \\
+	{\tt k = imin(k)-1} & ou & {\tt k = imax(2)} 
+\end{tabular}
+\vfill
+	
+	
+\end{frame}
+
+\begin{frame}
+Fonctions du type {\tt Values}:
+\bigskip
+
+\begin{tabular}{ll}
+	{\tt init()} & initialise les points du domaine à 0 \\
+	{\tt init(f)}& initialise les points du domaine \\ & avec la fonction $f : (x,y,z) \mapsto f(x,y,z)$\\
+	{\tt boundaries(g)} & initialise les points de la frontière \\ &  avec la fonction $g: (x,y,z) \mapsto g(x,y,z)$\\ \\
+	{\tt v(i,j,k)}& si {\tt v} est de type {Values}, la valeur au point \\ &  d'indice $(i,j,k)$ \\
+	{\tt v.swap(w)} & si {\tt v} et {\tt w} sont de type {\tt Values}, \\ & échange les valeurs de {\tt v} et {\tt w} \\ \\
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\vfill
+
+	
+\begin{itemize}
+\item 	Pour compiler, se placer dans le répertoire {\tt PoissonSeq} et taper:
+
+\hspace{2cm}{\color{blue}\begin{verbatim}
+./build.py
+\end{verbatim}
+}
+		
+\vfill
+		(si cela ne marche pas, taper \verb|python ./build.py|).
+		
+\vfill
+	\item Pour exécuter, rester dans le même répertoire et taper:
+
+\hspace{2cm}
+{\color{blue}\begin{verbatim}
+./install/gnu/Release/PoissonSeq.exe
+\end{verbatim}
+}
+
+\vfill
+Pour voir les options d'exécution possibles, taper \verb|./install/gnu/Release/PoissonSeq.exe --help|
+\end{itemize}
+
+\vfill
+Noter les valeurs obtenues et les temps de calcul affichés, ils serviront de référence pour évaluer les autres versions. 
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Version multithreads avec OpenMP (grain fin)}
+	
+Récupérer et décompresser un des fichiers \bigskip
+
+\href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP1\_OpenMP\_FineGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.zip}{\tt TP1\_OpenMP\_FineGrain\_incomplet.zip}
+\bigskip
+
+Un répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
+ 
+\vfill
+{\color{red}
+	Attention:
+	\bigskip
+	
+	\begin{minipage}{\textwidth}\color{red}
+Si vous avez déjà récupéré ce fichier et modifié les sources qui y sont contenues, créez un autre répertoire ailleurs et travaillez dans ce nouveau répertoire, sinon vous écraserez les modifications déjà faites !
+	\end{minipage}
+}
+\vfill
+\end{frame}
+
+\begin{frame}[fragile]
+
+\begin{itemize}
+	\item 	Pour compiler, se placer dans le répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain} et taper:
+	
+	\hspace{-2cm}{\color{blue}\begin{verbatim}
+./build.py
+\end{verbatim}
+	}
+	
+	\vfill
+	(si cela ne marche pas, taper \verb|python ./build.py|).
+	
+	\vfill
+	\item Pour exécuter, rester dans le même répertoire et taper (sur une seule ligne):
+	
+	\hspace{2cm}
+	{\color{blue}\begin{verbatim}
+./install/gnu/Release/PoissonOpenMP_FineGrain.exe \
+		 threads=<n>
+\end{verbatim}
+	}
+	
+	\vfill
+	(à la place de {\tt <n>} taper 3 pour exécuter sur 3 threads (par exemple)
+	\vfill
+	
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+	On fournit aussi un script pour comparer les speedups pour différents nombres de threads:
+	
+	{\color{blue}\begin{verbatim}
+		./run.py <nthreads>
+		\end{verbatim}
+	}
+	qui lance plusieurs exécutions:
+	\begin{itemize}
+		\item version séquentielle
+		\item version OpenMP sur 1 thread
+		\item version OpenMP sur 2 threads
+		
+		...
+		\item version OpenMP sur \verb|<nthreads>| threads
+	\end{itemize}
+	
+	et à la fin affiche un graphe: nombre de threads .vs. temps CPU/speedup.
+	
+	\vfill
+	Remarque:
+	\medskip
+	
+	\hspace{1cm}\begin{minipage}{0.9\textwidth}
+		Pour pouvoir utiliser le script {\tt run.py},
+		il faut que le paquet {\tt matplotlib} (pour la version de python utilisée) soit installé
+	\end{minipage}
+	
+\end{frame}
+
+\begin{frame}
+	Première partie:
+\bigskip
+
+\framebox{\color{blue}%
+\begin{minipage}{\textwidth}
+		Dans le répertoire {\tt TP1/Poisson\_OpenMP\_FineGrain}, paral\-léliser avec OpenMP grain fin:
+		
+		\begin{enumerate}
+			\item \color{blue}Chercher les parties du code à paralléliser
+			\item \color{blue}Ajouter ou adapter les {\tt pragmas}
+			\item \color{blue}Identifier les variables partagées et privées
+			\item \color{blue}Compiler, lancer le code avec différents nombres de threads
+			\item \color{blue}Comparer avec la version séquentielle
+			\item \color{blue}Si différent, revenir en (2)
+		\end{enumerate}
+	
+	\end{minipage}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Version multithreads avec OpenMP (grain grossier)}
+	
+	Récupérer et décompresser un des fichiers \bigskip
+	
+	\href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.tar.gz}{\tt TP1\_OpenMP\_CoarseGrain\_incomplet.tar.gz} ou \href{https://perso.ensta-paris.fr/~tajchman/Seance3/TP1_OpenMP_FineGrain_incomplet.zip}{\tt TP1\_OpenMP\_CoarseGrain\_incomplet.zip}
+	\bigskip
+	
+	Un répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain} est créé et contient le code source incomplet de la version OpenMP grain fin.
+	
+	\vfill
+	Pour compiler et exécuter on utilisera la même procédure que dans le cas OpenMP grain fin.
+	
+\end{frame}
+
+
+\begin{frame}
+	Dans le parallélisme OpenMP gros grain, on découpe explicitement le domaine de calcul en plusieurs parties, chaque partie est calculée par un thread.
+	\vfill
+	
+	Le type {\tt Parameters} possède 2 fonctions supplémentaires utiles pour le // gros grain :
+	\bigskip
+	
+	\begin{tabular}{ll}
+		{\tt imin\_local(i,iThread)}&indice des premiers points intérieurs \\ &  dans la direction $i$, pour la partie \\ 
+		&calculée par le thread {\tt iThread}\\ \\
+		{\tt imax\_local(i,iThread)}& indice des derniers points sur la \\
+		& frontière dans la direction $i$, pour la \\
+		& partie calculée par le thread {\tt iThread}
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	Seconde partie:
+	\bigskip
+	
+	\framebox{\color{blue}%
+		\begin{minipage}{\textwidth}
+			Dans le répertoire {\tt TP1/Poisson\_OpenMP\_CoarseGrain}, paralléliser avec OpenMP grain grossier:
+			
+			\begin{enumerate}
+				\item \color{blue}Ajouter une région parallèle dans le programme principal autour de la boucle en temps
+				\item \color{blue}Identifier les instructions dans la région parallèle qui doivent s'exécuter en séquentiel et celles qui peuvent s'exécuter en parallèle
+				\item \color{blue}Identifier les variables partagées et privées
+				\item \color{blue}Ajouter ou adapter les pragmas correspondantes
+				\item \color{blue}Dans chaque thread, faire une partie des boucles internes
+				\item \color{blue}Compiler, lancer le code avec différents nombres de threads
+				\item \color{blue}Comparer avec la version séquentielle
+				\item \color{blue}Si différent, revenir en (2)
+			\end{enumerate}
+		\end{minipage}
+	}
+	
+\end{frame}
+
+\begin{frame}
+\bigskip
+Envoyez par mail à \href{mailto:marc.tajchman@cea.fr}{marc.tajchman@cea.fr} :
+
+\begin{itemize}
+	\item une description du travail réalisé (1-2 pages maximum)
+	\item le code source, avec vos modifications, dans une archive
+	(n'envoyez pas les répertoires \textcolor{blue}{\tt build} et  \textcolor{blue}{\tt install} qui contiennent des binaires) 
+	\item les fichiers run***.log et speedups***.pdf que vous avez obtenus
+\end{itemize}
+
+\bigskip
+
+{\bf avant le 20/12/2020, au plus tard le 23/12/2020.}
+
+\bigskip
+\textcolor{red}{\bf Envoyez vos fichiers source même s'ils contiennent des erreurs.}
+\end{frame}
+
+
+\end{document}

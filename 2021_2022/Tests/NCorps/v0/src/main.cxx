@@ -14,7 +14,7 @@ int main(const int argc, const char** argv) {
   t_total.start();
 
   printf("\nVersion d'origine\n\n");
-  printf("%10s %10s  \n", "Iteration", "Temps");
+  printf("%10s %10s    %17s \n", "Iteration", "Temps", "Energie cinetique");
   for (int step = 1; step <= nSteps; step++) {
 
     Timer t;
@@ -24,7 +24,7 @@ int main(const int argc, const char** argv) {
 
     t.stop();
 
-    printf("%10d %10.3f s\n", step, t.elapsed());
+    printf("%10d %10.3f s  %16.7g\n", step, t.elapsed(), p.K);
   }
 
   t_total.stop();

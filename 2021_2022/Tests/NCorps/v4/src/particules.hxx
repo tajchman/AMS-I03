@@ -35,6 +35,7 @@ struct Particules {
 
   double *x, *y, *z, *vx, *vy, *vz;
   int n;
+  double K;
 };
 
 #endif

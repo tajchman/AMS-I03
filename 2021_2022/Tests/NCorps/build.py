@@ -4,8 +4,8 @@ import subprocess, os, sys, argparse, glob
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--type', default='Release', 
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
-parser.add_argument('-c', '--compiler', default='gnu',
-                    choices=['gnu', 'intel'])
+parser.add_argument('-c', '--compiler', default='Gnu',
+                    choices=['Gnu', 'Intel', 'Clang', 'MSVC'])
 args = parser.parse_args()
 
 listd = glob.glob('v*')
@@ -22,6 +22,10 @@ for d in listd:
 
     if d in ['v6', 'v7']:
         e['OMP_NUM_THREADS'] = '3'
-    command = ['python', 'build.py', '--type', args.type]
+    command = [ 'python', 
+                'build.py', 
+                '--compiler', args.compiler, 
+                '--type', args.type
+                ]
     subprocess.run(command, cwd=d, env=e)
     
