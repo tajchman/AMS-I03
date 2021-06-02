@@ -24,9 +24,6 @@ public:
     return m_u[n2*i + n1*j + k];
   }
 
-  double * operator() (int i, int j) {
-    return m_u.data() + n2*i + n1*j;
-  }
   void plot(int order) const;
   void swap(Values & other);
   int size(int i) const { return m_n[i]; }

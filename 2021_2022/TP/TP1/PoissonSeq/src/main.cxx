@@ -23,9 +23,6 @@ double cond_ini(double x, double y, double z)
 
 double force(double x, double y, double z)
 {
-  if (x < 0.3)
-    return 0.0;
-  else
     return sin(x - 0.5) * cos(y - 0.5) * exp(-z * z);
 }
 
@@ -98,7 +95,9 @@ int main(int argc, char *argv[])
   s += "/temps_";
   s += std::to_string(id) + ".dat";
   std::ofstream f(s.c_str());
-  f << id << " " << T_total.elapsed() << std::endl;
+  f << id << " " << T_total.elapsed() 
+          << " " << T_calcul.elapsed() 
+          << " " << C.variation() << std::endl;
 
   return 0;
 }

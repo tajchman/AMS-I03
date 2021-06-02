@@ -6,7 +6,7 @@ try:
 except NameError:
     unicode = str
 
-import os, sys, argparse, numpy
+import os, sys, argparse
 from subprocess import *
 
 parser = argparse.ArgumentParser()

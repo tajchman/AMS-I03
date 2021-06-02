@@ -14,7 +14,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qdiag-disable:1786,3180")
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -diag-disable=1786,3180 -xHost")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -diag-disable=1786,3180")
   endif()
 endif()
 

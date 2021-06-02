@@ -7,6 +7,56 @@
   "configurations": [
     {
       "configurationType": "Debug",
+      "name": "MSVC_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${projectDir}/../build/Seq/msvc/${configurationType}",
+      "installRoot": "${projectDir}/../install/msvc/${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "cl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "cl.exe"
+        },
+        {
+          "name": "ENABLE_OPENMP",
+          "value": "ON"
+        }
+      ]
+    },
+    {
+      "configurationType": "Release",
+      "name": "MSVC_${configurationType}",
+      "generator": "Ninja",
+      "buildRoot": "${projectDir}/../build/Seq/msvc/${configurationType}",
+      "installRoot": "${projectDir}/../install/intel/${configurationType}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_COMPILER",
+          "value": "cl.exe"
+        },
+        {
+          "name": "CMAKE_C_COMPILER",
+          "value": "cl.exe"
+        },
+        {
+          "name": "ENABLE_OPENMP",
+          "value": "ON"
+        }
+      ]
+    },
+    {
+      "configurationType": "Debug",
       "name": "Intel_${configurationType}_Par",
       "generator": "Ninja",
       "buildRoot": "${projectDir}/../build/Par/intel/${configurationType}",

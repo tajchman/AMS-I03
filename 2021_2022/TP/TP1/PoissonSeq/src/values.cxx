@@ -19,8 +19,8 @@ Values::Values(Parameters & prm) : m_p(prm)
     nn *= (m_imax[i] - m_imin[i] + 3);
   }
   
-  n1 = m_imax[0] - m_imin[0] + 3;      // nombre de points dans la premiere direction
-  n2 = (m_imax[1] - m_imin[1] + 3) * n1; // nombre de points dans le plan des 2 premieres directions
+  n1 = m_imax[1] - m_imin[1] + 3;      // nombre de points dans la premiere direction
+  n2 = (m_imax[2] - m_imin[2] + 3) * n1; // nombre de points dans le plan des 2 premieres directions
   m_u.resize(nn);
 }
 
