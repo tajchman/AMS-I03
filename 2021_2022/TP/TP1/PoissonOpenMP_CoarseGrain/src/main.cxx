@@ -27,9 +27,6 @@ double cond_ini(double x, double y, double z)
 
 double force(double x, double y, double z)
 {
-  if (x < 0.3)
-    return 0.0;
-  else
     return sin(x - 0.5) * cos(y - 0.5) * exp(-z * z);
 }
 
@@ -84,21 +81,21 @@ int main(int argc, char *argv[])
 	}
 
 #pragma omp master
-      T_calcul.start();
+    T_calcul.start();
 
 #pragma omp barrier
-      C.iteration();
+    C.iteration();
 #pragma omp barrier
 
 #pragma omp single
       {
-	T_calcul.stop();
+    T_calcul.stop();
 
-	std::cout << "iteration " << std::setw(5) << it 
-		  << "  variation " << std::setw(10) << C.variation()
-		  << "  temps calcul " << std::setw(10) << std::setprecision(6) 
-		  << T_calcul.elapsed() << " s"
-		  << std::endl; 
+    std::cout << "iteration " << std::setw(5) << it 
+              << "  variation " << std::setw(10) << C.variation()
+              << "  temps calcul " << std::setw(10) << std::setprecision(6) 
+              << T_calcul.elapsed() << " s"
+              << std::endl; 
       }
     }
   }
@@ -114,18 +111,20 @@ int main(int argc, char *argv[])
   std::cout << "\n" << std::setw(26) << "temps total" 
             << std::setw(10) << T_total.elapsed() << " s\n" << std::endl;
 
-#ifdef _OPENMP
-  int id = Prm.nthreads();
-#else
-  int id = 0;
-#endif
+  #ifdef _OPENMP
+    int id = Prm.nthreads();
+  #else
+    int id = 0;
+  #endif
 
   std::string s = Prm.resultPath();
   mkdir_p(s.c_str());
   s += "/temps_";
   s += std::to_string(id) + ".dat";
   std::ofstream f(s.c_str());
-  f << id << " " << T_total.elapsed() << " " << C.variation() << std::endl;
+  f << id << " " << T_total.elapsed() 
+          << " " << T_calcul.elapsed() 
+          << " " << C.variation() << std::endl;
 
   return 0;
 }

@@ -124,12 +124,11 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   maxn++;
   int di = maxn/nt;
   
-  int i0 = 0, i1 = m_imin[idecoupe];
+  int i0 = m_imin[idecoupe];
   for (iT=0; iT < nt;iT++) {
-    i0 = i1;
-    i1 = i0 + di;
     m_imin_local[idecoupe][iT] = i0;
-    m_imax_local[idecoupe][iT] = i1;
+    m_imax_local[idecoupe][iT] = i0 + di - 1;
+    i0 += di;
   }
   m_imax_local[idecoupe][nt-1] = m_imax[idecoupe];
  
@@ -138,7 +137,7 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
     std::cerr << "Thread " << iT;
     for (int i=0; i < 3; i++)
       std::cerr<< "  [" << m_imin_local[i][iT] << "," 
-               << m_imax_local[i][iT] <<")";
+               << m_imax_local[i][iT] <<"]";
     std::cerr << std::endl;
   }
 #endif

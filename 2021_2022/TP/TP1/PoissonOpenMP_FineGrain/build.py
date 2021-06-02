@@ -45,35 +45,34 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--type', default='Release', 
+parser.add_argument('-m', '--mode', default='Release', 
                     choices=['Debug', 'Release', 'RelWithDebInfo'])
 parser.add_argument('-c', '--compiler', default='Gnu', 
                     choices=['Gnu', 'Intel', 'Clang', 'MSVC'])
-parser.add_argument('-o', '--openmp', type=str2bool, default=False)
 args = parser.parse_args()
-
-compileCmd, gen, e = envCompiler(args.compiler)
 
 base = os.getcwd()
 srcDir = os.path.join(base, 'src')
 
-print ('\nbuild ', args.compiler, args.type, '\n')
-buildDir = os.path.join(base, 'build', args.compiler, args.type, str(args.openmp))
-installDir = os.path.join(base, 'install', args.compiler, args.type)
+for o in ["ON", "OFF"]:
+  compileCmd, gen, e = envCompiler(args.compiler)
 
-cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.type]
-cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
-if args.openmp:
-    cmake_params.append('-DENABLE_OPENMP=ON')
-else:
-    cmake_params.append('-DENABLE_OPENMP=OFF')
-cmake_params.append(gen)
+  print ('\nbuild ', args.compiler, args.mode, 'openmp='+o, '\n')
+  buildDir = os.path.join(base, 'build', args.compiler, args.mode, o)
+  installDir = os.path.join(base, 'install', args.compiler, args.mode)
 
-if not os.path.exists(buildDir):
-  os.makedirs(buildDir)
+  cmake_params = ['-DCMAKE_BUILD_TYPE=' + args.mode]
+  cmake_params.append('-DCMAKE_INSTALL_PREFIX=' + installDir)
+  cmake_params.append('-DENABLE_OPENMP=' + o)
+  cmake_params.append(gen)
 
-configureCmd = ['cmake'] + cmake_params + [srcDir]
-err = subprocess.call(configureCmd, cwd=buildDir, env=e)
-if err == 0:
-  err = subprocess.call(compileCmd, cwd=buildDir, env=e)
+  if not os.path.exists(buildDir):
+    os.makedirs(buildDir)
+
+  configureCmd = ['cmake'] + cmake_params + [srcDir]
+  err = subprocess.call(configureCmd, cwd=buildDir, env=e)
+  if err == 0:
+    err = subprocess.call(compileCmd, cwd=buildDir, env=e)
+  if not err == 0:
+    exit(-1)
 

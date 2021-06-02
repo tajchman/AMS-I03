@@ -6,13 +6,13 @@ try:
 except NameError:
     unicode = str
 
-import os, sys, argparse
+import os, sys, argparse, numpy
 from subprocess import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('threadsMax', type=int)
 parser.add_argument('-c', '--compilers', default='Gnu')
-parser.add_argument('-t', '--type', default='Release', 
+parser.add_argument('-m', '--mode', default='Release', 
                     choices=['Release', 'Debug', 'RelWithDebInfo'])
 parser.add_argument('rest', nargs=argparse.REMAINDER)
 args = parser.parse_args()
@@ -21,9 +21,9 @@ version = 'OpenMP_FineGrain'
 base = os.path.join('.', 
                     'install', 
                     args.compilers,
-                    args.type)
+                    args.mode)
 
-resultsDir = os.path.join('.', 'results', args.compilers, args.type)
+resultsDir = os.path.join('.', 'results', args.compilers, args.mode)
 if not os.path.exists(resultsDir):
    os.makedirs(resultsDir)
 
@@ -76,26 +76,26 @@ with open('run_' + version + '.log', 'w') as log:
        efficiency_transitoire[i-1] = t_transitoire_0/(t_transitoire_i*i)*100.0
 
 with open('run_' + version + '.log', 'a') as log:
-    s = 'last diff (sequential) = ' + "{:10.4f}".format(last_diff_0) + "\n\n"
+
+    s = "threads:      " +  "".join([" {:9d}".format(u) for u in threads]) + "\n"
+    sys.stdout.write(s)
+    log.write(s)
+    
+    s = "speedups:     " + "".join([" {:9.3f}".format(u) for u in speedup]) + "\n"
+    sys.stdout.write(s)
+    log.write(s)
+    
+    s = "speedups\n(transitoire):" + "".join([" {:9.3f}".format(u) for u in speedup_transitoire]) + "\n"
+    sys.stdout.write(s)
+    log.write(s)
+        
+    s = "\nlast diff:   " + "".join(["{:10.2f}".format(u) for u in last]) + "\n"
+    sys.stdout.write(s)
+    log.write(s)
+    s = 'last diff (sequential) = ' + "{:10.2f}".format(last_diff_0) + "\n\n"
     sys.stdout.write(s)
     log.write(s)
 
-    s = "threads:  " +  "".join(["{:10d}".format(u) for u in threads]) + "\n"
-    sys.stdout.write(s)
-    log.write(s)
-    
-    s = "speedups: " + "".join(["{:10.3f}".format(u) for u in speedup]) + "\n"
-    sys.stdout.write(s)
-    log.write(s)
-    
-    s = "speedups (transitoire): " + "".join(["{:10.3f}".format(u) for u in speedup_transitoire]) + "\n"
-    sys.stdout.write(s)
-    log.write(s)
-    
-    s = "last diff:" + "".join(["{:10.4g}".format(u) for u in last]) + "\n"
-    sys.stdout.write(s)
-    log.write(s)
-    
 import matplotlib
 if os.environ.get('DISPLAY','') == '':
     print('no display found. Using non-interactive Agg backend')

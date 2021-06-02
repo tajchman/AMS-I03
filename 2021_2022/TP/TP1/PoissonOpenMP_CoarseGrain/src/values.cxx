@@ -74,7 +74,7 @@ void Values::init(callback_t f)
   for (i=imin_thread; i<=imax_thread; i++)
     for (j=jmin_thread; j<=jmax_thread; j++)
       for (k=kmin_thread; k<=kmax_thread; k++)
-        operator()(i,j,k) = f(xmin + i*dx, ymin + j*dy, zmin + k*dz);
+        operator()(i,j,k) = f(m_xmin[0] + i*dx, m_xmin[1] + j*dy, m_xmin[2] + k*dz);
 }
 
 void Values::boundaries(callback_t f)
