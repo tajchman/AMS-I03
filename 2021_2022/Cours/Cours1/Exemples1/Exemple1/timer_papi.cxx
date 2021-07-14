@@ -14,17 +14,12 @@ void TimerInit()
   if (retval < 0)
     throw std::runtime_error("PAPI initialisation error");
 
-  std::cout << "PAPI Version Number: "
-            << PAPI_VERSION_MAJOR(retval) << '.' 
-            << PAPI_VERSION_MINOR(retval) << '.'
-            << PAPI_VERSION_REVISION(retval) << std::endl;
-
   Timer::EventSet = PAPI_NULL;
   if (PAPI_create_eventset(&Timer::EventSet) != PAPI_OK)
     throw std::runtime_error("PAPI create event set error");
 
   if (PAPI_add_event(Timer::EventSet, PAPI_TOT_CYC) != PAPI_OK)
-    throw std::runtime_error("PAPI add event set error");
+    throw std::runtime_error("PAPI add event error");
 
   Timer::active = true;
 }
