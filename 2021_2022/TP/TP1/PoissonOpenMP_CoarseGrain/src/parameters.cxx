@@ -69,6 +69,8 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   m_n[2] = Get("n2", 401);
   m_itmax = Get("it", 10);
 
+  m_L.setIterations(m_n[0]);
+
   double d;
   double dt_max = 0.1/(m_n[0]*m_n[0]);
   d = 0.1/(m_n[1]*m_n[1]);
@@ -100,47 +102,8 @@ Parameters::Parameters(int argc, char ** argv) : Arguments(argc, argv)
   }
  
   #ifdef _OPENMP
-  int nt = m_nthreads;
-  #else
-  int nt = 1;
+  m_L.setThreads(m_nthreads);
   #endif
-
-  int idecoupe = -1, iT, maxn=-1;
-  for (int i=0; i<3; i++) {
-    m_imin_local[i].resize(nt);
-    m_imax_local[i].resize(nt);
-
-    for (iT = 0; iT < nt; iT++) 
-    {
-       m_imin_local[i][iT] = m_imin[i];
-       m_imax_local[i][iT] = m_imax[i];
-    }
-    if (m_imax[i] - m_imin[i] > maxn) {
-      idecoupe = i;
-      maxn = m_imax[i] - m_imin[i];
-    }
-  }
-
-  maxn++;
-  int di = maxn/nt;
-  
-  int i0 = m_imin[idecoupe];
-  for (iT=0; iT < nt;iT++) {
-    m_imin_local[idecoupe][iT] = i0;
-    m_imax_local[idecoupe][iT] = i0 + di - 1;
-    i0 += di;
-  }
-  m_imax_local[idecoupe][nt-1] = m_imax[idecoupe];
- 
-#ifdef DEBUG
-  for (iT=0; iT<nt; iT++) {
-    std::cerr << "Thread " << iT;
-    for (int i=0; i < 3; i++)
-      std::cerr<< "  [" << m_imin_local[i][iT] << "," 
-               << m_imax_local[i][iT] <<"]";
-    std::cerr << std::endl;
-  }
-#endif
 }
 
 bool Parameters::help()

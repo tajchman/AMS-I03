@@ -1,0 +1,57 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+}
+
+\urlstyle{same}
+
+\usepackage{xcolor}
+
+\lstdefinestyle{base}{
+	language=C++,
+	emptylines=1,
+	breaklines=true,
+	basicstyle=\ttfamily\color{black},
+	moredelim=**[is][\bf\color{red}]{@}{@},
+}
+
+\usetheme[]{boxes}
+\usecolortheme{seagull}
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{2em}%
+	\insertframenumber/\inserttotalframenumber
+}
+
+%\usepackage{french}
+\title{Modèles et techniques en programmation parallèle hybride et multi-c\oe urs}
+\subtitle{Travail pratique 1}
+\author{Marc Tajchman}\institute{CEA - DEN/DM2S/STMF/LMES}
+\date{10/08/2020}
+
+\def\Frac#1#2{\frac{\displaystyle #1}{\displaystyle #2}}
+	
+\begin{document}
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\large
+\begin{frame}
+	On fournit un code non parallélisé qui calcul une solution approchée du problème
+	
+	Cherche $\hat{x}, t = u(\boldmath{x}, t)$ où $t > 0$, $\hat{x} \in [0,1]^n$ ($n$ est la dimension en espace, $n=2$ ou $n=3$) : 
+	$$
+	\Frac{\partial u}{\partial t}
+	$$
+\end{frame}
+
+\end{document}

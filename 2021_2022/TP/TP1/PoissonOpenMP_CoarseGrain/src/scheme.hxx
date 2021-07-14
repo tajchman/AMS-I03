@@ -11,7 +11,6 @@
 #include <vector>
 #include "values.hxx"
 #include "parameters.hxx"
-
 class Scheme {
 
 public:

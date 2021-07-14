@@ -36,19 +36,19 @@ void Values::init()
   int iThread = 0;
 #endif
 
-  int imin_thread = m_p.imin_local(0, iThread);
-  int jmin_thread = m_p.imin_local(1, iThread);
-  int kmin_thread = m_p.imin_local(2, iThread);
+  int imin_thread = m_p.L().startIndex[iThread];
+  int jmin = m_p.imin(1);
+  int kmin = m_p.imin(2);
 
-  int imax_thread = m_p.imax_local(0, iThread);
-  int jmax_thread = m_p.imax_local(1, iThread);
-  int kmax_thread = m_p.imax_local(2, iThread);
+  int imax_thread = m_p.L().endIndex[iThread];
+  int jmax = m_p.imax(1);
+  int kmax = m_p.imax(2);
 
   double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
 
   for (i=imin_thread; i<=imax_thread; i++)
-    for (j=jmin_thread; j<=jmax_thread; j++)
-      for (k=kmin_thread; k<=kmax_thread; k++)
+    for (j=jmin; j<=jmax; j++)
+      for (k=kmin; k<=kmax; k++)
         operator()(i,j,k) = 0.0;
 }
 
@@ -61,19 +61,19 @@ void Values::init(callback_t f)
   int iThread = 0;
 #endif
 
-  int imin_thread = m_p.imin_local(0, iThread);
-  int jmin_thread = m_p.imin_local(1, iThread);
-  int kmin_thread = m_p.imin_local(2, iThread);
+  int imin_thread = m_p.L().startIndex[iThread];
+  int jmin = m_p.imin(1);
+  int kmin = m_p.imin(2);
 
-  int imax_thread = m_p.imax_local(0, iThread);
-  int jmax_thread = m_p.imax_local(1, iThread);
-  int kmax_thread = m_p.imax_local(2, iThread);
+  int imax_thread = m_p.L().endIndex[iThread];
+  int jmax = m_p.imax(1);
+  int kmax = m_p.imax(2);
 
   double dx = m_p.dx(0), dy = m_p.dx(1), dz = m_p.dx(2);
 
   for (i=imin_thread; i<=imax_thread; i++)
-    for (j=jmin_thread; j<=jmax_thread; j++)
-      for (k=kmin_thread; k<=kmax_thread; k++)
+    for (j=jmin; j<=jmax; j++)
+      for (k=kmin; k<=kmax; k++)
         operator()(i,j,k) = f(m_xmin[0] + i*dx, m_xmin[1] + j*dy, m_xmin[2] + k*dz);
 }
 

@@ -39,6 +39,7 @@ set(SRCS
     parameters.cxx
     values.cxx
     scheme.cxx
+    loadbalancing.cxx
     util/arguments.cxx
     util/os.cxx
     util/pause.cxx

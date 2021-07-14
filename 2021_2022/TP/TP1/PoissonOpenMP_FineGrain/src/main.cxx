@@ -23,7 +23,10 @@ double cond_ini(double x, double y, double z)
 
 double force(double x, double y, double z)
 {
+if (x < 0.3)
     return sin(x - 0.5) * cos(y - 0.5) * exp(-z * z);
+else
+    return 0.0;
 }
 
 int main(int argc, char *argv[])
@@ -59,6 +62,8 @@ int main(int argc, char *argv[])
   std::cout << "\n  temps init "  << std::setw(10) << std::setprecision(6) 
             << T_init.elapsed() << " s\n" << std::endl;
 
+  double T_previous;
+
   for (int it=0; it < itMax; it++) {
     if (freq > 0 && it % freq == 0) {
       T_other.start();
@@ -66,6 +71,7 @@ int main(int argc, char *argv[])
       T_other.stop();
     }
 
+    T_previous = T_calcul.elapsed();
     T_calcul.start();
     C.iteration();
     T_calcul.stop();
@@ -73,7 +79,7 @@ int main(int argc, char *argv[])
     std::cout << "iteration " << std::setw(5) << it 
               << "  variation " << std::setw(10) << C.variation()
               << "  temps calcul " << std::setw(10) << std::setprecision(6) 
-              << T_calcul.elapsed() << " s"
+              << T_calcul.elapsed() - T_previous << " s"
               << std::endl; 
   }
 

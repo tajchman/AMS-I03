@@ -27,7 +27,10 @@ double cond_ini(double x, double y, double z)
 
 double force(double x, double y, double z)
 {
+if (x < 0.3)
     return sin(x - 0.5) * cos(y - 0.5) * exp(-z * z);
+else
+    return 0.0;
 }
 
 int main(int argc, char *argv[])
@@ -58,6 +61,8 @@ int main(int argc, char *argv[])
   Values u_0(Prm);
   u_0.boundaries(cond_ini);
 
+  double T_previous;
+
 #pragma omp parallel 
   {
     u_0.init(cond_ini);
@@ -81,8 +86,10 @@ int main(int argc, char *argv[])
 	}
 
 #pragma omp master
+  {
+    T_previous = T_calcul.elapsed();
     T_calcul.start();
-
+  }
 #pragma omp barrier
     C.iteration();
 #pragma omp barrier
@@ -94,7 +101,7 @@ int main(int argc, char *argv[])
     std::cout << "iteration " << std::setw(5) << it 
               << "  variation " << std::setw(10) << C.variation()
               << "  temps calcul " << std::setw(10) << std::setprecision(6) 
-              << T_calcul.elapsed() << " s"
+              << T_calcul.elapsed() - T_previous << " s"
               << std::endl; 
       }
     }

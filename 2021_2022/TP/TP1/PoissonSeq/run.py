@@ -27,6 +27,6 @@ if not os.path.exists(resultsDir):
 
 codeSeq = os.path.join(base, 'PoissonSeq.exe')
 
-subprocess.call([codeSeq, "path=" + resultsDir] + args.rest)
+call([codeSeq, "path=" + resultsDir] + args.rest)
 
 
